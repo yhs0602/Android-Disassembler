@@ -2,7 +2,7 @@
  * Copyright (C) 2009 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
-} * you may not use this file except in compliance with the License.
+ } * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
@@ -18,41 +18,128 @@ package com.jourhyang.disasmarm;
 import android.app.*;
 import android.content.*;
 import android.database.*;
+import android.graphics.*;
 import android.net.*;
 import android.os.*;
 import android.provider.*;
+import android.util.*;
 import android.view.*;
+import android.view.View.*;
 import android.widget.*;
 import java.io.*;
-import android.system.*;
+import java.util.*;
 
 public class MainActivity extends Activity implements Button.OnClickListener
 {
 	String fpath;
 	byte[] filecontent=null;
 	ELFUtil elfUtil;
+	SharedPreferences setting;
+	SharedPreferences.Editor editor;
+
+
+	boolean showAddress,showLabel,showBytes,showInstruction,showCondition,showOperands,showComment;
+	private CustomDialog mCustomDialog;
+
+	//private ListViewAdapter adapter;
+
+	//private ListView listview;
+	ArrayList<ListViewItem> disasmResults=new ArrayList<ListViewItem>();
+
+	private TableLayout stk;
+
+	public void setShowAddress(boolean showAddress)
+	{
+		this.showAddress = showAddress;
+	}
+
+	public boolean isShowAddress()
+	{
+		return showAddress;
+	}
+
+	public void setShowLabel(boolean showLabel)
+	{
+		this.showLabel = showLabel;
+	}
+
+	public boolean isShowLabel()
+	{
+		return showLabel;
+	}
+
+	public void setShowBytes(boolean showBytes)
+	{
+		this.showBytes = showBytes;
+	}
+
+	public boolean isShowBytes()
+	{
+		return showBytes;
+	}
+
+	public void setShowInstruction(boolean showInstruction)
+	{
+		this.showInstruction = showInstruction;
+	}
+
+	public boolean isShowInstruction()
+	{
+		return showInstruction;
+	}
+
+	public void setShowCondition(boolean showCondition)
+	{
+		this.showCondition = showCondition;
+	}
+
+	public boolean isShowCondition()
+	{
+		return showCondition;
+	}
+
+	public void setShowOperands(boolean showOperands)
+	{
+		this.showOperands = showOperands;
+	}
+
+	public boolean isShowOperands()
+	{
+		return showOperands;
+	}
+
+	public void setShowComment(boolean showComment)
+	{
+		this.showComment = showComment;
+	}
+
+	public boolean isShowComment()
+	{
+		return showComment;
+	}
+
 	@Override
 	public void onClick(View p1)
 	{
 		// TODO: Implement this method
 		Button btn=(Button)p1;
-		switch(btn.getId())
+		switch (btn.getId())
 		{
 			case R.id.selFile:
 				showFileChooser();
 				break;
 			case R.id.btnDisasm:
-				if(filecontent==null)
+				if (filecontent == null)
 				{
-					Toast.makeText(this,"Please Select a file first.",2).show();
+					Toast.makeText(this, "Please Select a file first.", 2).show();
 					return;
 				}
 				DisassembleFile();
 				break;
 			case R.id.btnShowdetail:
-				if(elfUtil==null)
+				if (elfUtil == null)
 				{
-					Toast.makeText(this,"Please Select a file first.",2).show();
+					Toast.makeText(this, "Please Select a file first.", 2).show();
 					return;
 				}
 				ShowDetail();
@@ -66,7 +153,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			default:
 				break;
 		}
-		
+
 	}
 
 	private void SaveDisasm()
@@ -77,7 +164,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	private void SaveDetail()
 	{
 		// TODO: Implement this method
-		Toast.makeText(this,"Successfully saved to file: "+"blah.txt",1).show();
+		Toast.makeText(this, "Successfully saved to file: " + "blah.txt", 1).show();
 	}
 
 	private void ShowDetail()
@@ -90,14 +177,133 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 	private void DisassembleFile()
 	{
-		// TODO: Implement this method
-		EditText result=(EditText) findViewById(R.id.disasmText);
-		//more complicated
-		//rich edit, table,HTML, etc.
-		
-		result.setText(disassemble(filecontent,elfUtil.getEntryPoint()));
-		
+		Toast.makeText(this, "started", 1).show();
+		disasmResults.clear();
+
+		new Thread(new Runnable(){
+
+				@Override
+				public void run()
+				{
+					long index=elfUtil.getEntryPoint();
+
+					for (int i=0;i < 500;++i)
+					{
+						DisasmResult dar=new DisasmResult(filecontent, index);
+						final ListViewItem lvi=new ListViewItem(dar);
+						disasmResults.add(lvi);
+						if (index >= filecontent.length - 10000)
+						{
+							break;
+						}
+						index += dar.size;
+					}
+					for (final ListViewItem lvi:disasmResults)
+					{
+						runOnUiThread(new Runnable(){
+
+								@Override
+								public void run()
+								{
+
+									TableRow tbrow = new TableRow(MainActivity.this);
+
+									TextView t1v = new TextView(MainActivity.this);
+									t1v.setText(lvi.getAddress());
+									t1v.setTextColor(Color.BLACK);
+									t1v.setGravity(Gravity.CENTER);
+									t1v.setBackgroundResource(R.drawable.cell_shape);
+									tbrow.addView(t1v);
+									TextView t2v = new TextView(MainActivity.this);
+									t2v.setText(lvi.getLabel());
+									t2v.setTextColor(Color.BLACK);
+									t2v.setGravity(Gravity.CENTER);
+									t2v.setBackgroundResource(R.drawable.cell_shape);
+									tbrow.addView(t2v);
+									TextView t3v = new TextView(MainActivity.this);
+									t3v.setText(lvi.getBytes());
+									t3v.setTextColor(Color.BLACK);
+									t3v.setGravity(Gravity.CENTER);
+									t3v.setBackgroundResource(R.drawable.cell_shape);
+									tbrow.addView(t3v);								
+									TextView t4v = new TextView(MainActivity.this);
+									t4v.setText(lvi.getInstruction());
+									t4v.setTextColor(Color.BLACK);
+									t4v.setGravity(Gravity.CENTER);
+									t4v.setBackgroundResource(R.drawable.cell_shape);
+									tbrow.addView(t4v);
+									TextView t5v = new TextView(MainActivity.this);
+									t5v.setText(lvi.getCondition());
+									t5v.setTextColor(Color.BLACK);
+									t5v.setGravity(Gravity.CENTER);
+									t5v.setBackgroundResource(R.drawable.cell_shape);
+									tbrow.addView(t5v);
+									TextView t6v = new TextView(MainActivity.this);
+									t6v.setText(lvi.getOperands());
+									t6v.setTextColor(Color.BLACK);
+									t6v.setGravity(Gravity.CENTER);
+									t6v.setBackgroundResource(R.drawable.cell_shape);
+									tbrow.addView(t6v);
+									TextView t7v = new TextView(MainActivity.this);
+									t7v.setText(lvi.getComments());
+									t7v.setTextColor(Color.BLACK);
+									t7v.setGravity(Gravity.CENTER);
+									t7v.setBackgroundResource(R.drawable.cell_shape);
+									tbrow.addView(t7v);
+									AdjustShow(t1v, t2v, t3v, t4v, t5v, t6v, t7v);
+									tbrow.invalidate();
+									tbrow.setClickable(true);  //allows you to select a specific row
+
+									tbrow.setOnClickListener(new OnClickListener() {
+											public void onClick(View view)
+											{
+												TableRow tablerow = (TableRow) view; 
+												TextView sample = (TextView) tablerow.getChildAt(1);
+												tablerow.setBackgroundColor(Color.GREEN);
+												//	String result=sample.getText().toString();
+
+												//Toast toast = Toast.makeText(myActivity, result, Toast.LENGTH_LONG);
+												//toast.show();
+											}
+										});
+									stk.addView(tbrow);
+								}
+							});		
+					}
+					runOnUiThread(new Runnable(){
+
+							@Override
+							public void run()
+							{
+								// TODO: Implement this method
+								//EditText result=(EditText) findViewById(R.id.disasmText);
+								//more complicated
+								//rich edit, table,HTML, etc.
+
+								//adapter.notifyDataSetChanged()
+								//result.setText(Disassemble(result));
+								//listview.refreshDrawableState();
+								//onWindowFocusChanged(true);
+								Toast.makeText(MainActivity.this, "done", 1).show();
+							}
+						});				
+				}
+
+
+			}).start();
+
 	}
+	public void AdjustShow(TextView t1v, TextView t2v, TextView t3v, TextView t4v, TextView t5v, TextView t6v, TextView t7v)
+	{
+		t1v.setVisibility(isShowAddress() ? View.VISIBLE: View.GONE);
+		t2v.setVisibility(isShowLabel() ? View.VISIBLE: View.GONE);
+		t3v.setVisibility(isShowBytes() ? View.VISIBLE: View.GONE);
+		t4v.setVisibility(isShowInstruction() ? View.VISIBLE: View.GONE);
+		t5v.setVisibility(isShowCondition() ? View.VISIBLE: View.GONE);
+		t6v.setVisibility(isShowOperands() ? View.VISIBLE: View.GONE);
+		t7v.setVisibility(isShowComment() ? View.VISIBLE: View.GONE);
+	}
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -109,6 +315,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
          * function.
          */
         setContentView(R.layout.main);
+
 		Button selectFile=(Button) findViewById(R.id.selFile);
 		selectFile.setOnClickListener(this);
 		Button showDit=(Button) findViewById(R.id.btnShowdetail);
@@ -117,21 +324,214 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		disasm.setOnClickListener(this);
 		Button savdisasm=(Button) findViewById(R.id.btnSaveDisasm);
 		savdisasm.setOnClickListener(this);
-		if(Init()!=0)
+
+        // Adapter 생성
+		// adapter = new ListViewAdapter() ;
+		/*	ListViewItem item=new ListViewItem();
+		 item.setAddress("address");
+		 item.setBytes("bytes");
+		 item.setComments("comments");
+		 item.setCondition("condition");
+		 item.setInstruction("inst");
+		 item.setLabel("label");
+		 item.setOperands("operands");
+		 adapter.addItem(item);
+		 // 리스트뷰 참조 및 Adapter달기
+		 listview = (ListView) findViewById(R.id.lvDisassembly);
+		 listview.setAdapter(adapter);
+		 listview.setOnTouchListener(new ListView.OnTouchListener() {
+		 @Override
+		 public boolean onTouch(View v, MotionEvent event) {
+		 int action = event.getAction();
+		 switch (action) {
+		 case MotionEvent.ACTION_DOWN:
+		 // Disallow ScrollView to intercept touch events.
+		 v.getParent().requestDisallowInterceptTouchEvent(true);
+		 break;
+
+		 case MotionEvent.ACTION_UP:
+		 // Allow ScrollView to intercept touch events.
+		 v.getParent().requestDisallowInterceptTouchEvent(false);
+		 break;
+		 }
+
+		 // Handle ListView touch events.
+		 v.onTouchEvent(event);
+		 return true;
+		 }});
+		 // 위에서 생성한 listview에 클릭 이벤트 핸들러 정의.
+		 listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		 @Override
+		 public void onItemClick(AdapterView parent, View v, int position, long id) {
+		 // get item
+		 ListViewItem item = (ListViewItem) parent.getItemAtPosition(position) ;
+
+		 //String titleStr = item.getTitle() ;
+		 //String descStr = item.getDesc() ;
+		 //Drawable iconDrawable = item.getIcon() ;
+
+		 // TODO : use item data.
+		 }
+		 }) ;*/
+		if (Init() != 0)
 		{
-			Toast.makeText(this,"Failed Initializing",1).show();
+			Toast.makeText(this, "Failed Initializing", 1).show();
 			android.os.Process.killProcess(android.os.Process.getGidForName(null));
 		}
+		stk = (TableLayout) findViewById(R.id.table_main);
+		TableRow tbrow0 = new TableRow(MainActivity.this);
+		TextView tv0 = new TextView(MainActivity.this);
+		tv0.setText(" Address ");
+		tv0.setTextColor(Color.BLACK);
+		tbrow0.addView(tv0);
+		TextView tv1 = new TextView(MainActivity.this);
+		tv1.setText(" Label ");
+		tv1.setTextColor(Color.BLACK);
+		tbrow0.addView(tv1);
+		TextView tv2 = new TextView(MainActivity.this);
+		tv2.setText(" Bytes ");
+		tv2.setTextColor(Color.BLACK);
+		tbrow0.addView(tv2);
+		TextView tv3 = new TextView(MainActivity.this);
+		tv3.setText(" Inst ");
+		tv3.setTextColor(Color.BLACK);
+		tbrow0.addView(tv3);
+		TextView tv4 = new TextView(MainActivity.this);
+		tv4.setText(" Cond ");
+		tv4.setTextColor(Color.BLACK);
+		tbrow0.addView(tv4);
+		TextView tv5 = new TextView(MainActivity.this);
+		tv5.setText(" Operands ");
+		tv5.setTextColor(Color.BLACK);
+		tbrow0.addView(tv5);
+		TextView tv6 = new TextView(MainActivity.this);
+		tv6.setText(" Comment ");
+		tv6.setTextColor(Color.BLACK);
+		tbrow0.addView(tv6);
+		//AdjustShow(tv0,tv1,tv2,tv3,tv4,tv5,tv6);
+		stk.addView(tbrow0);
+
+		//init();
     }
+
 
 	@Override
 	protected void onDestroy()
 	{
 		// TODO: Implement this method
 		super.onDestroy();
+		try
+		{
+			elfUtil.close();
+		}
+		catch (Exception e)
+		{}
 		Finalize();
 	}
-	
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu)
+	{
+        // Inflate the menu; this adds items to the action bar if it is present.
+        // 메뉴버튼이 처음 눌러졌을 때 실행되는 콜백메서드
+        // 메뉴버튼을 눌렀을 때 보여줄 menu 에 대해서 정의
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        Log.d("test", "onCreateOptionsMenu - 최초 메뉴키를 눌렀을 때 호출됨");
+        return true;
+    }
+	@Override
+    public boolean onPrepareOptionsMenu(Menu menu)
+	{
+        Log.d("test", "onPrepareOptionsMenu - 옵션메뉴가 " +
+			  "화면에 보여질때 마다 호출됨");
+		/*   if(bLog){ // 로그인 한 상태: 로그인은 안보이게, 로그아웃은 보이게
+		 menu.getItem(0).setEnabled(true);
+		 menu.getItem(1).setEnabled(false);
+		 }else{ // 로그 아웃 한 상태 : 로그인 보이게, 로그아웃은 안보이게
+		 menu.getItem(0).setEnabled(false);
+		 menu.getItem(1).setEnabled(true);
+		 }
+
+		 bLog = !bLog;   // 값을 반대로 바꿈
+		 */
+        return super.onPrepareOptionsMenu(menu);
+    }
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item)
+	{
+        // 메뉴의 항목을 선택(클릭)했을 때 호출되는 콜백메서드
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        Log.d("test", "onOptionsItemSelected - 메뉴항목을 클릭했을 때 호출됨");
+
+        int id = item.getItemId();
+		switch (id)
+		{
+
+			case R.id.settings: {
+
+					Intent SettingActivity = new Intent(this, SettingsActivity.class);
+
+					startActivity(SettingActivity);
+
+				}
+				break;
+			case R.id.rows:
+				{
+					mCustomDialog = new CustomDialog(this, 
+													 "Select rows to view", // 제목
+													 "열 선택", // 내용 
+													 null, // 왼쪽 버튼 이벤트
+													 rightListener); // 오른쪽 버튼 이벤트
+					mCustomDialog.show();
+					break;
+				}
+		}
+
+		/*    switch(id) {
+		 case R.id.menu_login:
+		 Toast.makeText(getApplicationContext(), "로그인 메뉴 클릭",
+		 Toast.LENGTH_SHORT).show();
+		 return true;
+		 case R.id.menu_logout:
+		 Toast.makeText(getApplicationContext(), "로그아웃 메뉴 클릭",
+		 Toast.LENGTH_SHORT).show();
+		 return true;
+		 case R.id.menu_a:
+		 Toast.makeText(getApplicationContext(), "다음",
+		 Toast.LENGTH_SHORT).show();
+		 return true;
+		 }*/
+        return super.onOptionsItemSelected(item);
+    }
+	private View.OnClickListener leftListener = new View.OnClickListener() {
+		public void onClick(View v)
+		{
+			Toast.makeText(getApplicationContext(), "왼쪽버튼 클릭",
+						   Toast.LENGTH_SHORT).show();
+			mCustomDialog.dismiss();
+		}
+	};
+
+	private View.OnClickListener rightListener = new View.OnClickListener() {
+		public void onClick(View v)
+		{
+			Toast.makeText(getApplicationContext(), "오른쪽버튼 클릭",
+						   Toast.LENGTH_SHORT).show();
+		}
+	};
+
+	/*
+	 public void onWindowFocusChanged(boolean hasFocus) {
+	 // get content height
+	 int contentHeight = listview.getChildAt(0).getHeight();
+	 contentHeight*=listview.getChildCount();
+	 // set listview height
+	 LayoutParams lp = listview.getLayoutParams();
+	 lp.height = contentHeight;
+	 listview.setLayoutParams(lp);
+	 }
+	 */
 	private static final int FILE_SELECT_CODE = 0;
 
 	private void showFileChooser()
@@ -173,20 +573,22 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					try
 					{
 						String file_path;
-						if(new File(uri.getPath()).exists()==false)
+						if (new File(uri.getPath()).exists() == false)
 						{
-							file_path = RealPathUtils.getRealPathFromURI(this,uri);
-						}else{
-							file_path=uri.getPath();
+							file_path = RealPathUtils.getRealPathFromURI(this, uri);
 						}
-						
+						else
+						{
+							file_path = uri.getPath();
+						}
+
 						EditText et=(EditText) findViewById(R.id.fileNameText);
-						et.setText(file_path/*uri.getPath()*/);
+						et.setText(file_path);
 						fpath = file_path; //uri.getPath();
 						File file=new File(fpath);
 						long fsize=file.length();
 						int index=0;
-						filecontent=new byte[(int)fsize];
+						filecontent = new byte[(int)fsize];
 						DataInputStream in = new DataInputStream(new FileInputStream(fpath));
 						int len,counter=0;
 						byte[] b=new byte[1024];
@@ -200,7 +602,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 								counter++;
 							}
 						}
-						elfUtil=new ELFUtil(file);
+						elfUtil = new ELFUtil(file);
 						Toast.makeText(this, "success size=" + new Integer(index).toString(), 1).show();
 					}
 					catch (Exception e)
@@ -259,11 +661,33 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		return filePath;
 	}
 
+	public String Disassemble(EditText result)
+	{
+		//String s=disassemble(filecontent, elfUtil.getEntryPoint());
+		String s;
+		byte [] b=Arrays.copyOfRange(filecontent, (int)elfUtil.getEntryPoint(), filecontent.length - 1);
+		s = new DisasmResult(b, 0).toString();
+		return s;
+	}
+
+	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+	public static String bytesToHex(byte[] bytes)
+	{
+		char[] hexChars = new char[bytes.length * 2];
+		for (int j = 0; j < bytes.length; j++)
+		{
+			int v = bytes[j] & 0xFF;
+			hexChars[j * 2] = hexArray[v >>> 4];
+			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+		}
+		return new String(hexChars);
+	}
+
     /* A native method that is implemented by the
      * 'hello-jni' native library, which is packaged
      * with this application.
      */
-    public native String  disassemble(byte [] bytes,long entry);
+    public native String  disassemble(byte [] bytes, long entry);
 	public native int Init();
 	public native void Finalize();
 

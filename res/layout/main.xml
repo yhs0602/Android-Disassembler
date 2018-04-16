@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="fill_parent"
-	android:layout_width="fill_parent"
-	android:orientation="vertical">
+	android:layout_width="match_parent"
+	android:orientation="vertical"
+	android:measureWithLargestChild="true"
+	android:layout_height="match_parent">
 
 	<HorizontalScrollView
-		android:layout_height="wrap_content"
-		android:layout_width="fill_parent">
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
 
 		<ScrollView
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent">
+			android:layout_width="match_parent"
+			android:fillViewport="true"
+			android:layout_height="match_parent">
 
 			<TableLayout
-				android:layout_height="wrap_content"
-				android:layout_width="fill_parent">
+				android:layout_width="match_parent"
+				android:layout_height="match_parent">
 
 				<TableRow
-					android:layout_height="wrap_content"
-					android:layout_width="fill_parent">
+					android:layout_height="match_parent"
+					android:layout_width="match_parent">
 
 					<TextView
 						android:layout_height="wrap_content"
@@ -46,13 +48,13 @@
 
 				<TableRow
 					android:layout_height="wrap_content"
-					android:layout_width="wrap_content">
+					android:layout_width="match_parent">
 
 					<EditText
 						android:layout_height="wrap_content"
 						android:ems="10"
 						android:layout_width="wrap_content"
-						android:layout_span="4"
+						android:layout_span="2"
 						android:id="@+id/fileNameText"/>
 
 					<Button
@@ -64,8 +66,8 @@
 				</TableRow>
 
 				<TableRow
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content">
+					android:layout_height="match_parent"
+					android:layout_width="match_parent">
 
 					<RadioGroup
 						android:layout_height="wrap_content"
@@ -114,7 +116,8 @@
 
 								<RadioButton
 									android:layout_height="wrap_content"
-									android:layout_width="wrap_content"/>
+									android:layout_width="wrap_content"
+									android:text="MIPS"/>
 
 							</TableRow>
 
@@ -125,8 +128,8 @@
 				</TableRow>
 
 				<TableRow
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content">
+					android:layout_height="match_parent"
+					android:layout_width="match_parent">
 
 					<Button
 						android:layout_height="wrap_content"
@@ -139,13 +142,14 @@
 						android:layout_height="wrap_content"
 						android:text="Disassemble"
 						android:layout_width="wrap_content"
-						android:id="@+id/btnDisasm"/>
+						android:id="@+id/btnDisasm"
+						android:layout_span="1"/>
 
 				</TableRow>
 
 				<TableRow
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content">
+					android:layout_height="match_parent"
+					android:layout_width="match_parent">
 
 					<TextView
 						android:layout_height="wrap_content"
@@ -157,22 +161,22 @@
 				</TableRow>
 
 				<TableRow
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content">
+					android:layout_height="match_parent"
+					android:layout_width="match_parent">
 
 					<EditText
 						android:layout_height="wrap_content"
 						android:inputType="textMultiLine"
 						android:ems="10"
 						android:layout_width="wrap_content"
-						android:layout_span="5"
+						android:layout_span="4"
 						android:id="@+id/detailText"/>
 
 				</TableRow>
 
 				<TableRow
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content">
+					android:layout_height="match_parent"
+					android:layout_width="match_parent">
 
 					<Button
 						android:layout_height="wrap_content"
@@ -183,8 +187,8 @@
 				</TableRow>
 
 				<TableRow
-					android:layout_height="wrap_content"
-					android:layout_width="wrap_content">
+					android:layout_height="match_parent"
+					android:layout_width="match_parent">
 
 					<TextView
 						android:layout_height="wrap_content"
@@ -199,19 +203,17 @@
 					android:layout_height="wrap_content"
 					android:layout_width="wrap_content">
 
-					<EditText
+					<TableLayout
 						android:layout_height="wrap_content"
-						android:inputType="textMultiLine"
-						android:ems="10"
 						android:layout_width="wrap_content"
-						android:layout_span="5"
-						android:id="@+id/disasmText"/>
+						android:id="@+id/table_main"
+						android:background="#FFFFFF"/>
 
 				</TableRow>
 
 				<TableRow
 					android:layout_height="wrap_content"
-					android:layout_width="wrap_content">
+					android:layout_width="match_parent">
 
 					<Button
 						android:layout_height="wrap_content"

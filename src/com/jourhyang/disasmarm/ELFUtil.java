@@ -1,10 +1,18 @@
 package com.jourhyang.disasmarm;
 import java.io.*;
-//import org.apache.http.*;
-import nl.lxtreme.binutils.*;
+import java.nio.*;
+import java.util.*;
 import nl.lxtreme.binutils.elf.*;
-public class ELFUtil
+public class ELFUtil implements Closeable
 {
+
+	@Override
+	public void close() throws IOException
+	{
+		// TODO: Implement this method
+		elf.close();
+	}
+	
 	Elf elf;
 	public long getEntryPoint()
 	{
@@ -12,7 +20,8 @@ public class ELFUtil
 	}
 	public String toString()
 	{
-		return elf.toString();
+		return new StringBuilder(elf.toString())
+					.append(Arrays.toString(symstrings)).toString();
 	}
 	public static int getWord(byte a, byte b, byte c, byte d)
 	{
@@ -65,6 +74,22 @@ public class ELFUtil
 		//assertNotNull( header );
 		//bExecutable=header.elfType;
 		entryPoint = header.entryPoint;
+		
+		for(SectionHeader sh:sections)
+		{
+			//if(sh.type.equals(SectionType.))
+//			//{
+//				ByteBuffer buf=elf.getSection(sh);
+//				int entnum=(int)(sh.size/sh.entrySize);
+//				symstrings=new String[entnum];
+//				for(int i=0;i<entnum;++i)
+//				{
+//					byte [] bytes=new byte[(int)sh.entrySize];
+//					buf.get(bytes);
+//					symstrings[i]=new String(bytes);
+//				}
+//			}
+		}
 		//CodeBase=
 		//System.out.printf( "Entry point: 0x%x\n", header.entryPoint );
 	}
@@ -85,4 +110,5 @@ public class ELFUtil
 	private byte [] fileContents;
 	boolean bExecutable;
 	private long CodeBase;
+	String[] symstrings;
 }

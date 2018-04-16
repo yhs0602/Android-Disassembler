@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="useUserName"
+        android:summaryOff="사용자의 이름을 사용하지 않습니다"
+        android:summaryOn="사용자의 이름을 사용합니다"
+        android:title="사용자 이름 사용" />
+
+    <EditTextPreference
+        android:defaultValue="Mir"
+        android:dependency="useUserName"
+        android:key="userName"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="사용자 이름 설정" />
+
+    <ListPreference
+        android:defaultValue="0"
+        android:dependency="useUserName"
+        android:entries="@array/userNameOpen"
+        android:entryValues="@array/userNameOpen_values"
+        android:key="userNameOpen"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="이름 공개 범위" />
+
+    <PreferenceCategory android:title="자동 업데이트" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="useUpdateNofiti"
+            android:summary="업데이트후 알림을 띄웁니다"
+            android:title="알림 사용"
+			/>
+
+        <RingtonePreference
+            android:defaultValue="content://settings/system/notification_sound"
+            android:dependency="useUpdateNofiti"
+            android:key="autoUpdate_ringtone"
+            android:ringtoneType="notification"
+            android:showSilent="true"
+            android:title="알림 소리" 
+			/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="어플 정보" >
+        <Preference
+            android:summary="개발자 정보를 확인합니다"
+            android:title="개발자 정보" >
+            <intent
+                android:targetClass="com.jourhyang.disasmarm.MadeByActivity"
+                android:targetPackage="com.jourhyang.disasmarm" />
+        </Preference>
+        <Preference
+            android:summary="개발자에게 메일을 보냅니다"
+            android:title="메일 보내기" >
+            <intent
+                android:action="android.intent.action.SENDTO"
+                android:data="mailto:whdghks913@naver.com" />
+        </Preference>
+    </PreferenceCategory>
+
+</PreferenceScreen>

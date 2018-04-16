@@ -1,4 +1,6 @@
 package com.jourhyang.disasmarm;
+import java.util.*;
+import android.location.*;
 
 public class DisasmResult
 {
@@ -8,16 +10,45 @@ public class DisasmResult
 		address=0L;
 		size=0;
 		bytes=new byte[16];
-		mnemonic=new String();
-		op_str=new String();
+		mnemonic=new String("undefined");
+		op_str=new String("undefined");
 		regs_read=new byte[12];
 		regs_read_count=0;
 		regs_write=new byte[20];
 		regs_write_count=0;
 		groups=new byte[8];
 		groups_count=0;
+		//DisasmOne();
 	}
-	public native void DisasmOne();
+/*	public DisasmResult(byte [] bytes,long address)
+	{
+		this();
+		DisasmOne(bytes,address);
+	}*/
+	
+	public DisasmResult(byte [] bytes,long shift)
+	{
+		this();
+		DisasmOne2(bytes,shift,address);
+	}
+	public native void DisasmOne(byte[] bytes,long address);
+	public native void DisasmOne2(byte[] bytes,long shift,long Address);
+	
+	
+	@Override
+	public String toString()
+	{
+		// TODO: Implement this method
+		StringBuilder builder=new StringBuilder();
+		return builder.append("id:").append(id)
+			   .append("\naddress:").append(address)
+			   .append("\nsize:").append(size)
+			   .append("\nbytes:").append(Arrays.toString(bytes))
+			   .append("\nmnemonic:").append(mnemonic)
+			   .append("\nop_str:").append(op_str)
+			   .toString();
+	}
+	
 	//cs_insn {
 		// Instruction ID (basically a numeric ID for the instruction mnemonic)
 		// Find the instruction id in the '[ARCH]_insn' enum in the header file 

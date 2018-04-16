@@ -16,6 +16,7 @@
  */
 #include <string.h>
 #include <jni.h>
+#include <android/log.h>
 extern "C"
 {
 	#include "capstone.h"
@@ -38,7 +39,7 @@ extern "C"
 		JNIEXPORT jstring JNICALL Java_com_jourhyang_disasmarm_MainActivity_disassemble(JNIEnv * env, jobject thiz, jbyteArray _bytes,jlong entry)
 		{
 			int bytelen=env->GetArrayLength(_bytes);
-			char *bytes= new char[bytelen];
+			unsigned char *bytes= new unsigned char[bytelen];
 			jbyte *byte_buf;
  	        byte_buf = env->GetByteArrayElements(_bytes, NULL);
 			for(int i=0;i<bytelen;++i)
@@ -50,7 +51,7 @@ extern "C"
 			size_t count;
 			char *buf;
 			string strbuf;
-			count = cs_disasm(handle,/*(const uint8_t*)*/((const uint8_t*)bytes+/*CODE*/entry), bytelen-1, 0x1000, 0, & insn);
+			count = cs_disasm(handle,/*(const uint8_t*)*/((const uint8_t*)bytes+/*CODE*/entry), bytelen-1, entry, 0, & insn);
 			if (count > 0)
 			{
 				size_t j;
@@ -69,10 +70,13 @@ extern "C"
 			//free(buf);
 			return r;
 		}
-		JNIEXPORT void JNICALL Java_com_jourhyang_disasmarm_DisasmResult_DisasmOne(JNIEnv * env, jobject thiz,jbyteArray _bytes )
+		
+		void DisasmOne_sub(JNIEnv * env, jobject thiz,unsigned char* bytes,int bytelen,long addr);
+		
+		JNIEXPORT void JNICALL Java_com_jourhyang_disasmarm_DisasmResult_DisasmOne(JNIEnv * env, jobject thiz,jbyteArray _bytes ,jlong addr)
 		{
 			int bytelen=env->GetArrayLength(_bytes);
-			char *bytes= new char[bytelen];
+			unsigned char *bytes= new unsigned char[bytelen];
 			jbyte *byte_buf;
  	        byte_buf = env->GetByteArrayElements(_bytes, NULL);
 			for(int i=0;i<bytelen;++i)
@@ -80,13 +84,105 @@ extern "C"
 				bytes[i]=byte_buf[i];
 			}
 			env->ReleaseByteArrayElements(_bytes, byte_buf, 0);
+			DisasmOne_sub(env,thiz,bytes,bytelen,addr);
+		}
+		
+		JNIEXPORT void JNICALL Java_com_jourhyang_disasmarm_DisasmResult_DisasmOne2(JNIEnv * env, jobject thiz,jbyteArray _bytes, jlong shift)
+		{
+			int bytelen=env->GetArrayLength(_bytes);
+			unsigned char *bytes= new unsigned char[bytelen-shift];
+			jbyte *byte_buf;
+ 	        byte_buf = env->GetByteArrayElements(_bytes, NULL);
+			for(int i=0;i<bytelen-shift;++i)
+			{
+				bytes[i]=byte_buf[i+shift];
+			}
+			env->ReleaseByteArrayElements(_bytes, byte_buf, 0);
+			
+			DisasmOne_sub(env,thiz,bytes,bytelen-shift,shift);
+		}
+		
+		void DisasmOne_sub(JNIEnv * env, jobject thiz,unsigned char* bytes,int bytelen,long addr)
+		{
 			cs_insn * insn;
 			size_t count;
-			count = cs_disasm(handle,(const uint8_t*)bytes, bytelen-1, 0x1000, 0, & insn);
+			__android_log_print(ANDROID_LOG_VERBOSE, "DisasmARM", "DisasmOne_sub");
+			count = cs_disasm(handle,(const uint8_t*)bytes, bytelen-1, addr, 1, & insn);
 			if(count>0)
 			{
+				size_t j;
+				jclass cls = env->GetObjectClass(thiz);
+				jfieldID fid = env->GetFieldID(cls, "mnemonic","Ljava/lang/String;");
+				if (fid == NULL) {
+					return; /* failed to find the field */
+				}
+				/* Create a new string and overwrite the instance field */
+				jstring jstr = env->NewStringUTF( insn[0].mnemonic);
+				if (jstr == NULL) {
+					return; /* out of memory */
+				}
+				env->SetObjectField(thiz, fid, jstr);
+				
+				fid = env->GetFieldID( cls, "op_str","Ljava/lang/String;");
+				if (fid == NULL) {
+					return; /* failed to find the field */
+				}
+				/* Create a new string and overwrite the instance field */
+			    jstr = env->NewStringUTF(insn[0].op_str);
+				if (jstr == NULL) {
+					return; /* out of memory */
+				}
+				env->SetObjectField(thiz, fid, jstr);
+		
+				fid = env->GetFieldID( cls, "address","J");
+				if (fid == NULL) {
+					return; /* failed to find the field */
+				}
+				env->SetLongField(thiz, fid, insn[0].address);
+				
+				fid = env->GetFieldID( cls, "id","I");
+				if (fid == NULL) {
+					return; /* failed to find the field */
+				}
+				env->SetIntField(thiz, fid, insn[0].id);
+				
+				fid = env->GetFieldID(cls, "size","I");
+				if (fid == NULL) {
+					return; /* failed to find the field */
+				}
+				env->SetIntField(thiz, fid, insn[0].size);
+				
+				fid = env->GetFieldID( cls, "bytes","[B");
+				if (fid == NULL) {
+					return; /* failed to find the field */
+				}
+				jobject job=env->GetObjectField(thiz,fid);
+				jbyteArray *jba = reinterpret_cast<jbyteArray*>(&job);
+				int sz=env->GetArrayLength(*jba);
+				// Get the elements (you probably have to fetch the length of the array as well  
+ 				jbyte * data = env->GetByteArrayElements(*jba, NULL);
+				int min=insn[0].size > sz ? sz : insn[0].size;
+				for(int i=0;i<min;++i)
+				{
+					data[i]=insn[0].bytes[i];
+				}
+  				// Don't forget to release it 
+  				env->ReleaseByteArrayElements(*jba, data, 0);
+
+				//env->SetIntField(env, obj, fid, insn[0].size);
+				
+				
+				//for (j = 0; j < count; j++)
+				//{
+				//	 asprintf(&buf,"0%x : %s %s\n", insn[j].address, /*insn[j].bytes,*/ insn[j].mnemonic,insn[j].op_str);
+				//	 strbuf+=buf;
+				//	 free(buf);
+				//	 print_insn_detail(strbuf,&(insn[j]));
+				//}
 				cs_free(insn, count);
 			}
+			__android_log_print(ANDROID_LOG_VERBOSE, "DisasmARM", "DisasmOne_sub end");
+			
 				jfieldID fidid;   /* store the field ID */
 				jfieldID fidaddr;
 				jfieldID fidsize;
@@ -99,28 +195,28 @@ extern "C"
 				jfieldID fidregs_write_count;
 				jfieldID fidgroups;
 				jfieldID fidgroups_count;
-				//jstring jstr;
+				jstring jstr;
 				//const char *str;     /* Get a reference to obj’s class */
-				jclass cls = env->GetObjectClass( obj);
+		//		
 				//printf("In C:\n");     /* Look for the instance field s in cls */
-				fidid = env->GetFieldID(env, cls, "s","Ljava/lang/String;");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
+		//		fidid = env->GetFieldID(env, cls, "s","Ljava/lang/String;");
+		//		if (fid == NULL) {
+		//			return; /* failed to find the field */
+		//		}
 				/* Read the instance field s */
-				jstr = (*env)->GetObjectField(env, obj, fid);
-				str = (*env)->GetStringUTFChars(env, jstr, NULL);
-				if (str == NULL) {
-					return; /* out of memory */
-				}
-				printf("  c.s = \"%s\"\n", str);
-				(*env)->ReleaseStringUTFChars(env, jstr, str);
+				//jstr = (*env)->GetObjectField(env, obj, fid);
+				//str = (*env)->GetStringUTFChars(env, jstr, NULL);
+				//if (str == NULL) {
+				//	return; /* out of memory */
+				//}
+				//printf("  c.s = \"%s\"\n", str);
+				//(*env)->ReleaseStringUTFChars(env, jstr, str);
 				/* Create a new string and overwrite the instance field */
-				jstr = (*env)->NewStringUTF(env, "123");
-				if (jstr == NULL) {
-					return; /* out of memory */
-				}
-				(*env)->SetObjectField(env, obj, fid, jstr);
+			//	jstr = (*env)->NewStringUTF(env, "123");
+			//	if (jstr == NULL) {
+			//		return; /* out of memory */
+			//	}
+			//	(*env)->SetObjectField(env, obj, fid, jstr);
 		}
 		const char * errmsg(cs_err e)
 		{
@@ -201,11 +297,11 @@ extern "C"
 
 		arm = &(ins->detail->arm);
 
-		if (arm->op_count){
+		/*if (arm->op_count){
 			asprintf(&b,"\top_count: %u\n", arm-> op_count);
 			buf+=b;
 			free(b);
-		}
+		}*/
 		for (i = 0; i < arm->op_count; i++) {
 			cs_arm_op * op = &(arm->operands[i]);
 			switch((int)op->type) {

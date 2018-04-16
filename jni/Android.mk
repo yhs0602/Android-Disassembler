@@ -38,7 +38,7 @@ LOCAL_STATIC_LIBRARIES := capstone_static_x86
 else
 LOCAL_STATIC_LIBRARIES := capstone_static_arm 
 endif
-#LOCAL_LDLIBS           := -llog
+LOCAL_LDLIBS           := -llog
 include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
