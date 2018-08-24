@@ -28,6 +28,7 @@ import android.view.View.*;
 import android.widget.*;
 import java.io.*;
 import java.util.*;
+import nl.lxtreme.binutils.elf.*;
 
 public class MainActivity extends Activity implements Button.OnClickListener
 {
@@ -186,7 +187,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 				public void run()
 				{
 					long index=elfUtil.getEntryPoint();
-
+					getFunctionNames();
 					for (int i=0;i < 500;++i)
 					{
 						DisasmResult dar=new DisasmResult(filecontent, index);
@@ -289,9 +290,18 @@ public class MainActivity extends Activity implements Button.OnClickListener
 						});				
 				}
 
+				
+
 
 			}).start();
 
+	}
+	
+	private void getFunctionNames()
+	{
+		// TODO: Implement this method
+		
+		return ;
 	}
 	public void AdjustShow(TextView t1v, TextView t2v, TextView t3v, TextView t4v, TextView t5v, TextView t6v, TextView t7v)
 	{
