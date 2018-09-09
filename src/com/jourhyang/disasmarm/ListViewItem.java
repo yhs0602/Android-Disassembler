@@ -107,4 +107,23 @@ public class ListViewItem
 	{
 		return condition;
 	}
+
+	@Override
+	public String toString()
+	{
+		// TODO: Implement this method
+		if(disasmResult==null)
+		{
+			return "null!!!";
+		}
+		return disasmResult.toString();
+	/*	StringBuilder sb=new StringBuilder();
+		sb.append(address);
+		sb.append(bytes);
+		sb.append(label);
+		sb.append(instruction);
+		sb.append(
+		return sb.toString();*/
+	}
+	
 }

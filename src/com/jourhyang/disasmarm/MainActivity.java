@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2009 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- } * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.jourhyang.disasmarm;
 
 import android.app.*;
@@ -29,6 +14,7 @@ import android.widget.*;
 import java.io.*;
 import java.util.*;
 import nl.lxtreme.binutils.elf.*;
+import android.text.*;
 
 public class MainActivity extends Activity implements Button.OnClickListener
 {
@@ -37,7 +23,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	ELFUtil elfUtil;
 	SharedPreferences setting;
 	SharedPreferences.Editor editor;
-
+	private String TAG="Disassembler";
 
 	boolean showAddress,showLabel,showBytes,showInstruction,showCondition,showOperands,showComment;
 	private CustomDialog mCustomDialog;
@@ -48,6 +34,8 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	ArrayList<ListViewItem> disasmResults=new ArrayList<ListViewItem>();
 
 	private TableLayout stk;
+
+	private EditText etDetails;
 
 	public void setShowAddress(boolean showAddress)
 	{
@@ -164,39 +152,74 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 	private void SaveDetail()
 	{
+		Log.v(TAG,"Saving details");
+		File dir=new File("/sdcard/disasm/");
+		File file=new File(dir, new File(fpath).getName()+"_"+new Date(System.currentTimeMillis()).toString() + ".details.txt");
+		dir.mkdirs();
+		try
+		{
+			file.createNewFile();
+		}
+		catch (IOException e)
+		{
+			Log.e(TAG,"",e);
+			Toast.makeText(this,"Something went wrong saving file",3).show();
+		}
 		// TODO: Implement this method
-		Toast.makeText(this, "Successfully saved to file: " + "blah.txt", 1).show();
+		//Editable et=etDetails.getText();
+		try
+		{
+			FileOutputStream fos=new FileOutputStream(file);
+			try
+			{
+				fos.write(elfUtil.toString().getBytes());
+			}
+			catch (IOException e)
+			{
+				Log.e(TAG,"",e);
+			}
+		}
+		catch (FileNotFoundException e)
+		{
+			Log.e(TAG,"",e);
+		}
+
+		Toast.makeText(this, "Successfully saved to file: " + file.getPath(), 5).show();
 	}
 
 	private void ShowDetail()
 	{
 		// TODO: Implement this method
-		EditText details=(EditText) findViewById(R.id.detailText);
-		details.setText(elfUtil.toString());
+		
+		etDetails.setText(elfUtil.toString());
 		//details.setText("file format not recognized.");	
 	}
 
 	private void DisassembleFile()
 	{
 		Toast.makeText(this, "started", 1).show();
+		Log.v(TAG,"Strted disassm");
 		disasmResults.clear();
-
 		new Thread(new Runnable(){
 
 				@Override
 				public void run()
 				{
 					long index=elfUtil.getEntryPoint();
+					Log.v(TAG,"Entry point :"+Long.toHexString(index));
 					getFunctionNames();
 					for (int i=0;i < 500;++i)
 					{
 						DisasmResult dar=new DisasmResult(filecontent, index);
 						final ListViewItem lvi=new ListViewItem(dar);
 						disasmResults.add(lvi);
-						if (index >= filecontent.length - 10000)
+						Log.v(TAG,"i="+i+"lvi="+lvi.toString());
+						if (index >= filecontent.length - 100)
 						{
+							Log.i(TAG,"index is "+index+", breaking");
 							break;
 						}
+						Log.v(TAG,"dar.size is ="+dar.size);
 						index += dar.size;
 					}
 					for (final ListViewItem lvi:disasmResults)
@@ -262,7 +285,6 @@ public class MainActivity extends Activity implements Button.OnClickListener
 												TextView sample = (TextView) tablerow.getChildAt(1);
 												tablerow.setBackgroundColor(Color.GREEN);
 												//	String result=sample.getText().toString();
-
 												//Toast toast = Toast.makeText(myActivity, result, Toast.LENGTH_LONG);
 												//toast.show();
 											}
@@ -271,6 +293,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 								}
 							});		
 					}
+					Log.v(TAG,"disassembly done");
 					runOnUiThread(new Runnable(){
 
 							@Override
@@ -289,9 +312,6 @@ public class MainActivity extends Activity implements Button.OnClickListener
 							}
 						});				
 				}
-
-				
-
 
 			}).start();
 
@@ -325,7 +345,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
          * function.
          */
         setContentView(R.layout.main);
-
+		etDetails=(EditText) findViewById(R.id.detailText);
 		Button selectFile=(Button) findViewById(R.id.selFile);
 		selectFile.setOnClickListener(this);
 		Button showDit=(Button) findViewById(R.id.btnShowdetail);
@@ -334,7 +354,8 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		disasm.setOnClickListener(this);
 		Button savdisasm=(Button) findViewById(R.id.btnSaveDisasm);
 		savdisasm.setOnClickListener(this);
-
+		Button btSavDit=(Button) findViewById(R.id.btnSaveDetails);
+		btSavDit.setOnClickListener(this);
         // Adapter 생성
 		// adapter = new ListViewAdapter() ;
 		/*	ListViewItem item=new ListViewItem();
@@ -612,7 +633,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 								counter++;
 							}
 						}
-						elfUtil = new ELFUtil(file);
+						elfUtil = new ELFUtil(file,filecontent);
 						Toast.makeText(this, "success size=" + new Integer(index).toString(), 1).show();
 					}
 					catch (Exception e)
@@ -624,6 +645,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 						e.printStackTrace(pinrtStream);
 						String stackTraceString = out.toString(); // 찍은 값을 가져오고.
 						Toast.makeText(this, stackTraceString, 50).show();//보여 준다
+						Log.e(TAG,"Nooooop",e);
 					} 	
 				}
 				break;
