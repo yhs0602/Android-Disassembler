@@ -5,9 +5,7 @@ import java.util.*;
 import nl.lxtreme.binutils.elf.*;
 public class ELFUtil implements Closeable
 {
-
 	private String TAG="Disassembler elfutil";
-
 	@Override
 	public void close() throws IOException
 	{
@@ -142,18 +140,24 @@ public class ELFUtil implements Closeable
 			Log.v(TAG,tag.toString());
 			if (tag == null)
 			{
-				Log.v(TAG, "The tag  is null");
+				Log.v(TAG, "The tag is null");
 				break;
 			}
 			if (de.getTag().equals(DynamicEntry.Tag.NULL))	
 			{
-				Log.v(TAG, "Tag is NULL");
+				Log.v(TAG, "Tag is NULL tag");
 				break;
 			}
 			if (tag.equals(DynamicEntry.Tag.HASH))
 			{
 				hash = de.getValue();
-				sym_cnt = (int)(hash & 0xFFFF)>>1;
+				/* Get a pointer to the hash */
+				//			hash = (ElfW(Word*))dyn->d_un.d_ptr;
+//
+				/* The 2nd word is the number of symbols */
+				//			sym_cnt = hash[1];
+				//int hashvalue=fileContents[(int)hash]
+				sym_cnt = (fileContents[(int)hash+1]<<8 | fileContents[(int)hash]);
 				Log.v(TAG,"Hash="+hash+"cnt="+sym_cnt);
 			}
 			else if (tag.equals(DynamicEntry.Tag.STRTAB))
@@ -172,11 +176,30 @@ public class ELFUtil implements Closeable
 				//		int sym_index=0;
 				for (int sym_index=0;sym_index < sym_cnt;sym_index++)
 				{
-					String sym_name=new String(fileContents, (int)strtab + fileContents[(int)(sym + sym_index)], 64);
+					String sym_name=new String(fileContents, (int)strtab + fileContents[(int)(sym + sym_index*16)], 64);
+					byte[] bytes=sym_name.getBytes();
+					//char[] chars=new char[sym_name.length()];
+					//sym_name.getb(0,sym_name.length()-1,chars,0);
+					ArrayList<Byte> arr=new ArrayList<>();
+					for(int j=0;j<bytes.length;++j)
+					{
+						arr.add(new Byte(bytes[j]));
+						if(bytes[j]==0)
+						{
+							break;
+						}
+					}
+					byte[] newbytes=new byte[arr.size()];
+					for(int j=0;j<newbytes.length;++j)
+					{
+						newbytes[j]=arr.get(j);
+					}
+					sym_name=new String(newbytes);
+					//int symsymindexstname=fileContents[sym+sym_index];
 					//	sym_name = &strtab[sym[sym_index].st_name];
-					try{
+					/*try{
 						sym_name=sym_name.split("\0")[0];
-					}catch(Exception e){}
+					}catch(Exception e){}*/
 					sb.append(sym_name).append("\n");
 					Log.v(TAG,"sym_nmae="+sym_name);
 				}

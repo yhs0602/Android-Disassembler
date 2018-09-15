@@ -68,62 +68,54 @@
 				<TableRow
 					android:layout_height="match_parent"
 					android:layout_width="match_parent">
-
-					<RadioGroup
-						android:layout_height="wrap_content"
+					<com.jourhyang.disasmarm.RadioGridGroup xmlns:android="http://schemas.android.com/apk/res/android"
 						android:layout_width="wrap_content"
-						android:orientation="vertical"
-						android:layout_span="5">
+						android:layout_height="wrap_content">
 
-						<TableLayout
-							android:layout_height="wrap_content"
-							android:layout_width="wrap_content">
-
-							<TableRow
+						<TableRow>
+							<RadioButton
 								android:layout_height="wrap_content"
-								android:layout_width="wrap_content">
+								android:layout_width="wrap_content"
+								android:id="@+id/rbAuto"
+								android:text="Auto detect"/>
 
-								<RadioButton
-									android:layout_height="wrap_content"
-									android:layout_width="wrap_content"
-									android:text="Auto detect"/>
-
-								<RadioButton
-									android:layout_height="wrap_content"
-									android:layout_width="wrap_content"
-									android:text="ARM"/>
-
-								<RadioButton
-									android:layout_height="wrap_content"
-									android:layout_width="wrap_content"
-									android:text="ARM64"/>
-
-							</TableRow>
-
-							<TableRow
+							<RadioButton
 								android:layout_height="wrap_content"
-								android:layout_width="wrap_content">
+								android:layout_width="wrap_content"
+								android:id="@+id/rbARM"
+								android:text="ARM"/>
 
-								<RadioButton
-									android:layout_height="wrap_content"
-									android:layout_width="wrap_content"
-									android:text="Intel x86"/>
+							<RadioButton
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:id="@+id/rbARM64"
+								android:text="ARM64"/>
+							
+						</TableRow>
 
-								<RadioButton
-									android:layout_height="wrap_content"
-									android:layout_width="wrap_content"
-									android:text="ARM thumb"/>
+						<TableRow>
 
-								<RadioButton
-									android:layout_height="wrap_content"
-									android:layout_width="wrap_content"
-									android:text="MIPS"/>
+							<RadioButton
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:id="@+id/rbx86"
+								android:text="Intel x86"/>
 
-							</TableRow>
+							<RadioButton
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:id="@+id/rbThumb"
+								android:text="ARM thumb"/>
 
-						</TableLayout>
+							<RadioButton
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:id="@+id/rbMIPS"
+								android:text="MIPS"/>		
+						</TableRow>
 
-					</RadioGroup>
+						
+					</com.jourhyang.disasmarm.RadioGridGroup>
 
 				</TableRow>
 
