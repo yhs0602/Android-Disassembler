@@ -3,224 +3,214 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:orientation="vertical"
-	android:measureWithLargestChild="true"
-	android:layout_height="match_parent">
+	android:layout_height="match_parent"
+	android:gravity="center_horizontal|fill_horizontal">
 
-	<HorizontalScrollView
+	<ScrollView
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="match_parent"
+		android:layout_gravity="center_horizontal">
 
-		<ScrollView
+		<LinearLayout
+			android:layout_height="match_parent"
 			android:layout_width="match_parent"
-			android:fillViewport="true"
-			android:layout_height="match_parent">
+			android:orientation="vertical"
+			android:gravity="center_horizontal">
 
-			<TableLayout
-				android:layout_width="match_parent"
-				android:layout_height="match_parent">
+			<LinearLayout
+				android:orientation="vertical"
+				android:layout_height="match_parent"
+				android:layout_width="wrap_content"
+				android:layout_gravity="center_horizontal">
 
-				<TableRow
-					android:layout_height="match_parent"
-					android:layout_width="match_parent">
-
-					<TextView
-						android:layout_height="wrap_content"
-						android:text="Disassembler"
-						android:textAppearance="?android:attr/textAppearanceLarge"
-						android:layout_width="wrap_content"
-						android:layout_span="5"
-						android:textSize="32sp"/>
-
-				</TableRow>
-
-				<TableRow
+				<TextView
 					android:layout_height="wrap_content"
-					android:layout_width="wrap_content">
+					android:text="Disassembler"
+					android:textAppearance="?android:attr/textAppearanceLarge"
+					android:layout_width="wrap_content"
+					android:layout_span="5"
+					android:textSize="32sp"/>
 
-					<TextView
-						android:layout_height="wrap_content"
-						android:text="Select any file to disassemble"
-						android:textAppearance="?android:attr/textAppearanceMedium"
-						android:layout_width="wrap_content"
-						android:layout_span="5"/>
-
-				</TableRow>
-
-				<TableRow
+				<TextView
 					android:layout_height="wrap_content"
-					android:layout_width="match_parent">
+					android:text="Select any file to disassemble"
+					android:textAppearance="?android:attr/textAppearanceMedium"
+					android:layout_width="wrap_content"
+					android:layout_span="5"/>
+
+				<LinearLayout
+					android:orientation="horizontal"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content">
 
 					<EditText
-						android:layout_height="wrap_content"
+						android:layout_height="match_parent"
 						android:ems="10"
 						android:layout_width="wrap_content"
 						android:layout_span="2"
-						android:id="@+id/fileNameText"/>
+						android:id="@+id/fileNameText"
+						android:inputType="text"/>
 
 					<Button
 						android:layout_height="wrap_content"
 						android:text="Select file"
 						android:layout_width="wrap_content"
-						android:id="@+id/selFile"/>
-
-				</TableRow>
-
-				<TableRow
-					android:layout_height="match_parent"
-					android:layout_width="match_parent">
-					<com.jourhyang.disasmarm.RadioGridGroup xmlns:android="http://schemas.android.com/apk/res/android"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content">
-
-						<TableRow>
-							<RadioButton
-								android:layout_height="wrap_content"
-								android:layout_width="wrap_content"
-								android:id="@+id/rbAuto"
-								android:text="Auto detect"/>
-
-							<RadioButton
-								android:layout_height="wrap_content"
-								android:layout_width="wrap_content"
-								android:id="@+id/rbARM"
-								android:text="ARM"/>
-
-							<RadioButton
-								android:layout_height="wrap_content"
-								android:layout_width="wrap_content"
-								android:id="@+id/rbARM64"
-								android:text="ARM64"/>
-							
-						</TableRow>
-
-						<TableRow>
-
-							<RadioButton
-								android:layout_height="wrap_content"
-								android:layout_width="wrap_content"
-								android:id="@+id/rbx86"
-								android:text="Intel x86"/>
-
-							<RadioButton
-								android:layout_height="wrap_content"
-								android:layout_width="wrap_content"
-								android:id="@+id/rbThumb"
-								android:text="ARM thumb"/>
-
-							<RadioButton
-								android:layout_height="wrap_content"
-								android:layout_width="wrap_content"
-								android:id="@+id/rbMIPS"
-								android:text="MIPS"/>		
-						</TableRow>
-
-						
-					</com.jourhyang.disasmarm.RadioGridGroup>
-
-				</TableRow>
-
-				<TableRow
-					android:layout_height="match_parent"
-					android:layout_width="match_parent">
-
-					<Button
-						android:layout_height="wrap_content"
-						android:text="Show details"
-						android:layout_width="wrap_content"
+						android:id="@+id/selFile"
 						android:layout_span="1"
-						android:id="@+id/btnShowdetail"/>
+						android:layout_weight="1.0"/>
 
-					<Button
-						android:layout_height="wrap_content"
-						android:text="Disassemble"
-						android:layout_width="wrap_content"
-						android:id="@+id/btnDisasm"
-						android:layout_span="1"/>
+				</LinearLayout>
 
-				</TableRow>
-
-				<TableRow
-					android:layout_height="match_parent"
-					android:layout_width="match_parent">
-
-					<TextView
-						android:layout_height="wrap_content"
-						android:text="Details"
-						android:textAppearance="?android:attr/textAppearanceSmall"
-						android:layout_width="wrap_content"
-						android:layout_span="5"/>
-
-				</TableRow>
-
-				<TableRow
-					android:layout_height="match_parent"
-					android:layout_width="match_parent">
-
-					<EditText
-						android:layout_height="wrap_content"
-						android:inputType="textMultiLine"
-						android:ems="10"
-						android:layout_width="wrap_content"
-						android:layout_span="4"
-						android:id="@+id/detailText"/>
-
-				</TableRow>
-
-				<TableRow
-					android:layout_height="match_parent"
-					android:layout_width="match_parent">
-
-					<Button
-						android:layout_height="wrap_content"
-						android:text="Save Details to file"
-						android:layout_width="wrap_content"
-						android:id="@+id/btnSaveDetails"/>
-
-				</TableRow>
-
-				<TableRow
-					android:layout_height="match_parent"
-					android:layout_width="match_parent">
-
-					<TextView
-						android:layout_height="wrap_content"
-						android:text="Disassembly"
-						android:textAppearance="?android:attr/textAppearanceSmall"
-						android:layout_width="wrap_content"
-						android:layout_span="5"/>
-
-				</TableRow>
-
-				<TableRow
+				<com.jourhyang.disasmarm.RadioGridGroup
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_width="wrap_content">
+					android:layout_span="4">
 
-					<TableLayout
-						android:layout_height="wrap_content"
-						android:layout_width="wrap_content"
-						android:id="@+id/table_main"
-						android:background="#FFFFFF"/>
+					<TableRow>
 
-				</TableRow>
+						<RadioButton
+							android:layout_height="wrap_content"
+							android:layout_width="wrap_content"
+							android:id="@+id/rbAuto"
+							android:text="Auto detect"/>
 
-				<TableRow
+						<RadioButton
+							android:layout_height="wrap_content"
+							android:layout_width="wrap_content"
+							android:id="@+id/rbARM"
+							android:text="ARM"/>
+
+						<RadioButton
+							android:layout_height="wrap_content"
+							android:layout_width="wrap_content"
+							android:id="@+id/rbARM64"
+							android:text="ARM64"/>
+
+					</TableRow>
+
+					<TableRow>
+
+						<RadioButton
+							android:layout_height="wrap_content"
+							android:layout_width="wrap_content"
+							android:id="@+id/rbx86"
+							android:text="Intel x86"/>
+
+						<RadioButton
+							android:layout_height="wrap_content"
+							android:layout_width="wrap_content"
+							android:id="@+id/rbThumb"
+							android:text="ARM thumb"/>
+
+						<RadioButton
+							android:layout_height="wrap_content"
+							android:layout_width="wrap_content"
+							android:id="@+id/rbMIPS"
+							android:text="MIPS"/>
+
+					</TableRow>
+
+				</com.jourhyang.disasmarm.RadioGridGroup>
+
+				<LinearLayout
 					android:layout_height="wrap_content"
-					android:layout_width="match_parent">
+					android:layout_width="match_parent"
+					android:orientation="vertical">
 
-					<Button
-						android:layout_height="wrap_content"
-						android:text="Save disassembly to file"
-						android:layout_width="wrap_content"
-						android:layout_span="3"
-						android:id="@+id/btnSaveDisasm"/>
+					<TabHost
+						android:id="@+id/tabhost1"
+						android:layout_width="match_parent"
+						android:layout_height="match_parent">
 
-				</TableRow>
+						<LinearLayout
+							android:layout_width="match_parent"
+							android:layout_height="match_parent"
+							android:orientation="vertical">
 
-			</TableLayout>
+							<TabWidget
+								android:id="@android:id/tabs"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"/>
 
-		</ScrollView>
+							<FrameLayout
+								android:id="@android:id/tabcontent"
+								android:layout_width="match_parent"
+								android:layout_height="match_parent"
+								android:background="@android:color/holo_orange_light"
+								android:padding="32dp">
 
-	</HorizontalScrollView>
+								<LinearLayout
+									android:id="@+id/tab1"
+									android:orientation="vertical"
+									android:layout_width="match_parent"
+									android:layout_height="wrap_content"
+									android:gravity="center_horizontal">
+
+									<Button
+										android:layout_height="wrap_content"
+										android:text="Show details"
+										android:layout_width="wrap_content"
+										android:id="@+id/btnShowdetail"
+										android:layout_span="1"/>
+									
+									<EditText
+										android:layout_height="wrap_content"
+										android:inputType="textMultiLine"
+										android:ems="10"
+										android:layout_width="match_parent"
+										android:layout_span="4"
+										android:id="@+id/detailText"/>
+
+									<Button
+										android:layout_height="wrap_content"
+										android:text="Save Details to file"
+										android:layout_width="wrap_content"
+										android:id="@+id/btnSaveDetails"
+										android:layout_span="2"/>
+
+								</LinearLayout>
+
+								<LinearLayout
+									android:id="@+id/tab2"
+									android:orientation="vertical"
+									android:gravity="center_horizontal"
+									android:layout_width="match_parent"
+									android:layout_height="wrap_content">
+
+									<Button
+										android:layout_height="wrap_content"
+										android:text="Disassemble"
+										android:layout_width="wrap_content"
+										android:id="@+id/btnDisasm"
+										android:layout_span="1"/>
+									<TableLayout
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:id="@+id/table_main"
+										android:background="#FFFFFF"/>
+
+									<Button
+										android:layout_height="wrap_content"
+										android:text="Save disassembly to file"
+										android:layout_width="wrap_content"
+										android:layout_span="2"
+										android:id="@+id/btnSaveDisasm"/>
+
+								</LinearLayout>
+
+							</FrameLayout>
+
+						</LinearLayout>
+
+					</TabHost>
+
+				</LinearLayout>
+
+			</LinearLayout>
+
+		</LinearLayout>
+
+	</ScrollView>
 
 </LinearLayout>
 

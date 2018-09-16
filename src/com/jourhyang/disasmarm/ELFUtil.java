@@ -125,6 +125,8 @@ public class ELFUtil implements Closeable
 		 //elf.dynamicTable
 		 }
 		 }*/
+		 if(elf.dynamicTable==null)
+			 return;
 		StringBuilder sb=new StringBuilder();
 		Log.v(TAG,"size of dynamic table="+elf.dynamicTable.length);
 		long strtab=0L;	//pointer to the string table

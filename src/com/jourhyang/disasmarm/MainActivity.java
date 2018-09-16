@@ -13,10 +13,10 @@ import android.view.View.*;
 import android.widget.*;
 import java.io.*;
 import java.util.*;
-import nl.lxtreme.binutils.elf.*;
-import android.text.*;
+import android.support.v4.view.ViewPager;
+import android.support.v4.app.*;
 
-public class MainActivity extends Activity implements Button.OnClickListener
+public class MainActivity extends FragmentActivity implements Button.OnClickListener
 {
 	String fpath;
 	byte[] filecontent=null;
@@ -36,77 +36,11 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	private TableLayout stk;
 
 	private EditText etDetails;
-
-	public void setShowAddress(boolean showAddress)
-	{
-		this.showAddress = showAddress;
-	}
-
-	public boolean isShowAddress()
-	{
-		return showAddress;
-	}
-
-	public void setShowLabel(boolean showLabel)
-	{
-		this.showLabel = showLabel;
-	}
-
-	public boolean isShowLabel()
-	{
-		return showLabel;
-	}
-
-	public void setShowBytes(boolean showBytes)
-	{
-		this.showBytes = showBytes;
-	}
-
-	public boolean isShowBytes()
-	{
-		return showBytes;
-	}
-
-	public void setShowInstruction(boolean showInstruction)
-	{
-		this.showInstruction = showInstruction;
-	}
-
-	public boolean isShowInstruction()
-	{
-		return showInstruction;
-	}
-
-	public void setShowCondition(boolean showCondition)
-	{
-		this.showCondition = showCondition;
-	}
-
-	public boolean isShowCondition()
-	{
-		return showCondition;
-	}
-
-	public void setShowOperands(boolean showOperands)
-	{
-		this.showOperands = showOperands;
-	}
-
-	public boolean isShowOperands()
-	{
-		return showOperands;
-	}
-
-	public void setShowComment(boolean showComment)
-	{
-		this.showComment = showComment;
-	}
-
-	public boolean isShowComment()
-	{
-		return showComment;
-	}
-
+	//ViewPager vp;
+	TabHost tabHost;
+	FrameLayout frameLayout;
+	
+	
 	@Override
 	public void onClick(View p1)
 	{
@@ -120,7 +54,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			case R.id.btnDisasm:
 				if (filecontent == null)
 				{
-					Toast.makeText(this, "Please Select a file first.", 2).show();
+					AlertSelFile();
 					return;
 				}
 				DisassembleFile();
@@ -128,7 +62,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			case R.id.btnShowdetail:
 				if (elfUtil == null)
 				{
-					Toast.makeText(this, "Please Select a file first.", 2).show();
+					AlertSelFile();
 					return;
 				}
 				ShowDetail();
@@ -145,6 +79,11 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 	}
 
+	private void AlertSelFile()
+	{
+		Toast.makeText(this, "Please Select a file first.", 2).show();
+	}
+
 	private void SaveDisasm()
 	{
 		// TODO: Implement this method
@@ -152,6 +91,11 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 	private void SaveDetail()
 	{
+		if(fpath==null||"".compareToIgnoreCase(fpath)==0)
+		{
+			AlertSelFile();
+			return;
+		}
 		Log.v(TAG,"Saving details");
 		File dir=new File("/sdcard/disasm/");
 		File file=new File(dir, new File(fpath).getName()+"_"+new Date(System.currentTimeMillis()).toString() + ".details.txt");
@@ -207,7 +151,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 				{
 					long index=elfUtil.getEntryPoint();
 					Log.v(TAG,"Entry point :"+Long.toHexString(index));
-					getFunctionNames();
+				//	getFunctionNames();
 					for (int i=0;i < 500;++i)
 					{
 						DisasmResult dar=new DisasmResult(filecontent, index);
@@ -225,13 +169,10 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					for (final ListViewItem lvi:disasmResults)
 					{
 						runOnUiThread(new Runnable(){
-
 								@Override
 								public void run()
 								{
-
 									TableRow tbrow = new TableRow(MainActivity.this);
-
 									TextView t1v = new TextView(MainActivity.this);
 									t1v.setText(lvi.getAddress());
 									t1v.setTextColor(Color.BLACK);
@@ -356,6 +297,32 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		savdisasm.setOnClickListener(this);
 		Button btSavDit=(Button) findViewById(R.id.btnSaveDetails);
 		btSavDit.setOnClickListener(this);
+		
+		tabHost = (TabHost) findViewById(R.id.tabhost1);
+        tabHost.setup();
+
+        TabHost.TabSpec tab1 = tabHost.newTabSpec("1").setContent(R.id.tab1).setIndicator("Overview");
+
+        TabHost.TabSpec tab2 = tabHost.newTabSpec("2").setContent(R.id.tab2).setIndicator("Disassembly");
+
+        tabHost.addTab(tab1);
+        tabHost.addTab(tab2);
+		
+	/*	
+		vp = (ViewPager)findViewById(R.id.pager);
+        Button btn_first = (Button)findViewById(R.id.btn_first);
+        Button btn_second = (Button)findViewById(R.id.btn_second);
+        Button btn_third = (Button)findViewById(R.id.btn_third);
+
+        vp.setAdapter(new pagerAdapter(getSupportFragmentManager()));
+        vp.setCurrentItem(0);
+
+        btn_first.setOnClickListener(movePageListener);
+        btn_first.setTag(0);
+        btn_second.setOnClickListener(movePageListener);
+        btn_second.setTag(1);
+        btn_third.setOnClickListener(movePageListener);
+        btn_third.setTag(2);*/
         // Adapter 생성
 		// adapter = new ListViewAdapter() ;
 		/*	ListViewItem item=new ListViewItem();
@@ -441,11 +408,46 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		tbrow0.addView(tv6);
 		//AdjustShow(tv0,tv1,tv2,tv3,tv4,tv5,tv6);
 		stk.addView(tbrow0);
-
 		//init();
     }
+	/*
+    View.OnClickListener movePageListener = new View.OnClickListener()
+    {
+        @Override
+        public void onClick(View v)
+        {
+            int tag = (int) v.getTag();
+            vp.setCurrentItem(tag);
+        }
+    };
 
-
+    private class pagerAdapter extends FragmentStatePagerAdapter
+    {
+        public pagerAdapter(android.support.v4.app.FragmentManager fm)
+        {
+            super(fm);
+        }
+        @Override
+        public android.support.v4.app.Fragment getItem(int position)
+        {
+            switch(position)
+            {
+                case 0:
+                    return new OverviewFragment();
+                case 1:
+                    return new OverviewFragment();
+                case 2:
+                    return new OverviewFragment();
+                default:
+                    return null;
+            }
+        }
+        @Override
+        public int getCount()
+        {
+            return 3;
+        }
+    }*/
 	@Override
 	protected void onDestroy()
 	{
@@ -715,6 +717,77 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		return new String(hexChars);
 	}
 
+	public void setShowAddress(boolean showAddress)
+	{
+		this.showAddress = showAddress;
+	}
+
+	public boolean isShowAddress()
+	{
+		return showAddress;
+	}
+
+	public void setShowLabel(boolean showLabel)
+	{
+		this.showLabel = showLabel;
+	}
+
+	public boolean isShowLabel()
+	{
+		return showLabel;
+	}
+
+	public void setShowBytes(boolean showBytes)
+	{
+		this.showBytes = showBytes;
+	}
+
+	public boolean isShowBytes()
+	{
+		return showBytes;
+	}
+
+	public void setShowInstruction(boolean showInstruction)
+	{
+		this.showInstruction = showInstruction;
+	}
+
+	public boolean isShowInstruction()
+	{
+		return showInstruction;
+	}
+
+	public void setShowCondition(boolean showCondition)
+	{
+		this.showCondition = showCondition;
+	}
+
+	public boolean isShowCondition()
+	{
+		return showCondition;
+	}
+
+	public void setShowOperands(boolean showOperands)
+	{
+		this.showOperands = showOperands;
+	}
+
+	public boolean isShowOperands()
+	{
+		return showOperands;
+	}
+
+	public void setShowComment(boolean showComment)
+	{
+		this.showComment = showComment;
+	}
+
+	public boolean isShowComment()
+	{
+		return showComment;
+	}
+	
+	
     /* A native method that is implemented by the
      * 'hello-jni' native library, which is packaged
      * with this application.

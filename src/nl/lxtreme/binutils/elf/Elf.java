@@ -8,12 +8,11 @@
 package nl.lxtreme.binutils.elf;
 
 
+import android.util.*;
 import java.io.*;
 import java.nio.*;
 import java.nio.channels.*;
-//import java.nio.file.*;
 import java.util.*;
-
 import nl.lxtreme.binutils.elf.DynamicEntry.*;
 
 
@@ -463,6 +462,7 @@ public class Elf implements Closeable
       byte[] strTable = getDynamicStringTable();
 
       sb.append( "Dynamic table:\n" );
+	  if(dynamicTable!=null)
       for ( DynamicEntry entry : dynamicTable )
       {
         sb.append( '\t' );
@@ -487,5 +487,10 @@ public class Elf implements Closeable
     {
       throw new RuntimeException( "Unable to get dynamic string table!" );
     }
+	catch(NullPointerException npe)
+	{
+		Log.e("Disassembler elf","",npe);
+	}
+	return "";
   }
 }

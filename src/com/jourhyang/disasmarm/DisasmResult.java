@@ -34,7 +34,6 @@ public class DisasmResult
 	public native void DisasmOne(byte[] bytes,long address);
 	public native void DisasmOne2(byte[] bytes,long shift,long Address);
 	
-	
 	@Override
 	public String toString()
 	{
