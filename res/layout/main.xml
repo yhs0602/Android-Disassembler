@@ -146,13 +146,26 @@
 									android:layout_height="wrap_content"
 									android:gravity="center_horizontal">
 
-									<Button
+									<LinearLayout
 										android:layout_height="wrap_content"
-										android:text="Show details"
 										android:layout_width="wrap_content"
-										android:id="@+id/btnShowdetail"
-										android:layout_span="1"/>
-									
+										android:orientation="horizontal">
+
+										<Button
+											android:layout_height="wrap_content"
+											android:text="Show details"
+											android:layout_width="wrap_content"
+											android:id="@+id/btnShowdetail"/>
+
+										<Button
+											android:layout_height="wrap_content"
+											android:text="Save Details to file"
+											android:layout_width="wrap_content"
+											android:id="@+id/btnSaveDetails"
+											android:layout_span="2"/>
+
+									</LinearLayout>
+
 									<EditText
 										android:layout_height="wrap_content"
 										android:inputType="textMultiLine"
@@ -161,40 +174,40 @@
 										android:layout_span="4"
 										android:id="@+id/detailText"/>
 
-									<Button
-										android:layout_height="wrap_content"
-										android:text="Save Details to file"
-										android:layout_width="wrap_content"
-										android:id="@+id/btnSaveDetails"
-										android:layout_span="2"/>
-
 								</LinearLayout>
 
 								<LinearLayout
 									android:id="@+id/tab2"
 									android:orientation="vertical"
 									android:gravity="center_horizontal"
-									android:layout_width="match_parent"
+									android:layout_width="wrap_content"
 									android:layout_height="wrap_content">
 
-									<Button
+									<LinearLayout
 										android:layout_height="wrap_content"
-										android:text="Disassemble"
 										android:layout_width="wrap_content"
-										android:id="@+id/btnDisasm"
-										android:layout_span="1"/>
+										android:orientation="horizontal">
+
+										<Button
+											android:layout_height="wrap_content"
+											android:text="Disassemble"
+											android:layout_width="wrap_content"
+											android:id="@+id/btnDisasm"/>
+
+										<Button
+											android:layout_height="wrap_content"
+											android:text="Save to file"
+											android:layout_width="wrap_content"
+											android:layout_span="2"
+											android:id="@+id/btnSaveDisasm"/>
+
+									</LinearLayout>
+
 									<TableLayout
 										android:layout_height="wrap_content"
 										android:layout_width="wrap_content"
 										android:id="@+id/table_main"
 										android:background="#FFFFFF"/>
-
-									<Button
-										android:layout_height="wrap_content"
-										android:text="Save disassembly to file"
-										android:layout_width="wrap_content"
-										android:layout_span="2"
-										android:id="@+id/btnSaveDisasm"/>
 
 								</LinearLayout>
 

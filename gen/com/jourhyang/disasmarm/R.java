@@ -3018,8 +3018,8 @@ containing a value of this type.
         public static final int blocking=0x7f07004c;
         public static final int bottom=0x7f07003d;
         public static final int btnDisasm=0x7f0700ba;
-        public static final int btnSaveDetails=0x7f0700b8;
-        public static final int btnSaveDisasm=0x7f0700bc;
+        public static final int btnSaveDetails=0x7f0700b7;
+        public static final int btnSaveDisasm=0x7f0700bb;
         public static final int btnShowdetail=0x7f0700b6;
         public static final int btn_left=0x7f070095;
         public static final int btn_right=0x7f070096;
@@ -3045,7 +3045,7 @@ containing a value of this type.
         public static final int design_menu_item_action_area_stub=0x7f0700a2;
         public static final int design_menu_item_text=0x7f0700a1;
         public static final int design_navigation_view=0x7f0700a0;
-        public static final int detailText=0x7f0700b7;
+        public static final int detailText=0x7f0700b8;
         public static final int disableHome=0x7f070020;
         public static final int edit_query=0x7f07007e;
         public static final int end=0x7f070030;
@@ -3150,7 +3150,7 @@ containing a value of this type.
         public static final int tab2=0x7f0700b9;
         public static final int tabMode=0x7f07001f;
         public static final int tabhost1=0x7f0700b4;
-        public static final int table_main=0x7f0700bb;
+        public static final int table_main=0x7f0700bc;
         public static final int tag_transition_group=0x7f070016;
         public static final int text=0x7f070017;
         public static final int text2=0x7f070018;

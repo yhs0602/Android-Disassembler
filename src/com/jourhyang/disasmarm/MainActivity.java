@@ -25,7 +25,13 @@ public class MainActivity extends FragmentActivity implements Button.OnClickList
 	SharedPreferences.Editor editor;
 	private String TAG="Disassembler";
 
-	boolean showAddress,showLabel,showBytes,showInstruction,showCondition,showOperands,showComment;
+	boolean showAddress=true;
+	boolean showLabel=true;
+	boolean showBytes=true;
+	boolean showInstruction=true;
+	boolean showCondition=true;
+	boolean showOperands=true;
+	boolean showComment=true;
 	private CustomDialog mCustomDialog;
 
 	//private ListViewAdapter adapter;
@@ -86,7 +92,48 @@ public class MainActivity extends FragmentActivity implements Button.OnClickList
 
 	private void SaveDisasm()
 	{
+		if(fpath==null||"".compareToIgnoreCase(fpath)==0)
+		{
+			AlertSelFile();
+			return;
+		}
+		Log.v(TAG,"Saving disassembly");
+		File dir=new File("/sdcard/disasm/");
+		File file=new File(dir, new File(fpath).getName()+"_"+new Date(System.currentTimeMillis()).toString() + ".disassembly.txt");
+		dir.mkdirs();
+		try
+		{
+			file.createNewFile();
+		}
+		catch (IOException e)
+		{
+			Log.e(TAG,"",e);
+			Toast.makeText(this,"Something went wrong saving file",3).show();
+		}
 		// TODO: Implement this method
+		//Editable et=etDetails.getText();
+		try
+		{
+			FileOutputStream fos=new FileOutputStream(file);
+			try
+			{
+				StringBuilder sb=new StringBuilder();
+				for(ListViewItem lvi:disasmResults)
+				{
+					sb.append(lvi.toString());
+					sb.append(System.lineSeparator());
+				}
+				fos.write(sb.toString().getBytes());
+			}
+			catch (IOException e)
+			{
+				Log.e(TAG,"",e);
+			}
+		}
+		catch (FileNotFoundException e)
+		{
+			Log.e(TAG,"",e);
+		}
 	}
 
 	private void SaveDetail()

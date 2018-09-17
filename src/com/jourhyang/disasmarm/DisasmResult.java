@@ -1,6 +1,5 @@
 package com.jourhyang.disasmarm;
 import java.util.*;
-import android.location.*;
 
 public class DisasmResult
 {
