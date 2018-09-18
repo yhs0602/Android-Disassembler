@@ -3,6 +3,7 @@ package com.jourhyang.disasmarm;
 import android.app.*;
 import android.content.*;
 import android.os.*;
+import android.util.*;
 import android.view.*;
 import android.widget.*;
 
@@ -28,6 +29,9 @@ public class CustomDialog extends Dialog {
 	private View.OnClickListener mLeftClickListener;
 	private View.OnClickListener mRightClickListener;
 
+	MainActivity ma;//may cause leak?...
+	private String TAG="Disassembler dialog";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -74,8 +78,7 @@ public class CustomDialog extends Dialog {
 				&& mRightClickListener == null) {
 			mLeftButton.setOnClickListener(mLeftClickListener);
 		} else {
-			mLeftButton.setOnClickListener(new View.OnClickListener(){
-
+			mLeftButton.setOnClickListener(new View.OnClickListener(){					
 					@Override
 					public void onClick(View p1)
 					{
@@ -86,13 +89,15 @@ public class CustomDialog extends Dialog {
 						editor.putBoolean("comments", mCKComments.isChecked());
 						editor.putBoolean("bytes", mCKBytes.isChecked());
 						editor.putBoolean("label", mCKLabel.isChecked());
-						editor.putBoolean("address", mCKAddress.isChecked());
-						
+						editor.putBoolean("address", mCKAddress.isChecked());	
 						editor.commit();
-						Context c=getContext();
-						if(c instanceof MainActivity)
+						//Context c=getContext();
+						Activity activity=	getOwnerActivity();
+						if(activity instanceof MainActivity)
 						{
-							MainActivity ma=(MainActivity)c;
+							ma=(MainActivity) activity;
+							Log.v(TAG,"Activity is MA");
+							//MainActivity ma=(MainActivity)c;
 							ma.setShowLabel(mCKLabel.isChecked());
 							ma.setShowAddress(mCKAddress.isChecked());
 							ma.setShowBytes(mCKBytes.isChecked());
@@ -100,23 +105,17 @@ public class CustomDialog extends Dialog {
 							ma.setShowComment(mCKComments.isChecked());
 							ma.setShowCondition(mCKCondition.isChecked());
 							ma.setShowOperands(mCKOperands.isChecked());
-							
+							ma.RefreshTable();
 						}
 						dismiss();
-					}
-					
-				
+					}	
 			});
 			mRightButton.setOnClickListener(new View.OnClickListener(){
-
 					@Override
 					public void onClick(View p1)
 					{
-						// TODO: Implement this method
 						dismiss();
 					}
-					
-				
 			});
 		}
 	}
@@ -127,6 +126,10 @@ public class CustomDialog extends Dialog {
 		super(context, android.R.style.Theme_Translucent_NoTitleBar);
 		this.mTitle = title;
 		this.mLeftClickListener = singleListener;
+		//if(context instanceof MainActivity)
+		//{
+		//	ma=(MainActivity) context;
+		//}
 	}
 
 	// 클릭버튼이 확인과 취소 두개일때 생성자 함수로 이벤트를 받는다
@@ -138,6 +141,10 @@ public class CustomDialog extends Dialog {
 		this.mContent = content;
 		this.mLeftClickListener = leftListener;
 		this.mRightClickListener = rightListener;
+		//if(context instanceof MainActivity)
+		//{
+		//	ma=(MainActivity) context;
+		//}
 	}
 
 }
