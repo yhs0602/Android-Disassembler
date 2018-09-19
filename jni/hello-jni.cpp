@@ -76,39 +76,38 @@ extern "C"
 		JNIEXPORT void JNICALL Java_com_jourhyang_disasmarm_DisasmResult_DisasmOne(JNIEnv * env, jobject thiz,jbyteArray _bytes ,jlong addr)
 		{
 			int bytelen=env->GetArrayLength(_bytes);
-			unsigned char *bytes= new unsigned char[bytelen];
+			//unsigned char *bytes= new unsigned char[bytelen];
 			jbyte *byte_buf;
  	        byte_buf = env->GetByteArrayElements(_bytes, NULL);
-			for(int i=0;i<bytelen;++i)
+			/*for(int i=0;i<bytelen;++i)
 			{
 				bytes[i]=byte_buf[i];
-			}
+			}*/
+			DisasmOne_sub(env,thiz,(unsigned char *)byte_buf/*bytes*/,bytelen,addr);
 			env->ReleaseByteArrayElements(_bytes, byte_buf, 0);
-			DisasmOne_sub(env,thiz,bytes,bytelen,addr);
-			delete bytes;
+			//delete bytes;
 		}
 		
-		JNIEXPORT void JNICALL Java_com_jourhyang_disasmarm_DisasmResult_DisasmOne2(JNIEnv * env, jobject thiz,jbyteArray _bytes, jlong shift)
+		JNIEXPORT void JNICALL Java_com_jourhyang_disasmarm_DisasmResult_DisasmOne2(JNIEnv * env, jobject thiz,jbyteArray _bytes, jlong shift,jlong address)
 		{
 			int bytelen=env->GetArrayLength(_bytes);
-			unsigned char *bytes= new unsigned char[bytelen-shift];
+			//unsigned char *bytes= new unsigned char[bytelen-shift];
 			jbyte *byte_buf;
  	        byte_buf = env->GetByteArrayElements(_bytes, NULL);
-			for(int i=0;i<bytelen-shift;++i)
+			/*for(int i=0;i<bytelen-shift;++i)
 			{
 				bytes[i]=byte_buf[i+shift];
-			}
+			}*/
+			DisasmOne_sub(env,thiz,(unsigned char*)(byte_buf+shift)/*bytes*/,bytelen-shift,address);
 			env->ReleaseByteArrayElements(_bytes, byte_buf, 0);
-			
-			DisasmOne_sub(env,thiz,bytes,bytelen-shift,shift);
-			delete bytes;
+			//delete bytes;
 		}
 		
 		void DisasmOne_sub(JNIEnv * env, jobject thiz,unsigned char* bytes,int bytelen,long addr)
 		{
 			cs_insn * insn;
 			size_t count;
-			__android_log_print(ANDROID_LOG_VERBOSE, "DisasmARM", "DisasmOne_sub");
+			__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "DisasmOne_sub");
 			count = cs_disasm(handle,(const uint8_t*)bytes, bytelen-1, addr, 1, & insn);
 			if(count>0)
 			{
@@ -183,7 +182,7 @@ extern "C"
 				//}
 				cs_free(insn, count);
 			}
-			__android_log_print(ANDROID_LOG_VERBOSE, "DisasmARM", "DisasmOne_sub end");
+			__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "DisasmOne_sub end");
 			/*
 				jfieldID fidid;   /* store the field ID */
 			/*	jfieldID fidaddr;
