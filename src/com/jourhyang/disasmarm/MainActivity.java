@@ -13,10 +13,8 @@ import android.view.View.*;
 import android.widget.*;
 import java.io.*;
 import java.util.*;
-import android.support.v4.view.ViewPager;
-import android.support.v4.app.*;
 
-public class MainActivity extends FragmentActivity implements Button.OnClickListener
+public class MainActivity extends Activity implements Button.OnClickListener
 {
 	String fpath;
 	byte[] filecontent=null;
@@ -56,6 +54,10 @@ public class MainActivity extends FragmentActivity implements Button.OnClickList
 	private Button btShowDetails;
 
 	private Button btSavDit;
+
+	private NotificationManager mNotifyManager;
+
+	private Notification.Builder mBuilder;
 
 	@Override
 	public void onClick(View p1)
@@ -206,27 +208,52 @@ public class MainActivity extends FragmentActivity implements Button.OnClickList
 
 		final ProgressDialog dialog= showProgressDialog("Disassembling...");
 		disasmResults.clear();
+		mNotifyManager =
+			(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		mBuilder = new Notification.Builder(this);
+		mBuilder.setContentTitle("Disassembler")
+			.setContentText("Disassembling in progress")
+			.setSmallIcon(R.drawable.design_password_eye);
 		new Thread(new Runnable(){
 				@Override
 				public void run()
 				{
-					long index=elfUtil.getEntryPoint();
-					Log.v(TAG, "Entry point :" + Long.toHexString(index));
+					long start=elfUtil.getCodeSectionOffset();
+					long index=start;
+					long limit=elfUtil.getCodeSectionLimit();
+					long addr=elfUtil.getCodeSectionVirtAddr();
+					Log.v(TAG, "code section point :" + Long.toHexString(index));
 					//	getFunctionNames();
-					for (int i=0;i < 500;++i)
+					for (;;)
 					{
-						DisasmResult dar=new DisasmResult(filecontent, index);
+						DisasmResult dar=new DisasmResult(filecontent, index,addr);
+						if(dar.size==0)
+						{
+							dar.size=4;
+							dar.mnemonic="db";
+							dar.bytes=new byte[]{filecontent[(int)index],filecontent[(int)index+1],filecontent[(int)index+2],filecontent[(int)index+3]};
+							dar.op_str="";
+							Log.e(TAG,"Dar.size==0, breaking?");
+							//break;
+						}
 						final ListViewItem lvi=new ListViewItem(dar);
 						disasmResults.add(lvi);
-						Log.v(TAG, "i=" + i + "lvi=" + lvi.toString());
-						if (index >= filecontent.length - 100)
+						Log.v(TAG, "i=" + index + "lvi=" + lvi.toString());
+						if (index >= limit)
 						{
 							Log.i(TAG, "index is " + index + ", breaking");
 							break;
 						}
 						Log.v(TAG, "dar.size is =" + dar.size);
+						Log.i(TAG,""+index +" out of "+(limit-start));
+						if((limit-start)%32==0){
+							mBuilder.setProgress((int)(limit-start), (int)(index-start), true);
+							// Displays the progress bar for the first time.
+							mNotifyManager.notify(0, mBuilder.build());
+						}
 						index += dar.size;
-						dialog.setProgress((int)((float)i * 100 / (float)500));
+						dialog.setProgress((int)((float)(index-start) * 100 / (float)(limit-start)));
+						//dialog.setTitle("Disassembling.."+(index-start)+" out of "+(limit-start));
 					}
 					final int len=disasmResults.size();
 					runOnUiThread(new Runnable(){
@@ -370,6 +397,9 @@ public class MainActivity extends FragmentActivity implements Button.OnClickList
 		TableRow tbrow0 = new TableRow(MainActivity.this);
 		CreateDisasmTopRow(tbrow0);		
 		tlDisasmTable.addView(tbrow0);
+		elfUtil=null;
+		filecontent=null;
+		
     }
 
 	private void CreateDisasmTopRow(TableRow tbrow0)
@@ -605,7 +635,7 @@ public class MainActivity extends FragmentActivity implements Button.OnClickList
 		return filePath;
 	}
 
-	public String Disassemble(EditText result)
+	/*ublic String Disassemble(EditText result)
 	{
 		//String s=disassemble(filecontent, elfUtil.getEntryPoint());
 		String s;
@@ -613,6 +643,7 @@ public class MainActivity extends FragmentActivity implements Button.OnClickList
 		s = new DisasmResult(b, 0).toString();
 		return s;
 	}
+	*/
     private ProgressDialog showProgressDialog(String s)
 	{
         ProgressDialog dialog = new ProgressDialog(this);

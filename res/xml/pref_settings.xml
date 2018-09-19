@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-
+<!--
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="useUserName"
@@ -44,20 +44,21 @@
             android:title="알림 소리" 
 			/>
     </PreferenceCategory>
-    <PreferenceCategory android:title="어플 정보" >
+	-->
+    <PreferenceCategory android:title="@string/app_info" >
         <Preference
-            android:summary="개발자 정보를 확인합니다"
-            android:title="개발자 정보" >
+            android:summary="@string/dev_info"
+            android:title="@string/dev_info_detail" >
             <intent
                 android:targetClass="com.jourhyang.disasmarm.MadeByActivity"
                 android:targetPackage="com.jourhyang.disasmarm" />
         </Preference>
         <Preference
-            android:summary="개발자에게 메일을 보냅니다"
-            android:title="메일 보내기" >
+            android:summary="@string/send_mail_detail"
+            android:title="@string/send_mail" >
             <intent
                 android:action="android.intent.action.SENDTO"
-                android:data="mailto:whdghks913@naver.com" />
+                android:data="mailto:jourhyang123@naver.com" />
         </Preference>
     </PreferenceCategory>
 

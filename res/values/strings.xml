@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Disassembler</string>
+	<string name="app_info">Application info</string>
+	<string name="dev_info">Developer info</string>
+	<string name="dev_info_detail">Check out developer info!</string>
+	<string name="send_mail">Send Email</string>
+	<string name="send_mail_detail">Send an e-mail to the developer.</string>
 </resources>

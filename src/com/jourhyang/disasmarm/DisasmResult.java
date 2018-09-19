@@ -25,7 +25,7 @@ public class DisasmResult
 		DisasmOne(bytes,address);
 	}*/
 	
-	public DisasmResult(byte [] bytes,long shift)
+	public DisasmResult(byte [] bytes,long shift,long address)
 	{
 		this();
 		DisasmOne2(bytes,shift,address);

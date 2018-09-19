@@ -85,6 +85,7 @@ extern "C"
 			}
 			env->ReleaseByteArrayElements(_bytes, byte_buf, 0);
 			DisasmOne_sub(env,thiz,bytes,bytelen,addr);
+			delete bytes;
 		}
 		
 		JNIEXPORT void JNICALL Java_com_jourhyang_disasmarm_DisasmResult_DisasmOne2(JNIEnv * env, jobject thiz,jbyteArray _bytes, jlong shift)
@@ -100,6 +101,7 @@ extern "C"
 			env->ReleaseByteArrayElements(_bytes, byte_buf, 0);
 			
 			DisasmOne_sub(env,thiz,bytes,bytelen-shift,shift);
+			delete bytes;
 		}
 		
 		void DisasmOne_sub(JNIEnv * env, jobject thiz,unsigned char* bytes,int bytelen,long addr)
@@ -182,9 +184,9 @@ extern "C"
 				cs_free(insn, count);
 			}
 			__android_log_print(ANDROID_LOG_VERBOSE, "DisasmARM", "DisasmOne_sub end");
-			
+			/*
 				jfieldID fidid;   /* store the field ID */
-				jfieldID fidaddr;
+			/*	jfieldID fidaddr;
 				jfieldID fidsize;
 				jfieldID fidbytes;
 				jfieldID fidmnemonic;
@@ -195,7 +197,7 @@ extern "C"
 				jfieldID fidregs_write_count;
 				jfieldID fidgroups;
 				jfieldID fidgroups_count;
-				jstring jstr;
+				jstring jstr;*/
 				//const char *str;     /* Get a reference to obj’s class */
 		//		
 				//printf("In C:\n");     /* Look for the instance field s in cls */

@@ -20,9 +20,9 @@ public class SettingsActivity extends PreferenceActivity {
 
 		addPreferencesFromResource(R.xml.pref_settings);
 
-		setOnPreferenceChange(findPreference("userName"));
-		setOnPreferenceChange(findPreference("userNameOpen"));
-		setOnPreferenceChange(findPreference("autoUpdate_ringtone"));
+	//	setOnPreferenceChange(findPreference("userName"));
+		//setOnPreferenceChange(findPreference("userNameOpen"));
+	//	setOnPreferenceChange(findPreference("autoUpdate_ringtone"));
 	}
 
 	private void setOnPreferenceChange(Preference mPreference) {
@@ -69,7 +69,6 @@ public class SettingsActivity extends PreferenceActivity {
 				if (TextUtils.isEmpty(stringValue)) {
 					// Empty values correspond to 'silent' (no ringtone).
 					preference.setSummary("������ �����");
-
 				} else {
 					Ringtone ringtone = RingtoneManager.getRingtone(
 							preference.getContext(), Uri.parse(stringValue));

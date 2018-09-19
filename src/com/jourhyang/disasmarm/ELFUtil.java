@@ -6,6 +6,15 @@ import nl.lxtreme.binutils.elf.*;
 public class ELFUtil implements Closeable
 {
 	private String TAG="Disassembler elfutil";
+	public long getCodeSectionVirtAddr()
+	{
+		return codeVirtualAddress;
+	}
+	public long getCodeSectionLimit()
+	{
+		// TODO: Implement this method
+		return codeLimit;
+	}
 	@Override
 	public void close() throws IOException
 	{
@@ -59,10 +68,18 @@ public class ELFUtil implements Closeable
 	 ParseData();
 	 }
 	 */
-	public ELFUtil(File file,byte[] filec) throws IOException
+	public long getCodeSectionOffset()
+	{
+		if (codeOffset != 0)
+		{
+			return codeOffset;
+		}
+		return 0L;
+	}
+	public ELFUtil(File file, byte[] filec) throws IOException
 	{
 		elf = new Elf(file);
-		fileContents=filec;
+		fileContents = filec;
 		SectionHeader[] sections = elf.sectionHeaders;
 		//assertNotNull( sections );
 
@@ -125,91 +142,112 @@ public class ELFUtil implements Closeable
 		 //elf.dynamicTable
 		 }
 		 }*/
-		 if(elf.dynamicTable==null)
-			 return;
-		StringBuilder sb=new StringBuilder();
-		Log.v(TAG,"size of dynamic table="+elf.dynamicTable.length);
-		long strtab=0L;	//pointer to the string table
-		long hash=0L;
-		int sym_cnt=0;
-		int i=0;
-		for (DynamicEntry de=elf.dynamicTable[0];;++i)
-		{
-			if(i>=elf.dynamicTable.length)
-				i=0;
-			de=elf.dynamicTable[i];
-			DynamicEntry.Tag tag=de.getTag();
-			Log.v(TAG,tag.toString());
-			if (tag == null)
+		if (elf.dynamicTable != null)
+		{ 
+			StringBuilder sb=new StringBuilder();
+			Log.v(TAG, "size of dynamic table=" + elf.dynamicTable.length);
+			long strtab=0L;	//pointer to the string table
+			long hash=0L;
+			int sym_cnt=0;
+			int i=0;
+			for (DynamicEntry de=elf.dynamicTable[0];;++i)
 			{
-				Log.v(TAG, "The tag is null");
-				break;
-			}
-			if (de.getTag().equals(DynamicEntry.Tag.NULL))	
-			{
-				Log.v(TAG, "Tag is NULL tag");
-				break;
-			}
-			if (tag.equals(DynamicEntry.Tag.HASH))
-			{
-				hash = de.getValue();
-				/* Get a pointer to the hash */
-				//			hash = (ElfW(Word*))dyn->d_un.d_ptr;
+				if (i >= elf.dynamicTable.length)
+					i = 0;
+				de = elf.dynamicTable[i];
+				DynamicEntry.Tag tag=de.getTag();
+				Log.v(TAG, tag.toString());
+				if (tag == null)
+				{
+					Log.v(TAG, "The tag is null");
+					break;
+				}
+				if (de.getTag().equals(DynamicEntry.Tag.NULL))	
+				{
+					Log.v(TAG, "Tag is NULL tag");
+					break;
+				}
+				if (tag.equals(DynamicEntry.Tag.HASH))
+				{
+					hash = de.getValue();
+					/* Get a pointer to the hash */
+					//			hash = (ElfW(Word*))dyn->d_un.d_ptr;
 //
-				/* The 2nd word is the number of symbols */
-				//			sym_cnt = hash[1];
-				//int hashvalue=fileContents[(int)hash]
-				sym_cnt = (fileContents[(int)hash+1]<<8 | fileContents[(int)hash]);
-				Log.v(TAG,"Hash="+hash+"cnt="+sym_cnt);
-			}
-			else if (tag.equals(DynamicEntry.Tag.STRTAB))
-			{
-				strtab = de.getValue();
-				Log.i(TAG,"strtab="+strtab);
-			}
-			else if (tag.equals(DynamicEntry.Tag.SYMTAB))
-			{
-				if(sym_cnt==0||strtab==0)
-				{
-					continue;
+					/* The 2nd word is the number of symbols */
+					//			sym_cnt = hash[1];
+					//int hashvalue=fileContents[(int)hash]
+					sym_cnt = (fileContents[(int)hash + 1] << 8 | fileContents[(int)hash]);
+					Log.v(TAG, "Hash=" + hash + "cnt=" + sym_cnt);
 				}
-				long sym=de.getValue();
-				Log.i(TAG,"sym="+sym);
-				//		int sym_index=0;
-				for (int sym_index=0;sym_index < sym_cnt;sym_index++)
+				else if (tag.equals(DynamicEntry.Tag.STRTAB))
 				{
-					String sym_name=new String(fileContents, (int)strtab + fileContents[(int)(sym + sym_index*16)], 64);
-					byte[] bytes=sym_name.getBytes();
-					//char[] chars=new char[sym_name.length()];
-					//sym_name.getb(0,sym_name.length()-1,chars,0);
-					ArrayList<Byte> arr=new ArrayList<>();
-					for(int j=0;j<bytes.length;++j)
+					strtab = de.getValue();
+					Log.i(TAG, "strtab=" + strtab);
+				}
+				else if (tag.equals(DynamicEntry.Tag.SYMTAB))
+				{
+					if (sym_cnt == 0 || strtab == 0)
 					{
-						arr.add(new Byte(bytes[j]));
-						if(bytes[j]==0)
+						continue;
+					}
+					long sym=de.getValue();
+					Log.i(TAG, "sym=" + sym);
+					//		int sym_index=0;
+					for (int sym_index=0;sym_index < sym_cnt;sym_index++)
+					{
+						String sym_name=new String(fileContents, (int)strtab + fileContents[(int)(sym + sym_index * 16)], 64);
+						byte[] bytes=sym_name.getBytes();
+						//char[] chars=new char[sym_name.length()];
+						//sym_name.getb(0,sym_name.length()-1,chars,0);
+						ArrayList<Byte> arr=new ArrayList<>();
+						for (int j=0;j < bytes.length;++j)
 						{
-							break;
+							arr.add(new Byte(bytes[j]));
+							if (bytes[j] == 0)
+							{
+								break;
+							}
 						}
+						byte[] newbytes=new byte[arr.size()];
+						for (int j=0;j < newbytes.length;++j)
+						{
+							newbytes[j] = arr.get(j);
+						}
+						sym_name = new String(newbytes);
+						//int symsymindexstname=fileContents[sym+sym_index];
+						//	sym_name = &strtab[sym[sym_index].st_name];
+						/*try{
+						 sym_name=sym_name.split("\0")[0];
+						 }catch(Exception e){}*/
+						sb.append(sym_name).append("\n");
+						Log.v(TAG, "sym_nmae=" + sym_name);
 					}
-					byte[] newbytes=new byte[arr.size()];
-					for(int j=0;j<newbytes.length;++j)
-					{
-						newbytes[j]=arr.get(j);
-					}
-					sym_name=new String(newbytes);
-					//int symsymindexstname=fileContents[sym+sym_index];
-					//	sym_name = &strtab[sym[sym_index].st_name];
-					/*try{
-						sym_name=sym_name.split("\0")[0];
-					}catch(Exception e){}*/
-					sb.append(sym_name).append("\n");
-					Log.v(TAG,"sym_nmae="+sym_name);
+					break;
 				}
-				break;
+			}
+			info = sb.toString();
+			Log.i(TAG, "info=" + info);
+		}
+		Log.v(TAG,"Checking code section");
+		for (SectionHeader sh:elf.sectionHeaders)
+		{
+			Log.v(TAG, "type=" + sh.type.toString() + "name=" + sh.getName());
+			if (sh.type.equals(SectionType.PROGBITS))
+			{
+				Log.v(TAG, "sh.type.equals Progbits");
+				String name=sh.getName();
+				if (name != null)
+				{
+					Log.i(TAG, "name nonnull:name=" + name);
+					if (name.equals(".text"))
+					{
+						codeOffset = sh.fileOffset;
+						codeLimit = codeOffset + sh.size;
+						codeVirtualAddress = sh.virtualAddress;
+					}
+				}
 			}
 		}
-		info = sb.toString();
-		Log.i(TAG,"info="+info);
 		//	for (size_t header_index = 0; header_index < info->dlpi_phnum; header_index++)
 		//	{
 
@@ -303,6 +341,9 @@ public class ELFUtil implements Closeable
 	private long entryPoint;
 	private byte [] fileContents;
 	boolean bExecutable;
-	private long CodeBase;
+	private long codeOffset=0L;
+	private long codeLimit=0L;
+	private long codeVirtualAddress=0L;
 	String[] symstrings;
+
 }

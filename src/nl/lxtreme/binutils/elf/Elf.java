@@ -264,7 +264,9 @@ public class Elf implements Closeable
     String name = shdr.getName();
     if ( name != null )
     {
-      sb.append( name );
+    	sb.append( name );
+		sb.append("\t");
+		sb.append( shdr.type );
     }
     else
     {
