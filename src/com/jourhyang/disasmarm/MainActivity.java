@@ -268,6 +268,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 									//AddOneRow(lvi);				
 								}
 								adapter.notifyDataSetChanged();
+								listview.requestLayout();
 								tab2.invalidate();
 								dialog.dismiss();
 								Toast.makeText(MainActivity.this, "done", 1).show();			
