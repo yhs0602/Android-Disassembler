@@ -2,6 +2,7 @@ package com.jourhyang.disasmarm;
 
 import android.app.*;
 import android.content.*;
+import android.content.res.*;
 import android.database.*;
 import android.graphics.*;
 import android.net.*;
@@ -213,7 +214,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		mBuilder = new Notification.Builder(this);
 		mBuilder.setContentTitle("Disassembler")
 			.setContentText("Disassembling in progress")
-			.setSmallIcon(R.drawable.design_password_eye);
+			.setSmallIcon(android.R.drawable.ic_media_play);
 		new Thread(new Runnable(){
 				@Override
 				public void run()
@@ -246,8 +247,8 @@ public class MainActivity extends Activity implements Button.OnClickListener
 						}
 						Log.v(TAG, "dar.size is =" + dar.size);
 						Log.i(TAG,""+index +" out of "+(limit-start));
-						if((limit-start)%32==0){
-							mBuilder.setProgress((int)(limit-start), (int)(index-start), true);
+						if((limit-start)%320==0){
+							mBuilder.setProgress((int)(limit-start), (int)(index-start), false);
 							// Displays the progress bar for the first time.
 							mNotifyManager.notify(0, mBuilder.build());
 						}
@@ -383,9 +384,10 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		
 		tabHost = (TabHost) findViewById(R.id.tabhost1);
         tabHost.setup();
-
-        TabHost.TabSpec tab1 = tabHost.newTabSpec("1").setContent(R.id.tab1).setIndicator("Overview");
-        TabHost.TabSpec tab2 = tabHost.newTabSpec("2").setContent(R.id.tab2).setIndicator("Disassembly");
+		TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator("Overview");
+        TabHost.TabSpec tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator("Details");
+        TabHost.TabSpec tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator("Disassembly");
+		tabHost.addTab(tab0);
         tabHost.addTab(tab1);
         tabHost.addTab(tab2);
 		this.tab1 = (LinearLayout) findViewById(R.id.tab1);
@@ -401,11 +403,16 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	//	tlDisasmTable.addView(tbrow0);
 		adapter=new ListViewAdapter();
 		listview = (ListView) findViewById(R.id.listview);
-        listview.setAdapter(adapter);	
+        listview.setAdapter(adapter);
+	//	ViewGroup.LayoutParams lp= listview.getLayoutParams();
+		//listview.setMinimumHeight(getScreenHeight());
+		//listview.setLayoutParams(lp);
 	//	elfUtil=null;
 	//	filecontent=null;	
     }
-
+	public static int getScreenHeight() {
+		return Resources.getSystem().getDisplayMetrics().heightPixels;
+	}
 	private void CreateDisasmTopRow(TableRow tbrow0)
 	{
 		TextView tv0 = new TextView(MainActivity.this);

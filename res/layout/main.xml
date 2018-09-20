@@ -14,211 +14,212 @@
 		<LinearLayout
 			android:orientation="vertical"
 			android:layout_height="match_parent"
-			android:layout_width="wrap_content"
+			android:layout_width="match_parent"
 			android:layout_gravity="center_horizontal">
 
-			<TextView
-				android:layout_height="wrap_content"
-				android:text="Disassembler"
-				android:textAppearance="?android:attr/textAppearanceLarge"
-				android:layout_width="wrap_content"
-				android:layout_span="5"
-				android:textSize="32sp"/>
-
-			<TextView
-				android:layout_height="wrap_content"
-				android:text="Select any file to disassemble"
-				android:textAppearance="?android:attr/textAppearanceMedium"
-				android:layout_width="wrap_content"
-				android:layout_span="5"/>
-
-			<LinearLayout
-				android:orientation="horizontal"
+			<TabHost
+				android:id="@+id/tabhost1"
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content">
+				android:layout_height="match_parent">
 
-				<EditText
-					android:layout_height="match_parent"
-					android:ems="10"
-					android:layout_width="wrap_content"
-					android:layout_span="2"
-					android:id="@+id/fileNameText"
-					android:inputType="text"/>
-
-				<Button
-					android:layout_height="wrap_content"
-					android:text="Select file"
-					android:layout_width="wrap_content"
-					android:id="@+id/selFile"
-					android:layout_span="1"
-					android:layout_weight="1.0"/>
-
-			</LinearLayout>
-
-			<com.jourhyang.disasmarm.RadioGridGroup
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_span="4">
-
-				<TableRow>
-
-					<RadioButton
-						android:layout_height="wrap_content"
-						android:layout_width="wrap_content"
-						android:id="@+id/rbAuto"
-						android:text="Auto detect"/>
-
-					<RadioButton
-						android:layout_height="wrap_content"
-						android:layout_width="wrap_content"
-						android:id="@+id/rbARM"
-						android:text="ARM"/>
-
-					<RadioButton
-						android:layout_height="wrap_content"
-						android:layout_width="wrap_content"
-						android:id="@+id/rbARM64"
-						android:text="ARM64"/>
-
-				</TableRow>
-
-				<TableRow>
-
-					<RadioButton
-						android:layout_height="wrap_content"
-						android:layout_width="wrap_content"
-						android:id="@+id/rbx86"
-						android:text="Intel x86"/>
-
-					<RadioButton
-						android:layout_height="wrap_content"
-						android:layout_width="wrap_content"
-						android:id="@+id/rbThumb"
-						android:text="ARM thumb"/>
-
-					<RadioButton
-						android:layout_height="wrap_content"
-						android:layout_width="wrap_content"
-						android:id="@+id/rbMIPS"
-						android:text="MIPS"/>
-
-				</TableRow>
-
-			</com.jourhyang.disasmarm.RadioGridGroup>
-
-			<LinearLayout
-				android:layout_height="wrap_content"
-				android:layout_width="match_parent"
-				android:orientation="vertical">
-
-				<TabHost
-					android:id="@+id/tabhost1"
+				<LinearLayout
 					android:layout_width="match_parent"
-					android:layout_height="match_parent">
+					android:layout_height="match_parent"
+					android:orientation="vertical">
 
-					<LinearLayout
+					<TabWidget
+						android:id="@android:id/tabs"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"/>
+
+					<FrameLayout
+						android:id="@android:id/tabcontent"
 						android:layout_width="match_parent"
 						android:layout_height="match_parent"
-						android:orientation="vertical">
+						android:foregroundGravity="center_horizontal">
 
-						<TabWidget
-							android:id="@android:id/tabs"
-							android:layout_width="match_parent"
-							android:layout_height="wrap_content"/>
-
-						<FrameLayout
-							android:id="@android:id/tabcontent"
+						<LinearLayout
+							android:id="@+id/tab0"
 							android:layout_width="match_parent"
 							android:layout_height="match_parent"
-							android:background="@android:color/holo_orange_light"
-							android:foregroundGravity="center_horizontal">
+							android:orientation="vertical">
+
+							<TextView
+								android:layout_height="wrap_content"
+								android:text="Disassembler"
+								android:textAppearance="?android:attr/textAppearanceLarge"
+								android:layout_width="wrap_content"
+								android:layout_span="5"
+								android:textSize="32sp"/>
+
+							<TextView
+								android:layout_height="wrap_content"
+								android:text="Select any file to disassemble"
+								android:textAppearance="?android:attr/textAppearanceMedium"
+								android:layout_width="wrap_content"
+								android:layout_span="5"/>
 
 							<LinearLayout
-								android:id="@+id/tab1"
-								android:orientation="vertical"
+								android:orientation="horizontal"
 								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:gravity="center_horizontal"
-								android:layout_gravity="center_horizontal">
-
-								<LinearLayout
-									android:layout_height="wrap_content"
-									android:layout_width="wrap_content"
-									android:orientation="horizontal">
-
-									<Button
-										android:layout_height="wrap_content"
-										android:text="Show details"
-										android:layout_width="wrap_content"
-										android:id="@+id/btnShowdetail"/>
-
-									<Button
-										android:layout_height="wrap_content"
-										android:text="Save Details to file"
-										android:layout_width="wrap_content"
-										android:id="@+id/btnSaveDetails"
-										android:layout_span="2"/>
-
-								</LinearLayout>
+								android:layout_height="wrap_content">
 
 								<EditText
-									android:layout_height="wrap_content"
-									android:inputType="textMultiLine"
+									android:layout_height="match_parent"
 									android:ems="10"
-									android:layout_width="match_parent"
-									android:layout_span="4"
-									android:id="@+id/detailText"/>
+									android:layout_width="wrap_content"
+									android:layout_span="2"
+									android:id="@+id/fileNameText"
+									android:inputType="text"/>
+
+								<Button
+									android:layout_height="wrap_content"
+									android:text="Select file"
+									android:layout_width="wrap_content"
+									android:id="@+id/selFile"
+									android:layout_span="1"
+									android:layout_weight="1.0"/>
 
 							</LinearLayout>
+
+							<com.jourhyang.disasmarm.RadioGridGroup
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_span="4">
+
+								<TableRow>
+
+									<RadioButton
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:id="@+id/rbAuto"
+										android:text="Auto detect"/>
+
+									<RadioButton
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:id="@+id/rbARM"
+										android:text="ARM"/>
+
+									<RadioButton
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:id="@+id/rbARM64"
+										android:text="ARM64"/>
+
+								</TableRow>
+
+								<TableRow>
+
+									<RadioButton
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:id="@+id/rbx86"
+										android:text="Intel x86"/>
+
+									<RadioButton
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:id="@+id/rbThumb"
+										android:text="ARM thumb"/>
+
+									<RadioButton
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:id="@+id/rbMIPS"
+										android:text="MIPS"/>
+
+								</TableRow>
+
+							</com.jourhyang.disasmarm.RadioGridGroup>
+
+						</LinearLayout>
+
+						<LinearLayout
+							android:id="@+id/tab1"
+							android:orientation="vertical"
+							android:layout_width="match_parent"
+							android:layout_height="match_parent"
+							android:gravity="center_horizontal"
+							android:layout_gravity="center_horizontal">
 
 							<LinearLayout
-								android:id="@+id/tab2"
-								android:orientation="vertical"
-								android:gravity="center_horizontal"
-								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
-								android:layout_gravity="center_horizontal">
+								android:layout_width="wrap_content"
+								android:orientation="horizontal">
 
-								<LinearLayout
+								<Button
 									android:layout_height="wrap_content"
+									android:text="Show details"
 									android:layout_width="wrap_content"
-									android:orientation="horizontal">
+									android:id="@+id/btnShowdetail"/>
 
-									<Button
-										android:layout_height="wrap_content"
-										android:text="Disassemble"
-										android:layout_width="wrap_content"
-										android:id="@+id/btnDisasm"/>
-
-									<Button
-										android:layout_height="wrap_content"
-										android:text="Save to file"
-										android:layout_width="wrap_content"
-										android:layout_span="2"
-										android:id="@+id/btnSaveDisasm"/>
-
-								</LinearLayout>
-
-								<HorizontalScrollView
+								<Button
 									android:layout_height="wrap_content"
-									android:layout_width="match_parent">
-
-									<ListView
-										android:layout_height="100dp"
-										android:layout_width="wrap_content"
-										android:id="@+id/listview"/>
-
-								</HorizontalScrollView>
+									android:text="Save Details to file"
+									android:layout_width="wrap_content"
+									android:id="@+id/btnSaveDetails"
+									android:layout_span="2"/>
 
 							</LinearLayout>
 
-						</FrameLayout>
+							<EditText
+								android:layout_height="wrap_content"
+								android:inputType="textMultiLine"
+								android:ems="10"
+								android:layout_width="match_parent"
+								android:layout_span="4"
+								android:id="@+id/detailText"/>
 
-					</LinearLayout>
+						</LinearLayout>
 
-				</TabHost>
+						<LinearLayout
+							android:id="@+id/tab2"
+							android:orientation="vertical"
+							android:gravity="center_horizontal"
+							android:layout_width="match_parent"
+							android:layout_height="match_parent"
+							android:layout_gravity="center_horizontal">
 
-			</LinearLayout>
+							<LinearLayout
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:orientation="horizontal">
+
+								<Button
+									android:layout_height="wrap_content"
+									android:text="Disassemble"
+									android:layout_width="wrap_content"
+									android:id="@+id/btnDisasm"/>
+
+								<Button
+									android:layout_height="wrap_content"
+									android:text="Save to file"
+									android:layout_width="wrap_content"
+									android:layout_span="2"
+									android:id="@+id/btnSaveDisasm"/>
+
+							</LinearLayout>
+
+							<HorizontalScrollView
+								android:layout_height="match_parent"
+								android:layout_width="match_parent"
+								android:layout_weight="1.0">
+
+								<ListView
+									android:layout_height="match_parent"
+									android:layout_width="match_parent"
+									android:id="@+id/listview"/>
+
+							</HorizontalScrollView>
+
+						</LinearLayout>
+
+					</FrameLayout>
+
+				</LinearLayout>
+
+			</TabHost>
 
 		</LinearLayout>
 
