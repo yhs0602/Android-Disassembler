@@ -203,11 +203,10 @@
 									android:layout_height="wrap_content"
 									android:layout_width="match_parent">
 
-									<TableLayout
-										android:layout_height="wrap_content"
+									<ListView
+										android:layout_height="100dp"
 										android:layout_width="wrap_content"
-										android:id="@+id/table_main"
-										android:background="#FFFFFF"/>
+										android:id="@+id/listview"/>
 
 								</HorizontalScrollView>
 

@@ -3078,6 +3078,7 @@ containing a value of this type.
         public static final int line3=0x7f070015;
         public static final int listMode=0x7f07001d;
         public static final int list_item=0x7f070061;
+        public static final int listview=0x7f0700bd;
         public static final int masked=0x7f0700d2;
         public static final int media_actions=0x7f0700c4;
         public static final int message=0x7f07008b;
@@ -3151,7 +3152,6 @@ containing a value of this type.
         public static final int tab2=0x7f0700ba;
         public static final int tabMode=0x7f07001f;
         public static final int tabhost1=0x7f0700b5;
-        public static final int table_main=0x7f0700bd;
         public static final int tag_transition_group=0x7f070016;
         public static final int text=0x7f070017;
         public static final int text2=0x7f070018;

@@ -32,9 +32,9 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	boolean showComment=true;
 	private CustomDialog mCustomDialog;
 
-	//private ListViewAdapter adapter;
+	private ListViewAdapter adapter;
 
-	//private ListView listview;
+	private ListView listview;
 	ArrayList<ListViewItem> disasmResults=new ArrayList<ListViewItem>();
 
 	private TableLayout tlDisasmTable;
@@ -263,8 +263,10 @@ public class MainActivity extends Activity implements Button.OnClickListener
 								for (int i=0;i < len;++i)
 								{
 									final ListViewItem lvi=disasmResults.get(i);
-									AddOneRow(lvi);				
+									adapter.addItem(lvi);
+									//AddOneRow(lvi);				
 								}
+								adapter.notifyDataSetChanged();
 								tab2.invalidate();
 								dialog.dismiss();
 								Toast.makeText(MainActivity.this, "done", 1).show();			
@@ -393,13 +395,15 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			Toast.makeText(this, "Failed to initialize the native engine", 3).show();
 			android.os.Process.killProcess(android.os.Process.getGidForName(null));
 		}
-		tlDisasmTable = (TableLayout) findViewById(R.id.table_main);
-		TableRow tbrow0 = new TableRow(MainActivity.this);
-		CreateDisasmTopRow(tbrow0);		
-		tlDisasmTable.addView(tbrow0);
-		elfUtil=null;
-		filecontent=null;
-		
+	//tlDisasmTable = (TableLayout) findViewById(R.id.table_main);
+	//	TableRow tbrow0 = new TableRow(MainActivity.this);
+	//	CreateDisasmTopRow(tbrow0);		
+	//	tlDisasmTable.addView(tbrow0);
+		adapter=new ListViewAdapter();
+		listview = (ListView) findViewById(R.id.listview);
+        listview.setAdapter(adapter);	
+	//	elfUtil=null;
+	//	filecontent=null;	
     }
 
 	private void CreateDisasmTopRow(TableRow tbrow0)
@@ -436,15 +440,15 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	}
 	public void RefreshTable()
 	{
-		tlDisasmTable.removeAllViews();
-		TableRow tbrow0 = new TableRow(MainActivity.this);
-		CreateDisasmTopRow(tbrow0);		
-		tlDisasmTable.addView(tbrow0);
-		for(int i=0;i<disasmResults.size();++i)
+		//tlDisasmTable.removeAllViews();
+		//TableRow tbrow0 = new TableRow(MainActivity.this);
+		//CreateDisasmTopRow(tbrow0);		
+		//tlDisasmTable.addView(tbrow0);
+		//for(int i=0;i<disasmResults.size();++i)
 		{
-			AddOneRow(disasmResults.get(i));
+			//AddOneRow(disasmResults.get(i));
 		}
-		tlDisasmTable.refreshDrawableState();
+		//tlDisasmTable.refreshDrawableState();
 	}
 	
 	@Override
