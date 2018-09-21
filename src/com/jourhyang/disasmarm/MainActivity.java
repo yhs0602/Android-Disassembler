@@ -110,6 +110,27 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			AlertSelFile();
 			return;
 		}
+		final List<String> ListItems = new ArrayList<>();
+        ListItems.add("Classic(Addr bytes inst op comment)");
+        ListItems.add("Simple(Addr: inst op; comment");
+        ListItems.add("Json(Reloadable)");
+        final CharSequence[] items =  ListItems.toArray(new String[ ListItems.size()]);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Export as...");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int pos) {
+					//String selectedText = items[pos].toString();
+					final ProgressDialog dialog2= showProgressDialog("Saving...");
+					SaveDisasmSub(pos);
+					dialog2.dismiss();
+				}
+			});
+        builder.show();
+	}
+
+	private void SaveDisasmSub(int mode)
+	{
 		Log.v(TAG, "Saving disassembly");
 		File dir=new File("/sdcard/disasm/");
 		File file=new File(dir, new File(fpath).getName() + "_" + new Date(System.currentTimeMillis()).toString() + ".disassembly.txt");
@@ -132,7 +153,31 @@ public class MainActivity extends Activity implements Button.OnClickListener
 				StringBuilder sb=new StringBuilder();
 				for (ListViewItem lvi:disasmResults)
 				{
-					sb.append(lvi.toString());
+					switch(mode)
+					{
+						case 0:
+							sb.append(lvi.address);
+							sb.append("\t");
+							sb.append(lvi.bytes);
+							sb.append("\t");
+							sb.append(lvi.instruction);
+							sb.append(" ");
+							sb.append(lvi.operands);
+							sb.append("\t");
+							sb.append(lvi.comments);
+							break;
+						case 1:
+							sb.append(lvi.address);
+							sb.append(":");
+							sb.append(lvi.instruction);
+							sb.append(" ");
+							sb.append(lvi.operands);
+							sb.append("  ;");
+							sb.append(lvi.comments);
+							break;
+						case 2:
+							sb.append(lvi.toString());
+					}	
 					sb.append(System.lineSeparator());
 				}
 				fos.write(sb.toString().getBytes());
@@ -253,6 +298,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 							mNotifyManager.notify(0, mBuilder.build());
 						}
 						index += dar.size;
+						addr+=dar.size;
 						dialog.setProgress((int)((float)(index-start) * 100 / (float)(limit-start)));
 						//dialog.setTitle("Disassembling.."+(index-start)+" out of "+(limit-start));
 					}
