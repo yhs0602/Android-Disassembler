@@ -60,6 +60,10 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 	private Notification.Builder mBuilder;
 
+	boolean instantMode;
+	
+	private long instantEntry;
+	
 	@Override
 	public void onClick(View p1)
 	{
@@ -76,7 +80,65 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					AlertSelFile();
 					return;
 				}
-				DisassembleFile();
+				final List<String> ListItems = new ArrayList<>();
+				ListItems.add("Instant mode");
+				ListItems.add("Persist mode");
+			//	ListItems.add("");
+				final CharSequence[] items =  ListItems.toArray(new String[ ListItems.size()]);
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle("Disassemble as...");
+				builder.setItems(items, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int pos) {
+							//String selectedText = items[pos].toString();
+							dialog.dismiss();
+							if(pos==0)
+							{
+								instantMode=true;
+								final List<String> ListItems2 = new ArrayList<>();
+								ListItems2.add("Entry point");
+								ListItems2.add("Custom address");
+								AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+								builder.setTitle("Start from...");
+								builder.setItems(items, new DialogInterface.OnClickListener() {
+										public void onClick(DialogInterface dialog2, int pos) {						
+											if(pos==0)
+											{
+												instantEntry=elfUtil.getEntryPoint();
+												DisassembleInstant();
+											}else if(pos==1){
+												final EditText edittext = new EditText(MainActivity.this);
+
+												AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+												builder.setTitle("Start from...");
+												builder.setMessage("Enter address to start analyzing.");
+												builder.setView(edittext);
+												builder.setPositiveButton("OK",
+													new DialogInterface.OnClickListener() {
+														public void onClick(DialogInterface dialog3, int which) {
+															instantEntry=parseAddress(edittext.getText().toString());
+															DisassembleInstant();
+														}			
+													});
+												builder.setNegativeButton("cancel",
+													new DialogInterface.OnClickListener() {
+														public void onClick(DialogInterface dialog4, int which) {
+															dialog4.dismiss();
+														}
+													});
+												dialog2.dismiss();
+												builder.show();
+											}
+										}
+									});
+								builder.show();
+							}
+							else if(pos==1)
+							{
+								DisassembleFile();
+							}
+						}
+					});
+				builder.show();
 				break;
 			case R.id.btnShowdetail:
 				if (elfUtil == null)
@@ -97,7 +159,12 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		}
 
 	}
-
+	private long parseAddress(String toString)
+	{
+		// TODO: Implement this method
+		return Long.decode(toString);
+	}
+	
 	private void AlertSelFile()
 	{
 		Toast.makeText(this, "Please Select a file first.", 2).show();
@@ -121,6 +188,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
         builder.setItems(items, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int pos) {
 					//String selectedText = items[pos].toString();
+					dialog.dismiss();
 					final ProgressDialog dialog2= showProgressDialog("Saving...");
 					SaveDisasmSub(pos);
 					dialog2.dismiss();
@@ -246,10 +314,51 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		etDetails.setText(elfUtil.toString());
 	}
 	
+	private void DisassembleInstant()
+	{
+		long startaddress=instantEntry;//file offset
+		long index=startaddress;
+		long addr=elfUtil.getCodeSectionVirtAddr();
+		long limit=startaddress+400;
+		for(;;)
+		{
+			DisasmResult dar=new DisasmResult(filecontent, index,addr);
+			if(dar.size==0)
+			{
+				dar.size=4;
+				dar.mnemonic="db";
+				dar.bytes=new byte[]{filecontent[(int)index],filecontent[(int)index+1],filecontent[(int)index+2],filecontent[(int)index+3]};
+				dar.op_str="";
+				Log.e(TAG,"Dar.size==0, breaking?");
+				//break;
+			}
+			final ListViewItem lvi=new ListViewItem(dar);
+			disasmResults.add(lvi);
+			adapter.addItem(lvi);
+			adapter.notifyDataSetChanged();
+			Log.v(TAG, "i=" + index + "lvi=" + lvi.toString());
+			if (index >= limit)
+			{
+				Log.i(TAG, "index is " + index + ", breaking");
+				break;
+			}
+			Log.v(TAG, "dar.size is =" + dar.size);
+			Log.i(TAG,""+index +" out of "+(limit-startaddress));
+			/*if((limit-start)%320==0){
+				mBuilder.setProgress((int)(limit-startaddress), (int)(index-start), false);
+				// Displays the progress bar for the first time.
+				mNotifyManager.notify(0, mBuilder.build());
+			}*/
+			index += dar.size;
+			addr+=dar.size;
+			
+		}
+	}
+	
 	//TODO: DisassembleFile(long address, int amt);
 	private void DisassembleFile()
 	{
-		Toast.makeText(this, "started", 1).show();
+		Toast.makeText(this, "started", 2).show();
 		Log.v(TAG, "Strted disassm");
 
 		final ProgressDialog dialog= showProgressDialog("Disassembling...");
@@ -451,6 +560,16 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		adapter=new ListViewAdapter();
 		listview = (ListView) findViewById(R.id.listview);
         listview.setAdapter(adapter);
+		listview.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+				@Override
+				public void onItemClick(AdapterView<?> parent, View p2, int position, long id)
+				{
+					ListViewItem lvi=(ListViewItem) parent.getItemAtPosition(position);
+					
+					// TODO: Implement this method
+					return;
+				}			
+		});
 	//	ViewGroup.LayoutParams lp= listview.getLayoutParams();
 		//listview.setMinimumHeight(getScreenHeight());
 		//listview.setLayoutParams(lp);
