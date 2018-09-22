@@ -38,12 +38,13 @@ public class DisasmResult
 	{
 		// TODO: Implement this method
 		StringBuilder builder=new StringBuilder();
-		return builder.append("id:").append(id)
+		return builder.append("{\nid:").append(id)
 			   .append("\naddress:").append(address)
 			   .append("\nsize:").append(size)
 			   .append("\nbytes:").append(Arrays.toString(bytes))
 			   .append("\nmnemonic:").append(mnemonic)
 			   .append("\nop_str:").append(op_str)
+			   .append("\n},")
 			   .toString();
 	}
 	

@@ -92,24 +92,18 @@ public class ListViewAdapter extends BaseAdapter
     // 아이템 데이터 추가를 위한 함수. 개발자가 원하는대로 작성 가능.
     public void addItem(DisasmResult disasm)
 	{
-        ListViewItem item = new ListViewItem();
-
+        ListViewItem item = new ListViewItem(disasm);
 		//    item.setIcon(icon);
 		// item.setTitle(title);
 		//    item.setDesc(desc);
-
         listViewItemList.add(item);
+		//notifyDataSetChanged();
     }
 	// 아이템 데이터 추가를 위한 함수. 개발자가 원하는대로 작성 가능.
     public void addItem(ListViewItem item)
 	{
-       // ListViewItem item = new ListViewItem();
-
-		//    item.setIcon(icon);
-		// item.setTitle(title);
-		//    item.setDesc(desc);
-
         listViewItemList.add(item);
+		//notifyDataSetChanged();
     }
 }
 //http://recipes4dev.tistory.com/m/43

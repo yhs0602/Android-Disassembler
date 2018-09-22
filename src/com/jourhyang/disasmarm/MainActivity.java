@@ -64,6 +64,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	
 	private long instantEntry;
 	
+	Thread workerThread;
 	@Override
 	public void onClick(View p1)
 	{
@@ -361,15 +362,17 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		Toast.makeText(this, "started", 2).show();
 		Log.v(TAG, "Strted disassm");
 
-		final ProgressDialog dialog= showProgressDialog("Disassembling...");
+		//final ProgressDialog dialog= showProgressDialog("Disassembling...");
 		disasmResults.clear();
 		mNotifyManager =
 			(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mBuilder = new Notification.Builder(this);
 		mBuilder.setContentTitle("Disassembler")
 			.setContentText("Disassembling in progress")
-			.setSmallIcon(android.R.drawable.ic_media_play);
-		new Thread(new Runnable(){
+			.setSmallIcon(R.drawable.cell_shape)
+			.setOngoing(true)
+			.setProgress(100,0,false);
+		workerThread= new Thread(new Runnable(){
 				@Override
 				public void run()
 				{
@@ -392,46 +395,65 @@ public class MainActivity extends Activity implements Button.OnClickListener
 							//break;
 						}
 						final ListViewItem lvi=new ListViewItem(dar);
-						disasmResults.add(lvi);
-						Log.v(TAG, "i=" + index + "lvi=" + lvi.toString());
+						
+						runOnUiThread(new Runnable(){
+								@Override
+								public void run()
+								{
+									adapter.addItem(lvi);
+									adapter.notifyDataSetChanged();
+									return ;
+								}
+							});
+						//Log.v(TAG, "i=" + index + "lvi=" + lvi.toString());
 						if (index >= limit)
 						{
 							Log.i(TAG, "index is " + index + ", breaking");
 							break;
 						}
-						Log.v(TAG, "dar.size is =" + dar.size);
+						//Log.v(TAG, "dar.size is =" + dar.size);
 						Log.i(TAG,""+index +" out of "+(limit-start));
-						if((limit-start)%320==0){
+						if((index-start)%320==0){
 							mBuilder.setProgress((int)(limit-start), (int)(index-start), false);
 							// Displays the progress bar for the first time.
-							mNotifyManager.notify(0, mBuilder.build());
+							mNotifyManager.notify(0, mBuilder.build());					
+							runOnUiThread(new Runnable(){
+									@Override
+									public void run()
+									{
+										//adapter.notifyDataSetChanged();
+										listview.requestLayout();
+									}
+								});
 						}
 						index += dar.size;
-						addr+=dar.size;
-						dialog.setProgress((int)((float)(index-start) * 100 / (float)(limit-start)));
+						addr+=dar.size;			
+						//dialog.setProgress((int)((float)(index-start) * 100 / (float)(limit-start)));
 						//dialog.setTitle("Disassembling.."+(index-start)+" out of "+(limit-start));
 					}
+					mNotifyManager.cancel(0);
 					final int len=disasmResults.size();
 					runOnUiThread(new Runnable(){
 							@Override
 							public void run()
 							{
-								for (int i=0;i < len;++i)
+								/*for (int i=0;i < len;++i)
 								{
 									final ListViewItem lvi=disasmResults.get(i);
 									adapter.addItem(lvi);
 									//AddOneRow(lvi);				
-								}
-								adapter.notifyDataSetChanged();
+								}*/
+								//adapter.notifyDataSetChanged();
 								listview.requestLayout();
 								tab2.invalidate();
-								dialog.dismiss();
-								Toast.makeText(MainActivity.this, "done", 1).show();			
+								//dialog.dismiss();
+								Toast.makeText(MainActivity.this, "done", 2).show();			
 							}
 						});
 					Log.v(TAG, "disassembly done");		
 				}
-			}).start();
+			});
+			workerThread.start();
 	}
 	View.OnClickListener rowClkListener= new OnClickListener() {
 		public void onClick(View view)
@@ -636,6 +658,16 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		catch (Exception e)
 		{}
 		Finalize();
+		if(mNotifyManager!=null)
+		{
+			mNotifyManager.cancel(0);
+			mNotifyManager.cancelAll();
+		}
+		//maybe service needed.
+		/*if(workerThread!=null)
+		{
+			workerThread.stop();
+		}*/
 	}
 	@Override
     public boolean onCreateOptionsMenu(Menu menu)
