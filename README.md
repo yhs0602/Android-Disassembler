@@ -24,7 +24,7 @@ Fast and lightweight, but buggy.
 -Persist mode
 A bit lags, but OK
 
-#Export mode
+# Export mode
 -Classic
 Pretty!
 -Simple
