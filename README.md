@@ -31,3 +31,6 @@ Pretty!
 Can be directly pasted as code!
  - Json
 It can be loaded again to analyze again(though reloading is not implemented yet - Sorry:( )
+
+# Build
+I use [AIDE](https://play.google.com/store/apps/details?id=com.aide.ui) to build the project.
