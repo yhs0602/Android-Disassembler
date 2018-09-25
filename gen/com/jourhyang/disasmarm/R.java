@@ -13,70 +13,197 @@ public final class R {
         public static final int userNameOpen_values=0x7f050001;
     }
     public static final class attr {
+        /** <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
+         */
+        public static final int alphaChannelText=0x7f010001;
+        /** <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a boolean value, either "<code>true</code>" or "<code>false</code>".
+         */
+        public static final int alphaChannelVisible=0x7f010000;
+        /** <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+         */
+        public static final int borderColor=0x7f010003;
+        /** <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+         */
+        public static final int sliderColor=0x7f010002;
+    }
+    public static final class dimen {
+        public static final int colorpickerview__dialog_preview_height=0x7f060002;
+        public static final int colorpickerview__dialog_preview_width=0x7f060001;
+        /**  This is the minimum padding the ColorPickerView will have, if no padding is set this is used. 
+         */
+        public static final int colorpickerview__required_padding=0x7f060000;
     }
     public static final class drawable {
         public static final int cell_shape=0x7f020000;
+        public static final int colorpickerview__btn_background=0x7f020001;
+        public static final int colorpickerview__btn_background_pressed=0x7f020002;
+        public static final int ic_launcher=0x7f020003;
     }
     public static final class id {
-        public static final int activitycustomdialogCheckBoxAddress=0x7f080002;
-        public static final int activitycustomdialogCheckBoxBytes=0x7f080004;
-        public static final int activitycustomdialogCheckBoxComment=0x7f080008;
-        public static final int activitycustomdialogCheckBoxCondition=0x7f080006;
-        public static final int activitycustomdialogCheckBoxInstruction=0x7f080005;
-        public static final int activitycustomdialogCheckBoxLabel=0x7f080003;
-        public static final int activitycustomdialogCheckBoxOperands=0x7f080007;
-        public static final int activitymadebyTextView1=0x7f08000b;
-        public static final int btnDisasm=0x7f080022;
-        public static final int btnSaveDetails=0x7f08001f;
-        public static final int btnSaveDisasm=0x7f080023;
-        public static final int btnShowdetail=0x7f08001e;
-        public static final int btn_left=0x7f080009;
-        public static final int btn_right=0x7f08000a;
-        public static final int detailText=0x7f080020;
-        public static final int fileNameText=0x7f080015;
-        public static final int listview=0x7f080024;
-        public static final int rbARM=0x7f080018;
-        public static final int rbARM64=0x7f080019;
-        public static final int rbAuto=0x7f080017;
-        public static final int rbMIPS=0x7f08001c;
-        public static final int rbThumb=0x7f08001b;
-        public static final int rbx86=0x7f08001a;
-        public static final int rows=0x7f080026;
-        public static final int selFile=0x7f080016;
-        public static final int settings=0x7f080025;
-        public static final int tab0=0x7f080014;
-        public static final int tab1=0x7f08001d;
-        public static final int tab2=0x7f080021;
-        public static final int tabhost1=0x7f080013;
-        public static final int tvAddr=0x7f08000c;
-        public static final int tvBytes=0x7f08000e;
-        public static final int tvComment=0x7f080012;
-        public static final int tvCond=0x7f080010;
-        public static final int tvInst=0x7f08000f;
-        public static final int tvLabel=0x7f08000d;
-        public static final int tvOperand=0x7f080011;
-        public static final int txt_content=0x7f080001;
-        public static final int txt_title=0x7f080000;
+        public static final int activitycolorpickerdialogButtonLeft=0x7f070009;
+        public static final int activitycolorpickerdialogButtonRight=0x7f07000a;
+        public static final int activitycolorpickerdialogTextView1=0x7f070004;
+        public static final int activitycolorpickerdialogTextView2=0x7f070005;
+        public static final int activitycustomdialogCheckBoxAddress=0x7f07000d;
+        public static final int activitycustomdialogCheckBoxBytes=0x7f07000f;
+        public static final int activitycustomdialogCheckBoxComment=0x7f070013;
+        public static final int activitycustomdialogCheckBoxCondition=0x7f070011;
+        public static final int activitycustomdialogCheckBoxInstruction=0x7f070010;
+        public static final int activitycustomdialogCheckBoxLabel=0x7f07000e;
+        public static final int activitycustomdialogCheckBoxOperands=0x7f070012;
+        public static final int activitymadebyTextView1=0x7f070016;
+        public static final int btnDisasm=0x7f07002e;
+        public static final int btnSaveDetails=0x7f07002b;
+        public static final int btnSaveDisasm=0x7f07002f;
+        public static final int btnShowdetail=0x7f07002a;
+        public static final int btn_left=0x7f070014;
+        public static final int btn_right=0x7f070015;
+        public static final int color_panel_new=0x7f070008;
+        public static final int color_panel_old=0x7f070007;
+        public static final int colorpickerview=0x7f070006;
+        public static final int colorpickerview__color_panel_new=0x7f070002;
+        public static final int colorpickerview__color_panel_old=0x7f070001;
+        public static final int colorpickerview__color_picker_view=0x7f070000;
+        public static final int colorpickerview__preference_preview_color_panel=0x7f070003;
+        public static final int detailText=0x7f07002c;
+        public static final int fileNameText=0x7f070021;
+        public static final int listview=0x7f070030;
+        public static final int path=0x7f070017;
+        public static final int rbARM=0x7f070024;
+        public static final int rbARM64=0x7f070025;
+        public static final int rbAuto=0x7f070023;
+        public static final int rbMIPS=0x7f070028;
+        public static final int rbThumb=0x7f070027;
+        public static final int rbx86=0x7f070026;
+        public static final int rows=0x7f070033;
+        public static final int rowtext=0x7f070031;
+        public static final int selFile=0x7f070022;
+        public static final int settings=0x7f070032;
+        public static final int tab0=0x7f070020;
+        public static final int tab1=0x7f070029;
+        public static final int tab2=0x7f07002d;
+        public static final int tabhost1=0x7f07001f;
+        public static final int tvAddr=0x7f070018;
+        public static final int tvBytes=0x7f07001a;
+        public static final int tvComment=0x7f07001e;
+        public static final int tvCond=0x7f07001c;
+        public static final int tvInst=0x7f07001b;
+        public static final int tvLabel=0x7f070019;
+        public static final int tvOperand=0x7f07001d;
+        public static final int txt_content=0x7f07000c;
+        public static final int txt_title=0x7f07000b;
     }
     public static final class layout {
-        public static final int activity_custom_dialog=0x7f030000;
-        public static final int activity_made_by=0x7f030001;
-        public static final int fragment_overview=0x7f030002;
-        public static final int listview_item=0x7f030003;
-        public static final int main=0x7f030004;
+        public static final int activity_colorpicker_dialog=0x7f030000;
+        public static final int activity_custom_dialog=0x7f030001;
+        public static final int activity_made_by=0x7f030002;
+        public static final int colorpickerview__dialog_color_picker=0x7f030003;
+        public static final int colorpickerview__preference_preview_layout=0x7f030004;
+        public static final int fileaselactivity=0x7f030005;
+        public static final int fragment_overview=0x7f030006;
+        public static final int listview_item=0x7f030007;
+        public static final int main=0x7f030008;
+        public static final int row=0x7f030009;
     }
     public static final class menu {
-        public static final int menu_main=0x7f070000;
+        public static final int menu_main=0x7f0a0000;
     }
     public static final class string {
-        public static final int app_info=0x7f060001;
-        public static final int app_name=0x7f060000;
-        public static final int dev_info=0x7f060002;
-        public static final int dev_info_detail=0x7f060003;
-        public static final int send_mail=0x7f060004;
-        public static final int send_mail_detail=0x7f060005;
+        public static final int app_info=0x7f080001;
+        public static final int app_name=0x7f080000;
+        public static final int dev_info=0x7f080002;
+        public static final int dev_info_detail=0x7f080003;
+        public static final int open_info=0x7f080006;
+        public static final int open_info_detail=0x7f080007;
+        public static final int send_mail=0x7f080004;
+        public static final int send_mail_detail=0x7f080005;
+    }
+    public static final class style {
+        public static final int colorpickerview__ColorPickerViewStyle=0x7f090000;
+        /**  Custom button style quite close to the one foind in material design. (borderless) 
+ Use default button material style in v21+ 
+         */
+        public static final int colorpickerview__PickerDialogButtonStyle=0x7f090001;
     }
     public static final class xml {
-        public static final int pref_settings=0x7f040000;
+        public static final int pref_opensource=0x7f040000;
+        public static final int pref_settings=0x7f040001;
     }
+    public static final class styleable {
+        /** Attributes that can be used with a colorpickerview__ColorPickerView.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #colorpickerview__ColorPickerView_alphaChannelText com.jourhyang.disasmarm:alphaChannelText}</code></td><td></td></tr>
+           <tr><td><code>{@link #colorpickerview__ColorPickerView_alphaChannelVisible com.jourhyang.disasmarm:alphaChannelVisible}</code></td><td></td></tr>
+           <tr><td><code>{@link #colorpickerview__ColorPickerView_borderColor com.jourhyang.disasmarm:borderColor}</code></td><td></td></tr>
+           <tr><td><code>{@link #colorpickerview__ColorPickerView_sliderColor com.jourhyang.disasmarm:sliderColor}</code></td><td></td></tr>
+           </table>
+           @see #colorpickerview__ColorPickerView_alphaChannelText
+           @see #colorpickerview__ColorPickerView_alphaChannelVisible
+           @see #colorpickerview__ColorPickerView_borderColor
+           @see #colorpickerview__ColorPickerView_sliderColor
+         */
+        public static final int[] colorpickerview__ColorPickerView = {
+            0x7f010000, 0x7f010001, 0x7f010002, 0x7f010003
+        };
+        /**
+          <p>This symbol is the offset where the {@link com.jourhyang.disasmarm.R.attr#alphaChannelText}
+          attribute's value can be found in the {@link #colorpickerview__ColorPickerView} array.
+
+
+          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
+          @attr name com.jourhyang.disasmarm:alphaChannelText
+        */
+        public static final int colorpickerview__ColorPickerView_alphaChannelText = 1;
+        /**
+          <p>This symbol is the offset where the {@link com.jourhyang.disasmarm.R.attr#alphaChannelVisible}
+          attribute's value can be found in the {@link #colorpickerview__ColorPickerView} array.
+
+
+          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a boolean value, either "<code>true</code>" or "<code>false</code>".
+          @attr name com.jourhyang.disasmarm:alphaChannelVisible
+        */
+        public static final int colorpickerview__ColorPickerView_alphaChannelVisible = 0;
+        /**
+          <p>This symbol is the offset where the {@link com.jourhyang.disasmarm.R.attr#borderColor}
+          attribute's value can be found in the {@link #colorpickerview__ColorPickerView} array.
+
+
+          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+          @attr name com.jourhyang.disasmarm:borderColor
+        */
+        public static final int colorpickerview__ColorPickerView_borderColor = 3;
+        /**
+          <p>This symbol is the offset where the {@link com.jourhyang.disasmarm.R.attr#sliderColor}
+          attribute's value can be found in the {@link #colorpickerview__ColorPickerView} array.
+
+
+          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+          @attr name com.jourhyang.disasmarm:sliderColor
+        */
+        public static final int colorpickerview__ColorPickerView_sliderColor = 2;
+    };
 }

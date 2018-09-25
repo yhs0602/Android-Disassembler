@@ -170,6 +170,32 @@ extern "C"
   				// Don't forget to release it 
   				env->ReleaseByteArrayElements(*jba, data, 0);
 
+				if(insn[0].detail!=NULL)
+				{
+					fid = env->GetFieldID( cls, "groups","[B");
+					if (fid == NULL) {
+						return; /* failed to find the field */
+					}
+					jobject job2=env->GetObjectField(thiz,fid);
+					jbyteArray *jba2 = reinterpret_cast<jbyteArray*>(&job2);
+					int sz2=env->GetArrayLength(*jba2);
+					// Get the elements (you probably have to fetch the length of the array as well  
+ 					jbyte * data2 = env->GetByteArrayElements(*jba2, NULL);
+					int min=insn[0].detail->groups_count > sz2 ? sz2 : insn[0].detail->groups_count;
+					for(int i=0;i<min;++i)
+					{
+						data2[i]=insn[0].detail->groups[i];
+					}
+  					// Don't forget to release it 
+  					env->ReleaseByteArrayElements(*jba2, data2, 0);
+					
+					fid = env->GetFieldID(cls, "groups_count","B");
+					if (fid == NULL) {
+						return; /* failed to find the field */
+					}
+					env->SetByteField(thiz, fid, insn[0].detail->groups_count);
+				
+				}
 				//env->SetIntField(env, obj, fid, insn[0].size);
 				
 				
@@ -252,8 +278,7 @@ extern "C"
 			mem.realloc=realloc;
 			cs_option(NULL,CS_OPT_MEM,(size_t )&mem);
 			if ((e=cs_open(CS_ARCH_ARM, CS_MODE_ARM, & handle) )!= CS_ERR_OK)
-			{
-				
+			{	
 				return /* env->NewStringUTF(errmsg(e));*/-1;
 			}
 			cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);

@@ -30,6 +30,64 @@ public class DisasmResult
 		this();
 		DisasmOne2(bytes,shift,address);
 	}
+
+	public boolean isBranch()
+	{
+		if(groups_count==0)
+			return false;
+			for(int i=0;i<groups_count;++i)
+			{
+				if(groups[i]==CS_GRP_JUMP)
+					return true;
+			}
+		return false;
+	}
+	public boolean isCall()
+	{
+		if(groups_count==0)
+			return false;
+		for(int i=0;i<groups_count;++i)
+		{
+			if(groups[i]==CS_GRP_CALL)
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean isRet()
+	{
+		if(groups_count==0)
+			return false;
+		for(int i=0;i<groups_count;++i)
+		{
+			if(groups[i]==CS_GRP_RET)
+				return true;
+		}
+		return false;
+	}
+	public boolean isIret()
+	{
+		if(groups_count==0)
+			return false;
+		for(int i=0;i<groups_count;++i)
+		{
+			if(groups[i]==CS_GRP_IRET)
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean isInt()
+	{
+		if(groups_count==0)
+			return false;
+		for(int i=0;i<groups_count;++i)
+		{
+			if(groups[i]==CS_GRP_INT)
+				return true;
+		}
+		return false;
+	}
 	public native void DisasmOne(byte[] bytes,long address);
 	public native void DisasmOne2(byte[] bytes,long shift,long Address);
 	
@@ -98,8 +156,25 @@ public class DisasmResult
 		byte regs_write_count;
 		//uint8_t groups[8]; // list of group this instruction belong to
 		//uint8_t groups_count; // number of groups this insn belongs to
+	//> Common instruction groups - to be consistent across all architectures.
 		byte[] groups;
 		byte groups_count;
+	/*typedef enum cs_group_type {
+	 CS_GRP_INVALID = 0,  // uninitialized/invalid group.
+	 CS_GRP_JUMP,    // all jump instructions (conditional+direct+indirect jumps)
+	 CS_GRP_CALL,    // all call instructions
+	 CS_GRP_RET,     // all return instructions
+	 CS_GRP_INT,     // all interrupt instructions (int+syscall)
+	 CS_GRP_IRET,    // all interrupt return instructions
+	 } cs_group_type;*/
+	public static final int CS_GRP_INVALID = 0,  // uninitialized/invalid group.
+	CS_GRP_JUMP=1,    // all jump instructions (conditional+direct+indirect jumps)
+	CS_GRP_CALL=2,    // all call instructions
+	CS_GRP_RET=3,     // all return instructions
+	CS_GRP_INT=4,     // all interrupt instructions (int+syscall)
+	CS_GRP_IRET=5;    // all interrupt return instructions
+	
+		
 		// Architecture-specific instruction info
 		//union {
 		/*	cs_x86 x86;	// X86 architecture, including 16-bit, 32-bit & 64-bit mode

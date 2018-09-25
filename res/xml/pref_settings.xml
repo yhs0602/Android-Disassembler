@@ -60,6 +60,32 @@
                 android:action="android.intent.action.SENDTO"
                 android:data="mailto:jourhyang123@naver.com" />
         </Preference>
+		<Preference
+            android:summary="@string/send_mail_detail"
+            android:title="@string/send_mail" >
+            <intent
+                android:action="android.intent.action.SENDTO"
+                android:data="mailto:1641832e@fire.fundersclub.com" />
+        </Preference>
+		<!--Preference
+            android:summary="@string/open_info"
+            android:title="@string/open_info_detail" >
+            <intent
+                android:targetClass="com.jourhyang.disasmarm.OpenSourceActivity"
+                android:targetPackage="com.jourhyang.disasmarm" />
+        </Preference-->
+		<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+			android:key="openscrn">
+			<Preference
+					android:summary="capstone disassembler engine"
+					android:title="Capstone"
+					android:key="capstone"
+				/>
+				<Preference
+					android:summary="Color picker"
+					android:title="com.github.danielnilsson9.colorpickerview"
+					android:key="colorpicker"/>
+		</PreferenceScreen>
     </PreferenceCategory>
 
 </PreferenceScreen>

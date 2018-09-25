@@ -6,4 +6,7 @@
 	<string name="dev_info_detail">Check out developer info!</string>
 	<string name="send_mail">Send Email</string>
 	<string name="send_mail_detail">Send an e-mail to the developer.</string>
+	<string name="open_info">Open source info</string>
+	<string name="open_info_detail">Open source license</string>
+	
 </resources>

@@ -19,6 +19,7 @@
         </activity>
 		<activity android:name=".SettingsActivity"/>
 		<activity android:name=".MadeByActivity"/>
-		
+		<activity android:name=".OpenSourceActivity"/>
+		<activity android:name=".FileSelectorActivity"/>
     </application>
 </manifest> 

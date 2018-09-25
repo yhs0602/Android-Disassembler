@@ -11,23 +11,29 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
+import android.preference.*;
 
-public class SettingsActivity extends PreferenceActivity {
-
+public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener
+{
+	@Override
+	public boolean onPreferenceClick(Preference p1)
+	{
+		// TODO: Implement this method
+		return true ;
+	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		addPreferencesFromResource(R.xml.pref_settings);
-
-	//	setOnPreferenceChange(findPreference("userName"));
+		PreferenceScreen scrn=(PreferenceScreen) findPreference("openScrn");
+		scrn.setOnPreferenceClickListener(this);
 		//setOnPreferenceChange(findPreference("userNameOpen"));
 	//	setOnPreferenceChange(findPreference("autoUpdate_ringtone"));
 	}
 
 	private void setOnPreferenceChange(Preference mPreference) {
 		mPreference.setOnPreferenceChangeListener(onPreferenceChangeListener);
-
 		onPreferenceChangeListener.onPreferenceChange(
 				mPreference,
 				PreferenceManager.getDefaultSharedPreferences(
@@ -45,7 +51,7 @@ public class SettingsActivity extends PreferenceActivity {
 				preference.setSummary(stringValue);
 
 			} else if (preference instanceof ListPreference) {
-				/**
+				/*
 				 * ListPreference�� ��� stringValue�� entryValues�̱� ������ �ٷ� Summary��
 				 * ������� ���Ѵ� ��� ����� entries���� String� �ε��Ͽ� ����Ѵ�
 				 */
@@ -58,8 +64,9 @@ public class SettingsActivity extends PreferenceActivity {
 								: null);
 
 			} else if (preference instanceof RingtonePreference) {
-				/**
-				 * RingtonePreference�� ��� stringValue��
+				
+				/*
+				RingtonePreference�� ��� stringValue��
 				 * content://media/internal/audio/media�� ����̱� ������
 				 * RingtoneManager� ����Ͽ� Summary�� ����Ѵ�
 				 * 
@@ -90,4 +97,12 @@ public class SettingsActivity extends PreferenceActivity {
 
 	};
 
+	@Override
+	protected void onPause()
+	{
+		// TODO: Implement this method
+		super.onPause();
+		//getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(onPreferenceChangeListener);
+	}
+	
 }

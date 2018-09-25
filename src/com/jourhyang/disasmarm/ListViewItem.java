@@ -38,6 +38,12 @@ public class ListViewItem
 		
 	}
 
+	public boolean isBranch()
+	{
+		// TODO: Implement this method
+		return disasmResult.isBranch();
+	}
+	
 	public void setAddress(String address)
 	{
 		this.address = address;

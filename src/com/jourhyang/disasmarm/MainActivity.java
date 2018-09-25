@@ -17,6 +17,7 @@ import java.util.*;
 
 public class MainActivity extends Activity implements Button.OnClickListener
 {
+	private static final int REQUEST_SELECT_FILE = 12345678;
 	String fpath;
 	byte[] filecontent=null;
 	ELFUtil elfUtil;
@@ -61,9 +62,9 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	private Notification.Builder mBuilder;
 
 	boolean instantMode;
-	
+
 	private long instantEntry;
-	
+
 	Thread workerThread;
 	@Override
 	public void onClick(View p1)
@@ -84,29 +85,33 @@ public class MainActivity extends Activity implements Button.OnClickListener
 				final List<String> ListItems = new ArrayList<>();
 				ListItems.add("Instant mode");
 				ListItems.add("Persist mode");
-			//	ListItems.add("");
+				//	ListItems.add("");
 				final CharSequence[] items =  ListItems.toArray(new String[ ListItems.size()]);
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				builder.setTitle("Disassemble as...");
 				builder.setItems(items, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int pos) {
+						public void onClick(DialogInterface dialog, int pos)
+						{
 							//String selectedText = items[pos].toString();
 							dialog.dismiss();
-							if(pos==0)
+							if (pos == 0)
 							{
-								instantMode=true;
+								instantMode = true;
 								final List<String> ListItems2 = new ArrayList<>();
 								ListItems2.add("Entry point");
 								ListItems2.add("Custom address");
 								AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 								builder.setTitle("Start from...");
 								builder.setItems(items, new DialogInterface.OnClickListener() {
-										public void onClick(DialogInterface dialog2, int pos) {						
-											if(pos==0)
+										public void onClick(DialogInterface dialog2, int pos)
+										{						
+											if (pos == 0)
 											{
-												instantEntry=elfUtil.getEntryPoint();
+												instantEntry = elfUtil.getEntryPoint();
 												DisassembleInstant();
-											}else if(pos==1){
+											}
+											else if (pos == 1)
+											{
 												final EditText edittext = new EditText(MainActivity.this);
 
 												AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -115,14 +120,16 @@ public class MainActivity extends Activity implements Button.OnClickListener
 												builder.setView(edittext);
 												builder.setPositiveButton("OK",
 													new DialogInterface.OnClickListener() {
-														public void onClick(DialogInterface dialog3, int which) {
-															instantEntry=parseAddress(edittext.getText().toString());
+														public void onClick(DialogInterface dialog3, int which)
+														{
+															instantEntry = parseAddress(edittext.getText().toString());
 															DisassembleInstant();
 														}			
 													});
 												builder.setNegativeButton("cancel",
 													new DialogInterface.OnClickListener() {
-														public void onClick(DialogInterface dialog4, int which) {
+														public void onClick(DialogInterface dialog4, int which)
+														{
 															dialog4.dismiss();
 														}
 													});
@@ -133,7 +140,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 									});
 								builder.show();
 							}
-							else if(pos==1)
+							else if (pos == 1)
 							{
 								DisassembleFile();
 							}
@@ -165,7 +172,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		// TODO: Implement this method
 		return Long.decode(toString);
 	}
-	
+
 	private void AlertSelFile()
 	{
 		Toast.makeText(this, "Please Select a file first.", 2).show();
@@ -187,7 +194,8 @@ public class MainActivity extends Activity implements Button.OnClickListener
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Export as...");
         builder.setItems(items, new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int pos) {
+				public void onClick(DialogInterface dialog, int pos)
+				{
 					//String selectedText = items[pos].toString();
 					dialog.dismiss();
 					final ProgressDialog dialog2= showProgressDialog("Saving...");
@@ -222,7 +230,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 				StringBuilder sb=new StringBuilder();
 				for (ListViewItem lvi:disasmResults)
 				{
-					switch(mode)
+					switch (mode)
 					{
 						case 0:
 							sb.append(lvi.address);
@@ -314,23 +322,23 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	{
 		etDetails.setText(elfUtil.toString());
 	}
-	
+
 	private void DisassembleInstant()
 	{
 		long startaddress=instantEntry;//file offset
 		long index=startaddress;
 		long addr=elfUtil.getCodeSectionVirtAddr();
-		long limit=startaddress+400;
-		for(;;)
+		long limit=startaddress + 400;
+		for (;;)
 		{
-			DisasmResult dar=new DisasmResult(filecontent, index,addr);
-			if(dar.size==0)
+			DisasmResult dar=new DisasmResult(filecontent, index, addr);
+			if (dar.size == 0)
 			{
-				dar.size=4;
-				dar.mnemonic="db";
-				dar.bytes=new byte[]{filecontent[(int)index],filecontent[(int)index+1],filecontent[(int)index+2],filecontent[(int)index+3]};
-				dar.op_str="";
-				Log.e(TAG,"Dar.size==0, breaking?");
+				dar.size = 4;
+				dar.mnemonic = "db";
+				dar.bytes = new byte[]{filecontent[(int)index],filecontent[(int)index + 1],filecontent[(int)index + 2],filecontent[(int)index + 3]};
+				dar.op_str = "";
+				Log.e(TAG, "Dar.size==0, breaking?");
 				//break;
 			}
 			final ListViewItem lvi=new ListViewItem(dar);
@@ -344,18 +352,18 @@ public class MainActivity extends Activity implements Button.OnClickListener
 				break;
 			}
 			Log.v(TAG, "dar.size is =" + dar.size);
-			Log.i(TAG,""+index +" out of "+(limit-startaddress));
+			Log.i(TAG, "" + index + " out of " + (limit - startaddress));
 			/*if((limit-start)%320==0){
-				mBuilder.setProgress((int)(limit-startaddress), (int)(index-start), false);
-				// Displays the progress bar for the first time.
-				mNotifyManager.notify(0, mBuilder.build());
-			}*/
+			 mBuilder.setProgress((int)(limit-startaddress), (int)(index-start), false);
+			 // Displays the progress bar for the first time.
+			 mNotifyManager.notify(0, mBuilder.build());
+			 }*/
 			index += dar.size;
-			addr+=dar.size;
-			
+			addr += dar.size;
+
 		}
 	}
-	
+
 	//TODO: DisassembleFile(long address, int amt);
 	private void DisassembleFile()
 	{
@@ -371,8 +379,8 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			.setContentText("Disassembling in progress")
 			.setSmallIcon(R.drawable.cell_shape)
 			.setOngoing(true)
-			.setProgress(100,0,false);
-		workerThread= new Thread(new Runnable(){
+			.setProgress(100, 0, false);
+		workerThread = new Thread(new Runnable(){
 				@Override
 				public void run()
 				{
@@ -384,18 +392,18 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					//	getFunctionNames();
 					for (;;)
 					{
-						DisasmResult dar=new DisasmResult(filecontent, index,addr);
-						if(dar.size==0)
+						DisasmResult dar=new DisasmResult(filecontent, index, addr);
+						if (dar.size == 0)
 						{
-							dar.size=4;
-							dar.mnemonic="db";
-							dar.bytes=new byte[]{filecontent[(int)index],filecontent[(int)index+1],filecontent[(int)index+2],filecontent[(int)index+3]};
-							dar.op_str="";
-							Log.e(TAG,"Dar.size==0, breaking?");
+							dar.size = 4;
+							dar.mnemonic = "db";
+							dar.bytes = new byte[]{filecontent[(int)index],filecontent[(int)index + 1],filecontent[(int)index + 2],filecontent[(int)index + 3]};
+							dar.op_str = "";
+							Log.e(TAG, "Dar.size==0, breaking?");
 							//break;
 						}
 						final ListViewItem lvi=new ListViewItem(dar);
-						
+
 						runOnUiThread(new Runnable(){
 								@Override
 								public void run()
@@ -412,9 +420,10 @@ public class MainActivity extends Activity implements Button.OnClickListener
 							break;
 						}
 						//Log.v(TAG, "dar.size is =" + dar.size);
-						Log.i(TAG,""+index +" out of "+(limit-start));
-						if((index-start)%320==0){
-							mBuilder.setProgress((int)(limit-start), (int)(index-start), false);
+						Log.i(TAG, "" + index + " out of " + (limit - start));
+						if ((index - start) % 320 == 0)
+						{
+							mBuilder.setProgress((int)(limit - start), (int)(index - start), false);
 							// Displays the progress bar for the first time.
 							mNotifyManager.notify(0, mBuilder.build());					
 							runOnUiThread(new Runnable(){
@@ -427,7 +436,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 								});
 						}
 						index += dar.size;
-						addr+=dar.size;			
+						addr += dar.size;			
 						//dialog.setProgress((int)((float)(index-start) * 100 / (float)(limit-start)));
 						//dialog.setTitle("Disassembling.."+(index-start)+" out of "+(limit-start));
 					}
@@ -438,11 +447,11 @@ public class MainActivity extends Activity implements Button.OnClickListener
 							public void run()
 							{
 								/*for (int i=0;i < len;++i)
-								{
-									final ListViewItem lvi=disasmResults.get(i);
-									adapter.addItem(lvi);
-									//AddOneRow(lvi);				
-								}*/
+								 {
+								 final ListViewItem lvi=disasmResults.get(i);
+								 adapter.addItem(lvi);
+								 //AddOneRow(lvi);				
+								 }*/
 								//adapter.notifyDataSetChanged();
 								listview.requestLayout();
 								tab2.invalidate();
@@ -453,7 +462,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					Log.v(TAG, "disassembly done");		
 				}
 			});
-			workerThread.start();
+		workerThread.start();
 	}
 	View.OnClickListener rowClkListener= new OnClickListener() {
 		public void onClick(View view)
@@ -547,19 +556,19 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		etDetails = (EditText) findViewById(R.id.detailText);
 		Button selectFile=(Button) findViewById(R.id.selFile);
 		selectFile.setOnClickListener(this);
-		btShowDetails=(Button) findViewById(R.id.btnShowdetail);
+		btShowDetails = (Button) findViewById(R.id.btnShowdetail);
 		btShowDetails.setOnClickListener(this);
-		btDisasm=(Button) findViewById(R.id.btnDisasm);
+		btDisasm = (Button) findViewById(R.id.btnDisasm);
 		btDisasm.setOnClickListener(this);
-		btSavDisasm=(Button) findViewById(R.id.btnSaveDisasm);
+		btSavDisasm = (Button) findViewById(R.id.btnSaveDisasm);
 		btSavDisasm.setOnClickListener(this);
-		btSavDit=(Button) findViewById(R.id.btnSaveDetails);
+		btSavDit = (Button) findViewById(R.id.btnSaveDetails);
 		btSavDit.setOnClickListener(this);
 
-		etFilename=(EditText) findViewById(R.id.fileNameText);
+		etFilename = (EditText) findViewById(R.id.fileNameText);
 		etFilename.setFocusable(false);
 		etFilename.setEnabled(false);
-		
+
 		tabHost = (TabHost) findViewById(R.id.tabhost1);
         tabHost.setup();
 		TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator("Overview");
@@ -575,11 +584,11 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			Toast.makeText(this, "Failed to initialize the native engine", 3).show();
 			android.os.Process.killProcess(android.os.Process.getGidForName(null));
 		}
-	//tlDisasmTable = (TableLayout) findViewById(R.id.table_main);
-	//	TableRow tbrow0 = new TableRow(MainActivity.this);
-	//	CreateDisasmTopRow(tbrow0);		
-	//	tlDisasmTable.addView(tbrow0);
-		adapter=new ListViewAdapter();
+		//tlDisasmTable = (TableLayout) findViewById(R.id.table_main);
+		//	TableRow tbrow0 = new TableRow(MainActivity.this);
+		//	CreateDisasmTopRow(tbrow0);		
+		//	tlDisasmTable.addView(tbrow0);
+		adapter = new ListViewAdapter();
 		listview = (ListView) findViewById(R.id.listview);
         listview.setAdapter(adapter);
 		listview.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -587,18 +596,22 @@ public class MainActivity extends Activity implements Button.OnClickListener
 				public void onItemClick(AdapterView<?> parent, View p2, int position, long id)
 				{
 					ListViewItem lvi=(ListViewItem) parent.getItemAtPosition(position);
-					
+					if (lvi.isBranch())
+					{
+
+					}
 					// TODO: Implement this method
 					return;
 				}			
-		});
-	//	ViewGroup.LayoutParams lp= listview.getLayoutParams();
+			});
+		//	ViewGroup.LayoutParams lp= listview.getLayoutParams();
 		//listview.setMinimumHeight(getScreenHeight());
 		//listview.setLayoutParams(lp);
-	//	elfUtil=null;
-	//	filecontent=null;	
+		//	elfUtil=null;
+		//	filecontent=null;	
     }
-	public static int getScreenHeight() {
+	public static int getScreenHeight()
+	{
 		return Resources.getSystem().getDisplayMetrics().heightPixels;
 	}
 	private void CreateDisasmTopRow(TableRow tbrow0)
@@ -630,7 +643,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		TextView tv6 = new TextView(MainActivity.this);
 		tv6.setText(" Comment ");
 		tv6.setTextColor(Color.BLACK);
-		AdjustShow(tv0,tv1,tv2,tv3,tv4,tv5,tv6);
+		AdjustShow(tv0, tv1, tv2, tv3, tv4, tv5, tv6);
 		tbrow0.addView(tv6);
 	}
 	public void RefreshTable()
@@ -645,7 +658,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		}
 		//tlDisasmTable.refreshDrawableState();
 	}
-	
+
 	@Override
 	protected void onDestroy()
 	{
@@ -658,16 +671,16 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		catch (Exception e)
 		{}
 		Finalize();
-		if(mNotifyManager!=null)
+		if (mNotifyManager != null)
 		{
 			mNotifyManager.cancel(0);
 			mNotifyManager.cancelAll();
 		}
 		//maybe service needed.
 		/*if(workerThread!=null)
-		{
-			workerThread.stop();
-		}*/
+		 {
+		 workerThread.stop();
+		 }*/
 	}
 	@Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -737,59 +750,97 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		}
 	};
 
-	private static final int FILE_SELECT_CODE = 0;
+	//private static final int FILE_SELECT_CODE = 0;
 
 	private void showFileChooser()
 	{
-		Intent intent = new Intent();
-		intent.setAction(Intent.ACTION_GET_CONTENT);
-		//아래와 같이 할 경우 mime-type에 해당하는 파일만 선택 가능해집니다.
-		intent.setType("application/*");
-		intent.addCategory(Intent.CATEGORY_OPENABLE);
-		try
-		{
-			startActivityForResult(
-                Intent.createChooser(intent, "Select a File"),
-                FILE_SELECT_CODE);
-		}
-		catch (android.content.ActivityNotFoundException ex)
-		{
-			// Potentially direct the user to the Market with a Dialog
-			Toast.makeText(this, "Please install a File Manager.",
-						   Toast.LENGTH_SHORT).show();
-		}
+		Intent i=new Intent(this, FileSelectorActivity.class);
+		startActivityForResult(i, REQUEST_SELECT_FILE);		
+		/*
+		 Intent intent = new Intent();
+		 intent.setAction(Intent.ACTION_GET_CONTENT);
+		 //아래와 같이 할 경우 mime-type에 해당하는 파일만 선택 가능해집니다.
+		 intent.setType("application/*");
+		 intent.addCategory(Intent.CATEGORY_OPENABLE);
+		 try
+		 {
+		 startActivityForResult(
+		 Intent.createChooser(intent, "Select a File"),
+		 FILE_SELECT_CODE);
+		 }
+		 catch (android.content.ActivityNotFoundException ex)
+		 {
+		 // Potentially direct the user to the Market with a Dialog
+		 Toast.makeText(this, "Please install a File Manager.",
+		 Toast.LENGTH_SHORT).show();
+		 }*/
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		switch (requestCode)
 		{
-			case FILE_SELECT_CODE:
-				if (resultCode == RESULT_OK)
+				/*case FILE_SELECT_CODE:
+				 if (resultCode == RESULT_OK)
+				 {
+				 // Get the Uri of the selected file
+				 Uri uri = data.getData();
+				 //File file=new File(uri.);
+				 //URI -> real file path
+				 try
+				 {
+				 String file_path;
+				 if (new File(uri.getPath()).exists() == false)
+				 {
+				 file_path = RealPathUtils.getRealPathFromURI(this, uri);
+				 }
+				 else
+				 {
+				 file_path = uri.getPath();
+				 }	
+				 etFilename.setText(file_path);
+				 fpath = file_path; //uri.getPath();
+				 File file=new File(file_path);
+				 long fsize=file.length();
+				 int index=0;
+				 filecontent = new byte[(int)fsize];
+				 DataInputStream in = new DataInputStream(new FileInputStream(fpath));
+				 int len,counter=0;
+				 byte[] b=new byte[1024];
+				 while ((len = in.read(b)) > 0)
+				 {
+				 for (int i = 0; i < len; i++)
+				 { // byte[] 버퍼 내용 출력
+				 //System.out.format("%02X ", b[i]);
+				 filecontent[index] = b[i];
+				 index++;
+				 counter++;
+				 }
+				 }
+				 elfUtil = new ELFUtil(file, filecontent);
+				 Toast.makeText(this, "success size=" + new Integer(index).toString(), 1).show();
+				 }
+				 catch (Exception e)
+				 {
+				 Toast.makeText(this, Log.getStackTraceString(e), 30).show();
+				 Log.e(TAG, "Nooo", e);
+				 } 	
+				 }
+				 break;
+				 */
+			case REQUEST_SELECT_FILE:
+				if (resultCode == Activity.RESULT_OK)
 				{
-					// Get the Uri of the selected file
-					Uri uri = data.getData();
-					//File file=new File(uri.);
-					//URI -> real file path
 					try
 					{
-						String file_path;
-						if (new File(uri.getPath()).exists() == false)
-						{
-							file_path = RealPathUtils.getRealPathFromURI(this, uri);
-						}
-						else
-						{
-							file_path = uri.getPath();
-						}	
-						etFilename.setText(file_path);
-						fpath = file_path; //uri.getPath();
-						File file=new File(fpath);
+						String path=data.getStringExtra("com.jourhyang.disasmarm.path");
+						File file=new File(path);
+						etFilename.setText(file.getAbsolutePath());
 						long fsize=file.length();
 						int index=0;
 						filecontent = new byte[(int)fsize];
-						DataInputStream in = new DataInputStream(new FileInputStream(fpath));
+						DataInputStream in = new DataInputStream(new FileInputStream(file));
 						int len,counter=0;
 						byte[] b=new byte[1024];
 						while ((len = in.read(b)) > 0)
@@ -805,17 +856,16 @@ public class MainActivity extends Activity implements Button.OnClickListener
 						elfUtil = new ELFUtil(file, filecontent);
 						Toast.makeText(this, "success size=" + new Integer(index).toString(), 1).show();
 					}
-					catch (Exception e)
+					catch (IOException e)
 					{
-						Toast.makeText(this, Log.getStackTraceString(e), 30).show();
-						Log.e(TAG, "Nooo", e);
-					} 	
+						Log.e(TAG,"",e);
+						Toast.makeText(this,Log.getStackTraceString(e),30).show();
+					}
 				}
-				break;
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-
+	
 	private String getRealPathFromURI(Uri uri)
 	{
 		String filePath = "";
@@ -845,14 +895,14 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	}
 
 	/*ublic String Disassemble(EditText result)
-	{
-		//String s=disassemble(filecontent, elfUtil.getEntryPoint());
-		String s;
-		byte [] b=Arrays.copyOfRange(filecontent, (int)elfUtil.getEntryPoint(), filecontent.length - 1);
-		s = new DisasmResult(b, 0).toString();
-		return s;
-	}
-	*/
+	 {
+	 //String s=disassemble(filecontent, elfUtil.getEntryPoint());
+	 String s;
+	 byte [] b=Arrays.copyOfRange(filecontent, (int)elfUtil.getEntryPoint(), filecontent.length - 1);
+	 s = new DisasmResult(b, 0).toString();
+	 return s;
+	 }
+	 */
     private ProgressDialog showProgressDialog(String s)
 	{
         ProgressDialog dialog = new ProgressDialog(this);
@@ -963,7 +1013,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
     static {
         System.loadLibrary("hello-jni");
     }
-	
+
 	/*	OnCreate()
 	 vp = (ViewPager)findViewById(R.id.pager);
 	 Button btn_first = (Button)findViewById(R.id.btn_first);
@@ -1027,13 +1077,13 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	 // TODO : use item data.
 	 }
 	 }) ;*/
-	 /*
+	/*
 	 PrintStackTrace to string
 	 ByteArrayOutputStream out = new ByteArrayOutputStream();
 	 PrintStream pinrtStream = new PrintStream(out);
 	 e.printStackTrace(pinrtStream);
 	 String stackTraceString = out.toString(); // 찍은 값을 가져오고.
-	 
+
 	 */
 	/*
 	 public void onWindowFocusChanged(boolean hasFocus) {
