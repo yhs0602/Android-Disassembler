@@ -74,8 +74,9 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		switch (btn.getId())
 		{
 			case R.id.selFile:
-				showFileChooser();
-				break;
+				throw new RuntimeException();
+				//showFileChooser();
+				//break;
 			case R.id.btnDisasm:
 				if (filecontent == null)
 				{
@@ -547,7 +548,32 @@ public class MainActivity extends Activity implements Button.OnClickListener
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+		final Thread.UncaughtExceptionHandler ori=Thread.getDefaultUncaughtExceptionHandler();
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
+				@Override
+				public void uncaughtException(Thread p1, Throwable p2)
+				{
+					// TODO: Implement this method
+					final Intent emailIntent = new Intent( android.content.Intent.ACTION_SEND);
 
+					emailIntent.setType("plain/text");
+
+					emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
+										 new String[] { "1641832e@fire.fundersclub.com" });
+
+					emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+										 "Crash report");
+
+					emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+										 Log.getStackTraceString(p2));
+
+					startActivity(Intent.createChooser(
+									  emailIntent, "Send mail..."));
+					ori.uncaughtException(p1,p2);
+					return ;
+				}
+			});
+		
         /* Create a TextView and set its content.
          * the text is retrieved by calling a native
          * function.
