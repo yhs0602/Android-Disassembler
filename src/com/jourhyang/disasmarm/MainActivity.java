@@ -69,14 +69,12 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	@Override
 	public void onClick(View p1)
 	{
-		// TODO: Implement this method
 		Button btn=(Button)p1;
 		switch (btn.getId())
 		{
 			case R.id.selFile:
-				throw new RuntimeException();
-				//showFileChooser();
-				//break;
+				showFileChooser();
+				break;
 			case R.id.btnDisasm:
 				if (filecontent == null)
 				{
@@ -567,8 +565,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
 										 Log.getStackTraceString(p2));
 
-					startActivity(Intent.createChooser(
-									  emailIntent, "Send mail..."));
+					startActivity(Intent.createChooser(emailIntent, "Send crash report as an issue by email"));
 					ori.uncaughtException(p1,p2);
 					return ;
 				}
