@@ -8,9 +8,14 @@
 	<string name="send_mail_detail">Send an e-mail to the developer.</string>
 	<string name="open_info">Open source info</string>
 	<string name="open_info_detail">Open source license</string>
-	    <string name="app_name">Storage Chooser</string>
+	<string name="send_feature_request">Send Feature request</string>
+	<string name="send_feature_request_detail">Send a feature request to the developer.</string>
+	
+	
     <string name="choose_storage">Choose Storage</string>
-    <string name="choose_external_storage">Choose External Storage</string>
+    
+	
+	<string name="choose_external_storage">Choose External Storage</string>
 
     <string name="external_storage">External storage</string>
     <!-- Usb storage descripton -->

@@ -34,3 +34,6 @@ It can be loaded again to analyze again(though reloading is not implemented yet 
 
 # Build
 I use [AIDE](https://play.google.com/store/apps/details?id=com.aide.ui) to build the project.
+
+# Open Source
+ - This app used [Capstone](https://github.com/aquynh/capstone), and [Colorpickerview](https://github.com/danielnilsson9/color-picker-view).

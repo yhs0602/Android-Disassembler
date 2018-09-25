@@ -61,8 +61,8 @@
                 android:data="mailto:jourhyang123@naver.com" />
         </Preference>
 		<Preference
-            android:summary="@string/send_mail_detail"
-            android:title="@string/send_mail" >
+            android:summary="@string/send_feature_request_detail"
+            android:title="@string/send_feature_request" >
             <intent
                 android:action="android.intent.action.SENDTO"
                 android:data="mailto:1641832e@fire.fundersclub.com" />
@@ -75,7 +75,9 @@
                 android:targetPackage="com.jourhyang.disasmarm" />
         </Preference-->
 		<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-			android:key="openscrn">
+			android:key="openscrn"
+			android:title="Open source LICENSE"
+			android:summary="Check open source license">
 			<Preference
 					android:summary="capstone disassembler engine"
 					android:title="Capstone"
@@ -87,5 +89,4 @@
 					android:key="colorpicker"/>
 		</PreferenceScreen>
     </PreferenceCategory>
-
 </PreferenceScreen>

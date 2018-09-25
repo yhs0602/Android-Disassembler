@@ -2576,23 +2576,25 @@ containing a value of this type.
         public static final int abc_toolbar_collapse_description=0x7f060010;
         public static final int app_info=0x7f060020;
         public static final int app_name=0x7f06001f;
-        public static final int choose_external_storage=0x7f060028;
-        public static final int choose_storage=0x7f060027;
+        public static final int choose_external_storage=0x7f06002a;
+        public static final int choose_storage=0x7f060029;
         public static final int dev_info=0x7f060021;
         public static final int dev_info_detail=0x7f060022;
-        public static final int external_storage=0x7f060029;
+        public static final int external_storage=0x7f06002b;
         public static final int open_info=0x7f060025;
         public static final int open_info_detail=0x7f060026;
         public static final int search_menu_title=0x7f060011;
+        public static final int send_feature_request=0x7f060027;
+        public static final int send_feature_request_detail=0x7f060028;
         public static final int send_mail=0x7f060023;
         public static final int send_mail_detail=0x7f060024;
         public static final int status_bar_notification_info_overflow=0x7f06001e;
-        public static final int text_freespace=0x7f06002b;
-        public static final int toast_not_readable=0x7f06002d;
-        public static final int toast_threshold_breached=0x7f06002c;
+        public static final int text_freespace=0x7f06002d;
+        public static final int toast_not_readable=0x7f06002f;
+        public static final int toast_threshold_breached=0x7f06002e;
         /**  Usb storage descripton 
          */
-        public static final int usb_storage=0x7f06002a;
+        public static final int usb_storage=0x7f06002c;
     }
     public static final class style {
         public static final int AlertDialog_AppCompat=0x7f080084;
