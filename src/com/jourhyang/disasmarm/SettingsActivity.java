@@ -24,9 +24,8 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		addPreferencesFromResource(R.xml.pref_settings);
-		PreferenceScreen scrn=(PreferenceScreen) findPreference("openScrn");
+		PreferenceScreen scrn=(PreferenceScreen) findPreference("openscrn");
 		scrn.setOnPreferenceClickListener(this);
 		//setOnPreferenceChange(findPreference("userNameOpen"));
 	//	setOnPreferenceChange(findPreference("autoUpdate_ringtone"));
