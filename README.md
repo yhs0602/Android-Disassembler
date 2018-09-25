@@ -19,15 +19,15 @@ Disassemble .so (NDK, JNI) files on Android. Capstone-based disassembler applica
 1. To export the disassembly, press `Export` button and choose the option.
 
 # Analysis mode
--Instant mode
+ - Instant mode
 Fast and lightweight, but buggy.
--Persist mode
+ - Persist mode
 A bit lags, but OK
 
 # Export mode
--Classic
+ - Classic
 Pretty!
--Simple
+ - Simple
 Can be directly pasted as code!
--Json
+ - Json
 It can be loaded again to analyze again(though reloading is not implemented yet - Sorry:( )
