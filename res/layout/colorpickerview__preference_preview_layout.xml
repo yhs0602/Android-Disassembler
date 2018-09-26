@@ -1,0 +1,5 @@
+<com.github.danielnilsson9.colorpickerview.view.ColorPanelView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@id/colorpickerview__preference_preview_color_panel"
+	android:layout_width="25dp"    
+	android:layout_height="25dp"
+/>

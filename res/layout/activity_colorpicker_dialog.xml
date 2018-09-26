@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:gravity="center_horizontal">
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:text="Large Text"
+		android:id="@+id/activitycolorpickerdialogTextView1"/>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		android:text="Medium Text"
+		android:id="@+id/activitycolorpickerdialogTextView2"/>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		android:padding="16dp">
+
+		<com.github.danielnilsson9.colorpickerview.view.ColorPickerView
+			android:id="@+id/colorpickerview"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"/>
+
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="40dp"
+			android:layout_alignLeft="@id/colorpickerview"
+			android:layout_alignRight="@id/colorpickerview"
+			android:layout_below="@id/colorpickerview"
+			android:layout_marginTop="16dp"
+			android:orientation="horizontal">
+
+			<com.github.danielnilsson9.colorpickerview.view.ColorPanelView
+				android:id="@+id/color_panel_old"
+				android:layout_width="0px"
+				android:layout_height="match_parent"
+				android:layout_weight="0.5"/>
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="match_parent"
+				android:layout_marginLeft="10dp"
+				android:layout_marginRight="10dp"
+				android:gravity="center"
+				android:text="→"
+				android:textColor="#646464"
+				android:textSize="20sp"/>
+
+			<com.github.danielnilsson9.colorpickerview.view.ColorPanelView
+				android:id="@+id/color_panel_new"
+				android:layout_width="0px"
+				android:layout_height="match_parent"
+				android:layout_weight="0.5"/>
+
+		</LinearLayout>
+
+	</RelativeLayout>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:orientation="horizontal"
+		android:gravity="right">
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="Button"
+			android:id="@+id/activitycolorpickerdialogButtonLeft"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="OK"
+			android:id="@+id/activitycolorpickerdialogButtonRight"/>
+
+	</LinearLayout>
+
+</LinearLayout>
+

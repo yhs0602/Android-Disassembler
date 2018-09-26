@@ -32,6 +32,21 @@ Can be directly pasted as code!
  - Json
 It can be loaded again to analyze again(though reloading is not implemented yet - Sorry:( )
 
+# Permissions
+
+Before using the app you need some steps:
+**Granting permissions**
+
+![image](images/Screenshot_20180926-090152.png)
+![image](images/Screenshot_20180926-090201.png)
+
+# ScreenShots
+![image](images/Screenshot_20180926-090313.png?rw)
+![image](images/Screenshot_20180926-090316.png)
+![image](images/Screenshot_20180926-090327.png)
+![image](images/Screenshot_20180926-090417.png)
+
+
 # Build
 I use [AIDE](https://play.google.com/store/apps/details?id=com.aide.ui) to build the project.
 

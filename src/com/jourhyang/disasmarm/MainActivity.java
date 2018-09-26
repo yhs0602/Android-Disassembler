@@ -1,13 +1,16 @@
 package com.jourhyang.disasmarm;
 
+import android.*;
 import android.app.*;
 import android.content.*;
+import android.content.pm.*;
 import android.content.res.*;
 import android.database.*;
 import android.graphics.*;
 import android.net.*;
 import android.os.*;
 import android.provider.*;
+import android.support.v4.content.*;
 import android.util.*;
 import android.view.*;
 import android.view.View.*;
@@ -540,7 +543,29 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		t6v.setVisibility(isShowOperands() ? View.VISIBLE: View.GONE);
 		t7v.setVisibility(isShowComment() ? View.VISIBLE: View.GONE);
 	}
+	
+	int REQUEST_WRITE_STORAGE_REQUEST_CODE=1;
+	private void requestAppPermissions() {
+		if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+			return;
+		}
 
+		if (hasReadPermissions() && hasWritePermissions()) {
+			return;
+		}
+		requestPermissions(new String[] {
+											  Manifest.permission.READ_EXTERNAL_STORAGE,
+											  Manifest.permission.WRITE_EXTERNAL_STORAGE
+										  }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
+	}
+
+	private boolean hasReadPermissions() {
+		return checkSelfPermission( Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+	}
+
+	private boolean hasWritePermissions() {
+		return checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+	}
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -627,6 +652,8 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					return;
 				}			
 			});
+			
+		requestAppPermissions();
 		//	ViewGroup.LayoutParams lp= listview.getLayoutParams();
 		//listview.setMinimumHeight(getScreenHeight());
 		//listview.setLayoutParams(lp);
