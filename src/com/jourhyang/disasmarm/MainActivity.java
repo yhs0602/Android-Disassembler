@@ -17,7 +17,6 @@ import android.view.View.*;
 import android.widget.*;
 import java.io.*;
 import java.util.*;
-
 public class MainActivity extends Activity implements Button.OnClickListener
 {
 	private static final int REQUEST_SELECT_FILE = 12345678;
@@ -544,7 +543,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		t7v.setVisibility(isShowComment() ? View.VISIBLE: View.GONE);
 	}
 	
-	int REQUEST_WRITE_STORAGE_REQUEST_CODE=1;
+	final int REQUEST_WRITE_STORAGE_REQUEST_CODE=1;
 	private void requestAppPermissions() {
 		if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			return;
@@ -825,7 +824,30 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		 Toast.LENGTH_SHORT).show();
 		 }*/
 	}
+@Override
+public void onRequestPermissionsResult(int requestCode,
+        String permissions[], int[] grantResults) {
+    switch (requestCode) {
+        case REQUEST_WRITE_STORAGE_REQUEST_CODE: {
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
+                // permission was granted, yay! Do the
+                // contacts-related task you need to do.
+
+            } else {
+
+                // permission denied, boo! Disable the
+                // functionality that depends on this permission.
+            }
+            return;
+        }
+
+        // other 'case' lines to check for other
+        // permissions this app might request
+    }
+}
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{

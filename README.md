@@ -50,5 +50,11 @@ Before using the app you need some steps:
 # Build
 I use [AIDE](https://play.google.com/store/apps/details?id=com.aide.ui) to build the project.
 
+As AIDE doesn't seem to support gradle&JNI mixed project you need to downliad some library projects.
+
+https://github.com/dandar3/android-support-v7-appcompat
+
+And [modified storagechooser-2.](https://github.com/KYHSGeekCode/storage-chooser-2-android-buildable-libtary-project)
+
 # Open Source
  - This app used [Capstone](https://github.com/aquynh/capstone), and [Colorpickerview](https://github.com/danielnilsson9/color-picker-view).
