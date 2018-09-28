@@ -8,6 +8,7 @@ import android.view.*;
 import android.widget.*;
 import java.io.*;
 import java.util.*;
+import android.util.*;
 
 public class FileSelectorActivity extends ListActivity {
 	private List<String> item = (List<String>) null;
@@ -17,10 +18,10 @@ public class FileSelectorActivity extends ListActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState);;
 		setContentView(R.layout.fileaselactivity);
 		mPath = (TextView) findViewById(R.id.path);
-		getDir(root);
+		getDir("/sdcard/");
 	}
 
 	private void getDir(String dirPath) {
@@ -35,7 +36,13 @@ public class FileSelectorActivity extends ListActivity {
 			item.add("../");
 			path.add(f.getParent());
 		}
-
+		if(files==null)
+		{
+			Log.e("Disassembler dirsel","listfile null");
+			ArrayAdapter<String> fileList = new ArrayAdapter<String>(this, R.layout.row, item);
+			setListAdapter(fileList);
+			return;
+		}
 		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
 			path.add(file.getPath());

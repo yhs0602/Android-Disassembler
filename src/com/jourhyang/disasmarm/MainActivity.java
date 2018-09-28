@@ -25,7 +25,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	ELFUtil elfUtil;
 	SharedPreferences setting;
 	SharedPreferences.Editor editor;
-	private String TAG="Disassembler";
+	private static final String TAG="Disassembler";
 
 	boolean showAddress=true;
 	boolean showLabel=true;
@@ -391,6 +391,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					long addr=elfUtil.getCodeSectionVirtAddr();
 					Log.v(TAG, "code section point :" + Long.toHexString(index));
 					//	getFunctionNames();
+					HashMap xrefComments=new HashMap();
 					for (;;)
 					{
 						DisasmResult dar=new DisasmResult(filecontent, index, addr);
@@ -404,7 +405,10 @@ public class MainActivity extends Activity implements Button.OnClickListener
 							//break;
 						}
 						final ListViewItem lvi=new ListViewItem(dar);
-
+						if(lvi.isBranch())
+						{
+							xrefComments.put(lvi.getTargetAddress(),lvi.address);
+						}
 						runOnUiThread(new Runnable(){
 								@Override
 								public void run()
@@ -443,6 +447,9 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					}
 					mNotifyManager.cancel(0);
 					final int len=disasmResults.size();
+					//add xrefs
+					
+					
 					runOnUiThread(new Runnable(){
 							@Override
 							public void run()
@@ -543,27 +550,27 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		t7v.setVisibility(isShowComment() ? View.VISIBLE: View.GONE);
 	}
 	
-	final int REQUEST_WRITE_STORAGE_REQUEST_CODE=1;
-	private void requestAppPermissions() {
+	public static final int REQUEST_WRITE_STORAGE_REQUEST_CODE=1;
+	public static void requestAppPermissions(Activity a) {
 		if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			return;
 		}
-
-		if (hasReadPermissions() && hasWritePermissions()) {
+		if (hasReadPermissions(a) && hasWritePermissions(a)) {
+			Log.i(TAG,"Has permissions");
 			return;
 		}
-		requestPermissions(new String[] {
+		a.requestPermissions(new String[] {
 											  Manifest.permission.READ_EXTERNAL_STORAGE,
 											  Manifest.permission.WRITE_EXTERNAL_STORAGE
 										  }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
 	}
 
-	private boolean hasReadPermissions() {
-		return checkSelfPermission( Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+	public static boolean hasReadPermissions(Context c) {
+		return c.checkSelfPermission( Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
 	}
 
-	private boolean hasWritePermissions() {
-		return checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+	public static boolean hasWritePermissions(Context c) {
+		return c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
 	}
     /** Called when the activity is first created. */
     @Override
@@ -645,14 +652,14 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					ListViewItem lvi=(ListViewItem) parent.getItemAtPosition(position);
 					if (lvi.isBranch())
 					{
-
+						
 					}
 					// TODO: Implement this method
 					return;
 				}			
 			});
 			
-		requestAppPermissions();
+		requestAppPermissions(this);
 		//	ViewGroup.LayoutParams lp= listview.getLayoutParams();
 		//listview.setMinimumHeight(getScreenHeight());
 		//listview.setLayoutParams(lp);

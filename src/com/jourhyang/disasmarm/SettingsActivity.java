@@ -62,6 +62,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 		}
 		//setOnPreferenceChange(findPreference("userNameOpen"));
 		//	setOnPreferenceChange(findPreference("autoUpdate_ringtone"));
+		MainActivity.requestAppPermissions(this);
 	}
 
 	private void setOnPreferenceChange(Preference mPreference) {

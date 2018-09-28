@@ -114,6 +114,10 @@ public class ListViewItem
 		return condition;
 	}
 
+	public void AddComment(String comment)
+	{
+		this.comments+=comment;
+	}
 	@Override
 	public String toString()
 	{
