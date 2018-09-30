@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Disassembler</string>
+	<string name="app_info">어플 정보</string>
+	<string name="dev_info">개발자 정보</string>
+	<string name="dev_info_detail">개발자 정보를 확인합니다</string>
+	<string name="send_mail">메일 보내기</string>
+	<string name="send_mail_detail">개발자에게 메일을 보냅니다</string>
+</resources>

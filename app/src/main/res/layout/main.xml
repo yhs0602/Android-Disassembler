@@ -1,11 +1,206 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center">
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:orientation="vertical"
+	android:layout_height="match_parent"
+	android:gravity="center_horizontal|fill_horizontal">
 
-    <TextView
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+	<TabHost
+		android:id="@+id/tabhost1"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical">
+
+			<TabWidget
+				android:id="@android:id/tabs"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"/>
+
+			<FrameLayout
+				android:id="@android:id/tabcontent"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:foregroundGravity="center_horizontal">
+
+				<LinearLayout
+					android:id="@+id/tab0"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:orientation="vertical">
+
+					<TextView
+						android:layout_height="wrap_content"
+						android:text="Disassembler"
+						android:textAppearance="?android:attr/textAppearanceLarge"
+						android:layout_width="wrap_content"
+						android:layout_span="5"
+						android:textSize="32sp"/>
+
+					<TextView
+						android:layout_height="wrap_content"
+						android:text="Select any file to disassemble"
+						android:textAppearance="?android:attr/textAppearanceMedium"
+						android:layout_width="wrap_content"
+						android:layout_span="5"/>
+
+					<LinearLayout
+						android:orientation="horizontal"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content">
+
+						<EditText
+							android:layout_height="match_parent"
+							android:ems="10"
+							android:layout_width="wrap_content"
+							android:layout_span="2"
+							android:id="@+id/fileNameText"
+							android:inputType="text"/>
+
+						<Button
+							android:layout_height="wrap_content"
+							android:text="Select file"
+							android:layout_width="wrap_content"
+							android:id="@+id/selFile"
+							android:layout_span="1"
+							android:layout_weight="1.0"/>
+
+					</LinearLayout>
+						<!--SO-->
+					<com.kyhsgeekcode.disassembler.RadioGridGroup
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_span="4">
+
+						<TableRow>
+
+							<RadioButton
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:id="@+id/rbAuto"
+								android:text="Auto detect"/>
+
+							<RadioButton
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:id="@+id/rbARM"
+								android:text="ARM"/>
+
+							<RadioButton
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:id="@+id/rbARM64"
+								android:text="ARM64"/>
+
+						</TableRow>
+
+						<TableRow>
+
+							<RadioButton
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:id="@+id/rbx86"
+								android:text="Intel x86"/>
+
+							<RadioButton
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:id="@+id/rbThumb"
+								android:text="ARM thumb"/>
+
+							<RadioButton
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:id="@+id/rbMIPS"
+								android:text="MIPS"/>
+
+						</TableRow>
+
+					</com.kyhsgeekcode.disassembler.RadioGridGroup>
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:id="@+id/tab1"
+					android:orientation="vertical"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:gravity="center_horizontal"
+					android:layout_gravity="center_horizontal">
+
+					<LinearLayout
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:orientation="horizontal">
+
+						<Button
+							android:layout_height="wrap_content"
+							android:text="Show details"
+							android:layout_width="wrap_content"
+							android:id="@+id/btnShowdetail"/>
+
+						<Button
+							android:layout_height="wrap_content"
+							android:text="Save Details to file"
+							android:layout_width="wrap_content"
+							android:id="@+id/btnSaveDetails"
+							android:layout_span="2"/>
+
+					</LinearLayout>
+
+					<EditText
+						android:layout_height="wrap_content"
+						android:inputType="textMultiLine"
+						android:ems="10"
+						android:layout_width="match_parent"
+						android:layout_span="4"
+						android:id="@+id/detailText"/>
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:id="@+id/tab2"
+					android:orientation="vertical"
+					android:gravity="center_horizontal"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_gravity="center_horizontal">
+
+					<LinearLayout
+						android:layout_height="wrap_content"
+						android:layout_width="match_parent"
+						android:orientation="horizontal">
+
+						<Button
+							android:layout_height="wrap_content"
+							android:text="Disassemble"
+							android:layout_width="wrap_content"
+							android:id="@+id/btnDisasm"/>
+
+						<Button
+							android:layout_height="wrap_content"
+							android:text="Save to file"
+							android:layout_width="wrap_content"
+							android:id="@+id/btnSaveDisasm"/>
+
+					</LinearLayout>
+
+					<ListView
+						android:layout_height="match_parent"
+						android:layout_width="match_parent"
+						android:id="@+id/listview"/>
+
+				</LinearLayout>
+
+			</FrameLayout>
+
+		</LinearLayout>
+
+	</TabHost>
 
 </LinearLayout>
+

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory android:title="@string/app_info" >
+		<Preference
+            android:summary="capstone disassembler engine"
+            android:title="Capstone"
+			android:key="capstone"
+			/>
+		<Preference
+            android:summary="Color picker"
+            android:title="com.github.danielnilsson9.colorpickerview"
+			android:key="colorpicker"/>
+    </PreferenceCategory>
+</PreferenceScreen>
