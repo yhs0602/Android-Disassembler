@@ -57,10 +57,12 @@ public class Arm_const
 			}
 			catch (IllegalAccessException e)
 			{
-				Log.e("arm","",e);
+				Log.e("Disassembler","",e);
 			}
 			catch (IllegalArgumentException e)
-			{}
+			{
+				Log.e("Disassembler","",e);
+			}
 		}
 		return "";
 	}
