@@ -70,7 +70,7 @@
 							android:layout_weight="1.0"/>
 
 					</LinearLayout>
-						<!--SO-->
+
 					<com.kyhsgeekcode.disassembler.RadioGridGroup
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
@@ -152,13 +152,18 @@
 
 					</LinearLayout>
 
-					<EditText
-						android:layout_height="wrap_content"
-						android:inputType="textMultiLine"
-						android:ems="10"
-						android:layout_width="match_parent"
-						android:layout_span="4"
-						android:id="@+id/detailText"/>
+					<ScrollView
+						android:layout_height="match_parent"
+						android:layout_width="match_parent">
+
+						<EditText
+							android:layout_height="wrap_content"
+							android:inputType="textMultiLine"
+							android:ems="10"
+							android:layout_width="match_parent"
+							android:id="@+id/detailText"/>
+
+					</ScrollView>
 
 				</LinearLayout>
 
@@ -186,6 +191,12 @@
 							android:text="Save to file"
 							android:layout_width="wrap_content"
 							android:id="@+id/btnSaveDisasm"/>
+
+						<Button
+							android:layout_height="wrap_content"
+							android:layout_width="wrap_content"
+							android:text="Abort"
+							android:id="@+id/btAbort"/>
 
 					</LinearLayout>
 

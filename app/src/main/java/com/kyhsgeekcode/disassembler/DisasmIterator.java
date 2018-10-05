@@ -26,18 +26,22 @@ public class DisasmIterator
 		});
 	}
 	
-	public void showNoti(int progress)
+	public int showNoti(int progress)
 	{
 		mBuilder.setProgress((int)total,progress, false);
 		// Displays the progress bar for the first time.
 		mNotifyManager.notify(0, mBuilder.build());					
 		activity.runOnUiThread(activity.runnableRequestLayout);
-		
+		if(Thread.interrupted())
+		{
+			return -1;
+		}
+		return 0;
 	}
+
 	MainActivity activity;
 	NotificationManager mNotifyManager;
 	Notification.Builder mBuilder;
 	long total;
 	ListViewAdapter adapter;
-	
 }

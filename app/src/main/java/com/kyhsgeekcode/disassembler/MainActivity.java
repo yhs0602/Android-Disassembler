@@ -31,7 +31,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	SharedPreferences setting;
 	SharedPreferences.Editor editor;
 	private static final String TAG="Disassembler";
-
+	private static final String RATIONALSETTING = "showRationals";
 	boolean showAddress=true;
 	boolean showLabel=true;
 	boolean showBytes=true;
@@ -64,6 +64,8 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 	private Button btSavDit;
 
+	private Button btAbort;
+	
 	private NotificationManager mNotifyManager;
 
 	private Notification.Builder mBuilder;
@@ -75,6 +77,10 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	Thread workerThread;
 
 	private Capstone cs;
+
+	private String EXTRA_NOTIFICATION_ID;
+
+	private String ACTION_SNOOZE;
 	@Override
 	public void onClick(View p1)
 	{
@@ -152,6 +158,15 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			case R.id.btnSaveDetails:
 				SaveDetail();
 				break;
+			case R.id.btAbort:
+				if(workerThread!=null)
+				{
+					if(workerThread.isAlive())
+					{
+						workerThread.interrupt();
+					}
+				}
+				break;
 			default:
 				break;
 		}
@@ -199,11 +214,13 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		{
 			Toast.makeText(this,"Did you enter valid address?",3).show();
 		}
+		return elfUtil.getEntryPoint();
 	}
 
 	private void AlertSelFile()
 	{
 		Toast.makeText(this, "Please Select a file first.", 2).show();
+		showFileChooser();
 	}
 
 	private void SaveDisasm()
@@ -356,6 +373,8 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 	private void DisassembleInstant()
 	{
+		Toast.makeText(this,"Not supported by now. Please just use persist mode instead.",3).show();
+		
 		long startaddress=instantEntry;//file offset
 		long index=startaddress;
 		long addr=elfUtil.getCodeSectionVirtAddr();
@@ -363,10 +382,14 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		if(limit>=filecontent.length)
 		{
 			Toast.makeText(this,"Odd address :(",3).show();
+			return;
 		}
-		for (;;)
+		btDisasm.setEnabled(false);
+		//disasmResults.clear();
+		//setupListView();
+		/*for (;;)
 		{
-			DisasmResult dar=new DisasmResult(filecontent, index, addr);
+			/*DisasmResult dar=new DisasmResult(filecontent, index, addr);
 			if (dar.size == 0)
 			{
 				dar.size = 4;
@@ -392,11 +415,14 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			 mBuilder.setProgress((int)(limit-startaddress), (int)(index-start), false);
 			 // Displays the progress bar for the first time.
 			 mNotifyManager.notify(0, mBuilder.build());
-			 }*/
+			 }//
 			index += dar.size;
 			addr += dar.size;
 
-		}
+		}*/
+		//Currently not suported
+		
+		btDisasm.setEnabled(true);
 	}
 
 	public final Runnable runnableRequestLayout=new Runnable(){
@@ -423,9 +449,11 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	{
 		Toast.makeText(this, "started", 2).show();
 		Log.v(TAG, "Strted disassm");
-
+		btDisasm.setEnabled(false);
+		btAbort.setEnabled(true);
 		//final ProgressDialog dialog= showProgressDialog("Disassembling...");
 		disasmResults.clear();
+		setupListView();
 		mNotifyManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mBuilder = new Notification.Builder(this);
 		mBuilder.setContentTitle("Disassembler")
@@ -433,6 +461,12 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			.setSmallIcon(R.drawable.cell_shape)
 			.setOngoing(true)
 			.setProgress(100, 0, false);
+		/*Intent snoozeIntent = new Intent(this, MyBroadcastReceiver.class);
+		snoozeIntent.setAction(ACTION_SNOOZE);
+		snoozeIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
+		PendingIntent snoozePendingIntent =
+			PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
+		mBuilder.addAction(R.drawable.ic_launcher,"",snoozeIntent);*/
 		workerThread = new Thread(new Runnable(){
 				@Override
 				public void run()
@@ -503,6 +537,8 @@ public class MainActivity extends Activity implements Button.OnClickListener
 								listview.requestLayout();
 								tab2.invalidate();
 								//dialog.dismiss();
+								btDisasm.setEnabled(true);
+								btAbort.setEnabled(false);
 								Toast.makeText(MainActivity.this, "done", 2).show();			
 							}
 						});
@@ -756,6 +792,15 @@ public class MainActivity extends Activity implements Button.OnClickListener
 				public void uncaughtException(Thread p1, Throwable p2)
 				{
 					// TODO: Implement this method
+					Toast.makeText(MainActivity.this,Log.getStackTraceString(p2),3).show();
+					if(p2 instanceof SecurityException)
+					{
+						Toast.makeText(MainActivity.this,"Did you grant required permissions to this app?",3).show();
+						setting=getSharedPreferences(RATIONALSETTING,MODE_PRIVATE);
+						editor=setting.edit();
+						editor.putBoolean("show",true);
+						editor.commit();
+					}
 					requestAppPermissions(MainActivity.this);
 					String [] accs=getAccounts();
 					final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
@@ -781,6 +826,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					startActivity(Intent.createChooser(emailIntent, "Send crash report as an issue by email"));
 				//	ori.uncaughtException(p1, p2);
 					Log.wtf(TAG,"UncaughtException",p2);
+					finish();
 					return ;
 				}
 				private String[] getAccounts() {
@@ -818,7 +864,11 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		btSavDisasm.setOnClickListener(this);
 		btSavDit = (Button) findViewById(R.id.btnSaveDetails);
 		btSavDit.setOnClickListener(this);
+		btAbort = (Button) findViewById(R.id.btAbort);
 
+		btAbort.setOnClickListener(this);
+		btAbort.setEnabled(false);
+		
 		etFilename = (EditText) findViewById(R.id.fileNameText);
 		etFilename.setFocusable(false);
 		etFilename.setEnabled(false);
@@ -856,28 +906,16 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		//	TableRow tbrow0 = new TableRow(MainActivity.this);
 		//	CreateDisasmTopRow(tbrow0);		
 		//	tlDisasmTable.addView(tbrow0);
-		adapter = new ListViewAdapter();
-		listview = (ListView) findViewById(R.id.listview);
-        listview.setAdapter(adapter);
-		listview.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-				@Override
-				public void onItemClick(AdapterView<?> parent, View p2, int position, long id)
-				{
-					ListViewItem lvi=(ListViewItem) parent.getItemAtPosition(position);
-					if (lvi.isBranch())
-					{
-
-					}
-					// TODO: Implement this method
-					return;
-				}			
-			});
-		AlertDialog.Builder builder=new AlertDialog.Builder(this);
-		builder.setTitle("Permissions");
-		builder.setCancelable(false);
-		builder.setMessage("- Read/Write storage(obvious)\r\n- GetAccounts: add email address info on crash report.");
-		builder.setPositiveButton("OK",(DialogInterface.OnClickListener)null);
-		builder.show();
+		setupListView();
+		
+		setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
+		boolean show=setting.getBoolean("show",true);
+		if(show){
+			showPermissionRationales();
+			editor=setting.edit();
+			editor.putBoolean("show",false);
+			editor.commit();
+		}
 		requestAppPermissions(this);
 		//	ViewGroup.LayoutParams lp= listview.getLayoutParams();
 		//listview.setMinimumHeight(getScreenHeight());
@@ -885,6 +923,25 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		//	elfUtil=null;
 		//	filecontent=null;	
     }
+
+	private void showPermissionRationales()
+	{
+		AlertDialog.Builder builder=new AlertDialog.Builder(this);
+		builder.setTitle("Permissions");
+		builder.setCancelable(false);
+		builder.setMessage("- Read/Write storage(obvious)\r\n- GetAccounts: add email address info on crash report.\r\n\r\n For more information visit https://github.com/KYHSGeekCode/Android-Disassembler/");
+		builder.setPositiveButton("OK", (DialogInterface.OnClickListener)null);
+		builder.show();
+	}
+
+	private void setupListView()
+	{
+		adapter = new ListViewAdapter();
+		listview = (ListView) findViewById(R.id.listview);
+        listview.setAdapter(adapter);
+		listview.setOnItemClickListener(new DisasmClickListener());
+				
+	}
 	public static int getScreenHeight()
 	{
 		return Resources.getSystem().getDisplayMetrics().heightPixels;
@@ -1162,6 +1219,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 							}
 						}
 						elfUtil = new ELFUtil(file, filecontent);
+						fpath=path;
 						Toast.makeText(this, "success size=" + new Integer(index).toString(), 1).show();
 					}
 					catch (IOException e)
