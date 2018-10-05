@@ -3,6 +3,7 @@ package capstone;
 
 import android.util.*;
 import java.lang.reflect.*;
+import java.util.*;
 
 public class Arm_const
  {
@@ -39,8 +40,44 @@ public class Arm_const
 	public static final int ARM_CC_GT = 13;
 	public static final int ARM_CC_LE = 14;
 	public static final int ARM_CC_AL = 15;
+	private static final Map<Integer, String> _int2string;
+
+	static
+	{
+		final Map<Integer, String> int2string = new HashMap<>();
+
+		try
+		{
+			for (Field field: Arm_const.class.getFields())
+			{
+				final int mod = field.getModifiers();
+
+				if (!int.class.equals(field.getType()))
+					continue;
+
+				if (!Modifier.isStatic(mod) || !Modifier.isPublic(mod))
+					continue;
+
+				if (!field.getName().startsWith("ARM_CC_"))
+					continue;
+
+				int2string.put(field.getInt(null),
+							   field.getName().substring("ARM_CC_".length()));
+			}
+		}
+		catch (IllegalAccessException l_e)
+		{
+			throw new RuntimeException(l_e); // should not occur
+		}
+
+		_int2string = Collections.unmodifiableMap(int2string);
+	}
 
 	public static String getCCName(int cc)
+	{
+		return _int2string.get(cc);
+	}
+	public static String getCCName2(int cc)
 	{
 		Class clazz=Arm_const.class;
 		Field[] fields=clazz.getFields();

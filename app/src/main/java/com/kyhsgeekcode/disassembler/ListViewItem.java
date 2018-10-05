@@ -24,6 +24,7 @@ public class ListViewItem
 		this.disasmResult = disasmResult;
 		this.address=Long.toHexString(disasmResult.address);
 		byte[] bytestmp=new byte[disasmResult.size];
+		//System.arraycopy();
 		for(int i=0;i<disasmResult.size;++i)
 		{
 			bytestmp[i]=disasmResult.bytes[i];

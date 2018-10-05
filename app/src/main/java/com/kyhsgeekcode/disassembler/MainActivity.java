@@ -1,6 +1,7 @@
 package com.kyhsgeekcode.disassembler;
 
 import android.*;
+import android.accounts.*;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
@@ -14,13 +15,16 @@ import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
+import capstone.*;
 import java.io.*;
 import java.util.*;
-import capstone.*;
+import java.util.regex.*;
 
 public class MainActivity extends Activity implements Button.OnClickListener
 {
 	private static final int REQUEST_SELECT_FILE = 12345678;
+	private static final int BULK_SIZE = 1024;
+
 	String fpath;
 	byte[] filecontent=null;
 	ELFUtil elfUtil;
@@ -40,7 +44,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	private ListViewAdapter adapter;
 
 	private ListView listview;
-	ArrayList<ListViewItem> disasmResults=new ArrayList<>();
+	ArrayList<DisasmResult> disasmResults=new ArrayList<>();
 
 	private TableLayout tlDisasmTable;
 
@@ -89,24 +93,17 @@ public class MainActivity extends Activity implements Button.OnClickListener
 				final List<String> ListItems = new ArrayList<>();
 				ListItems.add("Instant mode");
 				ListItems.add("Persist mode");
-				//	ListItems.add("");
-				final CharSequence[] items =  ListItems.toArray(new String[ ListItems.size()]);
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Disassemble as...");
-				builder.setItems(items, new DialogInterface.OnClickListener() {
+				ShowSelDialog(ListItems,"Disassemble as...",new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int pos)
 						{
 							//String selectedText = items[pos].toString();
-							dialog.dismiss();
 							if (pos == 0)
 							{
 								instantMode = true;
-								final List<String> ListItems2 = new ArrayList<>();
-								ListItems2.add("Entry point");
-								ListItems2.add("Custom address");
-								AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-								builder.setTitle("Start from...");
-								builder.setItems(items, new DialogInterface.OnClickListener() {
+								ListItems.clear();
+								ListItems.add("Entry point");
+								ListItems.add("Custom address");
+								ShowSelDialog(ListItems,"Start from...",new DialogInterface.OnClickListener() {
 										public void onClick(DialogInterface dialog2, int pos)
 										{						
 											if (pos == 0)
@@ -116,33 +113,23 @@ public class MainActivity extends Activity implements Button.OnClickListener
 											}
 											else if (pos == 1)
 											{
-												final EditText edittext = new EditText(MainActivity.this);
-
-												AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-												builder.setTitle("Start from...");
-												builder.setMessage("Enter address to start analyzing.");
-												builder.setView(edittext);
-												builder.setPositiveButton("OK",
-													new DialogInterface.OnClickListener() {
+												final EditText edittext=new EditText(MainActivity.this);
+												ShowEditDialog("Start from...","Enter address to start analyzing.",edittext,"OK",new DialogInterface.OnClickListener() {
 														public void onClick(DialogInterface dialog3, int which)
 														{
 															instantEntry = parseAddress(edittext.getText().toString());
 															DisassembleInstant();
 														}			
-													});
-												builder.setNegativeButton("cancel",
-													new DialogInterface.OnClickListener() {
+													},"cancel",new DialogInterface.OnClickListener() {
 														public void onClick(DialogInterface dialog4, int which)
 														{
 															dialog4.dismiss();
 														}
 													});
-												dialog2.dismiss();
-												builder.show();
+												//dialog2.dismiss();
 											}
 										}
 									});
-								builder.show();
 							}
 							else if (pos == 1)
 							{
@@ -150,7 +137,6 @@ public class MainActivity extends Activity implements Button.OnClickListener
 							}
 						}
 					});
-				builder.show();
 				break;
 			case R.id.btnShowdetail:
 				if (elfUtil == null)
@@ -169,12 +155,50 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			default:
 				break;
 		}
-
+		
 	}
+	
+	private void ShowEditDialog(String title,String message,final EditText edittext,
+									String positive,DialogInterface.OnClickListener pos,
+									String negative,DialogInterface.OnClickListener neg)
+	{
+		AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+		builder.setTitle(title);
+		builder.setMessage(message);
+		builder.setView(edittext);
+		builder.setPositiveButton(positive,pos);
+		builder.setNegativeButton(negative,neg);
+		builder.show();
+		return ;
+	}
+	private void ShowSelDialog(final List<String> ListItems,String title,DialogInterface.OnClickListener listener)
+	{
+		final CharSequence[] items =  ListItems.toArray(new String[ ListItems.size()]);
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(title);
+		builder.setItems(items,listener);
+		builder.show();
+	}
+	
+	
 	private long parseAddress(String toString)
 	{
+		if(toString==null)
+		{
+			return elfUtil.getEntryPoint();
+		}
+		if(toString.equals(""))
+		{
+			return elfUtil.getEntryPoint();
+		}
 		// TODO: Implement this method
-		return Long.decode(toString);
+		try{
+			long l= Long.decode(toString);
+			return l;
+		}catch(NumberFormatException e)
+		{
+			Toast.makeText(this,"Did you enter valid address?",3).show();
+		}
 	}
 
 	private void AlertSelFile()
@@ -184,6 +208,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 	private void SaveDisasm()
 	{
+		requestAppPermissions(this);
 		if (fpath == null || "".compareToIgnoreCase(fpath) == 0)
 		{
 			AlertSelFile();
@@ -232,7 +257,8 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			try
 			{
 				StringBuilder sb=new StringBuilder();
-				for (ListViewItem lvi:disasmResults)
+				ArrayList<ListViewItem> items=adapter.itemList();
+				for (ListViewItem lvi:items)
 				{
 					switch (mode)
 					{
@@ -277,6 +303,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 	private void SaveDetail()
 	{
+		requestAppPermissions(this);
 		if (fpath == null || "".compareToIgnoreCase(fpath) == 0)
 		{
 			AlertSelFile();
@@ -333,6 +360,10 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		long index=startaddress;
 		long addr=elfUtil.getCodeSectionVirtAddr();
 		long limit=startaddress + 400;
+		if(limit>=filecontent.length)
+		{
+			Toast.makeText(this,"Odd address :(",3).show();
+		}
 		for (;;)
 		{
 			DisasmResult dar=new DisasmResult(filecontent, index, addr);
@@ -346,7 +377,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 				//break;
 			}
 			final ListViewItem lvi=new ListViewItem(dar);
-			disasmResults.add(lvi);
+			//disasmResults.add(lvi);
 			adapter.addItem(lvi);
 			adapter.notifyDataSetChanged();
 			Log.v(TAG, "i=" + index + "lvi=" + lvi.toString());
@@ -368,6 +399,25 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		}
 	}
 
+	public final Runnable runnableRequestLayout=new Runnable(){
+		@Override
+		public void run()
+		{
+			//adapter.notifyDataSetChanged();
+			listview.requestLayout();
+		}
+	};
+
+//	final Runnable runnableAddItem=new Runnable(){
+//		@Override
+//		public void run()
+//		{
+//			adapter.addItem(lvi);
+//			adapter.notifyDataSetChanged();
+//			return ;
+//		}
+//	};
+	ListViewItem lvi;
 	//TODO: DisassembleFile(long address, int amt);
 	private void DisassembleFile()
 	{
@@ -376,8 +426,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 		//final ProgressDialog dialog= showProgressDialog("Disassembling...");
 		disasmResults.clear();
-		mNotifyManager =
-			(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		mNotifyManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mBuilder = new Notification.Builder(this);
 		mBuilder.setContentTitle("Disassembler")
 			.setContentText("Disassembling in progress")
@@ -393,68 +442,53 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					long limit=elfUtil.getCodeSectionLimit();
 					long addr=elfUtil.getCodeSectionVirtAddr();
 					Log.v(TAG, "code section point :" + Long.toHexString(index));
+					//ListViewItem lvi;
 					//	getFunctionNames();
-					HashMap xrefComments=new HashMap();
-					for (;;)
+					long size=limit - start;
+					long leftbytes=size;
+					DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
+					dai.getAll(filecontent,start,size,addr, disasmResults);
+				/*	do
 					{
-						Capstone.CsInsn[] insns=cs.disasm(filecontent,index,addr,1);
-						Capstone.CsInsn insn=insns[0];
-						final ListViewItem lvi=new ListViewItem(insn/*filecontent, index, addr*/);
-						if (insn.size == 0)
+						Capstone.CsInsn[] insns=cs.disasm(filecontent,index,Math.min(leftbytes,2048),addr,256);
+						if(insns==null)
 						{
-							insn.size = 4;
-							insn.mnemonic = "db";
-							//insn.bytes = new byte[]{filecontent[(int)index],filecontent[(int)index + 1],filecontent[(int)index + 2],filecontent[(int)index + 3]};
-							insn.opStr = "";
-							Log.e(TAG, "Dar.size==0, breaking?");
-							//break;
-						}
-						//final ListViewItem lvi=new ListViewItem(dar);
-						if(lvi.isBranch())
-						{
-							//xrefComments.put(lvi.getTargetAddress(),lvi.address);
-						}
-						runOnUiThread(new Runnable(){
-								@Override
-								public void run()
-								{
-									adapter.addItem(lvi);
-									adapter.notifyDataSetChanged();
-									return ;
-								}
-							});
-						//Log.v(TAG, "i=" + index + "lvi=" + lvi.toString());
-						if (index >= limit)
-						{
-							Log.i(TAG, "index is " + index + ", breaking");
+							Log.i(TAG,"INSN null, breaking!");
 							break;
 						}
-						//Log.v(TAG, "dar.size is =" + dar.size);
-						Log.i(TAG, "" + index + " out of " + (limit - start));
-						if ((index - start) % 320 == 0)
+						int bytes=0;
+						for(Capstone.CsInsn insn:insns)
 						{
-							mBuilder.setProgress((int)(limit - start), (int)(index - start), false);
-							// Displays the progress bar for the first time.
-							mNotifyManager.notify(0, mBuilder.build());					
-							runOnUiThread(new Runnable(){
-									@Override
-									public void run()
-									{
-										//adapter.notifyDataSetChanged();
-										listview.requestLayout();
-									}
-								});
+							if(insn.size==0)
+							{
+								Log.i(TAG,"INSN siz 0");
+								insn.size=4;//ignore and skip		
+								//blahblah
+							}
+							Log.v(TAG,index+"bytes="+bytes+"left="+leftbytes+"addr="+insn.address+insn.mnemonic);
+							index+=insn.size;
+							bytes+=insn.size;
+							addr+=insn.size;
 						}
-						index += insn.size;
-						addr += insn.size;			
-						//dialog.setProgress((int)((float)(index-start) * 100 / (float)(limit-start)));
-						//dialog.setTitle("Disassembling.."+(index-start)+" out of "+(limit-start));
-					}
+						if(insns.length==0)
+						{
+							index+=4;
+							bytes+=4;
+							addr+=4;
+						}
+						if(insns.length<256)
+						{
+							Log.i(TAG,"len l 256,"+insns.length);
+							//break;
+						}
+						leftbytes-=bytes;
+						Log.i(TAG,"left="+leftbytes+"bytes="+bytes);
+					}while(leftbytes>0);
+				*/	
 					mNotifyManager.cancel(0);
 					final int len=disasmResults.size();
 					//add xrefs
-					
-					
+
 					runOnUiThread(new Runnable(){
 							@Override
 							public void run()
@@ -464,7 +498,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 								 final ListViewItem lvi=disasmResults.get(i);
 								 adapter.addItem(lvi);
 								 //AddOneRow(lvi);				
-								 }*/
+								 }/*/
 								//adapter.notifyDataSetChanged();
 								listview.requestLayout();
 								tab2.invalidate();
@@ -473,6 +507,128 @@ public class MainActivity extends Activity implements Button.OnClickListener
 							}
 						});
 					Log.v(TAG, "disassembly done");		
+				}
+
+				private void method()
+				{
+					int c=3;
+					/*final int numLoop=(int)size / BULK_SIZE;
+					 final int remain=(int)size % BULK_SIZE;
+					 final long endloopaddr=numLoop * BULK_SIZE;
+					 HashMap xrefComments=new HashMap();	
+					 //Optimization: less JNA Calls by bulk processing
+					 //index : base of foffset
+					 //processedbytes : offset from index of foffset
+					 Log.i(TAG,"size="+size+"numLoop"+numLoop+"remain"+remain+"endloop"+endloopaddr);
+					 for (;index < endloopaddr;index += BULK_SIZE,addr += BULK_SIZE)
+					 {
+					 int processedbytes=0;
+					 Capstone.CsInsn[] insns=cs.disasm(filecontent, index, BULK_SIZE, addr, 0);
+					 Log.i(TAG,"index="+index+"insns len="+insns.length+"Processedbytes="+processedbytes);
+					 for (Capstone.CsInsn insn:insns)
+					 {
+					 //Capstone.CsInsn insn=insns[0];	
+					 int siz=DoOneItem(insn);
+					 Log.v(TAG,"pb="+processedbytes+"siz="+siz);
+					 if (siz == 0)//Broken Instruction
+					 {
+					 Log.i(TAG,"Siz 0");
+					 //disassemble remnants...
+					 HandleBroken(processedbytes, index, limit, start, addr);
+					 break;
+					 }
+					 processedbytes += siz;
+					 //Log.i(TAG, "" + index+processedbytes + " out of " + (limit - start));
+					 }
+					 //if ((index - start) % 3200 == 0)
+					 {
+					 mBuilder.setProgress((int)(size), (int)(index - start), false);
+					 // Displays the progress bar for the first time.
+					 mNotifyManager.notify(0, mBuilder.build());					
+					 runOnUiThread(runnableRequestLayout);
+					 }
+					 //dialog.setProgress((int)((float)(index-start) * 100 / (float)(limit-start)));
+					 //dialog.setTitle("Disassembling.."+(index-start)+" out of "+(limit-start));
+					 }
+					 Capstone.CsInsn[] insns=cs.disasm(filecontent, index, remain, addr, 0);
+					 int processedbytes=0;
+					 for (Capstone.CsInsn insn:insns)
+					 {
+					 //Capstone.CsInsn insn=insns[0];
+					 int siz=DoOneItem(insn);
+					 if (siz == 0)//Broken Instruction
+					 {
+					 //disassemble remnants...
+					 HandleBroken(processedbytes, index, limit, start, addr);
+					 break;
+					 }
+					 processedbytes += siz;
+					 Log.v(TAG, "" + index+processedbytes + " out of " + (limit - start));
+					 }
+					 */
+				}
+			/*	
+				///@Desc skips an instruction and disassembles after it
+				///@Note currebtly only skips 4 bytes for ARM.
+				///////!!!!!! Now use skipdata mode!!!!!!!!!!
+				private void HandleBroken(int pb, long index, long limit, long start, long addr)
+				{
+					Log.i(TAG,"handleBroken("+pb+","+index+","+addr+")");
+					Capstone.CsInsn[] insns=cs.disasm(filecontent, pb + index + 4, BULK_SIZE - 4 - pb, addr + pb + 4, 0);
+					int processedbytes=pb+4;
+					for (Capstone.CsInsn insn:insns)
+					{
+						int siz=DoOneItem(insn);
+						if (siz == 0)//Broken Instruction
+						{
+							Log.i(TAG,"size 0");
+							//disassemble remnants...
+							HandleBroken(processedbytes, index, limit, start, addr+pb);
+							break;
+						}
+						processedbytes += siz;
+					}
+					return ;
+				}
+				*/
+				///@Param index: file offset of insn
+				///		  //addr: virtual address of insn
+				private int DoOneItem(Capstone.CsInsn insn)
+				{
+					lvi = new ListViewItem(insn);
+					if (insn.size == 0)
+					{
+						insn.size = 4;
+						insn.mnemonic = "db";
+						//insn.bytes = new byte[]{filecontent[(int)index],filecontent[(int)index + 1],filecontent[(int)index + 2],filecontent[(int)index + 3]};
+						insn.opStr = "";
+						Log.e(TAG, "Dar.size==0, breaking?");
+						return 0;
+					}
+					//final ListViewItem lvi=new ListViewItem(dar);
+					//if (lvi.isBranch())
+					{
+						//xrefComments.put(lvi.getTargetAddress(),lvi.address);
+					}
+					runOnUiThread(new Runnable(){
+							@Override
+							public void run()
+							{
+								adapter.addItem(lvi);
+								adapter.notifyDataSetChanged();
+								return ;
+							}
+						});
+					//Log.v(TAG, "i=" + index + "lvi=" + lvi.toString());
+					//if (index >= limit)
+					//{
+					//	Log.i(TAG, "index is " + index + ", breaking");
+					//break;
+					//}
+					//Log.v(TAG, "dar.size is =" + dar.size);
+					return insn.size;
+//					index += insn.size;
+//					addr += insn.size;
 				}
 			});
 		workerThread.start();
@@ -554,27 +710,39 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		t6v.setVisibility(isShowOperands() ? View.VISIBLE: View.GONE);
 		t7v.setVisibility(isShowComment() ? View.VISIBLE: View.GONE);
 	}
-	
+
 	public static final int REQUEST_WRITE_STORAGE_REQUEST_CODE=1;
-	public static void requestAppPermissions(Activity a) {
-		if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+	public static void requestAppPermissions(Activity a)
+	{
+		if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+		{
 			return;
 		}
-		if (hasReadPermissions(a) && hasWritePermissions(a)) {
-			Log.i(TAG,"Has permissions");
+		if (hasReadPermissions(a) && hasWritePermissions(a)&&hasGetAccountPermissions(a))
+		{
+			Log.i(TAG, "Has permissions");
 			return;
 		}
 		a.requestPermissions(new String[] {
-											  Manifest.permission.READ_EXTERNAL_STORAGE,
-											  Manifest.permission.WRITE_EXTERNAL_STORAGE
-										  }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
+								 Manifest.permission.READ_EXTERNAL_STORAGE,
+								 Manifest.permission.WRITE_EXTERNAL_STORAGE,
+								 Manifest.permission.GET_ACCOUNTS
+							 }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
 	}
 
-	public static boolean hasReadPermissions(Context c) {
-		return c.checkSelfPermission( Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+	private static boolean  hasGetAccountPermissions(Context c)
+	{
+		// TODO: Implement this method
+		return c.checkSelfPermission(Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED;
 	}
 
-	public static boolean hasWritePermissions(Context c) {
+	public static boolean hasReadPermissions(Context c)
+	{
+		return c.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+	}
+
+	public static boolean hasWritePermissions(Context c)
+	{
 		return c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
 	}
     /** Called when the activity is first created. */
@@ -582,13 +750,15 @@ public class MainActivity extends Activity implements Button.OnClickListener
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-		final Thread.UncaughtExceptionHandler ori=Thread.getDefaultUncaughtExceptionHandler();
+		//final Thread.UncaughtExceptionHandler ori=Thread.getDefaultUncaughtExceptionHandler();
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 				@Override
 				public void uncaughtException(Thread p1, Throwable p2)
 				{
 					// TODO: Implement this method
-					final Intent emailIntent = new Intent( android.content.Intent.ACTION_SEND);
+					requestAppPermissions(MainActivity.this);
+					String [] accs=getAccounts();
+					final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 
 					emailIntent.setType("plain/text");
 
@@ -597,16 +767,41 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 					emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
 										 "Crash report");
-
+					StringBuilder content=new StringBuilder(Log.getStackTraceString(p2));
+					content.append("Emails:");
+					content.append(System.lineSeparator());
+					for(String s:accs)
+					{
+						content.append(s);
+						content.append(System.lineSeparator());
+					}
 					emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-										 Log.getStackTraceString(p2));
+										 content.toString());
 
 					startActivity(Intent.createChooser(emailIntent, "Send crash report as an issue by email"));
-					ori.uncaughtException(p1,p2);
+				//	ori.uncaughtException(p1, p2);
+					Log.wtf(TAG,"UncaughtException",p2);
 					return ;
 				}
+				private String[] getAccounts() {
+					Pattern emailPattern = Patterns.EMAIL_ADDRESS;
+					Account[] accounts = AccountManager.get(MainActivity.this).getAccounts();
+					if(accounts==null)
+					{
+						return new String[]{""};
+					}
+					ArrayList<String> accs=new ArrayList<>();
+					for (Account account : accounts) {
+						if (emailPattern.matcher(account.name).matches()) {
+							String email = account.name;
+							accs.add(email);
+							//Log.d(TAG, "email : " + email);
+						}
+					}
+					return accs.toArray(new String[accs.size()]);
+				}
 			});
-		
+
         /* Create a TextView and set its content.
          * the text is retrieved by calling a native
          * function.
@@ -640,18 +835,23 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		this.tab2 = (LinearLayout) findViewById(R.id.tab2);
 		try
 		{
-			cs = new Capstone(Capstone.CS_ARCH_ARM, Capstone.CS_MODE_ARM);
-			cs.setDetail(Capstone.CS_OPT_ON);
-		}catch(RuntimeException e)
+			if(Init()==-1)
+			{
+				throw new RuntimeException();
+			}
+			//cs = new Capstone(Capstone.CS_ARCH_ARM, Capstone.CS_MODE_ARM);
+			//cs.setDetail(Capstone.CS_OPT_ON);
+		}
+		catch (RuntimeException e)
 		{
-			Toast.makeText(this, "Failed to initialize the native engine: "+Log.getStackTraceString(e), 10).show();
+			Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), 10).show();
 			android.os.Process.killProcess(android.os.Process.getGidForName(null));
 		}
-		if (cs==null)
+		/*if (cs == null)
 		{
 			Toast.makeText(this, "Failed to initialize the native engine", 3).show();
 			android.os.Process.killProcess(android.os.Process.getGidForName(null));
-		}
+		}*/
 		//tlDisasmTable = (TableLayout) findViewById(R.id.table_main);
 		//	TableRow tbrow0 = new TableRow(MainActivity.this);
 		//	CreateDisasmTopRow(tbrow0);		
@@ -666,13 +866,18 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					ListViewItem lvi=(ListViewItem) parent.getItemAtPosition(position);
 					if (lvi.isBranch())
 					{
-						
+
 					}
 					// TODO: Implement this method
 					return;
 				}			
 			});
-			
+		AlertDialog.Builder builder=new AlertDialog.Builder(this);
+		builder.setTitle("Permissions");
+		builder.setCancelable(false);
+		builder.setMessage("- Read/Write storage(obvious)\r\n- GetAccounts: add email address info on crash report.");
+		builder.setPositiveButton("OK",(DialogInterface.OnClickListener)null);
+		builder.show();
 		requestAppPermissions(this);
 		//	ViewGroup.LayoutParams lp= listview.getLayoutParams();
 		//listview.setMinimumHeight(getScreenHeight());
@@ -740,9 +945,10 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		}
 		catch (Exception e)
 		{}
-		if(cs!=null)
+		Finalize();
+		if (cs != null)
 			cs.close();
-		cs=(Capstone) null;
+		cs = (Capstone) null;
 		//Finalize();
 		if (mNotifyManager != null)
 		{
@@ -827,6 +1033,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 	private void showFileChooser()
 	{
+		requestAppPermissions(this);
 		Intent i=new Intent(this, FileSelectorActivity.class);
 		startActivityForResult(i, REQUEST_SELECT_FILE);		
 		/*
@@ -848,30 +1055,35 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		 Toast.LENGTH_SHORT).show();
 		 }*/
 	}
-@Override
-public void onRequestPermissionsResult(int requestCode,
-        String permissions[], int[] grantResults) {
-    switch (requestCode) {
-        case REQUEST_WRITE_STORAGE_REQUEST_CODE: {
-            // If request is cancelled, the result arrays are empty.
-            if (grantResults.length > 0
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+	@Override
+	public void onRequestPermissionsResult(int requestCode,
+										   String permissions[], int[] grantResults)
+	{
+		switch (requestCode)
+		{
+			case REQUEST_WRITE_STORAGE_REQUEST_CODE: {
+					// If request is cancelled, the result arrays are empty.
+					if (grantResults.length > 0
+						&& grantResults[0] == PackageManager.PERMISSION_GRANTED)
+					{
 
-                // permission was granted, yay! Do the
-                // contacts-related task you need to do.
+						// permission was granted, yay! Do the
+						// contacts-related task you need to do.
 
-            } else {
+					}
+					else
+					{
 
-                // permission denied, boo! Disable the
-                // functionality that depends on this permission.
-            }
-            return;
-        }
+						// permission denied, boo! Disable the
+						// functionality that depends on this permission.
+					}
+					return;
+				}
 
-        // other 'case' lines to check for other
-        // permissions this app might request
-    }
-}
+				// other 'case' lines to check for other
+				// permissions this app might request
+		}
+	}
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
@@ -954,14 +1166,14 @@ public void onRequestPermissionsResult(int requestCode,
 					}
 					catch (IOException e)
 					{
-						Log.e(TAG,"",e);
-						Toast.makeText(this,Log.getStackTraceString(e),30).show();
+						Log.e(TAG, "", e);
+						Toast.makeText(this, Log.getStackTraceString(e), 30).show();
 					}
 				}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-	
+
 	private String getRealPathFromURI(Uri uri)
 	{
 		String filePath = "";
@@ -1013,11 +1225,11 @@ public void onRequestPermissionsResult(int requestCode,
 	public static String bytesToHex(byte[] bytes)
 	{
 		char[] hexChars = new char[bytes.length * 2];
-		for (int j = 0; j < bytes.length; j++)
+		for (int p=0, j = 0; j < bytes.length; j++)
 		{
 			int v = bytes[j] & 0xFF;
-			hexChars[j * 2] = hexArray[v >>> 4];
-			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+			hexChars[p++] = hexArray[v >>> 4];
+			hexChars[p++] = hexArray[v & 0x0F];
 		}
 		return new String(hexChars);
 	}
@@ -1096,16 +1308,19 @@ public void onRequestPermissionsResult(int requestCode,
      * 'hello-jni' native library, which is packaged
      * with this application.
      */
-  //  public native String  disassemble(byte [] bytes, long entry);
-	//public native int Init();
-	//public native void Finalize();
+	//  public native String  disassemble(byte [] bytes, long entry);
+	public native int Init();
+	public native void Finalize();
 
     /* this is used to load the 'hello-jni' library on application
      * startup. The library has already been unpacked into
      * /data/data/com.example.hellojni/lib/libhello-jni.so at
      * installation time by the package manager.
      */
-    
+	 static{
+		 System.loadLibrary("hello-jni");
+	 }
+
 	/*	OnCreate()
 	 vp = (ViewPager)findViewById(R.id.pager);
 	 Button btn_first = (Button)findViewById(R.id.btn_first);

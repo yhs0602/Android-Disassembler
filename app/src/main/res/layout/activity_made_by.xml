@@ -12,26 +12,25 @@
 		android:textAppearance="?android:attr/textAppearanceLarge"
 		android:layout_width="wrap_content"
 		android:typeface="serif"
-		android:textStyle="bold|italic"
+		android:textStyle="bold"
 		android:textIsSelectable="true"
 		android:textSize="40sp"
-		android:alpha="0.9"
 		android:background="@drawable/cell_shape"
-		android:ellipsize="middle"
 		android:gravity="right|center_vertical|fill|fill_vertical"
-		android:textColor="#99DF76"
-		android:shadowColor="#C4554E"
-		android:textColorHint="#AD413A"
 		android:id="@+id/activitymadebyTextView1"/>
 
 	<TextView
-		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:text="PramUkesh"
 		android:textAppearance="?android:attr/textAppearanceLarge"
-		android:text="&lt;a href=&#34;https://stackexchange.com/users/11771696/kyhsgeekcode?tab=accounts\&#34;&gt;KYHSGeekCode&lt;/a&gt;"
-		android:linksClickable="true"
-        android:autoLink="web"
-		/>
+		android:layout_width="wrap_content"
+		android:typeface="serif"
+		android:textStyle="bold"
+		android:textIsSelectable="true"
+		android:textSize="40sp"
+		android:background="@drawable/cell_shape"
+		android:gravity="right|center_vertical|fill|fill_vertical"
+		android:id="@+id/activitymadebyTextView2"/>
 
 </LinearLayout>
 

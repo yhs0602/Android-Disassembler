@@ -221,7 +221,11 @@ public class Capstone
 
 			return op_info;
 		}
-
+		int opCount;
+		int opIndex;
+		int regRead;
+		int regWrite;
+		byte[] bytes;
 		public int opCount(int type)
 		{
 			return cs.cs_op_count(csh, raw.getPointer(), type);
@@ -276,8 +280,7 @@ public class Capstone
 			// TODO: Implement this method
 			super.finalize();
 			cs.cs_free(raw.getPointer(),new NativeLong(1));
-		}
-		
+		}	
 	}
 
 	private CsInsn[] fromArrayRaw(_cs_insn[] arr_raw)
@@ -564,11 +567,11 @@ public class Capstone
 
 		return allInsn;
 	}
-	public CsInsn[] disasm(byte[] code,long offset, long address, long count)
+	public CsInsn[] disasm(byte[] code,long offset, long length,long address, long count)
 	{
 		PointerByReference insnRef = new PointerByReference();
 
-		NativeLong c = cs.cs_disasm2(ns.csh, code,new NativeLong(offset), new NativeLong(code.length), address, new NativeLong(count), insnRef);
+		NativeLong c = cs.cs_disasm2(ns.csh, code,new NativeLong(offset), new NativeLong(length), address, new NativeLong(count), insnRef);
 
 		if (0 == c.intValue())
 		{

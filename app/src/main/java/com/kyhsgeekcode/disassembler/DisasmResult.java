@@ -10,8 +10,8 @@ public class DisasmResult
 		address=0L;
 		size=0;
 		bytes=new byte[16];
-		mnemonic=new String("undefined");
-		op_str=new String("undefined");
+		mnemonic="undefined";
+		op_str="undefined";
 		regs_read=new byte[12];
 		regs_read_count=0;
 		regs_write=new byte[20];

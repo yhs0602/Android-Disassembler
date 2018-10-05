@@ -50,8 +50,8 @@
             android:summary="@string/dev_info"
             android:title="@string/dev_info_detail" >
             <intent
-                android:targetClass="com.jourhyang.disasmarm.MadeByActivity"
-                android:targetPackage="com.jourhyang.disasmarm" />
+                android:targetClass="com.kyhsgeekcode.disassembler.MadeByActivity"
+                android:targetPackage="com.kyhsgeekcode.disassembler" />
         </Preference>
         <Preference
             android:summary="@string/send_mail_detail"

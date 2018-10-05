@@ -57,4 +57,8 @@ Use Android studio.
  - Changed to Android Studio structure.
 
 # TODO
- - Optimization
+ - Optimization(Done)
+ - Support x86 files.
+ - fix bugs
+ - add menus on clicking disassemblies.
+ - add coloring.
