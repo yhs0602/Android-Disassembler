@@ -55,6 +55,16 @@ public class ListViewItem
 		
 	}
 
+	public String toSimpleString()
+	{
+		// TODO: Implement this method
+		StringBuilder builder=new StringBuilder(instruction);
+		builder.append(" ");
+		builder.append(operands);
+		
+		return builder.toString();
+	}
+
 	public boolean isBranch()
 	{
 		// TODO: Implement this method

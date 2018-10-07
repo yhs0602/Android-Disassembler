@@ -87,6 +87,11 @@
 					android:summary="Color picker"
 					android:title="com.github.danielnilsson9.colorpickerview"
 					android:key="colorpicker"/>
+				
+			<Preference
+				android:summary="Storage chooser by codekidX"
+				android:title="Storage Chooser 2.0"
+				android:key="filechooser"/>
 		</PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>

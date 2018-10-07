@@ -38,7 +38,8 @@ public class DisasmIterator
 		}
 		return 0;
 	}
-
+	public native int CSoption(int type, int vslue);
+	
 	MainActivity activity;
 	NotificationManager mNotifyManager;
 	Notification.Builder mBuilder;

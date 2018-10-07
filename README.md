@@ -41,17 +41,16 @@ Before using the app you need some steps:
 ![image](images/Screenshot_20180926-090201.png)
 
 # ScreenShots
-![image](images/Screenshot_20180926-090313.png?rw)
-![image](images/Screenshot_20180926-090316.png)
-![image](images/Screenshot_20180926-090327.png)
-![image](images/Screenshot_20180926-090417.png)
+![image](images/Screenshot_20181007-193746.png)
+![image](images/Screenshot_20181007-193752.png)
+![image](images/Screenshot_20181007-193758.png)
 
 
 # Build
 Use Android studio.
 
 # Open Source
- - This app used [Capstone](https://github.com/aquynh/capstone), and [Colorpickerview](https://github.com/danielnilsson9/color-picker-view).
+ - This app used [Capstone](https://github.com/aquynh/capstone), [Storage-Chooser](https://github.com/codekidX/storage-chooser), and [Colorpickerview](https://github.com/danielnilsson9/color-picker-view).
 
 # What's new
  - Changed to Android Studio structure.

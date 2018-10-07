@@ -11,16 +11,20 @@ import android.graphics.*;
 import android.net.*;
 import android.os.*;
 import android.provider.*;
+import android.support.v4.widget.*;
+import android.support.v7.app.*;
 import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
 import capstone.*;
+import com.codekidlabs.storagechooser.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+import nl.lxtreme.binutils.elf.*;
 
-public class MainActivity extends Activity implements Button.OnClickListener
+public class MainActivity extends AppCompatActivity implements Button.OnClickListener
 {
 	private static final int REQUEST_SELECT_FILE = 12345678;
 	private static final int BULK_SIZE = 1024;
@@ -65,7 +69,11 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	private Button btSavDit;
 
 	private Button btAbort;
-	
+
+	private String[] mPlanetTitles;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+
 	private NotificationManager mNotifyManager;
 
 	private Notification.Builder mBuilder;
@@ -81,6 +89,8 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	private String EXTRA_NOTIFICATION_ID;
 
 	private String ACTION_SNOOZE;
+
+	//DisasmIterator disasmIterator;
 	@Override
 	public void onClick(View p1)
 	{
@@ -170,14 +180,14 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			default:
 				break;
 		}
-		
+
 	}
-	
+
 	private void ShowEditDialog(String title,String message,final EditText edittext,
-									String positive,DialogInterface.OnClickListener pos,
-									String negative,DialogInterface.OnClickListener neg)
+								String positive,DialogInterface.OnClickListener pos,
+								String negative,DialogInterface.OnClickListener neg)
 	{
-		AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+		android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
 		builder.setTitle(title);
 		builder.setMessage(message);
 		builder.setView(edittext);
@@ -186,16 +196,20 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		builder.show();
 		return ;
 	}
-	private void ShowSelDialog(final List<String> ListItems,String title,DialogInterface.OnClickListener listener)
+	public static void ShowSelDialog(Activity a,final List<String> ListItems,String title,DialogInterface.OnClickListener listener)
 	{
 		final CharSequence[] items =  ListItems.toArray(new String[ ListItems.size()]);
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
 		builder.setTitle(title);
 		builder.setItems(items,listener);
 		builder.show();
 	}
-	
-	
+
+	private void ShowSelDialog(final List<String> ListItems,String title,DialogInterface.OnClickListener listener)
+	{
+		MainActivity.ShowSelDialog(this,ListItems,title,listener);
+	}
+
 	private long parseAddress(String toString)
 	{
 		if(toString==null)
@@ -235,11 +249,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
         ListItems.add("Classic(Addr bytes inst op comment)");
         ListItems.add("Simple(Addr: inst op; comment");
         ListItems.add("Json(Reloadable)");
-        final CharSequence[] items =  ListItems.toArray(new String[ ListItems.size()]);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Export as...");
-        builder.setItems(items, new DialogInterface.OnClickListener() {
+		ShowSelDialog(this,ListItems,"Export as...",new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int pos)
 				{
 					//String selectedText = items[pos].toString();
@@ -249,7 +259,6 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					dialog2.dismiss();
 				}
 			});
-        builder.show();
 	}
 
 	private void SaveDisasmSub(int mode)
@@ -374,7 +383,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	private void DisassembleInstant()
 	{
 		Toast.makeText(this,"Not supported by now. Please just use persist mode instead.",3).show();
-		
+
 		long startaddress=instantEntry;//file offset
 		long index=startaddress;
 		long addr=elfUtil.getCodeSectionVirtAddr();
@@ -388,40 +397,40 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		//disasmResults.clear();
 		//setupListView();
 		/*for (;;)
-		{
-			/*DisasmResult dar=new DisasmResult(filecontent, index, addr);
-			if (dar.size == 0)
-			{
-				dar.size = 4;
-				dar.mnemonic = "db";
-				dar.bytes = new byte[]{filecontent[(int)index],filecontent[(int)index + 1],filecontent[(int)index + 2],filecontent[(int)index + 3]};
-				dar.op_str = "";
-				Log.e(TAG, "Dar.size==0, breaking?");
-				//break;
-			}
-			final ListViewItem lvi=new ListViewItem(dar);
-			//disasmResults.add(lvi);
-			adapter.addItem(lvi);
-			adapter.notifyDataSetChanged();
-			Log.v(TAG, "i=" + index + "lvi=" + lvi.toString());
-			if (index >= limit)
-			{
-				Log.i(TAG, "index is " + index + ", breaking");
-				break;
-			}
-			Log.v(TAG, "dar.size is =" + dar.size);
-			Log.i(TAG, "" + index + " out of " + (limit - startaddress));
-			/*if((limit-start)%320==0){
-			 mBuilder.setProgress((int)(limit-startaddress), (int)(index-start), false);
-			 // Displays the progress bar for the first time.
-			 mNotifyManager.notify(0, mBuilder.build());
-			 }//
-			index += dar.size;
-			addr += dar.size;
+		 {
+		 /*DisasmResult dar=new DisasmResult(filecontent, index, addr);
+		 if (dar.size == 0)
+		 {
+		 dar.size = 4;
+		 dar.mnemonic = "db";
+		 dar.bytes = new byte[]{filecontent[(int)index],filecontent[(int)index + 1],filecontent[(int)index + 2],filecontent[(int)index + 3]};
+		 dar.op_str = "";
+		 Log.e(TAG, "Dar.size==0, breaking?");
+		 //break;
+		 }
+		 final ListViewItem lvi=new ListViewItem(dar);
+		 //disasmResults.add(lvi);
+		 adapter.addItem(lvi);
+		 adapter.notifyDataSetChanged();
+		 Log.v(TAG, "i=" + index + "lvi=" + lvi.toString());
+		 if (index >= limit)
+		 {
+		 Log.i(TAG, "index is " + index + ", breaking");
+		 break;
+		 }
+		 Log.v(TAG, "dar.size is =" + dar.size);
+		 Log.i(TAG, "" + index + " out of " + (limit - startaddress));
+		 /*if((limit-start)%320==0){
+		 mBuilder.setProgress((int)(limit-startaddress), (int)(index-start), false);
+		 // Displays the progress bar for the first time.
+		 mNotifyManager.notify(0, mBuilder.build());
+		 }//
+		 index += dar.size;
+		 addr += dar.size;
 
-		}*/
+		 }*/
 		//Currently not suported
-		
+
 		btDisasm.setEnabled(true);
 	}
 
@@ -462,11 +471,11 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			.setOngoing(true)
 			.setProgress(100, 0, false);
 		/*Intent snoozeIntent = new Intent(this, MyBroadcastReceiver.class);
-		snoozeIntent.setAction(ACTION_SNOOZE);
-		snoozeIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
-		PendingIntent snoozePendingIntent =
-			PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
-		mBuilder.addAction(R.drawable.ic_launcher,"",snoozeIntent);*/
+		 snoozeIntent.setAction(ACTION_SNOOZE);
+		 snoozeIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
+		 PendingIntent snoozePendingIntent =
+		 PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
+		 mBuilder.addAction(R.drawable.ic_launcher,"",snoozeIntent);*/
 		workerThread = new Thread(new Runnable(){
 				@Override
 				public void run()
@@ -482,43 +491,43 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					long leftbytes=size;
 					DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
 					dai.getAll(filecontent,start,size,addr, disasmResults);
-				/*	do
-					{
-						Capstone.CsInsn[] insns=cs.disasm(filecontent,index,Math.min(leftbytes,2048),addr,256);
-						if(insns==null)
-						{
-							Log.i(TAG,"INSN null, breaking!");
-							break;
-						}
-						int bytes=0;
-						for(Capstone.CsInsn insn:insns)
-						{
-							if(insn.size==0)
-							{
-								Log.i(TAG,"INSN siz 0");
-								insn.size=4;//ignore and skip		
-								//blahblah
-							}
-							Log.v(TAG,index+"bytes="+bytes+"left="+leftbytes+"addr="+insn.address+insn.mnemonic);
-							index+=insn.size;
-							bytes+=insn.size;
-							addr+=insn.size;
-						}
-						if(insns.length==0)
-						{
-							index+=4;
-							bytes+=4;
-							addr+=4;
-						}
-						if(insns.length<256)
-						{
-							Log.i(TAG,"len l 256,"+insns.length);
-							//break;
-						}
-						leftbytes-=bytes;
-						Log.i(TAG,"left="+leftbytes+"bytes="+bytes);
-					}while(leftbytes>0);
-				*/	
+					/*	do
+					 {
+					 Capstone.CsInsn[] insns=cs.disasm(filecontent,index,Math.min(leftbytes,2048),addr,256);
+					 if(insns==null)
+					 {
+					 Log.i(TAG,"INSN null, breaking!");
+					 break;
+					 }
+					 int bytes=0;
+					 for(Capstone.CsInsn insn:insns)
+					 {
+					 if(insn.size==0)
+					 {
+					 Log.i(TAG,"INSN siz 0");
+					 insn.size=4;//ignore and skip		
+					 //blahblah
+					 }
+					 Log.v(TAG,index+"bytes="+bytes+"left="+leftbytes+"addr="+insn.address+insn.mnemonic);
+					 index+=insn.size;
+					 bytes+=insn.size;
+					 addr+=insn.size;
+					 }
+					 if(insns.length==0)
+					 {
+					 index+=4;
+					 bytes+=4;
+					 addr+=4;
+					 }
+					 if(insns.length<256)
+					 {
+					 Log.i(TAG,"len l 256,"+insns.length);
+					 //break;
+					 }
+					 leftbytes-=bytes;
+					 Log.i(TAG,"left="+leftbytes+"bytes="+bytes);
+					 }while(leftbytes>0);
+					 */	
 					mNotifyManager.cancel(0);
 					final int len=disasmResults.size();
 					//add xrefs
@@ -603,30 +612,30 @@ public class MainActivity extends Activity implements Button.OnClickListener
 					 }
 					 */
 				}
-			/*	
-				///@Desc skips an instruction and disassembles after it
-				///@Note currebtly only skips 4 bytes for ARM.
-				///////!!!!!! Now use skipdata mode!!!!!!!!!!
-				private void HandleBroken(int pb, long index, long limit, long start, long addr)
-				{
-					Log.i(TAG,"handleBroken("+pb+","+index+","+addr+")");
-					Capstone.CsInsn[] insns=cs.disasm(filecontent, pb + index + 4, BULK_SIZE - 4 - pb, addr + pb + 4, 0);
-					int processedbytes=pb+4;
-					for (Capstone.CsInsn insn:insns)
-					{
-						int siz=DoOneItem(insn);
-						if (siz == 0)//Broken Instruction
-						{
-							Log.i(TAG,"size 0");
-							//disassemble remnants...
-							HandleBroken(processedbytes, index, limit, start, addr+pb);
-							break;
-						}
-						processedbytes += siz;
-					}
-					return ;
-				}
-				*/
+				/*	
+				 ///@Desc skips an instruction and disassembles after it
+				 ///@Note currebtly only skips 4 bytes for ARM.
+				 ///////!!!!!! Now use skipdata mode!!!!!!!!!!
+				 private void HandleBroken(int pb, long index, long limit, long start, long addr)
+				 {
+				 Log.i(TAG,"handleBroken("+pb+","+index+","+addr+")");
+				 Capstone.CsInsn[] insns=cs.disasm(filecontent, pb + index + 4, BULK_SIZE - 4 - pb, addr + pb + 4, 0);
+				 int processedbytes=pb+4;
+				 for (Capstone.CsInsn insn:insns)
+				 {
+				 int siz=DoOneItem(insn);
+				 if (siz == 0)//Broken Instruction
+				 {
+				 Log.i(TAG,"size 0");
+				 //disassemble remnants...
+				 HandleBroken(processedbytes, index, limit, start, addr+pb);
+				 break;
+				 }
+				 processedbytes += siz;
+				 }
+				 return ;
+				 }
+				 */
 				///@Param index: file offset of insn
 				///		  //addr: virtual address of insn
 				private int DoOneItem(Capstone.CsInsn insn)
@@ -824,7 +833,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 										 content.toString());
 
 					startActivity(Intent.createChooser(emailIntent, "Send crash report as an issue by email"));
-				//	ori.uncaughtException(p1, p2);
+					//	ori.uncaughtException(p1, p2);
 					Log.wtf(TAG,"UncaughtException",p2);
 					finish();
 					return ;
@@ -868,7 +877,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 
 		btAbort.setOnClickListener(this);
 		btAbort.setEnabled(false);
-		
+
 		etFilename = (EditText) findViewById(R.id.fileNameText);
 		etFilename.setFocusable(false);
 		etFilename.setEnabled(false);
@@ -883,6 +892,17 @@ public class MainActivity extends Activity implements Button.OnClickListener
         tabHost.addTab(tab2);
 		this.tab1 = (LinearLayout) findViewById(R.id.tab1);
 		this.tab2 = (LinearLayout) findViewById(R.id.tab2);
+
+		mPlanetTitles = new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+														R.layout.row, mPlanetTitles));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
 		try
 		{
 			if(Init()==-1)
@@ -898,16 +918,16 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			android.os.Process.killProcess(android.os.Process.getGidForName(null));
 		}
 		/*if (cs == null)
-		{
-			Toast.makeText(this, "Failed to initialize the native engine", 3).show();
-			android.os.Process.killProcess(android.os.Process.getGidForName(null));
-		}*/
+		 {
+		 Toast.makeText(this, "Failed to initialize the native engine", 3).show();
+		 android.os.Process.killProcess(android.os.Process.getGidForName(null));
+		 }*/
 		//tlDisasmTable = (TableLayout) findViewById(R.id.table_main);
 		//	TableRow tbrow0 = new TableRow(MainActivity.this);
 		//	CreateDisasmTopRow(tbrow0);		
 		//	tlDisasmTable.addView(tbrow0);
 		setupListView();
-		
+
 		setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
 		boolean show=setting.getBoolean("show",true);
 		if(show){
@@ -924,9 +944,42 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		//	filecontent=null;	
     }
 
+	private class DrawerItemClickListener implements ListView.OnItemClickListener {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			selectItem(position);
+		}
+	}
+
+	/** Swaps fragments in the main content view */
+	private void selectItem(int position) {
+		// Create a new fragment and specify the planet to show based on position
+		/*Fragment fragment = new PlanetFragment();
+		 Bundle args = new Bundle();
+		 args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+		 fragment.setArguments(args);
+
+		 // Insert the fragment by replacing any existing fragment
+		 FragmentManager fragmentManager = getFragmentManager();
+		 fragmentManager.beginTransaction()
+		 .replace(R.id.content_frame, fragment)
+		 .commit();
+
+		 // Highlight the selected item, update the title, and close the drawer
+		 mDrawerList.setItemChecked(position, true);
+		 setTitle(mPlanetTitles[position]);
+		 mDrawerLayout.closeDrawer(mDrawerList);*/
+	}
+
+	@Override
+	public void setTitle(CharSequence title) {
+		//mTitle = title;
+		//getActionBar().setTitle(mTitle);
+	}
+
 	private void showPermissionRationales()
 	{
-		AlertDialog.Builder builder=new AlertDialog.Builder(this);
+		android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(this);
 		builder.setTitle("Permissions");
 		builder.setCancelable(false);
 		builder.setMessage("- Read/Write storage(obvious)\r\n- GetAccounts: add email address info on crash report.\r\n\r\n For more information visit https://github.com/KYHSGeekCode/Android-Disassembler/");
@@ -940,7 +993,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 		listview = (ListView) findViewById(R.id.listview);
         listview.setAdapter(adapter);
 		listview.setOnItemClickListener(new DisasmClickListener());
-				
+
 	}
 	public static int getScreenHeight()
 	{
@@ -1091,8 +1144,26 @@ public class MainActivity extends Activity implements Button.OnClickListener
 	private void showFileChooser()
 	{
 		requestAppPermissions(this);
-		Intent i=new Intent(this, FileSelectorActivity.class);
-		startActivityForResult(i, REQUEST_SELECT_FILE);		
+
+		StorageChooser chooser = new StorageChooser.Builder()
+			.withActivity(MainActivity.this)
+			.withFragmentManager(getFragmentManager())
+			.withMemoryBar(true)
+			.allowCustomPath(true)
+			.setType(StorageChooser.FILE_PICKER)
+			.build();
+// Show dialog whenever you want by
+		chooser.show();
+// get path that the user has chosen
+		chooser.setOnSelectListener(new StorageChooser.OnSelectListener() {
+				@Override
+				public void onSelect(String path) {
+					OnChoosePath(path);
+					//Log.e("SELECTED_PATH", path);
+				}
+			});
+		//Intent i=new Intent(this, FileSelectorActivity.class);
+		//startActivityForResult(i, REQUEST_SELECT_FILE);		
 		/*
 		 Intent intent = new Intent();
 		 intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -1197,40 +1268,183 @@ public class MainActivity extends Activity implements Button.OnClickListener
 			case REQUEST_SELECT_FILE:
 				if (resultCode == Activity.RESULT_OK)
 				{
-					try
-					{
-						String path=data.getStringExtra("com.jourhyang.disasmarm.path");
-						File file=new File(path);
-						etFilename.setText(file.getAbsolutePath());
-						long fsize=file.length();
-						int index=0;
-						filecontent = new byte[(int)fsize];
-						DataInputStream in = new DataInputStream(new FileInputStream(file));
-						int len,counter=0;
-						byte[] b=new byte[1024];
-						while ((len = in.read(b)) > 0)
-						{
-							for (int i = 0; i < len; i++)
-							{ // byte[] 버퍼 내용 출력
-								//System.out.format("%02X ", b[i]);
-								filecontent[index] = b[i];
-								index++;
-								counter++;
-							}
-						}
-						elfUtil = new ELFUtil(file, filecontent);
-						fpath=path;
-						Toast.makeText(this, "success size=" + new Integer(index).toString(), 1).show();
-					}
-					catch (IOException e)
-					{
-						Log.e(TAG, "", e);
-						Toast.makeText(this, Log.getStackTraceString(e), 30).show();
-					}
+					//OnChoosePath(data);
 				}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
+
+	private void OnChoosePath(String p)//Intent data)
+	{
+		try
+		{
+			String path=p;//data.getStringExtra("com.jourhyang.disasmarm.path");
+			File file=new File(path);
+			etFilename.setText(file.getAbsolutePath());
+			long fsize=file.length();
+			int index=0;
+			filecontent = new byte[(int)fsize];
+			DataInputStream in = new DataInputStream(new FileInputStream(file));
+			int len,counter=0;
+			byte[] b=new byte[1024];
+			while ((len = in.read(b)) > 0)
+			{
+				for (int i = 0; i < len; i++)
+				{ // byte[] 버퍼 내용 출력
+					//System.out.format("%02X ", b[i]);
+					filecontent[index] = b[i];
+					index++;
+					counter++;
+				}
+			}
+			try
+			{
+				elfUtil = new ELFUtil(file, filecontent);
+			}
+			catch (IOException e)
+			{
+				//not an elf file. try PE parser
+			}
+			MachineType type=elfUtil.elf.header.machineType;
+			int arch=getArchitecture(type);
+			if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL)
+			{
+				Toast.makeText(this, "Maybe I don't support this machine:" + type.name(), 3).show();
+			}
+			else
+			{
+				int err=0;
+				if ((err = (new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))) != cs.CS_ERR_OK)
+				{
+					Log.e(TAG, "setmode err" + err);
+					Toast.makeText(this, "failed to set architecture" + err, 3).show();
+				}
+				//cs.setMode();
+			}
+			fpath = path;
+			Toast.makeText(this, "success size=" + index + type.name(), 3).show();
+		}
+		catch (IOException e)
+		{
+			Log.e(TAG, "", e);
+			Toast.makeText(this, Log.getStackTraceString(e), 30).show();
+		}
+	}
+	private int getArchitecture(MachineType type)
+	{
+		// TODO: Implement this method
+		switch(type)
+		{
+			case NONE://(0, "No machine"),
+				return CS_ARCH_ALL;
+			case M32://(1, "AT&T WE 32100"),
+			case SPARC://(2, "SUN SPARC"),
+				return CS_ARCH_SPARC;
+			case i386: //(3, "Intel 80386"),
+				return CS_ARCH_X86;
+			case m68K: //(4, "Motorola m68k family"),
+			case m88K: //(5, "Motorola m88k family"),
+			case i860: //(7, "Intel 80860"),
+				return CS_ARCH_X86;
+			case MIPS: //(8, "MIPS R3000 big-endian"),
+				return CS_ARCH_MIPS;
+			case S370: //(9, "IBM System/370"),
+			case MIPS_RS3_LE: //(10, "MIPS R3000 little-endian"),
+				return CS_ARCH_MIPS;
+			case PARISC: //(15, "HPPA"),
+			case VPP500: //(17, "Fujitsu VPP500"),
+			case SPARC32PLUS: //(18, "Sun's \"v8plus\""),
+			case i960: //(19, "Intel 80960"),
+				return CS_ARCH_X86;
+			case PPC: //(20, "PowerPC"),
+				return CS_ARCH_PPC;
+			case PPC64: //(21, "PowerPC 64-bit"),
+				return CS_ARCH_PPC;
+			case S390: //(22, "IBM S390"),
+
+			case V800: //(36, "NEC V800 series"),
+			case FR20: //(37, "Fujitsu FR20"),
+			case RH32: //(38, "TRW RH-32"),
+			case RCE: //(39, "Motorola RCE"),
+			case ARM: //(40, "ARM"),
+				return CS_ARCH_ARM;
+			case FAKE_ALPHA: //(41, "Digital Alpha"),
+			case SH: //(42, "Hitachi SH"),
+			case SPARCV9: //(43, "SPARC v9 64-bit"),
+				return CS_ARCH_SPARC;
+			case TRICORE: //(44, "Siemens Tricore"),
+			case ARC: //(45, "Argonaut RISC Core"),
+			case H8_300: //(46, "Hitachi H8/300"),
+			case H8_300H: //(47, "Hitachi H8/300H"),
+			case H8S: //(48, "Hitachi H8S"),
+			case H8_500: //(49, "Hitachi H8/500"),
+			case IA_64: //(50, "Intel Merced"),
+				return CS_ARCH_X86;
+			case MIPS_X: //(51, "Stanford MIPS-X"),
+				return CS_ARCH_MIPS;
+			case COLDFIRE: //(52, "Motorola Coldfire"),
+			case m68HC12: //(53, "Motorola M68HC12"),
+			case MMA: //(54, "Fujitsu MMA Multimedia Accelerator"),
+			case PCP: //(55, "Siemens PCP"),
+			case NCPU: //(56, "Sony nCPU embeeded RISC"),
+			case NDR1: //(57, "Denso NDR1 microprocessor"),
+			case STARCORE: //(58, "Motorola Start*Core processor"),
+			case ME16: //(59, "Toyota ME16 processor"),
+			case ST100: //(60, "STMicroelectronic ST100 processor"),
+			case TINYJ: //(61, "Advanced Logic Corp. Tinyj emb.fam"),
+			case x86_64: //(62, "x86-64"),
+				return CS_ARCH_X86;
+			case PDSP: //(63, "Sony DSP Processor"),
+
+			case FX66: //(66, "Siemens FX66 microcontroller"),
+			case ST9PLUS: //(67, "STMicroelectronics ST9+ 8/16 mc"),
+			case ST7: //(68, "STmicroelectronics ST7 8 bit mc"),
+			case m68HC16: //(69, "Motorola MC68HC16 microcontroller"),
+			case m68HC11: //(70, "Motorola MC68HC11 microcontroller"),
+			case m68HC08: //(71, "Motorola MC68HC08 microcontroller"),
+			case m68HC05: //(72, "Motorola MC68HC05 microcontroller"),
+			case SVX: //(73, "Silicon Graphics SVx"),
+			case ST19: //(74, "STMicroelectronics ST19 8 bit mc"),
+			case VAX: //(75, "Digital VAX"),
+			case CRIS: //(76, "Axis Communications 32-bit embedded processor"),
+			case JAVELIN: //(77, "Infineon Technologies 32-bit embedded processor"),
+			case FIREPATH: //(78, "Element 14 64-bit DSP Processor"),
+			case ZSP: //(79, "LSI Logic 16-bit DSP Processor"),
+			case MMIX: //(80, "Donald Knuth's educational 64-bit processor"),
+			case HUANY: //(81, "Harvard University machine-independent object files"),
+			case PRISM: //(82, "SiTera Prism"),
+			case AVR: //(83, "Atmel AVR 8-bit microcontroller"),
+			case FR30: //(84, "Fujitsu FR30"),
+			case D10V: //(85, "Mitsubishi D10V"),
+			case D30V: //(86, "Mitsubishi D30V"),
+			case V850: //(87, "NEC v850"),
+			case M32R: //(88, "Mitsubishi M32R"),
+			case MN10300: //(89, "Matsushita MN10300"),
+			case MN10200: //(90, "Matsushita MN10200"),
+			case PJ: //(91, "picoJava"),
+			case OPENRISC: //(92, "OpenRISC 32-bit embedded processor"),
+			case ARC_A5: //(93, "ARC Cores Tangent-A5"),
+			case XTENSA: //(94, "Tensilica Xtensa Architecture"),
+			case AARCH64: //(183, "ARM AARCH64"),
+				return CS_ARCH_ARM64;
+			case TILEPRO: //(188, "Tilera TILEPro"),
+			case MICROBLAZE: //(189, "Xilinx MicroBlaze"),
+			case TILEGX: //(191, "Tilera TILE-Gx");
+
+		}
+		Log.e(TAG,"Unsupported machine!!"+type.name());
+		return CS_ARCH_ALL;
+	}
+	public static final int CS_ARCH_ARM = 0;
+	public static final int CS_ARCH_ARM64 = 1;
+	public static final int CS_ARCH_MIPS = 2;
+	public static final int CS_ARCH_X86 = 3;
+	public static final int CS_ARCH_PPC = 4;
+	public static final int CS_ARCH_SPARC = 5;
+	public static final int CS_ARCH_SYSZ = 6;
+	public static final int CS_ARCH_XCORE = 7;
+	public static final int CS_ARCH_MAX = 8;
+	public static final int CS_ARCH_ALL = 0xFFFF; // query id for cs_support()
 
 	private String getRealPathFromURI(Uri uri)
 	{
@@ -1375,9 +1589,9 @@ public class MainActivity extends Activity implements Button.OnClickListener
      * /data/data/com.example.hellojni/lib/libhello-jni.so at
      * installation time by the package manager.
      */
-	 static{
-		 System.loadLibrary("hello-jni");
-	 }
+	static{
+		System.loadLibrary("hello-jni");
+	}
 
 	/*	OnCreate()
 	 vp = (ViewPager)findViewById(R.id.pager);
