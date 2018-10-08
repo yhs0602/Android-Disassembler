@@ -50,7 +50,12 @@ Before using the app you need some steps:
 Use Android studio.
 
 # Open Source
- - This app used [Capstone](https://github.com/aquynh/capstone), [Storage-Chooser](https://github.com/codekidX/storage-chooser), and [Colorpickerview](https://github.com/danielnilsson9/color-picker-view).
+ This app used
+ - [Capstone](https://github.com/aquynh/capstone) 
+ - [Storage-Chooser](https://github.com/codekidX/storage-chooser)
+ - [Colorpickerview](https://github.com/danielnilsson9/color-picker-view)
+ - [Java-binutils](https://github.com/jawi/java-binutils)
+ - [PECOFF4J](https://github.com/kichik/pecoff4j).
 
 # What's new
  - Changed to Android Studio structure.

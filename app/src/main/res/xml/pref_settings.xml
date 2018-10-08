@@ -123,6 +123,10 @@
 				android:summary="Java-binutils by J.W. Janssen."
 				android:title="Java-binutils"
 				android:key="binutils"/>
+			<Preference
+				android:summary="PE parser by kichik"
+				android:title="PECOFF4J"
+				android:key="pecoff4j"/>
 		</PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>

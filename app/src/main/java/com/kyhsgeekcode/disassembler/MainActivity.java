@@ -23,6 +23,8 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 import nl.lxtreme.binutils.elf.*;
+import org.boris.pecoff4j.*;
+import org.boris.pecoff4j.io.*;
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener
 {
@@ -1300,29 +1302,32 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			try
 			{
 				elfUtil = new ELFUtil(file, filecontent);
+				MachineType type=elfUtil.elf.header.machineType;
+				int arch=getArchitecture(type);
+				if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL)
+				{
+					Toast.makeText(this, "Maybe I don't support this machine:" + type.name(), 3).show();
+				}
+				else
+				{
+					int err=0;
+					if ((err = (new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))) != cs.CS_ERR_OK)
+					{
+						Log.e(TAG, "setmode err" + err);
+						Toast.makeText(this, "failed to set architecture" + err, 3).show();
+					}
+					//cs.setMode();
+				}
 			}
 			catch (IOException e)
 			{
+				PE pe=PEParser.parse(path);
+				
 				//not an elf file. try PE parser
 			}
-			MachineType type=elfUtil.elf.header.machineType;
-			int arch=getArchitecture(type);
-			if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL)
-			{
-				Toast.makeText(this, "Maybe I don't support this machine:" + type.name(), 3).show();
-			}
-			else
-			{
-				int err=0;
-				if ((err = (new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))) != cs.CS_ERR_OK)
-				{
-					Log.e(TAG, "setmode err" + err);
-					Toast.makeText(this, "failed to set architecture" + err, 3).show();
-				}
-				//cs.setMode();
-			}
+			
 			fpath = path;
-			Toast.makeText(this, "success size=" + index + type.name(), 3).show();
+			Toast.makeText(this, "success size=" + index /*+ type.name()*/, 3).show();
 		}
 		catch (IOException e)
 		{
