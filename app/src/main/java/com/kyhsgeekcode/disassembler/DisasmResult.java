@@ -173,11 +173,11 @@ public class DisasmResult
 	CS_GRP_CALL=2,    // all call instructions
 	CS_GRP_RET=3,     // all return instructions
 	CS_GRP_INT=4,     // all interrupt instructions (int+syscall)
-	CS_GRP_IRET=5;    // all interrupt return instructions
+	CS_GRP_IRET=5;    // all interrupt return instructions	
 	
-		
-		// Architecture-specific instruction info
-		//union {
+	
+	// Architecture-specific instruction info
+	//union {
 		/*	cs_x86 x86;	// X86 architecture, including 16-bit, 32-bit & 64-bit mode
 			cs_arm64 arm64;	// ARM64 architecture (aka AArch64)
 			cs_arm arm;		// ARM architecture (including Thumb/Thumb2)

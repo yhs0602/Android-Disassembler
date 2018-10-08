@@ -46,13 +46,39 @@
     </PreferenceCategory>
 	-->
     <PreferenceCategory android:title="@string/app_info" >
-        <Preference
+        <PreferenceScreen
             android:summary="@string/dev_info"
             android:title="@string/dev_info_detail" >
-            <intent
+			<Preference
+				android:summary="Github"
+				android:title="Github repository"
+				android:key="git">
+				<intent android:action="android.intent.action.VIEW"
+					android:data="https://github.com/KYHSGeekCode/Android-Disassembler" />
+			</Preference>
+				<Preference
+					android:summary="Hyeonseo Yang: A high school student"
+					android:title="KYHSGeekCode"
+					android:key="kyhs">
+					<intent android:action="android.intent.action.VIEW"
+						android:data="https://stackoverflow.com/users/8614565/kyhsgeekcode" />
+				</Preference>
+				<Preference
+					android:summary="just a techy guy"
+					android:title="PramUkesh Venky"
+					android:key="venky">
+					<intent android:action="android.intent.action.VIEW"
+						android:data="https://github.com/PramUkesh" />
+				</Preference>
+			</PreferenceScreen>
+			
+			<!--Preference android:title="@string/prefs_web_page" >
+				<intent android:action="android.intent.action.VIEW"
+					android:data="http://www.example.com" />
+			</Preference-->
+            <!--intent
                 android:targetClass="com.kyhsgeekcode.disassembler.MadeByActivity"
-                android:targetPackage="com.kyhsgeekcode.disassembler" />
-        </Preference>
+                android:targetPackage="com.kyhsgeekcode.disassembler" /-->
         <Preference
             android:summary="@string/send_mail_detail"
             android:title="@string/send_mail" >
@@ -92,6 +118,11 @@
 				android:summary="Storage chooser by codekidX"
 				android:title="Storage Chooser 2.0"
 				android:key="filechooser"/>
+			
+			<Preference
+				android:summary="Java-binutils by J.W. Janssen."
+				android:title="Java-binutils"
+				android:key="binutils"/>
 		</PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>

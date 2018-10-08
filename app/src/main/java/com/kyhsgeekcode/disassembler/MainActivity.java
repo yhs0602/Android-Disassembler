@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private Button btAbort;
 
-	private String[] mPlanetTitles;
+	private String[] mProjNames;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
 
@@ -89,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private String EXTRA_NOTIFICATION_ID;
 
 	private String ACTION_SNOOZE;
+
+	private ProjectManager projects;
 
 	//DisasmIterator disasmIterator;
 	@Override
@@ -856,11 +858,20 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					return accs.toArray(new String[accs.size()]);
 				}
 			});
-
-        /* Create a TextView and set its content.
-         * the text is retrieved by calling a native
-         * function.
-         */
+		try
+		{
+			if(Init()==-1)
+			{
+				throw new RuntimeException();
+			}
+			//cs = new Capstone(Capstone.CS_ARCH_ARM, Capstone.CS_MODE_ARM);
+			//cs.setDetail(Capstone.CS_OPT_ON);
+		}
+		catch (RuntimeException e)
+		{
+			Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), 10).show();
+			android.os.Process.killProcess(android.os.Process.getGidForName(null));
+		}
         setContentView(R.layout.main);
 		etDetails = (EditText) findViewById(R.id.detailText);
 		Button selectFile=(Button) findViewById(R.id.selFile);
@@ -892,31 +903,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         tabHost.addTab(tab2);
 		this.tab1 = (LinearLayout) findViewById(R.id.tab1);
 		this.tab2 = (LinearLayout) findViewById(R.id.tab2);
-
-		mPlanetTitles = new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-														R.layout.row, mPlanetTitles));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-		try
-		{
-			if(Init()==-1)
-			{
-				throw new RuntimeException();
-			}
-			//cs = new Capstone(Capstone.CS_ARCH_ARM, Capstone.CS_MODE_ARM);
-			//cs.setDetail(Capstone.CS_OPT_ON);
-		}
-		catch (RuntimeException e)
-		{
-			Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), 10).show();
-			android.os.Process.killProcess(android.os.Process.getGidForName(null));
-		}
+	
 		/*if (cs == null)
 		 {
 		 Toast.makeText(this, "Failed to initialize the native engine", 3).show();
@@ -937,6 +924,19 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			editor.commit();
 		}
 		requestAppPermissions(this);
+		//projects=new ProjectManager();
+		mProjNames = new String[]{"Not","yet"};//projects.strProjects();//new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+														R.layout.row, mProjNames));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+		
+		
 		//	ViewGroup.LayoutParams lp= listview.getLayoutParams();
 		//listview.setMinimumHeight(getScreenHeight());
 		//listview.setLayoutParams(lp);
