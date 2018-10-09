@@ -127,6 +127,15 @@
 				android:summary="PE parser by kichik"
 				android:title="PECOFF4J"
 				android:key="pecoff4j"/>
+			<Preference
+				android:summary="Google's android icon"
+				android:title="Android robot icon"
+				android:key="androidicon"/>
+			<Preference
+				android:summary="Icons"
+				android:title="Icons by google"
+				android:key="icons"/>
+			
 		</PreferenceScreen>
     </PreferenceCategory>
 </PreferenceScreen>

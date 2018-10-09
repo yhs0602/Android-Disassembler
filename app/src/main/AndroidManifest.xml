@@ -23,18 +23,26 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 			<intent-filter>
+				<action android:name="android.intent.action.VIEW"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+				<category android:name="android.intent.category.BROWSABLE"/>
+				<data android:scheme="content"/>
+				<data android:scheme="file"/>
+				<data android:mimeType="*/*"/>
+		    </intent-filter>
+			<!--intent-filter>
 				<action android:name="android.intent.action.VIEW" />
 				<category android:name="android.intent.category.DEFAULT" />
 				<data android:scheme="file" />
 				<data android:host="*" />
-				<data android:pathPattern=".*\\.so" />
-			</intent-filter>
+				<data android:pathPattern="*" />
+			</intent-filter-->
         </activity>
 		<activity android:name=".SettingsActivity"/>
 		<activity android:name=".MadeByActivity"/>
 		<activity android:name=".OpenSourceActivity"/>
 		<activity android:name=".FileSelectorActivity"/>
-		
+
     </application>
 
 </manifest>

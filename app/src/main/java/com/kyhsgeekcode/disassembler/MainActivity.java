@@ -25,17 +25,34 @@ import java.util.regex.*;
 import nl.lxtreme.binutils.elf.*;
 import org.boris.pecoff4j.*;
 import org.boris.pecoff4j.io.*;
+import com.codekidlabs.storagechooser.utils.*;
+import com.kyhsgeekcode.disassembler.ProjectManager.*;
 
-public class MainActivity extends AppCompatActivity implements Button.OnClickListener
+
+public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
 {
+	@Override
+	public void onOpen(ProjectManager.Project proj)
+	{
+		// TODO: Implement this method
+		OnChoosePath(proj.oriFilePath);
+		setting=getSharedPreferences("",MODE_PRIVATE);
+		editor=setting.edit();
+		editor.putString(
+		return ;
+	}
+	
 	private static final int REQUEST_SELECT_FILE = 12345678;
 	private static final int BULK_SIZE = 1024;
-
+	private static final String SETTINGKEY=
+	
 	String fpath;
 	byte[] filecontent=null;
 	ELFUtil elfUtil;
 	SharedPreferences setting;
 	SharedPreferences.Editor editor;
+	SharedPreferences settingPath;
+	
 	private static final String TAG="Disassembler";
 	private static final String RATIONALSETTING = "showRationals";
 	boolean showAddress=true;
@@ -92,8 +109,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private String ACTION_SNOOZE;
 
-	private ProjectManager projects;
+	private ProjectManager projectManager;
 
+	private ProjectManager.Project currentProject;
 	//DisasmIterator disasmIterator;
 	@Override
 	public void onClick(View p1)
@@ -772,10 +790,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			Log.i(TAG, "Has permissions");
 			return;
 		}
+		showPermissionRationales(a);
 		a.requestPermissions(new String[] {
 								 Manifest.permission.READ_EXTERNAL_STORAGE,
-								 Manifest.permission.WRITE_EXTERNAL_STORAGE,
-								 Manifest.permission.GET_ACCOUNTS
+								 Manifest.permission.WRITE_EXTERNAL_STORAGE
+								 //,Manifest.permission.GET_ACCOUNTS
 							 }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
 	}
 
@@ -815,7 +834,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						editor.commit();
 					}
 					requestAppPermissions(MainActivity.this);
-					String [] accs=getAccounts();
+					//String [] accs=getAccounts();
 					final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 
 					emailIntent.setType("plain/text");
@@ -826,13 +845,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
 										 "Crash report");
 					StringBuilder content=new StringBuilder(Log.getStackTraceString(p2));
-					content.append("Emails:");
+					/*content.append("Emails:");
 					content.append(System.lineSeparator());
 					for(String s:accs)
 					{
 						content.append(s);
 						content.append(System.lineSeparator());
-					}
+					}*/
 					emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
 										 content.toString());
 
@@ -926,9 +945,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			editor.commit();
 		}
 		requestAppPermissions(this);
-		//projects=new ProjectManager();
-		mProjNames = new String[]{"Not","yet"};//projects.strProjects();//new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		mProjNames = new String[]{"Exception","happened"};
+		try
+		{
+			projectManager = new ProjectManager(this);
+			mProjNames=projectManager.strProjects();//new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);		
+		}
+		catch (IOException e)
+		{
+			Log.e(TAG,"",e);
+		}
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
@@ -937,8 +964,22 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-		
-		
+		//https://www.androidpub.com/1351553
+		Intent intent = getIntent();
+		if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+
+			// 연결되서 실행됐을 경우
+			String filePath = intent.getData().getPath();
+			OnChoosePath(filePath);
+		} else { // android.intent.action.MAIN
+			String lastProj=setting.getString("lastProject","");
+			/*Project tmpProj=*/projectManager.Open(lastProj);
+			/*if(tmpProj!=null)
+			{
+				onOpen(tmpProj);
+			}*/
+			// 직접 실행됐을 경우
+		}
 		//	ViewGroup.LayoutParams lp= listview.getLayoutParams();
 		//listview.setMinimumHeight(getScreenHeight());
 		//listview.setLayoutParams(lp);
@@ -949,12 +990,19 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			selectItem(position);
+			//selectItem(position);
+			if(view instanceof TextView)
+			{
+				TextView tv=(TextView)view;
+				String projname=tv.getText().toString();
+				projectManager.Open(projname);
+			}
 		}
 	}
 
 	/** Swaps fragments in the main content view */
 	private void selectItem(int position) {
+		//Project project=
 		// Create a new fragment and specify the planet to show based on position
 		/*Fragment fragment = new PlanetFragment();
 		 Bundle args = new Bundle();
@@ -980,6 +1028,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	}
 
 	private void showPermissionRationales()
+	{
+		showPermissionRationales(this);
+	}
+	public static void showPermissionRationales(Activity a)
 	{
 		android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(this);
 		builder.setTitle("Permissions");
@@ -1146,13 +1198,24 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private void showFileChooser()
 	{
 		requestAppPermissions(this);
-
+		//SharedPreferences sharedPreferences = null;
+		settingPath=getSharedPreferences("path",MODE_PRIVATE);
+		String prepath=settingPath.getString(DiskUtil.SC_PREFERENCE_KEY,"/storage/emulated/0/");
+		File tmp=new File(prepath);
+		if(tmp.isFile())
+		{
+			tmp=tmp.getParentFile();
+			prepath=tmp.getAbsolutePath();
+		}
 		StorageChooser chooser = new StorageChooser.Builder()
 			.withActivity(MainActivity.this)
 			.withFragmentManager(getFragmentManager())
 			.withMemoryBar(true)
 			.allowCustomPath(true)
 			.setType(StorageChooser.FILE_PICKER)
+			.actionSave(true)
+			//.withPreference(settingPath)
+			.withPredefinedPath(prepath)
 			.build();
 // Show dialog whenever you want by
 		chooser.show();
@@ -1160,6 +1223,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		chooser.setOnSelectListener(new StorageChooser.OnSelectListener() {
 				@Override
 				public void onSelect(String path) {
+					SharedPreferences.Editor edi=settingPath.edit();
+					edi.putString(DiskUtil.SC_PREFERENCE_KEY,path);
+					edi.commit();
 					OnChoosePath(path);
 					//Log.e("SELECTED_PATH", path);
 				}
@@ -1203,7 +1269,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					}
 					else
 					{
-
+						setting=getSharedPreferences(RATIONALSETTING,MODE_PRIVATE);
+						editor=setting.edit();
+						editor.putBoolean("show",true);
+						editor.commit();
 						// permission denied, boo! Disable the
 						// functionality that depends on this permission.
 					}
@@ -1299,6 +1368,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					counter++;
 				}
 			}
+			in.close();
 			try
 			{
 				elfUtil = new ELFUtil(file, filecontent);
@@ -1321,11 +1391,25 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			}
 			catch (IOException e)
 			{
-				PE pe=PEParser.parse(path);
-				
 				//not an elf file. try PE parser
-			}
-			
+				PE pe=PEParser.parse(path);
+				if(pe!=null)
+				{
+					PESignature ps =pe.getSignature();
+					if(ps==null||!ps.isValid())
+					{
+						//What is it?
+						Toast.makeText(this,"The file seems that it is neither an Elf file or PE file!",3).show();
+						throw new IOException(e);
+					}
+				}
+				else
+				{
+					//What is it?
+					Toast.makeText(this,"The file seems that it is neither an Elf file or PE file!",3).show();
+					throw new IOException(e);
+				}
+			}	
 			fpath = path;
 			Toast.makeText(this, "success size=" + index /*+ type.name()*/, 3).show();
 		}
