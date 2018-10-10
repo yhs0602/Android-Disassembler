@@ -62,14 +62,21 @@ public class ProjectManager
 	{
 		Project proj=new Project(name);
 		
-		return ;
+		return proj;
 	}
 	public Project Open(String name)
 	{
 		Project proj=projects.get(name);
 		if(proj!=null)
 		{
-			proj.Open();
+			try
+			{
+				proj.Open();
+			}
+			catch (Exception e)
+			{
+				Log.e(TAG,"",e);
+			}
 			return proj;
 		}
 		return proj;
@@ -86,11 +93,13 @@ public class ProjectManager
 			this.name = name;
 			File file=new File(Path);
 			File projdir=new File(file,name+"/");
+			if(!projdir.exists())
+				projdir.mkdirs();
 			projFile = new File(projdir, name + ".adp");
 			if (projFile.exists())
 			{
 				HashMap<String,String> map=new HashMap<String,String>();
-				BufferedReader br=new BufferedReader(new FileReader(file));
+				BufferedReader br=new BufferedReader(new FileReader(projFile));
 				String line;
 				while ((line = br.readLine()) != null)
 				{
@@ -111,6 +120,16 @@ public class ProjectManager
 			}
 		}
 
+		public File getDetail()
+		{
+			return detail;
+		}
+
+		public File getDisasm()
+		{
+			return disasm;
+		}
+
 		public void setOriFilePath(String oriFilePath)
 		{
 			this.oriFilePath = oriFilePath;
@@ -121,13 +140,41 @@ public class ProjectManager
 			return oriFilePath;
 		}
 		//loads the data.
-		public void Open()
+		public void Open() throws IOException
 		{
 			File dir=new File(Path);
 			File projdir=new File(dir,name+"/");
+			if(!projdir.exists())
+				projdir.mkdirs();
 			detail=new File(projdir,"details.txt");
 			disasm=new File(projdir,"disasm.json");
+			IOException err=new IOException();
+			if(!detail.exists())
+			{
+				try
+				{
+					detail.createNewFile();
+				}
+				catch (IOException e)
+				{
+					err.addSuppressed(e);
+				}
+			}
+			if(!disasm.exists())
+			{
+				try
+				{
+					disasm.createNewFile();
+				}
+				catch (IOException e)
+				{
+					err.addSuppressed(e);
+				}
+			}
 			listener.onOpen(this);
+			Throwable[] errs=err.getSuppressed();
+			if(errs!=null&&errs.length>0)
+				throw err;
 		}
 		public void Save() throws IOException
 		{

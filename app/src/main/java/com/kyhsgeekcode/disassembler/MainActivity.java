@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		// TODO: Implement this method
 		OnChoosePath(proj.oriFilePath);
+		currentProject=proj;
 		setting=getSharedPreferences(SETTINGKEY,MODE_PRIVATE);
 		editor=setting.edit();
 		editor.putString(LASTPROJKEY,proj.name);
@@ -357,9 +358,89 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			AlertSelFile();
 			return;
 		}
+		if(currentProject==null)
+		{
+			final EditText etName=new EditText(this);
+			ShowEditDialog("Create new Project", "Enter new project name", etName, "OK", new DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface p1,int  p2)
+					{
+						// TODO: Implement this method
+						String projn=etName.getText().toString();
+						SaveDetailNewProject(projn);
+						return ;
+					}
+				}, "Cancel", new DialogInterface.OnClickListener(){
+
+					@Override
+					public void onClick(DialogInterface p1, int p2)
+					{
+						// TODO: Implement this method
+						return ;
+					}				
+				});
+		}
+		//SaveDetailOld();
+	}
+
+	private void SaveDetailNewProject(String projn)
+	{
+		// TODO: Implement this method
+		try
+		{
+			ProjectManager.Project proj=projectManager.newProject(projn, fpath);
+			proj.Open();
+			File detailF=proj.getDetail();
+			if(detailF==null)
+				throw new IOException("Failed to create detail File");
+			detailF.createNewFile();
+			SaveDetail(new File(ProjectManager.Path),detailF);
+			proj.Save();
+		}
+		catch (IOException e)
+		{
+			AlertError("Error creating a project!!",e);
+		}
+		return ;
+	}
+	private void SaveDisasmNewProject(String projn)
+	{
+		// TODO: Implement this method
+		try
+		{
+			ProjectManager.Project proj=projectManager.newProject(projn, fpath);
+			proj.Open();
+			File disasmF=proj.getDisasm();
+			if(disasmF==null)
+				throw new IOException("Failed to create disasm File");
+			disasmF.createNewFile();
+			SaveDisasm()(new File(ProjectManager.Path),disasmF);
+			proj.Save();
+		}
+		catch (IOException e)
+		{
+			AlertError("Error creating a project!!",e);
+		}
+		return ;
+	}
+	
+	private void AlertError(String p0, IOException e)
+	{
+		// TODO: Implement this method
+		ShowAlertDialog((Activity)this,p0,Log.getStackTraceString(e));
+		return ;
+	}
+	
+	private void SaveDetailOld()
+	{
 		Log.v(TAG, "Saving details");
 		File dir=new File("/sdcard/disasm/");
 		File file=new File(dir, new File(fpath).getName() + "_" + new Date(System.currentTimeMillis()).toString() + ".details.txt");
+		SaveDetail(dir, file);
+	}
+
+	private void SaveDetail(File dir, File file)
+	{
 		dir.mkdirs();
 		try
 		{
@@ -953,7 +1034,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (IOException e)
 		{
-			Log.e(TAG,"",e);
+			Log.e(TAG,"Failed to load projects",e);
 		}
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -967,26 +1048,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		//https://www.androidpub.com/1351553
 		Intent intent = getIntent();
 		if (intent.getAction().equals(Intent.ACTION_VIEW)) {
-
 			// 연결되서 실행됐을 경우
 			String filePath = intent.getData().getPath();
 			OnChoosePath(filePath);
-		} else { // android.intent.action.MAIN
-			
+		} else { // android.intent.action.MAIN	
 			String lastProj=setting.getString(LASTPROJKEY, "");
-			/*Project tmpProj=*/projectManager.Open(lastProj);
-			/*if(tmpProj!=null)
-			{
-				onOpen(tmpProj);
-			}*/
-			// 직접 실행됐을 경우
+			if(projectManager!=null)
+				projectManager.Open(lastProj);
 		}
-		//	ViewGroup.LayoutParams lp= listview.getLayoutParams();
-		//listview.setMinimumHeight(getScreenHeight());
-		//listview.setLayoutParams(lp);
-		//	elfUtil=null;
-		//	filecontent=null;	
-    }
+	}
 
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 		@Override
@@ -1034,10 +1104,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	}
 	public static void showPermissionRationales(Activity a)
 	{
-		android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(this);
-		builder.setTitle("Permissions");
+		ShowAlertDialog(a,"Permissions","- Read/Write storage(obvious)\r\n- GetAccounts: add email address info on crash report.\r\n\r\n For more information visit https://github.com/KYHSGeekCode/Android-Disassembler/");
+	}
+
+	private static void ShowAlertDialog(Activity a,String title,String content)
+	{
+		android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(a);
+		builder.setTitle(title);
 		builder.setCancelable(false);
-		builder.setMessage("- Read/Write storage(obvious)\r\n- GetAccounts: add email address info on crash report.\r\n\r\n For more information visit https://github.com/KYHSGeekCode/Android-Disassembler/");
+		builder.setMessage(content);
 		builder.setPositiveButton("OK", (DialogInterface.OnClickListener)null);
 		builder.show();
 	}
