@@ -36,16 +36,16 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		// TODO: Implement this method
 		OnChoosePath(proj.oriFilePath);
-		setting=getSharedPreferences("",MODE_PRIVATE);
+		setting=getSharedPreferences(SETTINGKEY,MODE_PRIVATE);
 		editor=setting.edit();
-		editor.putString(
+		editor.putString(LASTPROJKEY,proj.name);
 		return ;
 	}
 	
 	private static final int REQUEST_SELECT_FILE = 12345678;
 	private static final int BULK_SIZE = 1024;
-	private static final String SETTINGKEY=
-	
+	private static final String SETTINGKEY="setting";
+	private static final String LASTPROJKEY = "lastProject";
 	String fpath;
 	byte[] filecontent=null;
 	ELFUtil elfUtil;
@@ -972,7 +972,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			String filePath = intent.getData().getPath();
 			OnChoosePath(filePath);
 		} else { // android.intent.action.MAIN
-			String lastProj=setting.getString("lastProject","");
+			
+			String lastProj=setting.getString(LASTPROJKEY, "");
 			/*Project tmpProj=*/projectManager.Open(lastProj);
 			/*if(tmpProj!=null)
 			{
