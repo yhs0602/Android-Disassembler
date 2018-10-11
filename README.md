@@ -1,12 +1,16 @@
+# Version 1.0.0 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+
 # Android-Disassembler
 Disassemble .so (NDK, JNI) files on Android. Capstone-based disassembler application on android
 
 # Features
 - Shows details of elf files.
 - Disassembles the entire code sections.
-- Has various export options of  the disassembly.
+- Has various export options of the disassembly. (Compilable txt file, analytic text files, json, and reloadable database)
 - Highlights branch instructions.
 - Has Instant analysis mode.
+- Supports projects.
+- Supports launching from file browsers.
 
 # Usuage
 1. Choose an elf file to analyze.
@@ -59,10 +63,20 @@ Use Android studio.
 
 # What's new
  - Changed to Android Studio structure.
+ - Supports various disasm export options.
+ - Supports open from file browsers.
+ - Supports x86 shared libraries.
+ - Doesn't require your email accounts when sending error reports
+ - Easier bug report
 
 # TODO
- - Optimization(Done)
- - Support x86 files.
+ - Optimize saving disassemblies
+ - Support x86 files. (Done..?)
  - fix bugs
  - add menus on clicking disassemblies.
- - add coloring.
+ - add Syntax highlighting in disassemblies.
+ - Add more project export options(zip, etc..)
+ - Show function names as entry point. (https://ja.stackoverflow.com/questions/49106/elf-ファイルのdynamicセクションの情報を読み込み-外部にexportされている関数の名前と住所を見せたいと思います) I am not good at Japanese but I had to post here for some reasons.
+ - Support exe files.
+ - Organize spaghetti codes.
+ - Add theme preferences.
