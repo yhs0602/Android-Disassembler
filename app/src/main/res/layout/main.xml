@@ -198,7 +198,7 @@
 
 								<Button
 									android:layout_height="wrap_content"
-									android:text="Save to file"
+									android:text="Export"
 									android:layout_width="wrap_content"
 									android:id="@+id/btnSaveDisasm"/>
 

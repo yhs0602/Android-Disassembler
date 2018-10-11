@@ -32,6 +32,126 @@ public class DisasmResult
 		//DisasmOne2(bytes,shift,address);
 	}
 
+	public void setId(int id)
+	{
+		this.id = id;
+	}
+
+	public int getId()
+	{
+		return id;
+	}
+
+	public void setAddress(long address)
+	{
+		this.address = address;
+	}
+
+	public long getAddress()
+	{
+		return address;
+	}
+
+	public void setSize(int size)
+	{
+		this.size = size;
+	}
+
+	public int getSize()
+	{
+		return size;
+	}
+
+	public void setBytes(byte[] bytes)
+	{
+		this.bytes = bytes;
+	}
+
+	public byte[] getBytes()
+	{
+		return bytes;
+	}
+
+	public void setMnemonic(String mnemonic)
+	{
+		this.mnemonic = mnemonic;
+	}
+
+	public String getMnemonic()
+	{
+		return mnemonic;
+	}
+
+	public void setOp_str(String op_str)
+	{
+		this.op_str = op_str;
+	}
+
+	public String getOp_str()
+	{
+		return op_str;
+	}
+
+	public void setRegs_read(byte[] regs_read)
+	{
+		this.regs_read = regs_read;
+	}
+
+	public byte[] getRegs_read()
+	{
+		return regs_read;
+	}
+
+	public void setRegs_read_count(byte regs_read_count)
+	{
+		this.regs_read_count = regs_read_count;
+	}
+
+	public byte getRegs_read_count()
+	{
+		return regs_read_count;
+	}
+
+	public void setRegs_write(byte[] regs_write)
+	{
+		this.regs_write = regs_write;
+	}
+
+	public byte[] getRegs_write()
+	{
+		return regs_write;
+	}
+
+	public void setRegs_write_count(byte regs_write_count)
+	{
+		this.regs_write_count = regs_write_count;
+	}
+
+	public byte getRegs_write_count()
+	{
+		return regs_write_count;
+	}
+
+	public void setGroups(byte[] groups)
+	{
+		this.groups = groups;
+	}
+
+	public byte[] getGroups()
+	{
+		return groups;
+	}
+
+	public void setGroups_count(byte groups_count)
+	{
+		this.groups_count = groups_count;
+	}
+
+	public byte getGroups_count()
+	{
+		return groups_count;
+	}
+
 	public boolean isBranch()
 	{
 		if(groups_count==0)
@@ -190,4 +310,46 @@ public class DisasmResult
 		*/
 	//} cs_detail;
 	//enum 
+	
+	
+	
+	////////DATABASE UNIT ////////
+	public static final String TABLE_NAME = "disasms";
+
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_ADDRESS = "address";
+	public static final String COLUMN_SIZE = "size";
+    public static final String COLUMN_BYTES = "bytes";
+	public static final String COLUMN_MNEMONIC = "mnemonic";
+    public static final String COLUMN_OPSTR = "op_str";
+    public static final String COLUMN_REGREAD = "reg_read";
+	public static final String COLUMN_REGREAD_CNT = "regs_read_count";
+    public static final String COLUMN_REGWRITE = "regs_write";
+    public static final String COLUMN_REGWRITE_CNT = "regs_write_count";
+	public static final String COLUMN_GROUP = "groups";
+    public static final String COLUMN_GROUP_CNT = "groups_count";
+   // public static final String COLUMN_TIMESTAMP = "bytes";
+	
+//	// Create table SQL query
+//	public static final String CREATE_TABLE =
+//	"CREATE TABLE " + TABLE_NAME + "("
+//	+ COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+//	+ COLUMN_NOTE + " TEXT,"
+//	+ COLUMN_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP"
+//	+ ")";
+	public static final String CREATE_TABLE =
+	"CREATE TABLE " + TABLE_NAME + "("
+	+ COLUMN_ID + " INTEGER, "
+	+ COLUMN_ADDRESS + " INTEGER PRIMARY KEY, "
+	+ COLUMN_SIZE + " INTEGER, "
+	+ COLUMN_BYTES + " CHAR(16), "
+	+ COLUMN_MNEMONIC + " TEXT, "
+	+ COLUMN_OPSTR + " TEXT, "
+	+ COLUMN_REGREAD + " CHAR(12), "
+	+ COLUMN_REGREAD_CNT + " INTEGER, "
+	+ COLUMN_REGWRITE + " CHAR(12), "
+	+ COLUMN_REGWRITE_CNT + " INTEGER, "
+	+ COLUMN_GROUP + " CHAR(8), "
+	+ COLUMN_GROUP_CNT + " INTEGER "
+	+ ")";
 }

@@ -8,12 +8,20 @@ public class ProjectManager
 {
 	public static final String Path="/sdcard/Android Disassembler/";
 	public static final String TAG="Disassembler Proj";
-
+	public static final File RootFile=new File(Path);
+	
+	//Scheme.
+	//Root
+	//		Proj1
+	//			Proj1.ada
+	//			details.txt
+	//			disasm.db
+	
 	String[] strprojects=new String[]{"Create new"};
-	OnProjectOpenListener listener;
+	MainActivity listener;
 	
 	//https://stackoverflow.com/a/8955040/8614565
-	public ProjectManager(OnProjectOpenListener list) throws IOException
+	public ProjectManager(MainActivity list) throws IOException
 	{
 		listener=list;
 		File file=new File(Path);
@@ -58,10 +66,10 @@ public class ProjectManager
 		// TODO: Implement this method
 		return strprojects;
 	}
-	public Project newProject(String name, String path) throws IOException
+	public Project newProject(String name, String oriFilePath) throws IOException
 	{
 		Project proj=new Project(name);
-		
+		proj.oriFilePath=oriFilePath;
 		return proj;
 	}
 	public Project Open(String name)
@@ -81,18 +89,23 @@ public class ProjectManager
 		}
 		return proj;
 	}
+	public static String createPath(String name)
+	{
+		return Path+name+"/";
+	}
 	public class Project
 	{
 		//Files: .project, disasm, details
 		String name="";
 		String oriFilePath="";
 		File projFile;
+		File projdir;
 		//String 
 		public Project(String name) throws IOException
 		{
 			this.name = name;
-			File file=new File(Path);
-			File projdir=new File(file,name+"/");
+			//File file=new File(Path);
+			projdir=new File(RootFile,name+"/");
 			if(!projdir.exists())
 				projdir.mkdirs();
 			projFile = new File(projdir, name + ".adp");
@@ -104,6 +117,8 @@ public class ProjectManager
 				while ((line = br.readLine()) != null)
 				{
 					String [] parsed=line.split(":");
+					if(parsed.length<2)
+						continue;
 					String key=parsed[0];
 					String value=parsed[1];
 					map.put(key, value);
@@ -120,14 +135,19 @@ public class ProjectManager
 			}
 		}
 
-		public File getDetail()
+		public File getDetailFile()
 		{
-			return detail;
+			return detailFile;
 		}
 
-		public File getDisasm()
+		public DatabaseHelper getDisasmDb()
 		{
-			return disasm;
+			if(disasmDB==null)
+			{
+				Log.e(TAG,"db null!!!");
+				return listener.getDb();
+			}
+			return disasmDB;
 		}
 
 		public void setOriFilePath(String oriFilePath)
@@ -142,36 +162,44 @@ public class ProjectManager
 		//loads the data.
 		public void Open() throws IOException
 		{
+			Open(true);
+		}
+		public void Open(boolean notify) throws IOException
+		{
 			File dir=new File(Path);
-			File projdir=new File(dir,name+"/");
+			projdir=new File(dir,name+"/");
 			if(!projdir.exists())
 				projdir.mkdirs();
-			detail=new File(projdir,"details.txt");
-			disasm=new File(projdir,"disasm.json");
+			detailFile=new File(projdir,"details.txt");
+			disasmDB=listener.getDb();
+		//	disasmDB=new File(projdir,"disasm.json");
 			IOException err=new IOException();
-			if(!detail.exists())
+			if(!detailFile.exists())
 			{
 				try
 				{
-					detail.createNewFile();
+					detailFile.createNewFile();
 				}
 				catch (IOException e)
 				{
 					err.addSuppressed(e);
 				}
 			}
-			if(!disasm.exists())
+			/*
+			//disasm is in database
+			if(!disasmDB.exists())
 			{
 				try
 				{
-					disasm.createNewFile();
+					disasmDB.createNewFile();
 				}
 				catch (IOException e)
 				{
 					err.addSuppressed(e);
 				}
-			}
-			listener.onOpen(this);
+			}*/
+			if(notify)
+				listener.onOpen(this);
 			Throwable[] errs=err.getSuppressed();
 			if(errs!=null&&errs.length>0)
 				throw err;
@@ -182,8 +210,30 @@ public class ProjectManager
 			bw.write("oriPath:" + oriFilePath);
 			bw.close();
 		}
-		File detail;
-		File disasm;
+		File detailFile;
+		DatabaseHelper disasmDB;
+		public String getDetail()
+		{
+			if(detailFile==null)
+			{
+				detailFile=new File(projdir,"details.txt");
+				if(!detailFile.exists())
+				{
+					return "";
+				}
+				try
+				{
+					int len=(int)detailFile.length();
+					byte[] buf=new byte[len];
+					FileInputStream fis=new FileInputStream(detailFile);
+					fis.read(buf);
+					return new String(buf);
+				}
+				catch (IOException e)
+				{}
+			}
+			return "";
+		}
 	}
 
 	public interface OnProjectOpenListener

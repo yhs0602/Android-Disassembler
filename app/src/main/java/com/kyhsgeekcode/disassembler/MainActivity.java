@@ -31,19 +31,41 @@ import com.kyhsgeekcode.disassembler.ProjectManager.*;
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
 {
+	public DatabaseHelper getDb()
+	{
+		return db;
+	}
 	@Override
 	public void onOpen(ProjectManager.Project proj)
 	{
 		// TODO: Implement this method
+		db=new DatabaseHelper(this,ProjectManager.createPath(proj.name)+"disasm.db");
 		OnChoosePath(proj.oriFilePath);
 		currentProject=proj;
 		setting=getSharedPreferences(SETTINGKEY,MODE_PRIVATE);
 		editor=setting.edit();
 		editor.putString(LASTPROJKEY,proj.name);
+		String det=proj.getDetail();
+		if(!"".equals(det))
+		{
+			etDetails.setText(det);
+		}
+		disasmResults=(ArrayList<DisasmResult>) db.getAll();
+		if(disasmResults!=null)
+		{
+			int len=disasmResults.size();
+			for(int i=0;i<len;++i)
+			{
+				adapter.addItem(disasmResults.get(i));
+				adapter.notifyDataSetChanged();
+			}
+		}else{
+			disasmResults=new ArrayList<>();
+		}
 		return ;
 	}
 	
-	private static final int REQUEST_SELECT_FILE = 12345678;
+	private static final int REQUEST_SELECT_FILE = 123;
 	private static final int BULK_SIZE = 1024;
 	private static final String SETTINGKEY="setting";
 	private static final String LASTPROJKEY = "lastProject";
@@ -113,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private ProjectManager projectManager;
 
 	private ProjectManager.Project currentProject;
+	
+	DatabaseHelper db;
 	//DisasmIterator disasmIterator;
 	@Override
 	public void onClick(View p1)
@@ -186,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				ShowDetail();
 				break;
 			case R.id.btnSaveDisasm:
-				SaveDisasm();
+				ExportDisasm();
 				break;
 			case R.id.btnSaveDetails:
 				SaveDetail();
@@ -260,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		showFileChooser();
 	}
 
-	private void SaveDisasm()
+	private void ExportDisasm()
 	{
 		requestAppPermissions(this);
 		if (fpath == null || "".compareToIgnoreCase(fpath) == 0)
@@ -268,27 +292,44 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			AlertSelFile();
 			return;
 		}
-		final List<String> ListItems = new ArrayList<>();
-        ListItems.add("Classic(Addr bytes inst op comment)");
-        ListItems.add("Simple(Addr: inst op; comment");
-        ListItems.add("Json(Reloadable)");
-		ShowSelDialog(this,ListItems,"Export as...",new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int pos)
-				{
-					//String selectedText = items[pos].toString();
-					dialog.dismiss();
-					final ProgressDialog dialog2= showProgressDialog("Saving...");
-					SaveDisasmSub(pos);
-					dialog2.dismiss();
-				}
-			});
+		if(currentProject==null)
+		{
+			final EditText etName=new EditText(this);
+			ShowEditDialog("Create new Project", "Enter new project name", etName, "OK", new DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface p1,int  p2)
+					{
+						// TODO: Implement this method
+						String projn=etName.getText().toString();
+						SaveDisasmNewProject(projn);
+						return ;
+					}
+				}, "Cancel", new DialogInterface.OnClickListener(){
+
+					@Override
+					public void onClick(DialogInterface p1, int p2)
+					{		
+						return ;
+					}				
+				});
+		}else{
+			ShowExportOptions();
+		}
+			
 	}
 
-	private void SaveDisasmSub(int mode)
+	private void ExportDisasmSub(int mode)
 	{
 		Log.v(TAG, "Saving disassembly");
-		File dir=new File("/sdcard/disasm/");
-		File file=new File(dir, new File(fpath).getName() + "_" + new Date(System.currentTimeMillis()).toString() + ".disassembly.txt");
+		if(mode==0)
+		{
+			SaveDisasm(currentProject.getDisasmDb());
+			return;
+		}
+		File dir=new File(projectManager.RootFile,currentProject.name+"/");
+		Log.d(TAG,"dirpath="+dir.getAbsolutePath());
+		File file=new File(dir, "Disassembly_" + new Date(System.currentTimeMillis()).toString() + (mode==3 ? ".json":".txt"));
+		Log.d(TAG,"filepath="+file.getAbsolutePath());
 		dir.mkdirs();
 		try
 		{
@@ -311,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				{
 					switch (mode)
 					{
-						case 0:
+						case 1:
 							sb.append(lvi.address);
 							sb.append("\t");
 							sb.append(lvi.bytes);
@@ -322,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 							sb.append("\t");
 							sb.append(lvi.comments);
 							break;
-						case 1:
+						case 2:
 							sb.append(lvi.address);
 							sb.append(":");
 							sb.append(lvi.instruction);
@@ -331,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 							sb.append("  ;");
 							sb.append(lvi.comments);
 							break;
-						case 2:
+						case 3:
 							sb.append(lvi.toString());
 					}	
 					sb.append(System.lineSeparator());
@@ -340,16 +381,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			}
 			catch (IOException e)
 			{
-				Log.e(TAG, "", e);
+				AlertError( "", e);
+				return;
 			}
 		}
 		catch (FileNotFoundException e)
 		{
-			Log.e(TAG, "", e);
+			AlertError("", e);
 		}
 		AlertSaveSuccess(file);
 	}
-
+	
 	private void SaveDetail()
 	{
 		requestAppPermissions(this);
@@ -379,7 +421,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						return ;
 					}				
 				});
+		}else{
+			try
+			{
+				SaveDetailSub(currentProject);
+			}
+			catch (IOException e)
+			{
+				AlertError("Error saving details",e);
+			}
 		}
+
 		//SaveDetailOld();
 	}
 
@@ -389,13 +441,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		try
 		{
 			ProjectManager.Project proj=projectManager.newProject(projn, fpath);
-			proj.Open();
-			File detailF=proj.getDetail();
-			if(detailF==null)
-				throw new IOException("Failed to create detail File");
-			detailF.createNewFile();
-			SaveDetail(new File(ProjectManager.Path),detailF);
-			proj.Save();
+			proj.Open(false);
+			SaveDetailSub(proj);
 		}
 		catch (IOException e)
 		{
@@ -403,31 +450,74 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		return ;
 	}
-	private void SaveDisasmNewProject(String projn)
+
+	private void SaveDetailSub(ProjectManager.Project proj) throws IOException
 	{
-		// TODO: Implement this method
+		File detailF=proj.getDetailFile();
+		if (detailF == null)
+			throw new IOException("Failed to create detail File");
+		currentProject = proj;
+		detailF.createNewFile();
+		SaveDetail(new File(ProjectManager.Path), detailF);
+		proj.Save();
+	}
+	private void SaveDisasmNewProject(String projn)
+	{	
 		try
 		{
 			ProjectManager.Project proj=projectManager.newProject(projn, fpath);
-			proj.Open();
-			File disasmF=proj.getDisasm();
-			if(disasmF==null)
-				throw new IOException("Failed to create disasm File");
-			disasmF.createNewFile();
-			SaveDisasm()(new File(ProjectManager.Path),disasmF);
+			currentProject=proj;
+			proj.Open(false);
+			ShowExportOptions();
 			proj.Save();
+			
 		}
 		catch (IOException e)
 		{
 			AlertError("Error creating a project!!",e);
+		}
+		return ;
+	}
+
+	private void ShowExportOptions()
+	{
+		final List<String> ListItems = new ArrayList<>();
+		ListItems.add("Project database(.db, reloadable)");
+        ListItems.add("Classic(Addr bytes inst op comment)");
+        ListItems.add("Simple(Addr: inst op; comment");
+        ListItems.add("Json");
+		ShowSelDialog(this, ListItems, "Export as...", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int pos)
+				{
+					//String selectedText = items[pos].toString();
+					dialog.dismiss();
+					final ProgressDialog dialog2= showProgressDialog("Saving...");
+					ExportDisasmSub(pos);
+					dialog2.dismiss();
+				}
+			});
+	}
+
+	private void  SaveDisasm(DatabaseHelper disasmF)
+	{
+		// TODO: Implement this method
+		int cnt=disasmF.getCount();
+		if(cnt==0)
+		{
+			int datasize=disasmResults.size();
+			for(int i=0;i<datasize;++i)
+			{
+				disasmF.insert(disasmResults.get(i));
+			}
 		}
 		return ;
 	}
 	
-	private void AlertError(String p0, IOException e)
+	private void AlertError(String p0, Exception e)
 	{
-		// TODO: Implement this method
-		ShowAlertDialog((Activity)this,p0,Log.getStackTraceString(e));
+		ShowErrorDialog(this,p0,e);
+		//ShowAlertDialog((Activity)this,p0,Log.getStackTraceString(e));
+		Log.e(TAG,p0,e);
 		return ;
 	}
 	
@@ -842,12 +932,31 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		tbrow.setTag(lvi);
 		tlDisasmTable.addView(tbrow);
 	}
-
-	private void getFunctionNames()
+	private void SendErrorReport(Throwable error)
 	{
-		// TODO: Implement this me
-		return ;
+		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+
+		emailIntent.setType("plain/text");
+
+		emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
+							 new String[] { "1641832e@fire.fundersclub.com" });
+
+		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+							 "Crash report");
+		StringBuilder content=new StringBuilder(Log.getStackTraceString(error));
+		/*content.append("Emails:");
+		 content.append(System.lineSeparator());
+		 for(String s:accs)
+		 {
+		 content.append(s);
+		 content.append(System.lineSeparator());
+		 }*/
+		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+							 content.toString());
+
+		startActivity(Intent.createChooser(emailIntent, "Send crash report as an issue by email"));
 	}
+
 	public void AdjustShow(TextView t1v, TextView t2v, TextView t3v, TextView t4v, TextView t5v, TextView t6v, TextView t7v)
 	{
 		t1v.setVisibility(isShowAddress() ? View.VISIBLE: View.GONE);
@@ -916,32 +1025,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					}
 					requestAppPermissions(MainActivity.this);
 					//String [] accs=getAccounts();
-					final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-
-					emailIntent.setType("plain/text");
-
-					emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
-										 new String[] { "1641832e@fire.fundersclub.com" });
-
-					emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-										 "Crash report");
-					StringBuilder content=new StringBuilder(Log.getStackTraceString(p2));
-					/*content.append("Emails:");
-					content.append(System.lineSeparator());
-					for(String s:accs)
-					{
-						content.append(s);
-						content.append(System.lineSeparator());
-					}*/
-					emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-										 content.toString());
-
-					startActivity(Intent.createChooser(emailIntent, "Send crash report as an issue by email"));
+					SendErrorReport(p2);
 					//	ori.uncaughtException(p1, p2);
 					Log.wtf(TAG,"UncaughtException",p2);
 					finish();
 					return ;
 				}
+
+				
 				private String[] getAccounts() {
 					Pattern emailPattern = Patterns.EMAIL_ADDRESS;
 					Account[] accounts = AccountManager.get(MainActivity.this).getAccounts();
@@ -1034,7 +1125,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (IOException e)
 		{
-			Log.e(TAG,"Failed to load projects",e);
+			AlertError("Failed to load projects",e);
 		}
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -1048,9 +1139,23 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		//https://www.androidpub.com/1351553
 		Intent intent = getIntent();
 		if (intent.getAction().equals(Intent.ACTION_VIEW)) {
-			// 연결되서 실행됐을 경우
+			// User opened this app from file browser
 			String filePath = intent.getData().getPath();
-			OnChoosePath(filePath);
+			String[] toks=filePath.split(".");
+			int last=toks.length-1;
+			String ext="";
+			if(last>=0){
+				ext=toks[last];
+				if("adp".equalsIgnoreCase(ext))
+				{
+					//User opened the project file
+					projectManager.Open(toks[last-1]);
+					
+				}
+			}else{
+			//User opened pther files
+				OnChoosePath(filePath);
+			}
 		} else { // android.intent.action.MAIN	
 			String lastProj=setting.getString(LASTPROJKEY, "");
 			if(projectManager!=null)
@@ -1106,7 +1211,25 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		ShowAlertDialog(a,"Permissions","- Read/Write storage(obvious)\r\n- GetAccounts: add email address info on crash report.\r\n\r\n For more information visit https://github.com/KYHSGeekCode/Android-Disassembler/");
 	}
-
+	private void ShowErrorDialog(Activity a,String title,final Throwable err)
+	{
+		android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(a);
+		builder.setTitle(title);
+		builder.setCancelable(false);
+		builder.setMessage(Log.getStackTraceString(err));
+		builder.setPositiveButton("OK", (DialogInterface.OnClickListener)null);
+		builder.setNegativeButton("Send error report", new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface p1,int  p2)
+				{
+					// TODO: Implement this method
+					SendErrorReport(err);
+					return ;
+				}
+			});
+		builder.show();
+	}
+	
 	private static void ShowAlertDialog(Activity a,String title,String content)
 	{
 		android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(a);
@@ -1465,7 +1588,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					//cs.setMode();
 				}
 			}
-			catch (IOException e)
+			catch (Exception e)
 			{
 				//not an elf file. try PE parser
 				PE pe=PEParser.parse(path);
@@ -1475,14 +1598,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					if(ps==null||!ps.isValid())
 					{
 						//What is it?
-						Toast.makeText(this,"The file seems that it is neither an Elf file or PE file!",3).show();
+						Toast.makeText(this,"The file seems that it is neither a valid Elf file or PE file!",3).show();
 						throw new IOException(e);
 					}
 				}
 				else
 				{
 					//What is it?
-					Toast.makeText(this,"The file seems that it is neither an Elf file or PE file!",3).show();
+					Toast.makeText(this,"The file seems that it is neither a valid Elf file or PE file!",3).show();
 					throw new IOException(e);
 				}
 			}	
@@ -1491,8 +1614,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (IOException e)
 		{
-			Log.e(TAG, "", e);
-			Toast.makeText(this, Log.getStackTraceString(e), 30).show();
+			//Log.e(TAG, "", e);
+			AlertError("Failed to open and parse the file",e);
+			//Toast.makeText(this, Log.getStackTraceString(e), 30).show();
 		}
 	}
 	private int getArchitecture(MachineType type)
