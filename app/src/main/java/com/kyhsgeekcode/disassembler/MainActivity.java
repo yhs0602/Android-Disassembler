@@ -50,7 +50,30 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		{
 			etDetails.setText(det);
 		}
-		disasmResults=(ArrayList<DisasmResult>) db.getAll();
+		File dir=new File(projectManager.RootFile,currentProject.name+"/");
+		Log.d(TAG,"dirpath="+dir.getAbsolutePath());
+		File file=new File(dir, "Disassembly.raw");
+		if(file.exists()){
+			try
+			{
+				FileInputStream fis = new FileInputStream(file);
+				ObjectInputStream ois = new ObjectInputStream(fis);
+				disasmResults = (ArrayList<DisasmResult>)ois.readObject();
+				ois.close();
+			}
+			catch (ClassNotFoundException e)
+			{
+				AlertError("Error loading from raw",e);
+			}
+			catch (IOException e)
+			{
+				AlertError("Error loading from raw",e);
+			}
+		}
+		else
+		{
+			disasmResults=(ArrayList<DisasmResult>) db.getAll();
+		}
 		if(disasmResults!=null)
 		{
 			int len=disasmResults.size();
@@ -321,7 +344,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private void ExportDisasmSub(int mode)
 	{
 		Log.v(TAG, "Saving disassembly");
-		if(mode==0)
+		if(mode==0)//Raw mode
+		{
+			SaveDisasmRaw();
+			return;
+		}
+		if(mode==4)//Database mode
 		{
 			SaveDisasm(currentProject.getDisasmDb());
 			return;
@@ -391,6 +419,38 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		AlertSaveSuccess(file);
 	}
+
+	private void SaveDisasmRaw()
+	{
+		File dir=new File(projectManager.RootFile,currentProject.name+"/");
+		Log.d(TAG,"dirpath="+dir.getAbsolutePath());
+		File file=new File(dir, "Disassembly.raw");
+		Log.d(TAG,"filepath="+file.getAbsolutePath());
+		dir.mkdirs();
+		try
+		{
+			file.createNewFile();
+		}
+		catch (IOException e)
+		{
+			Log.e(TAG, "", e);
+			Toast.makeText(this, "Something went wrong saving file", 3).show();
+		}
+		try
+		{
+			FileOutputStream fos = new FileOutputStream(file);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(disasmResults);
+			oos.close();
+		}
+		catch (IOException e)
+		{
+			AlertError("Failed to save disasm as a Raw file",e);
+			return;
+		}
+		AlertSaveSuccess(file);
+		return ;
+	}
 	
 	private void SaveDetail()
 	{
@@ -442,6 +502,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		{
 			ProjectManager.Project proj=projectManager.newProject(projn, fpath);
 			proj.Open(false);
+			db=new DatabaseHelper(this,ProjectManager.createPath(proj.name)+"disasm.db");
 			SaveDetailSub(proj);
 		}
 		catch (IOException e)
@@ -468,6 +529,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			ProjectManager.Project proj=projectManager.newProject(projn, fpath);
 			currentProject=proj;
 			proj.Open(false);
+			db=new DatabaseHelper(this,ProjectManager.createPath(proj.name)+"disasm.db");
 			ShowExportOptions();
 			proj.Save();
 			
@@ -482,10 +544,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private void ShowExportOptions()
 	{
 		final List<String> ListItems = new ArrayList<>();
-		ListItems.add("Project database(.db, reloadable)");
+		ListItems.add("Raw(Fast,Reloadable)");
         ListItems.add("Classic(Addr bytes inst op comment)");
         ListItems.add("Simple(Addr: inst op; comment");
         ListItems.add("Json");
+		ListItems.add("Database(.db, reloadable)");
 		ShowSelDialog(this, ListItems, "Export as...", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int pos)
 				{
@@ -653,6 +716,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		Log.v(TAG, "Strted disassm");
 		btDisasm.setEnabled(false);
 		btAbort.setEnabled(true);
+		btSavDisasm.setEnabled(false);
 		//final ProgressDialog dialog= showProgressDialog("Disassembling...");
 		disasmResults.clear();
 		setupListView();
@@ -741,6 +805,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								//dialog.dismiss();
 								btDisasm.setEnabled(true);
 								btAbort.setEnabled(false);
+								btSavDisasm.setEnabled(true);
 								Toast.makeText(MainActivity.this, "done", 2).show();			
 							}
 						});
@@ -1612,7 +1677,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			fpath = path;
 			Toast.makeText(this, "success size=" + index /*+ type.name()*/, 3).show();
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			//Log.e(TAG, "", e);
 			AlertError("Failed to open and parse the file",e);

@@ -1,8 +1,9 @@
 package com.kyhsgeekcode.disassembler;
 
 import java.util.*;
+import java.io.*;
 
-public class DisasmResult
+public class DisasmResult implements Serializable
 {
 	public DisasmResult()
 	{
