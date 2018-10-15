@@ -6,7 +6,7 @@
 		tools:remove="android:maxSdkVersion" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
 		tools:remove="android:maxSdkVersion"/>
-	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	<!--uses-permission android:name="android.permission.GET_ACCOUNTS" /-->
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"

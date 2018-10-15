@@ -2,6 +2,8 @@ package com.kyhsgeekcode.disassembler;
 
 import android.util.*;
 import java.io.*;
+import java.nio.*;
+import java.nio.channels.*;
 import java.util.*;
 import nl.lxtreme.binutils.elf.*;
 public class ELFUtil implements Closeable
@@ -75,12 +77,23 @@ public class ELFUtil implements Closeable
 		{
 			return codeOffset;
 		}
+		//Do some error
 		return 0L;
+	}
+	public ELFUtil(FileChannel channel, byte[] filec) throws IOException
+	{
+		elf = new Elf(channel);
+		fileContents = filec;
+		AfterConstructor();
 	}
 	public ELFUtil(File file, byte[] filec) throws IOException
 	{
 		elf = new Elf(file);
 		fileContents = filec;
+		AfterConstructor();
+	}
+	public void AfterConstructor() throws IOException
+	{
 		SectionHeader[] sections = elf.sectionHeaders;
 		//assertNotNull( sections );
 
@@ -94,7 +107,7 @@ public class ELFUtil implements Closeable
 		//bExecutable=header.elfType;
 		if (header.entryPoint == 0)
 		{
-			Log.i(TAG, "file " + file.getName() + "doesnt have entry point. currently set to 0x30");
+			//Log.i(TAG, "file " + file.getName() + "doesnt have entry point. currently set to 0x30");
 			entryPoint = 0x30;
 		}
 		else
@@ -151,85 +164,177 @@ public class ELFUtil implements Closeable
 			long hash=0L;
 			int sym_cnt=0;
 			int i=0;
-			for (DynamicEntry de=elf.dynamicTable[0];;++i)
+			byte[] symtabs=elf.getDynamicSymbolTable();
+			ByteBuffer symbuffer=elf.getSection(elf.getSectionHeaderByType(SectionType.DYNSYM));
+			byte[] strtable=elf.getDynamicStringTable();
+
+			/*https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-35166
+			 Symbol Values
+			 Symbol table entries for different object file types have slightly different interpretations for the st_value member.
+
+			 In relocatable files, st_value holds alignment constraints for a symbol whose section index is SHN_COMMON.
+
+			 In relocatable files, st_value holds a section offset for a defined symbol. st_value is an offset from the beginning of the section that st_shndx identifies.
+
+			 In executable and shared object files, st_value holds a virtual address. To make these files' symbols more useful for the runtime linker, the section offset (file interpretation) gives way to a virtual address (memory interpretation) for which the section number is irrelevant.
+
+			 Although the symbol table values have similar meanings for different object files, the data allow efficient access by the appropriate programs.
+			 */
+			/*https://github.com/torvalds/linux/blob/master/include/uapi/linux/elf.h
+			 /* 32-bit ELF base types. 
+			 typedef __u32	Elf32_Addr;
+			 typedef __u16	Elf32_Half;
+			 typedef __u32	Elf32_Off;
+			 typedef __s32	Elf32_Sword;
+			 typedef __u32	Elf32_Word;
+
+			 /* 64-bit ELF base types. 
+			 typedef __u64	Elf64_Addr;
+			 typedef __u16	Elf64_Half;
+			 typedef __s16	Elf64_SHalf;
+			 typedef __u64	Elf64_Off;
+			 typedef __s32	Elf64_Sword;
+			 typedef __u32	Elf64_Word;
+			 typedef __u64	Elf64_Xword;
+			 typedef __s64	Elf64_Sxword;
+
+			 */
+			/*https://docs.oracle.com/cd/E19683-01/816-1386/chapter6-79797/index.html
+			 typedef struct {
+			 Elf32_Word      st_name;
+			 Elf32_Addr      st_value;
+			 Elf32_Word      st_size;
+			 unsigned char   st_info;
+			 unsigned char   st_other;
+			 Elf32_Half      st_shndx;
+			 } Elf32_Sym;
+
+			 typedef struct {
+			 Elf64_Word      st_name;
+			 unsigned char   st_info;
+			 unsigned char   st_other;
+			 Elf64_Half      st_shndx;
+			 Elf64_Addr      st_value;
+			 Elf64_Xword     st_size;
+			 } Elf64_Sym;
+			 The elements of this structure are:
+
+			 st_name
+			 An index into the object file's symbol string table, which holds the character representations of the symbol names.
+			 If the value is nonzero, it represents a string table index that gives the symbol name.
+			 Otherwise, the symbol table entry has no name.
+
+			 st_value
+			 The value of the associated symbol. Depending on the context, this can be an absolute value, an address, and so forth. See "Symbol Values".
+
+			 st_size
+			 Many symbols have associated sizes. For example, a data object's size is the number of bytes contained in the object. This member holds 0 if the symbol has no size or an unknown size.
+
+			 */
+			while (symbuffer.hasRemaining())
 			{
-				if (i >= elf.dynamicTable.length)
-					i = 0;
-				de = elf.dynamicTable[i];
-				DynamicEntry.Tag tag=de.getTag();
-				Log.v(TAG, tag.toString());
-				if (tag == null)
-				{
-					Log.v(TAG, "The tag is null");
-					break;
-				}
-				if (de.getTag().equals(DynamicEntry.Tag.NULL))	
-				{
-					Log.v(TAG, "Tag is NULL tag");
-					break;
-				}
-				if (tag.equals(DynamicEntry.Tag.HASH))
-				{
-					hash = de.getValue();
-					/* Get a pointer to the hash */
-					//			hash = (ElfW(Word*))dyn->d_un.d_ptr;
-//
-					/* The 2nd word is the number of symbols */
-					//			sym_cnt = hash[1];
-					//int hashvalue=fileContents[(int)hash]
-					sym_cnt = (fileContents[(int)hash + 1] << 8 | fileContents[(int)hash]);
-					Log.v(TAG, "Hash=" + hash + "cnt=" + sym_cnt);
-				}
-				else if (tag.equals(DynamicEntry.Tag.STRTAB))
-				{
-					strtab = de.getValue();
-					Log.i(TAG, "strtab=" + strtab);
-				}
-				else if (tag.equals(DynamicEntry.Tag.SYMTAB))
-				{
-					if (sym_cnt == 0 || strtab == 0)
-					{
-						continue;
-					}
-					long sym=de.getValue();
-					Log.i(TAG, "sym=" + sym);
-					//		int sym_index=0;
-					for (int sym_index=0;sym_index < sym_cnt;sym_index++)
-					{
-						String sym_name=new String(fileContents, (int)strtab + fileContents[(int)(sym + sym_index * 16)], 64);
-						byte[] bytes=sym_name.getBytes();
-						//char[] chars=new char[sym_name.length()];
-						//sym_name.getb(0,sym_name.length()-1,chars,0);
-						ArrayList<Byte> arr=new ArrayList<>();
-						for (int j=0;j < bytes.length;++j)
-						{
-							arr.add(new Byte(bytes[j]));
-							if (bytes[j] == 0)
-							{
-								break;
-							}
-						}
-						byte[] newbytes=new byte[arr.size()];
-						for (int j=0;j < newbytes.length;++j)
-						{
-							newbytes[j] = arr.get(j);
-						}
-						sym_name = new String(newbytes);
-						//int symsymindexstname=fileContents[sym+sym_index];
-						//	sym_name = &strtab[sym[sym_index].st_name];
-						/*try{
-						 sym_name=sym_name.split("\0")[0];
-						 }catch(Exception e){}*/
-						sb.append(sym_name).append("\n");
-						Log.v(TAG, "sym_nmae=" + sym_name);
-					}
-					break;
-				}
+				int name=symbuffer.getInt();
+				int value=symbuffer.getInt();
+				int size=symbuffer.getInt();
+				short stinfo=symbuffer.get();
+				short stother=symbuffer.get();
+				short stshndx=symbuffer.getShort();
+				//symbuffer.
+				//int addr=sym_index*16;
+				/*int b1=symtabs[addr]&0xFF;//lolo
+				 int b2=symtabs[addr+1]&0xFF;//lohi
+				 int b3=symtabs[addr+2]&0xFF;//hilo
+				 int b4=symtabs[addr+3]&0xFF;//hihi
+				 int name=b4<<24|b3<<16|b2<<8|b1;*/
+				String sym_name=Elf.getZString(strtable, name);
+				sb.append(sym_name).append("=").append(Integer.toHexString(value))
+				.append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
+				.append(System.lineSeparator());
 			}
+			/*
+			 for (DynamicEntry de=elf.dynamicTable[0];;++i)
+			 {
+			 if (i >= elf.dynamicTable.length)
+			 i = 0;
+			 de = elf.dynamicTable[i];
+			 DynamicEntry.Tag tag=de.getTag();
+			 Log.v(TAG, tag.toString());
+			 if (tag == null)
+			 {
+			 Log.v(TAG, "The tag is null");
+			 break;
+			 }
+			 if (de.getTag().equals(DynamicEntry.Tag.NULL))	
+			 {
+			 Log.v(TAG, "Tag is NULL tag");
+			 break;
+			 }
+			 if (tag.equals(DynamicEntry.Tag.HASH))
+			 {
+			 hash = de.getValue();
+			 /* Get a pointer to the hash */
+			//			hash = (ElfW(Word*))dyn->d_un.d_ptr;
+//
+			/* The 2nd word is the number of symbols 
+			 //			sym_cnt = hash[1];
+			 //int hashvalue=fileContents[(int)hash]
+			 sym_cnt = (fileContents[(int)hash + 1] << 8 | fileContents[(int)hash]);
+			 Log.v(TAG, "Hash=" + hash + "cnt=" + sym_cnt);
+			 }
+			 else if (tag.equals(DynamicEntry.Tag.STRTAB))
+			 {
+			 strtab = de.getValue();
+			 Log.i(TAG, "strtab=" + strtab);
+			 }
+			 else if (tag.equals(DynamicEntry.Tag.SYMTAB))
+			 {
+			 if (sym_cnt == 0 || strtab == 0)
+			 {
+			 continue;
+			 }
+			 long sym=de.getValue();
+			 Log.i(TAG, "sym=" + sym);
+			 byte[] strtable=elf.getDynamicStringTable();
+			 //		int sym_index=0;
+			 for (int sym_index=0;sym_index < sym_cnt;sym_index++)
+			 {
+
+			 //new String(fileContents,  64);
+			 //byte[] bytes=sym_name.getBytes();
+			 //char[] chars=new char[sym_name.length()];
+			 //sym_name.getb(0,sym_name.length()-1,chars,0);
+			 /*ArrayList<Byte> arr=new ArrayList<>();
+			 for (int j=0;j < bytes.length;++j)
+			 {
+			 arr.add(new Byte(bytes[j]));
+			 if (bytes[j] == 0)
+			 {
+			 break;
+			 }
+			 }
+			 byte[] newbytes=new byte[arr.size()];
+			 for (int j=0;j < newbytes.length;++j)
+			 {
+			 newbytes[j] = arr.get(j);
+			 }
+			 sym_name = new String(newbytes);*/
+
+			//int symsymindexstname=fileContents[sym+sym_index];
+			//	sym_name = &strtab[sym[sym_index].st_name];
+			/*try{
+			 sym_name=sym_name.split("\0")[0];
+			 }catch(Exception e){}
+			 sb.append(sym_name).append("\n");
+			 Log.v(TAG, "sym_nmae=" + sym_name);
+			 }
+			 break;
+			 }
+
+			 }*/
 			info = sb.toString();
 			Log.i(TAG, "info=" + info);
 		}
-		Log.v(TAG,"Checking code section");
+		Log.v(TAG, "Checking code section");
 		for (SectionHeader sh:elf.sectionHeaders)
 		{
 			Log.v(TAG, "type=" + sh.type.toString() + "name=" + sh.getName());

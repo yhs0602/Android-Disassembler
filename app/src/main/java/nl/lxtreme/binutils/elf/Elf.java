@@ -33,7 +33,7 @@ public class Elf implements Closeable
     return in;
   }
 
-  static String getZString( byte[] buf, long offset )
+  public static String getZString( byte[] buf, long offset )
   {
     return getZString( buf, ( int )( offset & 0xFFFFFFFF ) );
   }
@@ -290,8 +290,24 @@ public class Elf implements Closeable
     }
     return sb;
   }
+	public byte[] getDynamicSymbolTable() throws IOException
+	{
+		SectionHeader dynSymHdr = getSectionHeaderByType( SectionType.SYMTAB );
+		if ( dynSymHdr == null )
+		{
+			throw new IOException( "Unable to get symbol table for dynamic section!" );
+		}
 
-  protected byte[] getDynamicStringTable() throws IOException
+		ByteBuffer dynSym = getSection( dynSymHdr );
+		if ( dynSym == null )
+		{
+			throw new IOException( "Unable to get symbol table for dynamic section!" );
+		}
+
+		return dynSym.array();
+	}
+	
+  public byte[] getDynamicStringTable() throws IOException
   {
     SectionHeader dynStrHdr = getSectionHeaderByType( SectionType.STRTAB );
     if ( dynStrHdr == null )

@@ -27,6 +27,7 @@ import org.boris.pecoff4j.*;
 import org.boris.pecoff4j.io.*;
 import com.codekidlabs.storagechooser.utils.*;
 import com.kyhsgeekcode.disassembler.ProjectManager.*;
+import java.nio.channels.*;
 
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		{
 			etDetails.setText(det);
 		}
+		
 		File dir=new File(projectManager.RootFile,currentProject.name+"/");
 		Log.d(TAG,"dirpath="+dir.getAbsolutePath());
 		File file=new File(dir, "Disassembly.raw");
@@ -560,19 +562,54 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 			});
 	}
+	class SaveDBAsync extends AsyncTask<DatabaseHelper, Integer, Void>
+	{
+		String TAG = getClass().getSimpleName();
+		android.app.AlertDialog.Builder builder;
+		ProgressBar progress;
+		protected void onPreExecute (){
+			super.onPreExecute();
+			Log.d(TAG + " PreExceute","On pre Exceute......");
+			progress=new ProgressBar(MainActivity.this);
+			progress.setIndeterminate(false);
+			
+			builder=new android.app.AlertDialog.Builder(MainActivity.this);
+			builder.setTitle("Saving..").setView(progress);
+			builder.show();
+		}
 
+		protected Void doInBackground(DatabaseHelper...disasmF) {
+			Log.d(TAG + " DoINBackGround","On doInBackground...");
+
+			int cnt=disasmF[0].getCount();
+			if(cnt==0)
+			{
+				int datasize=disasmResults.size();
+				for(int i=0;i<datasize;++i)
+				{
+					disasmF[0].insert(disasmResults.get(i));
+					publishProgress(i);
+				}
+			}
+			return null;
+		}
+
+		protected void onProgressUpdate(Integer...a){
+			super.onProgressUpdate(a);
+			progress.setProgress(a[0]);
+			//Log.d(TAG + " onProgressUpdate", "You are in progress update ... " + a[0]);
+		}
+/*
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+			//Log.d(TAG + " onPostExecute", "" + result);
+		}
+		*/
+	}
 	private void  SaveDisasm(DatabaseHelper disasmF)
 	{
 		// TODO: Implement this method
-		int cnt=disasmF.getCount();
-		if(cnt==0)
-		{
-			int datasize=disasmResults.size();
-			for(int i=0;i<datasize;++i)
-			{
-				disasmF.insert(disasmResults.get(i));
-			}
-		}
+		new SaveDBAsync().execute(disasmF);
 		return ;
 	}
 	
@@ -1040,7 +1077,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		{
 			return;
 		}
-		if (hasReadPermissions(a) && hasWritePermissions(a)&&hasGetAccountPermissions(a))
+		if (hasReadPermissions(a) && hasWritePermissions(a)/*&&hasGetAccountPermissions(a)*/)
 		{
 			Log.i(TAG, "Has permissions");
 			return;
@@ -1219,7 +1256,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 			}else{
 			//User opened pther files
-				OnChoosePath(filePath);
+				OnChoosePath(intent.getData());
 			}
 		} else { // android.intent.action.MAIN	
 			String lastProj=setting.getString(LASTPROJKEY, "");
@@ -1431,7 +1468,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				{
 					mCustomDialog = new CustomDialog(this, 
 													 "Select rows to view", // 제목
-													 "열 선택", // 내용 
+													 "Choose rows(Nothing happens)", // 내용 
 													 (View.OnClickListener)null, // 왼쪽 버튼 이벤트
 													 rightListener); // 오른쪽 버튼 이벤트
 					mCustomDialog.show();
@@ -1608,17 +1645,80 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
+	
+	private void OnChoosePath(Uri uri)
+	{
+		try
+		{
+			InputStream is=(InputStream)getContentResolver().openInputStream(uri);
+			//ByteArrayOutputStream bis=new ByteArrayOutputStream();
+			filecontent=Utils.getBytes(is);
+			//filecontent=is.toString().getBytes();
+			/*filecontent=new byte[1024];
+			while(is.read(filecontent,0,1024)>0)
+			{
+				
+			}
+			is.read(filecontent);
+			is.close();*/
+			File tmpfile=new File(getExternalFilesDir("directopen"),"tmp.so");
+			tmpfile.createNewFile();
+			FileOutputStream fos=new FileOutputStream(tmpfile);
+			fos.write(filecontent);
+			//elfUtil=new ELFUtil(new FileChannel().transferFrom(Channels.newChannel(is),0,0),filecontent);
+			elfUtil=new ELFUtil(tmpfile,filecontent);
+			fpath=tmpfile.getAbsolutePath();//uri.getPath();
+			AfterReadFully();
+			
+		}
+		catch (IOException e)
+		{
+			AlertError("Failed to read file",e);
+		}
+	}
+	/*
+	 * @(#)ASCIIUtility.java  1.10 05/08/29
+	 *
+	 * Copyright 1997-2005 Sun Microsystems, Inc. All Rights Reserved.
+	 */
 
+	public static class Utils {
+
+		public static byte[] getBytes(InputStream is) throws IOException {
+
+			int len;
+			int size = 1024;
+			byte[] buf;
+
+			if (is instanceof ByteArrayInputStream) {
+				size = is.available();
+				buf = new byte[size];
+				len = is.read(buf, 0, size);
+			} else {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				buf = new byte[size];
+				while ((len = is.read(buf, 0, size)) != -1)
+					bos.write(buf, 0, len);
+				buf = bos.toByteArray();
+			}
+			return buf;
+		}
+
+
+	}
+	
 	private void OnChoosePath(String p)//Intent data)
 	{
 		try
 		{
 			String path=p;//data.getStringExtra("com.jourhyang.disasmarm.path");
 			File file=new File(path);
+			fpath=path;
 			etFilename.setText(file.getAbsolutePath());
 			long fsize=file.length();
 			int index=0;
 			filecontent = new byte[(int)fsize];
+
 			DataInputStream in = new DataInputStream(new FileInputStream(file));
 			int len,counter=0;
 			byte[] b=new byte[1024];
@@ -1633,56 +1733,62 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 			}
 			in.close();
-			try
-			{
-				elfUtil = new ELFUtil(file, filecontent);
-				MachineType type=elfUtil.elf.header.machineType;
-				int arch=getArchitecture(type);
-				if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL)
-				{
-					Toast.makeText(this, "Maybe I don't support this machine:" + type.name(), 3).show();
-				}
-				else
-				{
-					int err=0;
-					if ((err = (new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))) != cs.CS_ERR_OK)
-					{
-						Log.e(TAG, "setmode err" + err);
-						Toast.makeText(this, "failed to set architecture" + err, 3).show();
-					}
-					//cs.setMode();
-				}
-			}
-			catch (Exception e)
-			{
-				//not an elf file. try PE parser
-				PE pe=PEParser.parse(path);
-				if(pe!=null)
-				{
-					PESignature ps =pe.getSignature();
-					if(ps==null||!ps.isValid())
-					{
-						//What is it?
-						Toast.makeText(this,"The file seems that it is neither a valid Elf file or PE file!",3).show();
-						throw new IOException(e);
-					}
-				}
-				else
-				{
-					//What is it?
-					Toast.makeText(this,"The file seems that it is neither a valid Elf file or PE file!",3).show();
-					throw new IOException(e);
-				}
-			}	
-			fpath = path;
+			elfUtil = new ELFUtil(file, filecontent);
+			AfterReadFully();
 			Toast.makeText(this, "success size=" + index /*+ type.name()*/, 3).show();
-		}
-		catch (Exception e)
+			
+			//OnOpenStream(fsize, path, index, file);
+		}catch (Exception e)
 		{
 			//Log.e(TAG, "", e);
 			AlertError("Failed to open and parse the file",e);
 			//Toast.makeText(this, Log.getStackTraceString(e), 30).show();
 		}
+	}
+
+	private void AfterReadFully() throws IOException
+	{
+		try
+		{
+			MachineType type=elfUtil.elf.header.machineType;
+			int arch=getArchitecture(type);
+			if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL)
+			{
+				Toast.makeText(this, "Maybe I don't support this machine:" + type.name(), 3).show();
+			}
+			else
+			{
+				int err=0;
+				if ((err = (new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))) != cs.CS_ERR_OK)
+				{
+					Log.e(TAG, "setmode err" + err);
+					Toast.makeText(this, "failed to set architecture" + err, 3).show();
+				}
+				//cs.setMode();
+			}
+		}
+		catch (Exception e)
+		{
+			//not an elf file. try PE parser
+			PE pe=PEParser.parse(fpath);
+			if (pe != null)
+			{
+				PESignature ps =pe.getSignature();
+				if (ps == null || !ps.isValid())
+				{
+					//What is it?
+					Toast.makeText(this, "The file seems that it is neither a valid Elf file or PE file!", 3).show();
+					throw new IOException(e);
+				}
+			}
+			else
+			{
+				//What is it?
+				Toast.makeText(this, "The file seems that it is neither a valid Elf file or PE file!", 3).show();
+				throw new IOException(e);
+			}
+		}	
+		//fpath = path;
 	}
 	private int getArchitecture(MachineType type)
 	{

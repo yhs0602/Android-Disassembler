@@ -32,6 +32,10 @@ public class ProjectManager
 			return;
 		}
 		File[] files=file.listFiles();
+		if((files==null)||(files.length==0))
+		{
+			return;
+		}
 		ArrayList<IOException> ex=new ArrayList<>();
 		for (File f:files)
 		{
