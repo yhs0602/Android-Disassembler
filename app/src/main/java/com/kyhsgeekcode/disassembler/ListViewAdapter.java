@@ -36,7 +36,7 @@ public class ListViewAdapter extends BaseAdapter
 	{
         final int pos = position;
         final Context context = parent.getContext();
-		
+
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
         if (convertView == null)
 		{

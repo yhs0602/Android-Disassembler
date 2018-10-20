@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal">
+
+	<TextView
+		android:layout_height="match_parent"
+		android:layout_width="300dp"
+		android:text="Mangled"
+		android:padding="10dp"
+		android:background="@drawable/cell_shape"
+		android:id="@+id/symbolrowTVmangled"/>
+
+	<TextView
+		android:layout_height="match_parent"
+		android:layout_width="300dp"
+		android:text="Demangled"
+		android:padding="10dp"
+		android:background="@drawable/cell_shape"
+		android:id="@+id/symbolrowTVdemangled"/>
+
+	<TextView
+		android:layout_height="match_parent"
+		android:layout_width="100dp"
+		android:text="Address"
+		android:padding="10dp"
+		android:background="@drawable/cell_shape"
+		android:id="@+id/symbolrowTVaddress"/>
+
+	<TextView
+		android:layout_height="match_parent"
+		android:layout_width="100dp"
+		android:text="Property"
+		android:padding="10dp"
+		android:background="@drawable/cell_shape"
+		android:id="@+id/symbolrowTVprop"/>
+
+</LinearLayout>
+

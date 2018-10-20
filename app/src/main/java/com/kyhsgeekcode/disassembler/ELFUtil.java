@@ -9,6 +9,13 @@ import nl.lxtreme.binutils.elf.*;
 public class ELFUtil implements Closeable
 {
 	private String TAG="Disassembler elfutil";
+	ArrayList<Symbol> syms;
+	public List<Symbol> getSymbols()
+	{
+		if(syms==null)
+			syms=new ArrayList<>();
+		return syms;
+	}
 	public long getCodeSectionVirtAddr()
 	{
 		return codeVirtualAddress;
@@ -114,48 +121,6 @@ public class ELFUtil implements Closeable
 		{
 			entryPoint = header.entryPoint;
 		}
-		/* Callback for dl_iterate_phdr.
-		 * Is called by dl_iterate_phdr for every loaded shared lib until something
-		 * else than 0 is returned by one call of this function.
-		 */
-		//int retrieve_symbolnames(struct dl_phdr_info* info, size_t info_size, void* symbol_names_vector) 
-		//	{
-
-		/* ElfW is a macro that creates proper typenames for the used system architecture
-		 * (e.g. on a 32 bit system, ElfW(Dyn*) becomes "Elf32_Dyn*") */
-		//ElfW(Dyn*) dyn;
-		//ElfW(Sym*) sym;
-		//ElfW(Word*) hash;
-
-		//char* strtab = 0;
-		//char* sym_name = 0;
-		//ElfW(Word) sym_cnt = 0;
-
-		/* the void pointer (3rd argument) should be a pointer to a vector<string>
-		 * in this example -> cast it to make it usable */
-		//vector<string>* symbol_names = reinterpret_cast<vector<string>*>(symbol_names_vector);
-
-		/* Iterate over all headers of the current shared lib
-		 * (first call is for the executable itself) */
-		//Elf elf=elfUtil.elf;
-		//elf.getSectionHeaderByType(SectionType.DYNAMIC);
-		/*for(SectionHeader sh:sections)
-		 {
-		 if(sh.type.equals(SectionType.DYNAMIC))
-		 {
-		 //long dyn=sh.fileOffset;
-		 ByteBuffer buf=elf.getSection(sh);
-		 int entnum=(int)(sh.size/sh.entrySize);
-		 symstrings=new String[entnum];
-		 for(int i=0;i<entnum;++i)
-		 {
-		 byte [] bytes=new byte[(int)sh.entrySize];
-		 buf.get(bytes);
-		 symstrings[i]=new String(bytes);
-		 }
-		 //elf.dynamicTable
-		 }
-		 }*/
 		if (elf.dynamicTable != null)
 		{ 
 			StringBuilder sb=new StringBuilder();
@@ -164,9 +129,144 @@ public class ELFUtil implements Closeable
 			long hash=0L;
 			int sym_cnt=0;
 			int i=0;
-			byte[] symtabs=elf.getDynamicSymbolTable();
-			ByteBuffer symbuffer=elf.getSection(elf.getSectionHeaderByType(SectionType.DYNSYM));
+			ByteBuffer dynsymbuffer=ByteBuffer.wrap(new byte[]{});
+			ByteBuffer symbuffer=ByteBuffer.wrap(new byte[]{});	
 			byte[] strtable=elf.getDynamicStringTable();
+			ArrayList<Symbol> dynsyms=new ArrayList<>();
+			//byte[] symtabs=elf.getDynamicSymbolTable();
+			//Syms has DynSyms
+			try
+			{
+				dynsymbuffer=elf.getSection(elf.getSectionHeaderByType(SectionType.DYNSYM));
+				ElfClass elfClass=elf.header.elfClass;
+				
+				if(elfClass.equals(ElfClass.CLASS_32))
+				{
+					while (dynsymbuffer.hasRemaining())
+					{
+						int name=dynsymbuffer.getInt();
+						int value=dynsymbuffer.getInt();
+						int size=dynsymbuffer.getInt();
+						short stinfo=dynsymbuffer.get();
+						short stother=dynsymbuffer.get();
+						short stshndx=dynsymbuffer.getShort();
+						String sym_name=Elf.getZString(strtable, name);
+						Symbol symbol=new Symbol();
+						symbol.name=sym_name;
+						symbol.is64=false;
+						symbol.st_info=stinfo;
+						symbol.st_name=name;
+						symbol.st_other=stother;
+						symbol.st_shndx=stshndx;
+						symbol.st_size=size;
+						symbol.st_value=value;
+						symbol.analyze();
+						dynsyms.add(symbol);
+						/*sb.append(sym_name).append("=").append(Integer.toHexString(value))
+							.append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
+							*/
+						sb.append(symbol.toString()).append(System.lineSeparator());
+					}		
+				}else{// 64
+					while (dynsymbuffer.hasRemaining())
+					{
+						int name=dynsymbuffer.getInt();
+						short stinfo=dynsymbuffer.get();
+						short stother=dynsymbuffer.get();
+						short stshndx=dynsymbuffer.getShort();
+						long value=dynsymbuffer.getLong();
+						long size=dynsymbuffer.getLong();	
+						String sym_name=Elf.getZString(strtable, name);
+						Symbol symbol=new Symbol();
+						symbol.name=sym_name;
+						symbol.is64=true;
+						symbol.st_info=stinfo;
+						symbol.st_name=name;
+						symbol.st_other=stother;
+						symbol.st_shndx=stshndx;
+						symbol.st_size=size;
+						symbol.st_value=value;
+						symbol.analyze();
+						dynsyms.add(symbol);
+						/*sb.append(sym_name).append("=").append(Integer.toHexString(value))
+							.append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
+							*/
+						sb.append(symbol.toString()).append(System.lineSeparator());
+					}		
+				}
+			}
+			catch(IllegalArgumentException |IOException e)
+			{
+				Log.e(TAG,"",e);
+			}
+			sb.append(System.lineSeparator()).append("syms;").append(System.lineSeparator());
+			try
+			{
+				symbuffer=elf.getSection(elf.getSectionHeaderByType(SectionType.SYMTAB));
+				ElfClass elfClass=elf.header.elfClass;
+				syms=new ArrayList<>();
+				if(elfClass.equals(ElfClass.CLASS_32))
+				{
+					while (symbuffer.hasRemaining())
+					{
+						int name=symbuffer.getInt();
+						int value=symbuffer.getInt();
+						int size=symbuffer.getInt();
+						short stinfo=symbuffer.get();
+						short stother=symbuffer.get();
+						short stshndx=symbuffer.getShort();
+						String sym_name=Elf.getZString(strtable, name);
+						Symbol symbol=new Symbol();
+						symbol.name=sym_name;
+						symbol.is64=false;
+						symbol.st_info=stinfo;
+						symbol.st_name=name;
+						symbol.st_other=stother;
+						symbol.st_shndx=stshndx;
+						symbol.st_size=size;
+						symbol.st_value=value;
+						symbol.analyze();
+						syms.add(symbol);
+						/*sb.append(sym_name).append("=").append(Integer.toHexString(value))
+							.append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
+							*/
+							sb.append(symbol.toString()).append(System.lineSeparator());
+					}		
+				}else{// 64
+					while (symbuffer.hasRemaining())
+					{
+						int name=symbuffer.getInt();
+						short stinfo=symbuffer.get();
+						short stother=symbuffer.get();
+						short stshndx=symbuffer.getShort();
+						long value=symbuffer.getLong();
+						long size=symbuffer.getLong();	
+						String sym_name=Elf.getZString(strtable, name);
+						Symbol symbol=new Symbol();
+						symbol.name=sym_name;
+						symbol.is64=true;
+						symbol.st_info=stinfo;
+						symbol.st_name=name;
+						symbol.st_other=stother;
+						symbol.st_shndx=stshndx;
+						symbol.st_size=size;
+						symbol.st_value=value;
+						symbol.analyze();
+						syms.add(symbol);
+					/*	sb.append(sym_name).append("=").append(Integer.toHexString(value))
+							.append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
+							*/
+							sb.append(symbol.toString()).append(System.lineSeparator());
+					}				
+				}
+			}catch(IllegalArgumentException |IOException|StringIndexOutOfBoundsException e)
+			{
+				Log.e(TAG,"",e);
+			}
+			if(syms==null)
+				syms=new ArrayList<>();
+			if(dynsyms!=null)
+				syms.addAll(dynsyms);
 
 			/*https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-35166
 			 Symbol Values
@@ -207,7 +307,7 @@ public class ELFUtil implements Closeable
 			 unsigned char   st_info;
 			 unsigned char   st_other;
 			 Elf32_Half      st_shndx;
-			 } Elf32_Sym;
+			 } Elf32_Sym; size 16
 
 			 typedef struct {
 			 Elf64_Word      st_name;
@@ -216,7 +316,7 @@ public class ELFUtil implements Closeable
 			 Elf64_Half      st_shndx;
 			 Elf64_Addr      st_value;
 			 Elf64_Xword     st_size;
-			 } Elf64_Sym;
+			 } Elf64_Sym; size 24
 			 The elements of this structure are:
 
 			 st_name
@@ -231,108 +331,8 @@ public class ELFUtil implements Closeable
 			 Many symbols have associated sizes. For example, a data object's size is the number of bytes contained in the object. This member holds 0 if the symbol has no size or an unknown size.
 
 			 */
-			while (symbuffer.hasRemaining())
-			{
-				int name=symbuffer.getInt();
-				int value=symbuffer.getInt();
-				int size=symbuffer.getInt();
-				short stinfo=symbuffer.get();
-				short stother=symbuffer.get();
-				short stshndx=symbuffer.getShort();
-				//symbuffer.
-				//int addr=sym_index*16;
-				/*int b1=symtabs[addr]&0xFF;//lolo
-				 int b2=symtabs[addr+1]&0xFF;//lohi
-				 int b3=symtabs[addr+2]&0xFF;//hilo
-				 int b4=symtabs[addr+3]&0xFF;//hihi
-				 int name=b4<<24|b3<<16|b2<<8|b1;*/
-				String sym_name=Elf.getZString(strtable, name);
-				sb.append(sym_name).append("=").append(Integer.toHexString(value))
-				.append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
-				.append(System.lineSeparator());
-			}
-			/*
-			 for (DynamicEntry de=elf.dynamicTable[0];;++i)
-			 {
-			 if (i >= elf.dynamicTable.length)
-			 i = 0;
-			 de = elf.dynamicTable[i];
-			 DynamicEntry.Tag tag=de.getTag();
-			 Log.v(TAG, tag.toString());
-			 if (tag == null)
-			 {
-			 Log.v(TAG, "The tag is null");
-			 break;
-			 }
-			 if (de.getTag().equals(DynamicEntry.Tag.NULL))	
-			 {
-			 Log.v(TAG, "Tag is NULL tag");
-			 break;
-			 }
-			 if (tag.equals(DynamicEntry.Tag.HASH))
-			 {
-			 hash = de.getValue();
-			 /* Get a pointer to the hash */
-			//			hash = (ElfW(Word*))dyn->d_un.d_ptr;
-//
-			/* The 2nd word is the number of symbols 
-			 //			sym_cnt = hash[1];
-			 //int hashvalue=fileContents[(int)hash]
-			 sym_cnt = (fileContents[(int)hash + 1] << 8 | fileContents[(int)hash]);
-			 Log.v(TAG, "Hash=" + hash + "cnt=" + sym_cnt);
-			 }
-			 else if (tag.equals(DynamicEntry.Tag.STRTAB))
-			 {
-			 strtab = de.getValue();
-			 Log.i(TAG, "strtab=" + strtab);
-			 }
-			 else if (tag.equals(DynamicEntry.Tag.SYMTAB))
-			 {
-			 if (sym_cnt == 0 || strtab == 0)
-			 {
-			 continue;
-			 }
-			 long sym=de.getValue();
-			 Log.i(TAG, "sym=" + sym);
-			 byte[] strtable=elf.getDynamicStringTable();
-			 //		int sym_index=0;
-			 for (int sym_index=0;sym_index < sym_cnt;sym_index++)
-			 {
-
-			 //new String(fileContents,  64);
-			 //byte[] bytes=sym_name.getBytes();
-			 //char[] chars=new char[sym_name.length()];
-			 //sym_name.getb(0,sym_name.length()-1,chars,0);
-			 /*ArrayList<Byte> arr=new ArrayList<>();
-			 for (int j=0;j < bytes.length;++j)
-			 {
-			 arr.add(new Byte(bytes[j]));
-			 if (bytes[j] == 0)
-			 {
-			 break;
-			 }
-			 }
-			 byte[] newbytes=new byte[arr.size()];
-			 for (int j=0;j < newbytes.length;++j)
-			 {
-			 newbytes[j] = arr.get(j);
-			 }
-			 sym_name = new String(newbytes);*/
-
-			//int symsymindexstname=fileContents[sym+sym_index];
-			//	sym_name = &strtab[sym[sym_index].st_name];
-			/*try{
-			 sym_name=sym_name.split("\0")[0];
-			 }catch(Exception e){}
-			 sb.append(sym_name).append("\n");
-			 Log.v(TAG, "sym_nmae=" + sym_name);
-			 }
-			 break;
-			 }
-
-			 }*/
 			info = sb.toString();
-			Log.i(TAG, "info=" + info);
+			//Log.i(TAG, "info=" + info);
 		}
 		Log.v(TAG, "Checking code section");
 		for (SectionHeader sh:elf.sectionHeaders)
@@ -354,83 +354,10 @@ public class ELFUtil implements Closeable
 				}
 			}
 		}
-//			for (size_t header_index = 0; header_index < info->dlpi_phnum; header_index++)
-//			{
-//
-//		/* Further processing is only needed if the dynamic section is reached */
-//				if (info->dlpi_phdr[header_index].p_type == PT_DYNAMIC)
-//			{
-//
-//		/* Get a pointer to the first entry of the dynamic section.
-//		 * It's address is the shared lib's address + the virtual address */
-//		dyn = (ElfW(Dyn)*)(info->dlpi_addr +  info->dlpi_phdr[header_index].p_vaddr);
-//
-//		/* Iterate over all entries of the dynamic section until the
-//		 * end of the symbol table is reached. This is indicated by
-//		 * an entry with d_tag == DT_NULL.
-//		 *
-//		 * Only the following entries need to be processed to find the
-//		 * symbol names:
-//		 *  - DT_HASH   -> second word of the hash is the number of symbols
-//		 *  - DT_STRTAB -> pointer to the beginning of a string table that
-//		 *                 contains the symbol names
-//		 *  - DT_SYMTAB -> pointer to the beginning of the symbols table
-//		 */
-//			while(dyn->d_tag != DT_NULL)
-//				{
-//			if (dyn->d_tag == DT_HASH)
-//			{
-//					/* Get a pointer to the hash */
-//					hash = (ElfW(Word*))dyn->d_un.d_ptr;
-//
-//		/* The 2nd word is the number of symbols */
-//					sym_cnt = hash[1];
-//
-//				}
-//			else if (dyn->d_tag == DT_STRTAB)
-//			{
-//					/* Get the pointer to the string table */
-//				strtab = (char*)dyn->d_un.d_ptr;
-//		}
-//			else if (dyn->d_tag == DT_SYMTAB)
-//			{
-//		/* Get the pointer to the first entry of the symbol table */
-//		sym = (ElfW(Sym*))dyn->d_un.d_ptr;
-//
-//
-//		/* Iterate over the symbol table */
-//		for (ElfW(Word) sym_index = 0; sym_index < sym_cnt; sym_index++)
-//			{
-//		/* get the name of the i-th symbol.
-//		 * This is located at the address of st_name
-//		 * relative to the beginning of the string table. */
-//			sym_name = &strtab[sym[sym_index].st_name];
-//
-//			symbol_names->push_back(string(sym_name));
-//		}
-//		}
-//
-//		/* move pointer to the next entry */
-//		dyn++;
-//		}
-//		}
-//			}
-//
-//		/* Returning something != 0 stops further iterations,
-//		 * since only the first entry, which is the executable itself, is needed
-//		 * 1 is returned after processing the first entry.
-//		 *
-//		 * If the symbols of all loaded dynamic libs shall be found,
-//		 * the return value has to be changed to 0.
-//		 */
-//		return 1;
-//
-//		}
-
-		//CodeBase=
-		//System.out.printf( "Entry point: 0x%x\n", header.entryPoint );
 	}
+	
 	String info="";
+	/*
 	public void ParseData() throws Exception
 	{
 		if (fileContents == null)
@@ -443,7 +370,7 @@ public class ELFUtil implements Closeable
 			throw new Exception("Not a ELF HEADER");
 		}
 		entryPoint = getWord((byte)0, (byte)0, (byte)0, (byte)0);
-	}
+	}*/
 	private long entryPoint;
 	private byte [] fileContents;
 	boolean bExecutable;
@@ -451,5 +378,64 @@ public class ELFUtil implements Closeable
 	private long codeLimit=0L;
 	private long codeVirtualAddress=0L;
 	String[] symstrings;
+	class Symbol
+	{
+		boolean is64;
+		long      st_name;
+		long      st_value;
+		long      st_size;
+		short   st_info;
+		short  st_other;
+		short      st_shndx;
+		String name="";
+		enum Bind{
+			STB_LOCAL,
+			STB_GLOBAL,
+			STB_WEAK
+		};
+		enum Type{
+			STT_NOTYPE,
+			STT_OBJECT,
+			STT_FUNC,
+			STT_SECTION,
+			STT_FILE,
+			STT_COMMON
+		};
+		Bind bind;
+		Type type;
+/*           #define STB_LOCAL  0
+#define STB_GLOBAL 1
+#define STB_WEAK   2
 
+#define STT_NOTYPE  0
+#define STT_OBJECT  1
+#define STT_FUNC    2
+#define STT_SECTION 3
+#define STT_FILE    4
+#define STT_COMMON  5
+#define STT_TLS     6       
+Oh. I Think I get it. `#define ELF_ST_BIND(x)    ((x) >> 4)` `#define ELF_ST_TYPE(x)    (((unsigned int) x) & 0xf)` that means that if `st_info == 34` then it means `STB_WEAK` **and** `STT_FUNC` because `34 >> 4 == 2` and `34 & 0xff == 2`. Is that right?
+     
+     
+     https://stackoverflow.com/q/48181509/8614565*/
+
+		public void analyze()
+		{
+			bind=Bind.values()[st_info>>4];
+			type=Type.values()[st_info&0xf];
+			return;
+		}
+		@Override
+		public String toString()
+		{
+			StringBuilder sb=new StringBuilder();
+			sb.append(name).append(" at ").append(Long.toHexString(st_value))
+				.append(" with size ").append(st_size).append(" binding=")
+				.append(bind).append("&type=").append(type)
+				.append(" at section #").append(st_shndx);
+				
+			return sb.toString();
+		}
+		
+	}
 }

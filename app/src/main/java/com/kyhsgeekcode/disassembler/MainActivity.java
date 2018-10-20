@@ -28,6 +28,7 @@ import org.boris.pecoff4j.io.*;
 import com.codekidlabs.storagechooser.utils.*;
 import com.kyhsgeekcode.disassembler.ProjectManager.*;
 import java.nio.channels.*;
+import com.evrencoskun.tableview.*;
 
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
@@ -160,6 +161,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private ProjectManager projectManager;
 
 	private ProjectManager.Project currentProject;
+	
+	//private SymbolTableAdapter symAdapter;
+	
+	//private TableView tvSymbols;
+	
+	private ListView lvSymbols;
+	
+	private SymbolListAdapter symbolLvAdapter;
 	
 	DatabaseHelper db;
 	//DisasmIterator disasmIterator;
@@ -641,8 +650,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			Log.e(TAG, "", e);
 			Toast.makeText(this, "Something went wrong saving file", 3).show();
 		}
-		// TODO: Implement this method
-		//Editable et=etDetails.getText();
+	
 		try
 		{
 			FileOutputStream fos=new FileOutputStream(file);
@@ -784,44 +792,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					long size=limit - start;
 					long leftbytes=size;
 					DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
-					dai.getAll(filecontent,start,size,addr, disasmResults);
-					/*	do
-					 {
-					 Capstone.CsInsn[] insns=cs.disasm(filecontent,index,Math.min(leftbytes,2048),addr,256);
-					 if(insns==null)
-					 {
-					 Log.i(TAG,"INSN null, breaking!");
-					 break;
-					 }
-					 int bytes=0;
-					 for(Capstone.CsInsn insn:insns)
-					 {
-					 if(insn.size==0)
-					 {
-					 Log.i(TAG,"INSN siz 0");
-					 insn.size=4;//ignore and skip		
-					 //blahblah
-					 }
-					 Log.v(TAG,index+"bytes="+bytes+"left="+leftbytes+"addr="+insn.address+insn.mnemonic);
-					 index+=insn.size;
-					 bytes+=insn.size;
-					 addr+=insn.size;
-					 }
-					 if(insns.length==0)
-					 {
-					 index+=4;
-					 bytes+=4;
-					 addr+=4;
-					 }
-					 if(insns.length<256)
-					 {
-					 Log.i(TAG,"len l 256,"+insns.length);
-					 //break;
-					 }
-					 leftbytes-=bytes;
-					 Log.i(TAG,"left="+leftbytes+"bytes="+bytes);
-					 }while(leftbytes>0);
-					 */	
+					dai.getAll(filecontent,start,size,addr, disasmResults);	
 					mNotifyManager.cancel(0);
 					final int len=disasmResults.size();
 					//add xrefs
@@ -830,13 +801,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 							@Override
 							public void run()
 							{
-								/*for (int i=0;i < len;++i)
-								 {
-								 final ListViewItem lvi=disasmResults.get(i);
-								 adapter.addItem(lvi);
-								 //AddOneRow(lvi);				
-								 }/*/
-								//adapter.notifyDataSetChanged();
 								listview.requestLayout();
 								tab2.invalidate();
 								//dialog.dismiss();
@@ -847,130 +811,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 							}
 						});
 					Log.v(TAG, "disassembly done");		
-				}
-
-				private void method()
-				{
-					int c=3;
-					/*final int numLoop=(int)size / BULK_SIZE;
-					 final int remain=(int)size % BULK_SIZE;
-					 final long endloopaddr=numLoop * BULK_SIZE;
-					 HashMap xrefComments=new HashMap();	
-					 //Optimization: less JNA Calls by bulk processing
-					 //index : base of foffset
-					 //processedbytes : offset from index of foffset
-					 Log.i(TAG,"size="+size+"numLoop"+numLoop+"remain"+remain+"endloop"+endloopaddr);
-					 for (;index < endloopaddr;index += BULK_SIZE,addr += BULK_SIZE)
-					 {
-					 int processedbytes=0;
-					 Capstone.CsInsn[] insns=cs.disasm(filecontent, index, BULK_SIZE, addr, 0);
-					 Log.i(TAG,"index="+index+"insns len="+insns.length+"Processedbytes="+processedbytes);
-					 for (Capstone.CsInsn insn:insns)
-					 {
-					 //Capstone.CsInsn insn=insns[0];	
-					 int siz=DoOneItem(insn);
-					 Log.v(TAG,"pb="+processedbytes+"siz="+siz);
-					 if (siz == 0)//Broken Instruction
-					 {
-					 Log.i(TAG,"Siz 0");
-					 //disassemble remnants...
-					 HandleBroken(processedbytes, index, limit, start, addr);
-					 break;
-					 }
-					 processedbytes += siz;
-					 //Log.i(TAG, "" + index+processedbytes + " out of " + (limit - start));
-					 }
-					 //if ((index - start) % 3200 == 0)
-					 {
-					 mBuilder.setProgress((int)(size), (int)(index - start), false);
-					 // Displays the progress bar for the first time.
-					 mNotifyManager.notify(0, mBuilder.build());					
-					 runOnUiThread(runnableRequestLayout);
-					 }
-					 //dialog.setProgress((int)((float)(index-start) * 100 / (float)(limit-start)));
-					 //dialog.setTitle("Disassembling.."+(index-start)+" out of "+(limit-start));
-					 }
-					 Capstone.CsInsn[] insns=cs.disasm(filecontent, index, remain, addr, 0);
-					 int processedbytes=0;
-					 for (Capstone.CsInsn insn:insns)
-					 {
-					 //Capstone.CsInsn insn=insns[0];
-					 int siz=DoOneItem(insn);
-					 if (siz == 0)//Broken Instruction
-					 {
-					 //disassemble remnants...
-					 HandleBroken(processedbytes, index, limit, start, addr);
-					 break;
-					 }
-					 processedbytes += siz;
-					 Log.v(TAG, "" + index+processedbytes + " out of " + (limit - start));
-					 }
-					 */
-				}
-				/*	
-				 ///@Desc skips an instruction and disassembles after it
-				 ///@Note currebtly only skips 4 bytes for ARM.
-				 ///////!!!!!! Now use skipdata mode!!!!!!!!!!
-				 private void HandleBroken(int pb, long index, long limit, long start, long addr)
-				 {
-				 Log.i(TAG,"handleBroken("+pb+","+index+","+addr+")");
-				 Capstone.CsInsn[] insns=cs.disasm(filecontent, pb + index + 4, BULK_SIZE - 4 - pb, addr + pb + 4, 0);
-				 int processedbytes=pb+4;
-				 for (Capstone.CsInsn insn:insns)
-				 {
-				 int siz=DoOneItem(insn);
-				 if (siz == 0)//Broken Instruction
-				 {
-				 Log.i(TAG,"size 0");
-				 //disassemble remnants...
-				 HandleBroken(processedbytes, index, limit, start, addr+pb);
-				 break;
-				 }
-				 processedbytes += siz;
-				 }
-				 return ;
-				 }
-				 */
-				///@Param index: file offset of insn
-				///		  //addr: virtual address of insn
-				private int DoOneItem(Capstone.CsInsn insn)
-				{
-					lvi = new ListViewItem(insn);
-					if (insn.size == 0)
-					{
-						insn.size = 4;
-						insn.mnemonic = "db";
-						//insn.bytes = new byte[]{filecontent[(int)index],filecontent[(int)index + 1],filecontent[(int)index + 2],filecontent[(int)index + 3]};
-						insn.opStr = "";
-						Log.e(TAG, "Dar.size==0, breaking?");
-						return 0;
-					}
-					//final ListViewItem lvi=new ListViewItem(dar);
-					//if (lvi.isBranch())
-					{
-						//xrefComments.put(lvi.getTargetAddress(),lvi.address);
-					}
-					runOnUiThread(new Runnable(){
-							@Override
-							public void run()
-							{
-								adapter.addItem(lvi);
-								adapter.notifyDataSetChanged();
-								return ;
-							}
-						});
-					//Log.v(TAG, "i=" + index + "lvi=" + lvi.toString());
-					//if (index >= limit)
-					//{
-					//	Log.i(TAG, "index is " + index + ", breaking");
-					//break;
-					//}
-					//Log.v(TAG, "dar.size is =" + dar.size);
-					return insn.size;
-//					index += insn.size;
-//					addr += insn.size;
-				}
-			});
+				}});
 		workerThread.start();
 	}
 	View.OnClickListener rowClkListener= new OnClickListener() {
@@ -982,58 +823,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			tablerow.setBackgroundColor(Color.GREEN);	
 		}
 	};
-	private void AddOneRow(ListViewItem lvi)
-	{
-		TableRow tbrow = new TableRow(MainActivity.this);
-		TextView t1v = new TextView(MainActivity.this);
-		t1v.setText(lvi.getAddress());
-		t1v.setTextColor(Color.BLACK);
-		t1v.setGravity(Gravity.CENTER);
-		t1v.setBackgroundResource(R.drawable.cell_shape);
-		tbrow.addView(t1v);
-		TextView t2v = new TextView(MainActivity.this);
-		t2v.setText(lvi.getLabel());
-		t2v.setTextColor(Color.BLACK);
-		t2v.setGravity(Gravity.CENTER);
-		t2v.setBackgroundResource(R.drawable.cell_shape);
-		tbrow.addView(t2v);
-		TextView t3v = new TextView(MainActivity.this);
-		t3v.setText(lvi.getBytes());
-		t3v.setTextColor(Color.BLACK);
-		t3v.setGravity(Gravity.CENTER);
-		t3v.setBackgroundResource(R.drawable.cell_shape);
-		tbrow.addView(t3v);								
-		TextView t4v = new TextView(MainActivity.this);
-		t4v.setText(lvi.getInstruction());
-		t4v.setTextColor(Color.BLACK);
-		t4v.setGravity(Gravity.CENTER);
-		t4v.setBackgroundResource(R.drawable.cell_shape);
-		tbrow.addView(t4v);
-		TextView t5v = new TextView(MainActivity.this);
-		t5v.setText(lvi.getCondition());
-		t5v.setTextColor(Color.BLACK);
-		t5v.setGravity(Gravity.CENTER);
-		t5v.setBackgroundResource(R.drawable.cell_shape);
-		tbrow.addView(t5v);
-		TextView t6v = new TextView(MainActivity.this);
-		t6v.setText(lvi.getOperands());
-		t6v.setTextColor(Color.BLACK);
-		t6v.setGravity(Gravity.CENTER);
-		t6v.setBackgroundResource(R.drawable.cell_shape);
-		tbrow.addView(t6v);
-		TextView t7v = new TextView(MainActivity.this);
-		t7v.setText(lvi.getComments());
-		t7v.setTextColor(Color.BLACK);
-		t7v.setGravity(Gravity.CENTER);
-		t7v.setBackgroundResource(R.drawable.cell_shape);
-		tbrow.addView(t7v);
-		AdjustShow(t1v, t2v, t3v, t4v, t5v, t6v, t7v);
-		tbrow.invalidate();
-		tbrow.setClickable(true);  //allows you to select a specific row
-		tbrow.setOnClickListener(rowClkListener);
-		tbrow.setTag(lvi);
-		tlDisasmTable.addView(tbrow);
-	}
 	private void SendErrorReport(Throwable error)
 	{
 		final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
@@ -1046,13 +835,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
 							 "Crash report");
 		StringBuilder content=new StringBuilder(Log.getStackTraceString(error));
-		/*content.append("Emails:");
-		 content.append(System.lineSeparator());
-		 for(String s:accs)
-		 {
-		 content.append(s);
-		 content.append(System.lineSeparator());
-		 }*/
+		
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
 							 content.toString());
 
@@ -1188,14 +971,24 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		etFilename.setFocusable(false);
 		etFilename.setEnabled(false);
 
+		lvSymbols=(ListView)findViewById(R.id.symlistView);
+		symbolLvAdapter=new SymbolListAdapter();
+		lvSymbols.setAdapter(symbolLvAdapter);
+		//symAdapter = new SymbolTableAdapter(this.getApplicationContext());
+		//tvSymbols = (TableView)findViewById(R.id.content_container);
+		//tvSymbols.setAdapter(symAdapter);
+		
 		tabHost = (TabHost) findViewById(R.id.tabhost1);
         tabHost.setup();
 		TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator("Overview");
         TabHost.TabSpec tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator("Details");
         TabHost.TabSpec tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator("Disassembly");
+		TabHost.TabSpec tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator("Symbols");
 		tabHost.addTab(tab0);
         tabHost.addTab(tab1);
+		tabHost.addTab(tab3);
         tabHost.addTab(tab2);
+		
 		this.tab1 = (LinearLayout) findViewById(R.id.tab1);
 		this.tab2 = (LinearLayout) findViewById(R.id.tab2);
 	
@@ -1748,6 +1541,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private void AfterReadFully() throws IOException
 	{
+		List<ELFUtil.Symbol> list=elfUtil.getSymbols();
+		for(int i=0;i<list.size();++i){
+			symbolLvAdapter.addItem(list.get(i));
+			symbolLvAdapter.notifyDataSetChanged();
+		}
+	//	symAdapter.setCellItems(list);
 		try
 		{
 			MachineType type=elfUtil.elf.header.machineType;
