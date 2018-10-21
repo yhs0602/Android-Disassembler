@@ -266,7 +266,7 @@ public class ELFUtil implements Closeable
 			if(syms==null)
 				syms=new ArrayList<>();
 			if(dynsyms!=null)
-				syms.addAll(dynsyms);
+				syms.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
 
 			/*https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-35166
 			 Symbol Values
@@ -388,6 +388,7 @@ public class ELFUtil implements Closeable
 		short  st_other;
 		short      st_shndx;
 		String name="";
+		String demangled="";
 		enum Bind{
 			STB_LOCAL,
 			STB_GLOBAL,
@@ -423,6 +424,9 @@ Oh. I Think I get it. `#define ELF_ST_BIND(x)    ((x) >> 4)` `#define ELF_ST_TYP
 		{
 			bind=Bind.values()[st_info>>4];
 			type=Type.values()[st_info&0xf];
+			demangled=Demangle(name);
+			if("".equals(demangled)||demangled==null)
+				demangled=name;
 			return;
 		}
 		@Override
@@ -438,4 +442,5 @@ Oh. I Think I get it. `#define ELF_ST_BIND(x)    ((x) >> 4)` `#define ELF_ST_TYP
 		}
 		
 	}
+	private native String Demangle(String mangled);
 }

@@ -7,6 +7,7 @@ import com.evrencoskun.tableview.adapter.*;
 import com.evrencoskun.tableview.adapter.recyclerview.holder.*;
 import com.kyhsgeekcode.disassembler.*;
 
+//I don't know what I should do to manipulate this!!!!
 public class SymbolTableAdapter extends AbstractTableAdapter<SymbolColHeader, SymbolRowHeader, ELFUtil.Symbol>
 {
      public SymbolTableAdapter(Context context) {

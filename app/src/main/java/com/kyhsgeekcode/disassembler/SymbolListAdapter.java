@@ -55,7 +55,7 @@ public class SymbolListAdapter extends BaseAdapter
 			
 			addrTextView.setText(Long.toHexString( listViewItem.st_value));
 			mangledTextView.setText(listViewItem.name);
-			demangledTextView.setText(listViewItem.name);
+			demangledTextView.setText(listViewItem.demangled);
 			try{
 			propTextView.setText(listViewItem.bind.toString()+listViewItem.type.toString());
 			}catch(NullPointerException e){}

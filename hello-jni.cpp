@@ -17,6 +17,8 @@
 #include <string.h>
 #include <jni.h>
 #include <android/log.h>
+#include <cxxabi.h>
+
 extern "C"
 {
 	#include "capstone.h"
@@ -474,8 +476,18 @@ extern "C"
 		{
 			return cs_disasm(handle,(const uint8_t *)(code+code_offset),code_size-code_offset,address,count,insn);
 		}
-
-		
+		JNIEXPORT jstring JNICALL Java_com_kyhsgeekcode_disassembler_ELFUtil_Demangle(JNIEnv * env, jobject thiz,jstring mangled)
+		{
+			const char* cstr=env->GetStringUTFChars(mangled,NULL);
+			char *demangled_name;
+			int status = -1;
+			demangled_name = abi::__cxa_demangle(cstr, NULL, NULL, &status);
+			jstring ret=env->NewStringUTF(demangled_name);
+			//printf("Demangled: %s\n", demangled_name);
+			free(demangled_name);
+			env->ReleaseStringUTFChars(mangled,cstr);
+			return ret;
+		}
 	static void print_string_hex(string buf,char *comment, unsigned char *str, size_t len)
 	{
 		unsigned char *c;

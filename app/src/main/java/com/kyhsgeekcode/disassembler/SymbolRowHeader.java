@@ -8,4 +8,5 @@ public class SymbolRowHeader
 	{
 		// TODO: Implement this method
 		return null;
-	}}
+	}
+}
