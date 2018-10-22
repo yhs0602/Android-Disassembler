@@ -1,11 +1,11 @@
 # Version 1.1.2 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
 # Android-Disassembler
-Disassemble android shared libraries (aka .so files) (NDK, JNI) on Android. Capstone-based disassembler application on android
+Disassemble android shared libraries (aka .so files) (NDK, JNI) on Android. Capstone-based disassembler application on android.
 
 # Features
 - Shows details of elf files.
-- Shows symbol table(functions'/objects', ...' names l) of elf files.
+- Shows symbol table(functions or objects' ,... names) of elf files.
 - Disassembles the code sections.
 - Has various export options of the disassembly. (Reloadable raw file, compilable txt file, analytic text files, json, and  reloadable database)
 - Supports projects.
@@ -44,7 +44,7 @@ Pretty!
  - Simple
 Can be directly pasted as code!
  - Json
-It can be loaded again to analyze again(though reloading is not implemented yet - Sorry:( )
+It can be loaded again to analyze again(though reloading is not implemented yet - Sorry.)
  - Database
 Slow. Not recommended.
 
