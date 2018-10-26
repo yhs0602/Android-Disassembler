@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
+	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"
 	android:orientation="horizontal"
-	android:background="#FFFFFF"
-	android:weightSum="8"
-	android:baselineAligned="true">
+	android:background="#FFFFFF">
 
 	<TextView
-		android:layout_height="wrap_content"
+		android:layout_height="match_parent"
 		android:text="Address"
-		android:layout_width="0dp"
+		android:layout_width="80dp"
 		android:id="@+id/tvAddr"
-		android:layout_weight="1"
 		android:textColor="#000000"
 		android:singleLine="true"
 		android:padding="5dp"
@@ -21,11 +18,10 @@
 		android:background="@drawable/cell_shape"/>
 
 	<TextView
-		android:layout_height="wrap_content"
+		android:layout_height="match_parent"
 		android:text="Label"
-		android:layout_width="0dp"
+		android:layout_width="40dp"
 		android:id="@+id/tvLabel"
-		android:layout_weight="0.5"
 		android:textColor="#000000"
 		android:singleLine="true"
 		android:padding="5dp"
@@ -33,11 +29,10 @@
 		android:background="@drawable/cell_shape"/>
 
 	<TextView
-		android:layout_height="wrap_content"
+		android:layout_height="match_parent"
 		android:text="Bytes"
-		android:layout_width="0dp"
+		android:layout_width="80dp"
 		android:id="@+id/tvBytes"
-		android:layout_weight="1.6"
 		android:textColor="#000000"
 		android:singleLine="true"
 		android:padding="5dp"
@@ -45,22 +40,19 @@
 		android:background="@drawable/cell_shape"/>
 
 	<TextView
-		android:layout_height="wrap_content"
+		android:layout_height="match_parent"
 		android:text="Instruction"
-		android:layout_width="0dp"
+		android:layout_width="100dp"
 		android:id="@+id/tvInst"
-		android:layout_weight="1.5"
 		android:textColor="#000000"
-		android:singleLine="true"
 		android:padding="5dp"
 		android:background="@drawable/cell_shape"/>
 
 	<TextView
 		android:layout_height="wrap_content"
 		android:text="Condition"
-		android:layout_width="0dp"
+		android:layout_width="20dp"
 		android:id="@+id/tvCond"
-		android:layout_weight="0.2"
 		android:textColor="#000000"
 		android:singleLine="true"
 		android:padding="5dp"
@@ -68,23 +60,20 @@
 		android:background="@drawable/cell_shape"/>
 
 	<TextView
-		android:layout_height="wrap_content"
+		android:layout_height="match_parent"
 		android:text="operand"
-		android:layout_width="0dp"
+		android:layout_width="180dp"
 		android:id="@+id/tvOperand"
-		android:layout_weight="2.5"
 		android:textColor="#000000"
-		android:singleLine="true"
 		android:padding="5dp"
 		android:ellipsize="marquee"
 		android:background="@drawable/cell_shape"/>
 
 	<TextView
-		android:layout_height="wrap_content"
+		android:layout_height="match_parent"
 		android:text="Comment"
-		android:layout_width="0dp"
+		android:layout_width="200dp"
 		android:id="@+id/tvComment"
-		android:layout_weight="1.2"
 		android:textColor="#000000"
 		android:singleLine="true"
 		android:padding="5dp"

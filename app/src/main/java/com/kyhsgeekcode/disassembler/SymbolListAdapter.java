@@ -6,6 +6,7 @@ import android.graphics.*;
 import android.view.*;
 import android.widget.*;
 import java.util.*;
+import com.kyhsgeekcode.disassembler.ELFUtil.*;
 
 public class SymbolListAdapter extends BaseAdapter
 {
@@ -16,6 +17,13 @@ public class SymbolListAdapter extends BaseAdapter
 	{
 
     }
+
+	public void addAll(List<ELFUtil.Symbol> symbols)
+	{
+		listViewItemList.addAll(symbols);
+		notifyDataSetChanged();
+		return ;
+	}
 	//You should not modify
 	public ArrayList<ELFUtil.Symbol> itemList()
 	{

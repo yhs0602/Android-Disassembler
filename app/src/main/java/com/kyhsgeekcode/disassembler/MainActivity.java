@@ -33,6 +33,33 @@ import com.evrencoskun.tableview.*;
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
 {
+
+	private RetainedFragment dataFragment;
+
+	private DisassemblyManager disasmManager;
+
+	public void setFpath(String fpath)
+	{
+		this.fpath = fpath;
+		dataFragment.setPath(fpath);
+	}
+
+	public void setElfUtil(ELFUtil elfUtil)
+	{
+		this.elfUtil = elfUtil;
+		dataFragment.setElfUtil(elfUtil);
+	}
+
+	public void setFilecontent(byte[] filecontent)
+	{
+		this.filecontent = filecontent;
+		dataFragment.setFilecontent(filecontent);
+	}
+
+	public byte[] getFilecontent()
+	{
+		return filecontent;
+	}
 	public DatabaseHelper getDb()
 	{
 		return db;
@@ -263,12 +290,24 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 
 	}
-
+	//The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
+	public static void ShowEditDialog(Activity a,String title,String message,final EditText edittext,
+									  String positive,DialogInterface.OnClickListener pos,
+									  String negative,DialogInterface.OnClickListener neg)
+	{
+		android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
+		builder.setTitle(title);
+		builder.setMessage(message);
+		builder.setView(edittext);
+		builder.setPositiveButton(positive,pos);
+		builder.setNegativeButton(negative,neg);
+		builder.show();
+	}
 	private void ShowEditDialog(String title,String message,final EditText edittext,
 								String positive,DialogInterface.OnClickListener pos,
 								String negative,DialogInterface.OnClickListener neg)
 	{
-		android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
+		android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder((Context)MainActivity.this);
 		builder.setTitle(title);
 		builder.setMessage(message);
 		builder.setView(edittext);
@@ -277,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.show();
 		return ;
 	}
+	//The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
 	public static void ShowSelDialog(Activity a,final List<String> ListItems,String title,DialogInterface.OnClickListener listener)
 	{
 		final CharSequence[] items =  ListItems.toArray(new String[ ListItems.size()]);
@@ -917,7 +957,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					return ;
 				}
 
-				
+				/*
 				private String[] getAccounts() {
 					Pattern emailPattern = Patterns.EMAIL_ADDRESS;
 					Account[] accounts = AccountManager.get(MainActivity.this).getAccounts();
@@ -934,7 +974,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						}
 					}
 					return accs.toArray(new String[accs.size()]);
-				}
+				}*/
 			});
 		try
 		{
@@ -950,6 +990,34 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), 10).show();
 			android.os.Process.killProcess(android.os.Process.getGidForName(null));
 		}
+		adapter = new ListViewAdapter();
+		symbolLvAdapter=new SymbolListAdapter();
+		disasmManager=new DisassemblyManager();
+		disasmManager.setData(adapter.itemList());
+		// find the retained fragment on activity restarts
+        FragmentManager fm = getFragmentManager();
+        dataFragment = (RetainedFragment) fm.findFragmentByTag("data");
+
+        // create the fragment and data the first time
+        if (dataFragment == null) {
+            // add the fragment
+            dataFragment = new RetainedFragment();
+            fm.beginTransaction().add(dataFragment, "data").commit();
+            // load the data from the web
+            dataFragment.setDisasmManager(disasmManager);
+			
+        }else{
+			//It should be handled
+			disasmManager= dataFragment.getDisasmManager();
+			filecontent=dataFragment.getFilecontent();
+			elfUtil=dataFragment.getElfUtil();
+			fpath=dataFragment.getPath();
+			if(elfUtil!=null)
+				symbolLvAdapter.addAll(elfUtil.getSymbols());
+		}
+
+        // the data is available in dataFragment.getData()
+		
         setContentView(R.layout.main);
 		etDetails = (EditText) findViewById(R.id.detailText);
 		Button selectFile=(Button) findViewById(R.id.selFile);
@@ -972,8 +1040,20 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		etFilename.setEnabled(false);
 
 		lvSymbols=(ListView)findViewById(R.id.symlistView);
-		symbolLvAdapter=new SymbolListAdapter();
+		//moved up
+		//symbolLvAdapter=new SymbolListAdapter();
 		lvSymbols.setAdapter(symbolLvAdapter);
+		lvSymbols.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view, int position,long  id)
+				{
+					ELFUtil.Symbol symbol=(ELFUtil.Symbol) parent.getItemAtPosition(position);
+					long address=symbol.st_value;
+					//LongSparseArray arr;
+					Toast.makeText(MainActivity.this,"Jump to"+Long.toHexString(address),3).show();
+					return true;
+				}
+			});
 		//symAdapter = new SymbolTableAdapter(this.getApplicationContext());
 		//tvSymbols = (TableView)findViewById(R.id.content_container);
 		//tvSymbols.setAdapter(symAdapter);
@@ -1125,7 +1205,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.show();
 	}
 	
-	private static void ShowAlertDialog(Activity a,String title,String content)
+	public static void ShowAlertDialog(Activity a,String title,String content)
 	{
 		android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(a);
 		builder.setTitle(title);
@@ -1134,19 +1214,34 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.setPositiveButton("OK", (DialogInterface.OnClickListener)null);
 		builder.show();
 	}
+	public static void ShowYesNoCancelDialog(Activity a,String title,String content,
+	DialogInterface.OnClickListener ok,
+	DialogInterface.OnClickListener no,
+	DialogInterface.OnClickListener can)
+	{
+		android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(a);
+		builder.setTitle(title);
+		builder.setCancelable(false);
+		builder.setMessage(content);
+		builder.setPositiveButton("OK", ok).setNegativeButton("No",no);
+		builder.setNeutralButton("Cancel",can);
+		builder.show();
+	}
 
 	private void setupListView()
 	{
-		adapter = new ListViewAdapter();
+		//moved to onCreate for avoiding NPE
+		//adapter = new ListViewAdapter();
 		listview = (ListView) findViewById(R.id.listview);
         listview.setAdapter(adapter);
-		listview.setOnItemClickListener(new DisasmClickListener());
-
+		listview.setOnItemClickListener(new DisasmClickListener(this));
+		adapter.addAll(disasmManager.getData());
 	}
 	public static int getScreenHeight()
 	{
 		return Resources.getSystem().getDisplayMetrics().heightPixels;
 	}
+	/*
 	private void CreateDisasmTopRow(TableRow tbrow0)
 	{
 		TextView tv0 = new TextView(MainActivity.this);
@@ -1179,6 +1274,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		AdjustShow(tv0, tv1, tv2, tv3, tv4, tv5, tv6);
 		tbrow0.addView(tv6);
 	}
+	*/
 	public void RefreshTable()
 	{
 		//tlDisasmTable.removeAllViews();
@@ -1186,23 +1282,61 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		//CreateDisasmTopRow(tbrow0);		
 		//tlDisasmTable.addView(tbrow0);
 		//for(int i=0;i<disasmResults.size();++i)
-		{
+		//{
 			//AddOneRow(disasmResults.get(i));
-		}
+		//}
 		//tlDisasmTable.refreshDrawableState();
 	}
+	@Override
+	public void onBackPressed()
+	{
+		if(currentProject==null)
+		{
+			ShowYesNoCancelDialog((Activity)this,"Save project?","",
+				new DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface p1, int p2)
+					{
+						ExportDisasm();
+						SaveDetail();
+						MainActivity.super.onBackPressed();
+						return ;
+					}
+				},
+				new DialogInterface.OnClickListener(){
 
+					@Override
+					public void onClick(DialogInterface p1, int p2)
+					{
+						// TODO: Implement this method
+						MainActivity.super.onBackPressed();
+						return ;
+					}
+				},
+				new DialogInterface.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface p1, int p2)
+					{					
+						return ;
+					}
+				});
+		}	
+		else
+			super.onBackPressed();
+		return;
+	}
+	
 	@Override
 	protected void onDestroy()
 	{
 		// TODO: Implement this method
 		super.onDestroy();
-		try
+		/*try
 		{
 			elfUtil.close();
 		}
 		catch (Exception e)
-		{}
+		{}*/
 		Finalize();
 		if (cs != null)
 			cs.close();
@@ -1445,7 +1579,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		{
 			InputStream is=(InputStream)getContentResolver().openInputStream(uri);
 			//ByteArrayOutputStream bis=new ByteArrayOutputStream();
-			filecontent=Utils.getBytes(is);
+			setFilecontent(Utils.getBytes(is));
 			//filecontent=is.toString().getBytes();
 			/*filecontent=new byte[1024];
 			while(is.read(filecontent,0,1024)>0)
@@ -1459,8 +1593,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			FileOutputStream fos=new FileOutputStream(tmpfile);
 			fos.write(filecontent);
 			//elfUtil=new ELFUtil(new FileChannel().transferFrom(Channels.newChannel(is),0,0),filecontent);
-			elfUtil=new ELFUtil(tmpfile,filecontent);
-			fpath=tmpfile.getAbsolutePath();//uri.getPath();
+			setElfUtil( new ELFUtil(tmpfile,filecontent));
+			setFpath( tmpfile.getAbsolutePath());//uri.getPath();
 			AfterReadFully();
 			
 		}
@@ -1506,11 +1640,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		{
 			String path=p;//data.getStringExtra("com.jourhyang.disasmarm.path");
 			File file=new File(path);
-			fpath=path;
+			setFpath(path);
 			etFilename.setText(file.getAbsolutePath());
 			long fsize=file.length();
 			int index=0;
-			filecontent = new byte[(int)fsize];
+			setFilecontent (new byte[(int)fsize]);
 
 			DataInputStream in = new DataInputStream(new FileInputStream(file));
 			int len,counter=0;
@@ -1526,7 +1660,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 			}
 			in.close();
-			elfUtil = new ELFUtil(file, filecontent);
+			setElfUtil(new ELFUtil(file, filecontent));
 			AfterReadFully();
 			Toast.makeText(this, "success size=" + index /*+ type.name()*/, 3).show();
 			
@@ -1542,10 +1676,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private void AfterReadFully() throws IOException
 	{
 		List<ELFUtil.Symbol> list=elfUtil.getSymbols();
-		for(int i=0;i<list.size();++i){
-			symbolLvAdapter.addItem(list.get(i));
-			symbolLvAdapter.notifyDataSetChanged();
-		}
+//		for(int i=0;i<list.size();++i){
+//			symbolLvAdapter.addItem(list.get(i));
+//			symbolLvAdapter.notifyDataSetChanged();
+//		}
+		symbolLvAdapter.addAll(list);
 	//	symAdapter.setCellItems(list);
 		try
 		{

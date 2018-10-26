@@ -1,6 +1,5 @@
 package com.kyhsgeekcode.disassembler;
 
-
 import android.content.*;
 import android.graphics.*;
 import android.view.*;
@@ -17,6 +16,13 @@ public class ListViewAdapter extends BaseAdapter
 	{
 
     }
+
+	public void addAll(ArrayList<ListViewItem> data)
+	{
+		// TODO: Implement this method
+		listViewItemList.addAll(data);
+		notifyDataSetChanged();
+	}
 	//You should not modify
 	public ArrayList<ListViewItem> itemList()
 	{

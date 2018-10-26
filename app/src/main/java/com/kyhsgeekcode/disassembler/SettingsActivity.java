@@ -14,6 +14,7 @@ import java.io.*;
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener
 {
 	private String TAG="Disassembler settings";
+
 	
 	@Override
 	public boolean onPreferenceClick(Preference p1)
@@ -49,6 +50,20 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 		builder.show();
 		return true ;
 	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState)
+	{
+		// TODO: Implement this method
+		super.onSaveInstanceState(outState, outPersistentState);
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState, PersistableBundle persistentState)
+	{
+		super.onRestoreInstanceState(savedInstanceState, persistentState);
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
