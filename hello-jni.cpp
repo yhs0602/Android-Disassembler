@@ -319,14 +319,16 @@ extern "C"
 		{
 			return (int)cs_option(handle,(cs_opt_type)arg1,arg2);
 		}
-		JNIEXPORT void JNICALL Java_com_kyhsgeekcode_disassembler_DisasmIterator_getAll(JNIEnv * env, jobject thiz,jbyteArray bytes, jlong offset, jlong size,jlong virtaddr, jobject arr)
+		JNIEXPORT void JNICALL Java_com_kyhsgeekcode_disassembler_DisasmIterator_getAll(JNIEnv * env, jobject thiz,jbyteArray bytes, jlong offset, jlong size,jlong virtaddr, jobject map)
 		{
 			int bytelen=env->GetArrayLength(bytes);
 			jbyte *byte_buf;
  	        byte_buf = env->GetByteArrayElements(bytes, NULL);
+			jclass longcls = env->FindClass("java/lang/Long");
 			//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "bytearrayelems");
-			jclass arrcls = env->FindClass("java/util/ArrayList");
+			//jclass arrcls = env->FindClass("java/util/ArrayList");
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "ArrayListcls");
+			jclass mapcls = env->FindClass("java/util/Map");
 			jclass darcls = env->FindClass("com/kyhsgeekcode/disassembler/DisasmResult");
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "Disasmresult");
 			jclass lvicls = env->FindClass("com/kyhsgeekcode/disassembler/ListViewItem");
@@ -337,11 +339,12 @@ extern "C"
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "darinit");
 			jmethodID ctorLvi = env->GetMethodID(lvicls,"<init>","(Lcom/kyhsgeekcode/disassembler/DisasmResult;)V");
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "lviinit");
-			jmethodID java_util_ArrayList_add  = env->GetMethodID(arrcls, "add", "(Ljava/lang/Object;)Z");
+			jmethodID java_util_Map_put  = env->GetMethodID(mapcls, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "arraylistaddmethod");
 			jmethodID notify = env->GetMethodID(thecls,"showNoti","(I)I");
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "shownotimethod");
 			jmethodID additem = env->GetMethodID(thecls,"AddItem","(Lcom/kyhsgeekcode/disassembler/ListViewItem;)V");
+			jmethodID ctorlong = env->GetMethodID(longcls,"<init>","(J)V"); 
 			int done=0;
 			// allocate memory cache for 1 instruction, to be used by cs_disasm_iter later.
 			cs_insn *insn = cs_malloc(handle);
@@ -440,9 +443,10 @@ extern "C"
 				}
 										//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "afterdetail");
 				jobject lvi=env->NewObject(lvicls,ctorLvi,dar);
+				jobject addrobj = env->NewObject(longcls,ctorlong,insn->address);
 										//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "created lvi");
 				//jstring element = env->NewStringUTF(s.c_str());
-  				env->CallBooleanMethod(arr, java_util_ArrayList_add, dar);
+  				env->CallObjectMethod(map, java_util_Map_put, addrobj,lvi);
 				env->CallVoidMethod(thiz,additem,lvi);
 				__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "added lvi");
 				

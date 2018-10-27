@@ -1,12 +1,13 @@
 package com.kyhsgeekcode.disassembler;
 import capstone.*;
+import java.io.*;
 
 
-public class ListViewItem
+public class ListViewItem implements Serializable
 {
 	String address,bytes,label,instruction,operands,comments,condition;
 	DisasmResult disasmResult;
-	Capstone.CsInsn insn;
+	//Capstone.CsInsn insn;
 	public ListViewItem(String address, String bytes, String label, String instruction, String operands, String comments, String condition)
 	{
 		this.address = address;
@@ -36,10 +37,10 @@ public class ListViewItem
 		this.label=Integer.toString( disasmResult.size);
 		this.operands=disasmResult.op_str;
 	}
-	
+	/*
 	public ListViewItem(Capstone.CsInsn insn)
 	{
-		this.insn=insn;
+		//this.insn=insn;
 		this.address=Long.toHexString(insn.address);
 		this.bytes=MainActivity.bytesToHex(insn.bytes());
 		this.comments="";
@@ -50,6 +51,7 @@ public class ListViewItem
 		this.label="";
 		this.operands=insn.opStr;
 	}
+	*/
 	public ListViewItem()
 	{
 		

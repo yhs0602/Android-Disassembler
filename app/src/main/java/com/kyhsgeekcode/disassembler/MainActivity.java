@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			{
 				FileInputStream fis = new FileInputStream(file);
 				ObjectInputStream ois = new ObjectInputStream(fis);
-				disasmResults = (ArrayList<DisasmResult>)ois.readObject();
+				disasmResults = (ArrayList<ListViewItem>)ois.readObject();
 				ois.close();
 			}
 			catch (ClassNotFoundException e)
@@ -102,16 +102,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		else
 		{
-			disasmResults=(ArrayList<DisasmResult>) db.getAll();
+			disasmResults=(ArrayList<ListViewItem>) db.getAll();
 		}
 		if(disasmResults!=null)
 		{
-			int len=disasmResults.size();
-			for(int i=0;i<len;++i)
+			//int len=disasmResults.size();
+			adapter.addAll(disasmResults);
+			/*for(int i=0;i<len;++i)
 			{
 				adapter.addItem(disasmResults.get(i));
 				adapter.notifyDataSetChanged();
-			}
+			}*/
 		}else{
 			disasmResults=new ArrayList<>();
 		}
@@ -143,9 +144,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private ListViewAdapter adapter;
 
 	private ListView listview;
-	ArrayList<DisasmResult> disasmResults=new ArrayList<>();
+	ArrayList<ListViewItem> disasmResults=new ArrayList<>();
 
-	private TableLayout tlDisasmTable;
+	//private TableLayout tlDisasmTable;
 
 	private EditText etDetails;
 	//ViewPager vp;
@@ -611,6 +612,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 			});
 	}
+	@Deprecated
 	class SaveDBAsync extends AsyncTask<DatabaseHelper, Integer, Void>
 	{
 		String TAG = getClass().getSimpleName();
@@ -636,7 +638,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				int datasize=disasmResults.size();
 				for(int i=0;i<datasize;++i)
 				{
-					disasmF[0].insert(disasmResults.get(i));
+					//disasmF[0].insert(disasmResults.get(i));
 					publishProgress(i);
 				}
 			}
