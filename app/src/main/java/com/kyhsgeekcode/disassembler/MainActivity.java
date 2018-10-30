@@ -512,8 +512,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		AlertSaveSuccess(file);
 		return ;
 	}
-	
 	private void SaveDetail()
+	{
+		SaveDetail((Runnable)null);
+	}
+	private void SaveDetail(final Runnable runnable)
 	{
 		requestAppPermissions(this);
 		if (fpath == null || "".compareToIgnoreCase(fpath) == 0)
@@ -531,6 +534,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						// TODO: Implement this method
 						String projn=etName.getText().toString();
 						SaveDetailNewProject(projn);
+						if(runnable!=null)
+							runnable.run();
 						return ;
 					}
 				}, "Cancel", new DialogInterface.OnClickListener(){
@@ -546,6 +551,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			try
 			{
 				SaveDetailSub(currentProject);
+				if(runnable!=null)
+					runnable.run();
 			}
 			catch (IOException e)
 			{
@@ -1509,18 +1516,37 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			}
 			case R.id.save:
 			{
-				if(currentProject==null)
+				//if(currentProject==null)
 				{
-					ExportDisasm();
-					SaveDetail();
+					ExportDisasm(new Runnable(){
+							@Override
+							public void run()
+							{
+								SaveDetail();
+								return ;
+							}		
+					});				
 				}
 				break;
 			}
 			case R.id.export:
 			{
-				ExportDisasm();
-				SaveDetail();
-				createZip();
+				ExportDisasm(new Runnable(){
+						@Override
+						public void run()
+						{
+							SaveDetail(new Runnable(){
+									@Override
+									public void run()
+									{
+										createZip();
+										return;
+									}						
+							});
+							return ;
+						}		
+					});				
+				
 				break;
 			}
 				
