@@ -1181,16 +1181,20 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		if (intent.getAction().equals(Intent.ACTION_VIEW)) {
 			// User opened this app from file browser
 			String filePath = intent.getData().getPath();
-			String[] toks=filePath.split(".");
+			Log.d(TAG,"intent path="+filePath);
+			String[] toks=filePath.split(Pattern.quote("."));
 			int last=toks.length-1;
 			String ext="";
-			if(last>=0){
+			if(last>=1){
 				ext=toks[last];
 				if("adp".equalsIgnoreCase(ext))
 				{
 					//User opened the project file
-					projectManager.Open(toks[last-1]);
-					
+					//now get the project name
+					File file=new File(filePath);
+					String pname=file.getName();
+					toks=pname.split(Pattern.quote("."));
+					projectManager.Open(toks[toks.length-2]);
 				}
 			}else{
 			//User opened pther files

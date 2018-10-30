@@ -319,13 +319,51 @@ extern "C"
 		{
 			return (int)cs_option(handle,(cs_opt_type)arg1,arg2);
 		}
-		JNIEXPORT void JNICALL Java_com_kyhsgeekcode_disassembler_DisasmIterator_getAll(JNIEnv * env, jobject thiz,jbyteArray bytes, jlong offset, jlong size,jlong virtaddr, jobject arr)
+		
+		//RunOnUIThread
+		//https://stackoverflow.com/questions/44808206/android-jni-call-function-on-android-ui-thread-from-c
+		//#include <android/looper.h>
+		#include <unistd.h>
+		//static ALooper* mainThreadLooper;
+		static int messagePipe[2];
+/*
+		static int looperCallback(int fd, int events, void* data);
+
+		JNIEXPORT jvoid JNICALL Java_com_kyhsgeekcode_disassembler_DisasmIterator_CallOnMain(JNIEnv * env, jobject thiz){
+ 		   mainThreadLooper = ALooper_forThread(); // get looper for this thread
+		   ALooper_acquire(mainThreadLooper); // add reference to keep object alive
+		   pipe(messagePipe); //create send-receive pipe
+		   // listen for pipe read end, if there is something to read
+		   // - notify via provided callback on main thread
+		   ALooper_addFd(mainThreadLooper, messagePipe[0],
+                  0, ALOOPER_EVENT_INPUT, looperCallback, nullptr);
+			LOGI("fd is registered");
+		}
+
+		// this will be called on main thread
+		//public void run()
+		static int looperCallback(int fd, int events, void* data)
+		{
+			//adapter.list.additem lvi
+			//adapter.notifydatasetchanged
+			char msg;
+			jobject lvi;
+			read(fd, &msg, 1); // read message from pipe
+			LOGI("got message #%d", msg);
+			return 1; // continue listening for events
+		}
+		*/
+		//Should fill LVI instead of DAR from now.
+		//Should fill Map insead of List ..
+		//No no.should fill adapter.
+		JNIEXPORT void JNICALL Java_com_kyhsgeekcode_disassembler_DisasmIterator_getAll(JNIEnv * env, jobject thiz,jbyteArray bytes, jlong offset, jlong size,jlong virtaddr/*, jobject arr*/)
 		{
 			int bytelen=env->GetArrayLength(bytes);
 			jbyte *byte_buf;
  	        byte_buf = env->GetByteArrayElements(bytes, NULL);
+			//jclass longcls = env->FindClass("java/lang/Long");
 			//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "bytearrayelems");
-			jclass arrcls = env->FindClass("java/util/ArrayList");
+		//	jclass mapcls = env->FindClass("java/util/Map");
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "ArrayListcls");
 			jclass darcls = env->FindClass("com/kyhsgeekcode/disassembler/DisasmResult");
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "Disasmresult");
@@ -336,8 +374,10 @@ extern "C"
 			jmethodID ctor = env->GetMethodID(darcls,"<init>","()V");
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "darinit");
 			jmethodID ctorLvi = env->GetMethodID(lvicls,"<init>","(Lcom/kyhsgeekcode/disassembler/DisasmResult;)V");
+			//jmethodID ctorLong = env->GetMethodID(longcls,"<init>","(Ljava/lang/Long;)V");
+			//jmethodID java_util_List_add  = env->GetMethodID(mapcls, "add", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "lviinit");
-			jmethodID java_util_ArrayList_add  = env->GetMethodID(arrcls, "add", "(Ljava/lang/Object;)Z");
+		//	jmethodID java_util_Map_put  = env->GetMethodID(mapcls, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "arraylistaddmethod");
 			jmethodID notify = env->GetMethodID(thecls,"showNoti","(I)I");
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "shownotimethod");
@@ -440,9 +480,20 @@ extern "C"
 				}
 										//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "afterdetail");
 				jobject lvi=env->NewObject(lvicls,ctorLvi,dar);
+				//jobject addrobj=env->NewObject(longcls,ctorLong,insn->address);
 										//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "created lvi");
 				//jstring element = env->NewStringUTF(s.c_str());
-  				env->CallBooleanMethod(arr, java_util_ArrayList_add, dar);
+  				//env->CallObjectMethod(map, java_util_Map_put,addrobj, lvi);
+				 /*   // send few messages from arbitrary thread
+					//std::thread worker([]() {
+						for(char msg = 100; msg < 110; msg++) {
+							LOGI("send message #%d", msg);
+							write(messagePipe[1], &msg, 1);
+							sleep(1);
+						}
+					//});		
+				worker.detach();
+			*/
 				env->CallVoidMethod(thiz,additem,lvi);
 				__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "added lvi");
 				
