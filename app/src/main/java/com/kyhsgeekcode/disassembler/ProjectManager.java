@@ -16,6 +16,7 @@ public class ProjectManager
 	//			Proj1.ada
 	//			details.txt
 	//			disasm.db
+	//      Proj1.zip
 	
 	String[] strprojects=new String[]{"Create new"};
 	MainActivity listener;

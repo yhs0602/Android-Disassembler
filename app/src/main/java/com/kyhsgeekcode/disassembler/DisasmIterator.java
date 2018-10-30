@@ -12,7 +12,7 @@ public class DisasmIterator
 		this.total = total;
 		this.adapter=adapter;
 	}
-	public native void getAll(byte[] bytes, long offset, long size,long virtaddr,ArrayList<DisasmResult> arr);
+	public native void getAll(byte[] bytes, long offset, long size,long virtaddr/*,ArrayList<ListViewItem> arr*/);
 	public void AddItem(final ListViewItem lvi)
 	{
 		activity.runOnUiThread(new Runnable(){

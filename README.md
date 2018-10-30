@@ -69,4 +69,6 @@ Slow. Not recommended.
  - Support exe files. (Why? I don't know..)
  - Organize spaghetti codes.
  - Add theme preferences.
- - Assembly syntax highlighting.
+
+# XRefs
+https://reverseengineering.stackexchange.com/a/18203/23870

@@ -29,6 +29,7 @@ import com.codekidlabs.storagechooser.utils.*;
 import com.kyhsgeekcode.disassembler.ProjectManager.*;
 import java.nio.channels.*;
 import com.evrencoskun.tableview.*;
+import java.util.zip.*;
 
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
@@ -37,6 +38,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private RetainedFragment dataFragment;
 
 	private DisassemblyManager disasmManager;
+
+	public void ExportDisasm()
+	{
+		ExportDisasm((Runnable)null);
+		return ;
+	}
 
 	public void setFpath(String fpath)
 	{
@@ -88,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			{
 				FileInputStream fis = new FileInputStream(file);
 				ObjectInputStream ois = new ObjectInputStream(fis);
-				disasmResults = (ArrayList<DisasmResult>)ois.readObject();
+				disasmResults = (ArrayList<ListViewItem>)ois.readObject();
 				ois.close();
 			}
 			catch (ClassNotFoundException e)
@@ -102,19 +109,21 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		else
 		{
-			disasmResults=(ArrayList<DisasmResult>) db.getAll();
+			disasmResults=(ArrayList<ListViewItem>) db.getAll();
 		}
 		if(disasmResults!=null)
 		{
-			int len=disasmResults.size();
-			for(int i=0;i<len;++i)
+			//int len=disasmResults.size();
+			/*for(int i=0;i<len;++i)
 			{
 				adapter.addItem(disasmResults.get(i));
 				adapter.notifyDataSetChanged();
-			}
+			}*/
+			adapter.addAll(disasmResults);
 		}else{
 			disasmResults=new ArrayList<>();
 		}
+		shouldSave=true;
 		return ;
 	}
 	
@@ -143,9 +152,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private ListViewAdapter adapter;
 
 	private ListView listview;
-	ArrayList<DisasmResult> disasmResults=new ArrayList<>();
+	ArrayList<ListViewItem> disasmResults=new ArrayList<>();
 
-	private TableLayout tlDisasmTable;
+	//private TableLayout tlDisasmTable;
 
 	private EditText etDetails;
 	//ViewPager vp;
@@ -199,6 +208,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	
 	DatabaseHelper db;
 	//DisasmIterator disasmIterator;
+	
+	boolean shouldSave=false;
 	@Override
 	public void onClick(View p1)
 	{
@@ -303,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.setNegativeButton(negative,neg);
 		builder.show();
 	}
-	private void ShowEditDialog(String title,String message,final EditText edittext,
+	private android.app.AlertDialog ShowEditDialog(String title,String message,final EditText edittext,
 								String positive,DialogInterface.OnClickListener pos,
 								String negative,DialogInterface.OnClickListener neg)
 	{
@@ -313,8 +324,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.setView(edittext);
 		builder.setPositiveButton(positive,pos);
 		builder.setNegativeButton(negative,neg);
-		builder.show();
-		return ;
+		return builder.show();
 	}
 	//The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
 	public static void ShowSelDialog(Activity a,final List<String> ListItems,String title,DialogInterface.OnClickListener listener)
@@ -358,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		showFileChooser();
 	}
 
-	private void ExportDisasm()
+	private void ExportDisasm(final Runnable runnable)
 	{
 		requestAppPermissions(this);
 		if (fpath == null || "".compareToIgnoreCase(fpath) == 0)
@@ -375,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					{
 						// TODO: Implement this method
 						String projn=etName.getText().toString();
-						SaveDisasmNewProject(projn);
+						SaveDisasmNewProject(projn,runnable);
 						return ;
 					}
 				}, "Cancel", new DialogInterface.OnClickListener(){
@@ -387,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					}				
 				});
 		}else{
-			ShowExportOptions();
+			ShowExportOptions(runnable);
 		}
 			
 	}
@@ -574,6 +584,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		proj.Save();
 	}
 	private void SaveDisasmNewProject(String projn)
+	{
+		SaveDisasmNewProject(projn,(Runnable)null);
+	}
+	private void SaveDisasmNewProject(String projn,Runnable runnable)
 	{	
 		try
 		{
@@ -581,7 +595,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			currentProject=proj;
 			proj.Open(false);
 			db=new DatabaseHelper(this,ProjectManager.createPath(proj.name)+"disasm.db");
-			ShowExportOptions();
+			ShowExportOptions(runnable);
 			proj.Save();
 			
 		}
@@ -594,19 +608,25 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private void ShowExportOptions()
 	{
+		ShowExportOptions((Runnable)null);
+	}
+	private void ShowExportOptions(final Runnable runnable)
+	{
 		final List<String> ListItems = new ArrayList<>();
 		ListItems.add("Raw(Fast,Reloadable)");
         ListItems.add("Classic(Addr bytes inst op comment)");
         ListItems.add("Simple(Addr: inst op; comment");
         ListItems.add("Json");
 		ListItems.add("Database(.db, reloadable)");
-		ShowSelDialog(this, ListItems, "Export as...", new DialogInterface.OnClickListener() {
+		ShowSelDialog((Activity)this, ListItems, "Export as...", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int pos)
 				{
 					//String selectedText = items[pos].toString();
 					dialog.dismiss();
 					final ProgressDialog dialog2= showProgressDialog("Saving...");
 					ExportDisasmSub(pos);
+					if(runnable!=null)
+						runnable.run();
 					dialog2.dismiss();
 				}
 			});
@@ -636,7 +656,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				int datasize=disasmResults.size();
 				for(int i=0;i<datasize;++i)
 				{
-					disasmF[0].insert(disasmResults.get(i));
+					//disasmF[0].insert(disasmResults.get(i));
 					publishProgress(i);
 				}
 			}
@@ -655,6 +675,41 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		*/
 	}
+	class SaveDisasmAsync extends AsyncTask<Void, Integer, Void>
+	{
+		//String TAG = getClass().getSimpleName();
+		android.app.AlertDialog.Builder builder;
+		ProgressBar progress;
+		protected void onPreExecute (){
+			super.onPreExecute();
+			Log.d(TAG + " PreExceute","On pre Exceute......");
+			progress=new ProgressBar(MainActivity.this);
+			progress.setIndeterminate(false);
+
+			builder=new android.app.AlertDialog.Builder(MainActivity.this);
+			builder.setTitle("Saving..").setView(progress);
+			builder.show();
+		}
+
+		protected Void doInBackground(Void...list) {
+			Log.d(TAG + " DoINBackGround","On doInBackground...");
+			SaveDisasmRaw();
+			return null;
+		}
+
+		protected void onProgressUpdate(Integer...a){
+			super.onProgressUpdate(a);
+			progress.setProgress(a[0]);
+			//Log.d(TAG + " onProgressUpdate", "You are in progress update ... " + a[0]);
+		}
+		/*
+		 protected void onPostExecute(Void result) {
+		 super.onPostExecute(result);
+		 //Log.d(TAG + " onPostExecute", "" + result);
+		 }
+		 */
+	}
+	
 	private void  SaveDisasm(DatabaseHelper disasmF)
 	{
 		// TODO: Implement this method
@@ -832,7 +887,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					long size=limit - start;
 					long leftbytes=size;
 					DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
-					dai.getAll(filecontent,start,size,addr, disasmResults);	
+					dai.getAll(filecontent,start,size,addr/*, disasmResults*/);
+					disasmResults= adapter.itemList();
 					mNotifyManager.cancel(0);
 					final int len=disasmResults.size();
 					//add xrefs
@@ -1051,6 +1107,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					long address=symbol.st_value;
 					//LongSparseArray arr;
 					Toast.makeText(MainActivity.this,"Jump to"+Long.toHexString(address),3).show();
+					tabHost.setCurrentTab(3);
+					jumpto(address);
 					return true;
 				}
 			});
@@ -1290,16 +1348,23 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	@Override
 	public void onBackPressed()
 	{
-		if(currentProject==null)
+		if(shouldSave&& currentProject==null)
 		{
 			ShowYesNoCancelDialog((Activity)this,"Save project?","",
 				new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface p1, int p2)
 					{
-						ExportDisasm();
-						SaveDetail();
-						MainActivity.super.onBackPressed();
+						ExportDisasm(new Runnable(){
+								@Override
+								public void run()
+								{
+									SaveDetail();
+									MainActivity.super.onBackPressed();
+									return ;
+								}
+							});
+						
 						return ;
 					}
 				},
@@ -1391,9 +1456,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					startActivity(SettingActivity);
 				}
 				break;
-			case R.id.rows:
+			/*case R.id.rows:
 				{
-					mCustomDialog = new CustomDialog(this, 
+					mCustomDialog = new CustomDialog((Activity)this, 
 													 "Select rows to view", // 제목
 													 "Choose rows(Nothing happens)", // 내용 
 													 (View.OnClickListener)null, // 왼쪽 버튼 이벤트
@@ -1401,9 +1466,141 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					mCustomDialog.show();
 					break;
 				}
+				*/
+			case R.id.jumpto:
+			{
+				final EditText et=new EditText(this);
+				et.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+						@Override
+						public boolean onEditorAction(TextView p1,int  p2, KeyEvent p3)
+						{
+							// TODO: Implement this method
+							return true;
+						}
+					});
+				ShowEditDialog("Goto an address/symbol","Enter a hex address or a symbol",et,
+					"Go", new DialogInterface.OnClickListener(){
+						@Override
+						public void onClick(DialogInterface p1, int p2)
+						{
+							String dest=et.getText().toString();
+							try
+							{
+								long address=Long.parseLong(dest,16);
+								jumpto(address);
+							}
+							catch(NumberFormatException nfe)
+							{
+								//not a number, lookup symbol table
+								for(ELFUtil.Symbol sym:elfUtil.syms)
+								{
+									if(sym.name!=null&&sym.name.equals(dest))
+									{
+										jumpto(sym.st_value);
+									}
+								}
+							}
+							return ;
+						}
+						
+					},
+				"Cancel",(DialogInterface.OnClickListener)null);
+				break;
+			}
+			case R.id.save:
+			{
+				if(currentProject==null)
+				{
+					ExportDisasm();
+					SaveDetail();
+				}
+				break;
+			}
+			case R.id.export:
+			{
+				ExportDisasm();
+				SaveDetail();
+				createZip();
+				break;
+			}
+				
 		}
         return super.onOptionsItemSelected(item);
     }
+	private void jumpto(long address)
+	{
+		if(isValidAddress(address))
+		{
+			
+		}
+		ListViewItem lv=new ListViewItem(new DisasmResult());
+		lv.disasmResult.address=address;
+		int index=Collections.binarySearch(adapter.itemList(), lv, new Comparator<ListViewItem>(){
+				@Override
+				public int compare(ListViewItem p1, ListViewItem p2)
+				{
+					if(p1==null)
+						return -1;
+					if(p2==null)
+						return 1;
+					if(p1.disasmResult==null)
+						return -1;
+					if(p2.disasmResult==null)
+						return 1;
+					return (int)(p1.disasmResult.address-p2.disasmResult.address);
+				}			
+		});
+		if(index<0)
+		{
+			//not found
+		}else{
+			listview.setSelection(index);
+			//listview.setScrollX(index);
+			//listview.smoothScrollToPosition(index); too slow
+		}
+		return ;
+	}
+
+	private boolean isValidAddress(long address)
+	{
+		
+		return true;
+	}
+	
+	private void createZip()
+	{
+		File targetFile = null;
+		try
+		{
+			File projFolder=new File(projectManager.RootFile,currentProject.name+"/");
+			FileOutputStream fos=new FileOutputStream(targetFile=new File(projectManager.RootFile, currentProject.name+".zip"));
+			ZipOutputStream zos=new ZipOutputStream(fos);
+			File[] targets=projFolder.listFiles();
+			byte[] buf=new byte[4096];
+			int readlen=0;
+			for(File file:targets)
+			{
+				Log.v(TAG,"writing "+file.getName());
+				ZipEntry ze=new ZipEntry(file.getName());
+				zos.putNextEntry(ze);
+				FileInputStream fis=new FileInputStream(file);
+				while((readlen=fis.read(buf,0,4096))>0)
+					zos.write(buf,0,readlen);
+				zos.closeEntry();
+				fis.close();
+			}
+			zos.close();
+			fos.close();		
+		}
+		catch (Exception e)
+		{
+			AlertError("Failed to export zip",e);
+			targetFile=(File) null;
+		}
+		if(targetFile!=null)
+			AlertSaveSuccess(targetFile);
+		return ;
+	}
 	private View.OnClickListener leftListener = new View.OnClickListener() {
 		public void onClick(View v)
 		{
@@ -1675,6 +1872,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private void AfterReadFully() throws IOException
 	{
+		shouldSave=true;
 		List<ELFUtil.Symbol> list=elfUtil.getSymbols();
 //		for(int i=0;i<list.size();++i){
 //			symbolLvAdapter.addItem(list.get(i));
