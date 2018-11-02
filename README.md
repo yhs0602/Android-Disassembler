@@ -1,4 +1,4 @@
-# Version 1.1.2 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.2.0 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
 # Android-Disassembler
 Disassemble android shared libraries (aka .so files) (NDK, JNI) on Android. Capstone-based disassembler application on android.
@@ -11,6 +11,7 @@ Disassemble android shared libraries (aka .so files) (NDK, JNI) on Android. Caps
 - Supports projects.
 - Supports launching from file browsers.
 - Supports many ABIs(arm,x86,x64,MIPS,PowerPC,...)
+- Jump to address by symbols' names, or a hex address.
 
 # What's new
  - Changed to Android Studio structure.
@@ -69,6 +70,7 @@ Slow. Not recommended.
  - Support exe files. (Why? I don't know..)
  - Organize spaghetti codes.
  - Add theme preferences.
+ - Show prototypes of NDK/C standard APIs in the symbols tab.
 
 # XRefs
 https://reverseengineering.stackexchange.com/a/18203/23870

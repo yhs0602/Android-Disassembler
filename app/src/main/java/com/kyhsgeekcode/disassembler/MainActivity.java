@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 {
 
 	private RetainedFragment dataFragment;
-
+	
 	private DisassemblyManager disasmManager;
 
 	public void ExportDisasm()

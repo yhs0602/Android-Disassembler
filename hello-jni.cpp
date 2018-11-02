@@ -38,215 +38,7 @@ extern "C"
 		const char * errmsg(cs_err e);
 		static void print_insn_detail(string &buf,cs_insn *ins);
 
-		JNIEXPORT jstring JNICALL Java_com_jourhyang_disasmarm_MainActivity_disassemble(JNIEnv * env, jobject thiz, jbyteArray _bytes,jlong entry)
-		{
-			int bytelen=env->GetArrayLength(_bytes);
-			unsigned char *bytes= new unsigned char[bytelen];
-			jbyte *byte_buf;
- 	        byte_buf = env->GetByteArrayElements(_bytes, NULL);
-			for(int i=0;i<bytelen;++i)
-			{
-				bytes[i]=byte_buf[i];
-			}
-			env->ReleaseByteArrayElements(_bytes, byte_buf, 0);
-			cs_insn * insn;
-			size_t count;
-			char *buf;
-			string strbuf;
-			count = cs_disasm(handle,/*(const uint8_t*)*/((const uint8_t*)bytes+/*CODE*/entry), bytelen-1, entry, 0, & insn);
-			if (count > 0)
-			{
-				size_t j;
-				for (j = 0; j < count; j++)
-				{
-					 asprintf(&buf,"0%x : %s %s\n", insn[j].address, /*insn[j].bytes,*/ insn[j].mnemonic,insn[j].op_str);
-					 strbuf+=buf;
-					 free(buf);
-					 print_insn_detail(strbuf,&(insn[j]));
-				}
-				cs_free(insn, count);
-			}
-			free(bytes);
-			// printf("ERROR: Failed to disassemble given code!\n");
-			jstring r=env->NewStringUTF(strbuf.c_str());
-			//free(buf);
-			return r;
-		}
 		
-		void DisasmOne_sub(JNIEnv * env, jobject thiz,unsigned char* bytes,int bytelen,long addr);
-		
-		JNIEXPORT void JNICALL Java_com_jourhyang_disasmarm_DisasmResult_DisasmOne(JNIEnv * env, jobject thiz,jbyteArray _bytes ,jlong addr)
-		{
-			int bytelen=env->GetArrayLength(_bytes);
-			//unsigned char *bytes= new unsigned char[bytelen];
-			jbyte *byte_buf;
- 	        byte_buf = env->GetByteArrayElements(_bytes, NULL);
-			/*for(int i=0;i<bytelen;++i)
-			{
-				bytes[i]=byte_buf[i];
-			}*/
-			DisasmOne_sub(env,thiz,(unsigned char *)byte_buf/*bytes*/,bytelen,addr);
-			env->ReleaseByteArrayElements(_bytes, byte_buf, 0);
-			//delete bytes;
-		}
-		
-		JNIEXPORT void JNICALL Java_com_jourhyang_disasmarm_DisasmResult_DisasmOne2(JNIEnv * env, jobject thiz,jbyteArray _bytes, jlong shift,jlong address)
-		{
-			int bytelen=env->GetArrayLength(_bytes);
-			//unsigned char *bytes= new unsigned char[bytelen-shift];
-			jbyte *byte_buf;
- 	        byte_buf = env->GetByteArrayElements(_bytes, NULL);
-			/*for(int i=0;i<bytelen-shift;++i)
-			{
-				bytes[i]=byte_buf[i+shift];
-			}*/
-			DisasmOne_sub(env,thiz,(unsigned char*)(byte_buf+shift)/*bytes*/,bytelen-shift,address);
-			env->ReleaseByteArrayElements(_bytes, byte_buf, 0);
-			//delete bytes;
-		}
-		
-		void DisasmOne_sub(JNIEnv * env, jobject thiz,unsigned char* bytes,int bytelen,long addr)
-		{
-			cs_insn * insn;
-			size_t count;
-			__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "DisasmOne_sub");
-			count = cs_disasm(handle,(const uint8_t*)bytes, bytelen-1, addr, 1, & insn);
-			if(count>0)
-			{
-				size_t j;
-				jclass cls = env->GetObjectClass(thiz);
-				jfieldID fid = env->GetFieldID(cls, "mnemonic","Ljava/lang/String;");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
-				/* Create a new string and overwrite the instance field */
-				jstring jstr = env->NewStringUTF( insn[0].mnemonic);
-				if (jstr == NULL) {
-					return; /* out of memory */
-				}
-				env->SetObjectField(thiz, fid, jstr);
-				
-				fid = env->GetFieldID( cls, "op_str","Ljava/lang/String;");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
-				/* Create a new string and overwrite the instance field */
-			    jstr = env->NewStringUTF(insn[0].op_str);
-				if (jstr == NULL) {
-					return; /* out of memory */
-				}
-				env->SetObjectField(thiz, fid, jstr);
-		
-				fid = env->GetFieldID( cls, "address","J");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
-				env->SetLongField(thiz, fid, insn[0].address);
-				
-				fid = env->GetFieldID( cls, "id","I");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
-				env->SetIntField(thiz, fid, insn[0].id);
-				
-				fid = env->GetFieldID(cls, "size","I");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
-				env->SetIntField(thiz, fid, insn[0].size);
-				
-				fid = env->GetFieldID( cls, "bytes","[B");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
-				jobject job=env->GetObjectField(thiz,fid);
-				jbyteArray *jba = reinterpret_cast<jbyteArray*>(&job);
-				int sz=env->GetArrayLength(*jba);
-				// Get the elements (you probably have to fetch the length of the array as well  
- 				jbyte * data = env->GetByteArrayElements(*jba, NULL);
-				int min=insn[0].size > sz ? sz : insn[0].size;
-				for(int i=0;i<min;++i)
-				{
-					data[i]=insn[0].bytes[i];
-				}
-  				// Don't forget to release it 
-  				env->ReleaseByteArrayElements(*jba, data, 0);
-
-				if(insn[0].detail!=NULL)
-				{
-					fid = env->GetFieldID( cls, "groups","[B");
-					if (fid == NULL) {
-						return; /* failed to find the field */
-					}
-					jobject job2=env->GetObjectField(thiz,fid);
-					jbyteArray *jba2 = reinterpret_cast<jbyteArray*>(&job2);
-					int sz2=env->GetArrayLength(*jba2);
-					// Get the elements (you probably have to fetch the length of the array as well  
- 					jbyte * data2 = env->GetByteArrayElements(*jba2, NULL);
-					int min=insn[0].detail->groups_count > sz2 ? sz2 : insn[0].detail->groups_count;
-					for(int i=0;i<min;++i)
-					{
-						data2[i]=insn[0].detail->groups[i];
-					}
-  					// Don't forget to release it 
-  					env->ReleaseByteArrayElements(*jba2, data2, 0);
-					
-					fid = env->GetFieldID(cls, "groups_count","B");
-					if (fid == NULL) {
-						return; /* failed to find the field */
-					}
-					env->SetByteField(thiz, fid, insn[0].detail->groups_count);
-				
-				}
-				//env->SetIntField(env, obj, fid, insn[0].size);
-				
-				
-				//for (j = 0; j < count; j++)
-				//{
-				//	 asprintf(&buf,"0%x : %s %s\n", insn[j].address, /*insn[j].bytes,*/ insn[j].mnemonic,insn[j].op_str);
-				//	 strbuf+=buf;
-				//	 free(buf);
-				//	 print_insn_detail(strbuf,&(insn[j]));
-				//}
-				cs_free(insn, count);
-			}
-			__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "DisasmOne_sub end");
-			/*
-				jfieldID fidid;   /* store the field ID */
-			/*	jfieldID fidaddr;
-				jfieldID fidsize;
-				jfieldID fidbytes;
-				jfieldID fidmnemonic;
-				jfieldID fidop_str;
-				jfieldID fidregs_read;
-				jfieldID fidregs_read_count;
-				jfieldID fidregs_write;
-				jfieldID fidregs_write_count;
-				jfieldID fidgroups;
-				jfieldID fidgroups_count;
-				jstring jstr;*/
-				//const char *str;     /* Get a reference to obj’s class */
-		//		
-				//printf("In C:\n");     /* Look for the instance field s in cls */
-		//		fidid = env->GetFieldID(env, cls, "s","Ljava/lang/String;");
-		//		if (fid == NULL) {
-		//			return; /* failed to find the field */
-		//		}
-				/* Read the instance field s */
-				//jstr = (*env)->GetObjectField(env, obj, fid);
-				//str = (*env)->GetStringUTFChars(env, jstr, NULL);
-				//if (str == NULL) {
-				//	return; /* out of memory */
-				//}
-				//printf("  c.s = \"%s\"\n", str);
-				//(*env)->ReleaseStringUTFChars(env, jstr, str);
-				/* Create a new string and overwrite the instance field */
-			//	jstr = (*env)->NewStringUTF(env, "123");
-			//	if (jstr == NULL) {
-			//		return; /* out of memory */
-			//	}
-			//	(*env)->SetObjectField(env, obj, fid, jstr);
-		}
 		const char * errmsg(cs_err e)
 		{
 			switch(e)
@@ -311,12 +103,16 @@ extern "C"
 			mem.free=free;
 			mem.vsnprintf=vsnprintf;
 			mem.realloc=realloc;
-			return cs_option(NULL,CS_OPT_MEM,(size_t )&mem);
-			
+			return cs_option(NULL,CS_OPT_MEM,(size_t )&mem);		
 			//return 0;
 		}
+		int arch=CS_ARCH_ARM;
 		JNIEXPORT jint JNICALL Java_com_kyhsgeekcode_disassembler_DisasmIterator_CSoption(JNIEnv * env, jobject thiz,jint arg1,jint arg2)
 		{
+			if(arg1==CS_OPT_MODE)
+			{
+				arch=arg2;
+			}
 			return (int)cs_option(handle,(cs_opt_type)arg1,arg2);
 		}
 		
@@ -388,6 +184,39 @@ extern "C"
    			const uint8_t *code = (uint8_t *)(byte_buf+offset);
 			size_t code_size = size-offset;	// size of @code buffer above
 			uint64_t addr = virtaddr;	// address of first instruction to be disassembled
+			
+			jfieldID fidMnemonic = env->GetFieldID(darcls, "mnemonic","Ljava/lang/String;");
+			if (fidMnemonic == NULL) {
+				return; /* failed to find the field */
+			}
+			jfieldID fidOPStr = env->GetFieldID(darcls, "op_str","Ljava/lang/String;");
+			if (fidOPStr == NULL) {
+				return; /* failed to find the field */
+			}
+			jfieldID fidAddr = env->GetFieldID( darcls, "address","J");
+			if (fidAddr == NULL) {
+				return; /* failed to find the field */
+			}
+			jfieldID fidID = env->GetFieldID( darcls, "id","I");
+			if (fidID == NULL) {
+				return; /* failed to find the field */
+			}
+			jfieldID fidSize = env->GetFieldID(darcls, "size","I");
+			if (fidSize == NULL) {
+				return; /* failed to find the field */
+			}
+			jfieldID fidbytes = env->GetFieldID( darcls, "bytes","[B");
+			if (fidbytes == NULL) {
+				return; /* failed to find the field */
+			}
+			jfieldID fidGroup = env->GetFieldID( darcls, "groups","[B");
+			if (fidGroup == NULL) {
+				return; /* failed to find the field */
+			}
+			jfieldID fidGroupCount = env->GetFieldID(darcls, "groups_count","B");
+			if (fidGroupCount == NULL) {
+				return; /* failed to find the field */
+			}
    			 // disassemble one instruction a time & store the result into @insn variable above
    			while(cs_disasm_iter(handle, &code, &code_size, &addr, insn)) {
 			      // analyze disassembled instruction in @insn variable ...
@@ -395,88 +224,99 @@ extern "C"
       			  // to point to the next instruction after each iteration.
 				  						__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "inloop");
 				jobject dar=env->NewObject(darcls,ctor);
-				jfieldID fid = env->GetFieldID(darcls, "mnemonic","Ljava/lang/String;");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
+				
 				/* Create a new string and overwrite the instance field */
 				jstring jstr = env->NewStringUTF( insn->mnemonic);
 				if (jstr == NULL) {
 					return; /* out of memory */
 				}
-				env->SetObjectField(dar, fid, jstr);
+				env->SetObjectField(dar, fidMnemonic, jstr);
 				env->DeleteLocalRef(jstr);
-				fid = env->GetFieldID(darcls, "op_str","Ljava/lang/String;");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
+				
 				/* Create a new string and overwrite the instance field */
 			    jstr = env->NewStringUTF(insn->op_str);
 				if (jstr == NULL) {
 					return; /* out of memory */
 				}
-				env->SetObjectField(dar, fid, jstr);
-				env->DeleteLocalRef(jstr);
-				fid = env->GetFieldID( darcls, "address","J");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
-				env->SetLongField(dar, fid, insn->address);
+				env->SetObjectField(dar, fidOPStr, jstr);
+				env->DeleteLocalRef(jstr);	
+				env->SetLongField(dar, fidAddr, insn->address);		
 				
-				fid = env->GetFieldID( darcls, "id","I");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
-				env->SetIntField(dar, fid, insn->id);
+				env->SetIntField(dar, fidID, insn->id);		
 				
-				fid = env->GetFieldID(darcls, "size","I");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
-				env->SetIntField(dar, fid, insn->size);
-				
-				fid = env->GetFieldID( darcls, "bytes","[B");
-				if (fid == NULL) {
-					return; /* failed to find the field */
-				}
-				jobject job=env->GetObjectField(dar,fid);
+				env->SetIntField(dar, fidSize, insn->size);		
+				jobject job=env->GetObjectField(dar,fidbytes);
 				jbyteArray *jba = reinterpret_cast<jbyteArray*>(&job);
 				int sz=env->GetArrayLength(*jba);
 				// Get the elements (you probably have to fetch the length of the array as well  
  				jbyte * data = env->GetByteArrayElements(*jba, NULL);
 				int min=insn->size > sz ? sz : insn->size;
-				for(int i=0;i<min;++i)
+				memcpy(data,insn->bytes,min);
+				/*for(int i=0;i<min;++i)
 				{
 					data[i]=insn->bytes[i];
-				}
+				}*/
   				// Don't forget to release it 
   				env->ReleaseByteArrayElements(*jba, data, 0);
 				env->DeleteLocalRef(job);
 						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "beforedetail");
 				if(insn[0].detail!=NULL)
 				{
-					fid = env->GetFieldID( darcls, "groups","[B");
-					if (fid == NULL) {
-						return; /* failed to find the field */
-					}
-					jobject job2=env->GetObjectField(dar,fid);
+					const cs_detail * detail=insn->detail;
+					jobject job2=env->GetObjectField(dar,fidGroup);
 					jbyteArray *jba2 = reinterpret_cast<jbyteArray*>(&job2);
 					int sz2=env->GetArrayLength(*jba2);
 					// Get the elements (you probably have to fetch the length of the array as well  
  					jbyte * data2 = env->GetByteArrayElements(*jba2, NULL);
-					int min=insn->detail->groups_count > sz2 ? sz2 : insn->detail->groups_count;
-					for(int i=0;i<min;++i)
+					int min=detail->groups_count > sz2 ? sz2 : detail->groups_count;
+					memcpy(data2,detail->groups,min);
+					/*for(int i=0;i<min;++i)
 					{
 						data2[i]=insn->detail->groups[i];
-					}
+					}*/
   					// Don't forget to release it 
   					env->ReleaseByteArrayElements(*jba2, data2, 0);
-					env->DeleteLocalRef(job2);
-					fid = env->GetFieldID(darcls, "groups_count","B");
-					if (fid == NULL) {
-						return; /* failed to find the field */
+					env->DeleteLocalRef(job2);		
+					env->SetByteField(dar, fidGroupCount, detail->groups_count);
+					//now get the operands, etc..
+					switch(arch)
+					{
+						case CS_ARCH_X86:	// X86 architecture (including x86 & x86-64)
+						{
+							const cs_x86 *x86=&detail->x86;
+							
+						}
+						case CS_ARCH_ARM:	// ARM architecture (including Thumb, Thumb-2)
+						{
+							const cs_arm *arm=&detail->arm;
+						}
+						case CS_ARCH_ARM64:		// ARM-64, also called AArch64
+						{
+							const cs_arm64 *arm64=&detail->arm64;
+						}
+						case CS_ARCH_MIPS:		// Mips architecture
+						{
+							const cs_mips *mips=&detail->mips;
+						}
+						case CS_ARCH_PPC:		// PowerPC architecture
+						{
+							const cs_ppc *ppc=&detail->ppc;
+						}
+						case CS_ARCH_SPARC:		// Sparc architecture
+						{
+							const cs_sparc *sparc=&detail->sparc;
+						}
+						case CS_ARCH_SYSZ:		// SystemZ architecture
+						{
+							const cs_sysz *sysz=&detail->sysz;
+						}
+						case CS_ARCH_XCORE:		// XCore architecture
+						{
+							const cs_xcore *xcore=&detail->xcore;
+						}
 					}
-					env->SetByteField(dar, fid, insn->detail->groups_count);	
+					
+					
 				}
 										//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "afterdetail");
 				jobject lvi=env->NewObject(lvicls,ctorLvi,dar);
@@ -718,5 +558,213 @@ extern "C"
 		}
 		buf+="\n";
 	}
-	
+	//	JNIEXPORT jstring JNICALL Java_com_jourhyang_disasmarm_MainActivity_disassemble(JNIEnv * env, jobject thiz, jbyteArray _bytes,jlong entry)
+//	{
+//		int bytelen=env->GetArrayLength(_bytes);
+//		unsigned char *bytes= new unsigned char[bytelen];
+//		jbyte *byte_buf;
+//		byte_buf = env->GetByteArrayElements(_bytes, NULL);
+//		for(int i=0;i<bytelen;++i)
+//		{
+//			bytes[i]=byte_buf[i];
+//		}
+//		env->ReleaseByteArrayElements(_bytes, byte_buf, 0);
+//		cs_insn * insn;
+//		size_t count;
+//		char *buf;
+//		string strbuf;
+//		count = cs_disasm(handle,/*(const uint8_t*)*/((const uint8_t*)bytes+/*CODE*/entry), bytelen-1, entry, 0, & insn);
+//		if (count > 0)
+//		{
+//			size_t j;
+//			for (j = 0; j < count; j++)
+//			{
+//				asprintf(&buf,"0%x : %s %s\n", insn[j].address, /*insn[j].bytes,*/ insn[j].mnemonic,insn[j].op_str);
+//				strbuf+=buf;
+//				free(buf);
+//				print_insn_detail(strbuf,&(insn[j]));
+//			}
+//			cs_free(insn, count);
+//		}
+//		free(bytes);
+//		// printf("ERROR: Failed to disassemble given code!\n");
+//		jstring r=env->NewStringUTF(strbuf.c_str());
+//		//free(buf);
+//		return r;
+//	}
+//
+//	void DisasmOne_sub(JNIEnv * env, jobject thiz,unsigned char* bytes,int bytelen,long addr);
+//
+//	JNIEXPORT void JNICALL Java_com_jourhyang_disasmarm_DisasmResult_DisasmOne(JNIEnv * env, jobject thiz,jbyteArray _bytes ,jlong addr)
+//	{
+//		int bytelen=env->GetArrayLength(_bytes);
+//		//unsigned char *bytes= new unsigned char[bytelen];
+//		jbyte *byte_buf;
+//		byte_buf = env->GetByteArrayElements(_bytes, NULL);
+//		/*for(int i=0;i<bytelen;++i)
+//		 {
+//		 bytes[i]=byte_buf[i];
+//		 }*/
+//		DisasmOne_sub(env,thiz,(unsigned char *)byte_buf/*bytes*/,bytelen,addr);
+//		env->ReleaseByteArrayElements(_bytes, byte_buf, 0);
+//		//delete bytes;
+//	}
+//
+//	JNIEXPORT void JNICALL Java_com_jourhyang_disasmarm_DisasmResult_DisasmOne2(JNIEnv * env, jobject thiz,jbyteArray _bytes, jlong shift,jlong address)
+//	{
+//		int bytelen=env->GetArrayLength(_bytes);
+//		//unsigned char *bytes= new unsigned char[bytelen-shift];
+//		jbyte *byte_buf;
+//		byte_buf = env->GetByteArrayElements(_bytes, NULL);
+//		/*for(int i=0;i<bytelen-shift;++i)
+//		 {
+//		 bytes[i]=byte_buf[i+shift];
+//		 }*/
+//		DisasmOne_sub(env,thiz,(unsigned char*)(byte_buf+shift)/*bytes*/,bytelen-shift,address);
+//		env->ReleaseByteArrayElements(_bytes, byte_buf, 0);
+//		//delete bytes;
+//	}
+//
+//	void DisasmOne_sub(JNIEnv * env, jobject thiz,unsigned char* bytes,int bytelen,long addr)
+//	{
+//		cs_insn * insn;
+//		size_t count;
+//		__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "DisasmOne_sub");
+//		count = cs_disasm(handle,(const uint8_t*)bytes, bytelen-1, addr, 1, & insn);
+//		if(count>0)
+//		{
+//			size_t j;
+//			jclass cls = env->GetObjectClass(thiz);
+//			jfieldID fid = env->GetFieldID(cls, "mnemonic","Ljava/lang/String;");
+//			if (fid == NULL) {
+//				return; /* failed to find the field */
+//			}
+//			/* Create a new string and overwrite the instance field */
+//			jstring jstr = env->NewStringUTF( insn[0].mnemonic);
+//			if (jstr == NULL) {
+//				return; /* out of memory */
+//			}
+//			env->SetObjectField(thiz, fid, jstr);
+//
+//			fid = env->GetFieldID( cls, "op_str","Ljava/lang/String;");
+//			if (fid == NULL) {
+//				return; /* failed to find the field */
+//			}
+//			/* Create a new string and overwrite the instance field */
+//			jstr = env->NewStringUTF(insn[0].op_str);
+//			if (jstr == NULL) {
+//				return; /* out of memory */
+//			}
+//			env->SetObjectField(thiz, fid, jstr);
+//
+//			fid = env->GetFieldID( cls, "address","J");
+//			if (fid == NULL) {
+//				return; /* failed to find the field */
+//			}
+//			env->SetLongField(thiz, fid, insn[0].address);
+//
+//			fid = env->GetFieldID( cls, "id","I");
+//			if (fid == NULL) {
+//				return; /* failed to find the field */
+//			}
+//			env->SetIntField(thiz, fid, insn[0].id);
+//
+//			fid = env->GetFieldID(cls, "size","I");
+//			if (fid == NULL) {
+//				return; /* failed to find the field */
+//			}
+//			env->SetIntField(thiz, fid, insn[0].size);
+//
+//			fid = env->GetFieldID( cls, "bytes","[B");
+//			if (fid == NULL) {
+//				return; /* failed to find the field */
+//			}
+//			jobject job=env->GetObjectField(thiz,fid);
+//			jbyteArray *jba = reinterpret_cast<jbyteArray*>(&job);
+//			int sz=env->GetArrayLength(*jba);
+//			// Get the elements (you probably have to fetch the length of the array as well  
+//			jbyte * data = env->GetByteArrayElements(*jba, NULL);
+//			int min=insn[0].size > sz ? sz : insn[0].size;
+//			for(int i=0;i<min;++i)
+//			{
+//				data[i]=insn[0].bytes[i];
+//			}
+//			// Don't forget to release it 
+//			env->ReleaseByteArrayElements(*jba, data, 0);
+//
+//			if(insn[0].detail!=NULL)
+//			{
+//				fid = env->GetFieldID( cls, "groups","[B");
+//				if (fid == NULL) {
+//					return; /* failed to find the field */
+//				}
+//				jobject job2=env->GetObjectField(thiz,fid);
+//				jbyteArray *jba2 = reinterpret_cast<jbyteArray*>(&job2);
+//				int sz2=env->GetArrayLength(*jba2);
+//				// Get the elements (you probably have to fetch the length of the array as well  
+//				jbyte * data2 = env->GetByteArrayElements(*jba2, NULL);
+//				int min=insn[0].detail->groups_count > sz2 ? sz2 : insn[0].detail->groups_count;
+//				for(int i=0;i<min;++i)
+//				{
+//					data2[i]=insn[0].detail->groups[i];
+//				}
+//				// Don't forget to release it 
+//				env->ReleaseByteArrayElements(*jba2, data2, 0);
+//
+//				fid = env->GetFieldID(cls, "groups_count","B");
+//				if (fid == NULL) {
+//					return; /* failed to find the field */
+//				}
+//				env->SetByteField(thiz, fid, insn[0].detail->groups_count);
+//
+//			}
+//			//env->SetIntField(env, obj, fid, insn[0].size);
+//
+//
+//			//for (j = 0; j < count; j++)
+//			//{
+//			//	 asprintf(&buf,"0%x : %s %s\n", insn[j].address, /*insn[j].bytes,*/ insn[j].mnemonic,insn[j].op_str);
+//			//	 strbuf+=buf;
+//			//	 free(buf);
+//			//	 print_insn_detail(strbuf,&(insn[j]));
+//			//}
+//			cs_free(insn, count);
+//		}
+//		__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "DisasmOne_sub end");
+//		/*
+//		 jfieldID fidid;   /* store the field ID */
+//		/*	jfieldID fidaddr;
+//		 jfieldID fidsize;
+//		 jfieldID fidbytes;
+//		 jfieldID fidmnemonic;
+//		 jfieldID fidop_str;
+//		 jfieldID fidregs_read;
+//		 jfieldID fidregs_read_count;
+//		 jfieldID fidregs_write;
+//		 jfieldID fidregs_write_count;
+//		 jfieldID fidgroups;
+//		 jfieldID fidgroups_count;
+//		 jstring jstr;*/
+//		//const char *str;     /* Get a reference to obj’s class */
+//		//		
+//		//printf("In C:\n");     /* Look for the instance field s in cls */
+//		//		fidid = env->GetFieldID(env, cls, "s","Ljava/lang/String;");
+//		//		if (fid == NULL) {
+//		//			return; /* failed to find the field */
+//		//		}
+//		/* Read the instance field s */
+//		//jstr = (*env)->GetObjectField(env, obj, fid);
+//		//str = (*env)->GetStringUTFChars(env, jstr, NULL);
+//		//if (str == NULL) {
+//		//	return; /* out of memory */
+//		//}
+//		//printf("  c.s = \"%s\"\n", str);
+//		//(*env)->ReleaseStringUTFChars(env, jstr, str);
+//		/* Create a new string and overwrite the instance field */
+//		//	jstr = (*env)->NewStringUTF(env, "123");
+//		//	if (jstr == NULL) {
+//		//		return; /* out of memory */
+//		//	}
+//		//	(*env)->SetObjectField(env, obj, fid, jstr);
+//	}
 }

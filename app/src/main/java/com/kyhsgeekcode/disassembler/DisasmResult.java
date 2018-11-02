@@ -296,7 +296,6 @@ public class DisasmResult implements Serializable
 	CS_GRP_INT=4,     // all interrupt instructions (int+syscall)
 	CS_GRP_IRET=5;    // all interrupt return instructions	
 	
-	
 	// Architecture-specific instruction info
 	//union {
 		/*	cs_x86 x86;	// X86 architecture, including 16-bit, 32-bit & 64-bit mode
@@ -311,8 +310,8 @@ public class DisasmResult implements Serializable
 		*/
 	//} cs_detail;
 	//enum 
-	
-	
+	byte op_count=0;
+	//Should be arch specific? if then we need to create a class
 	
 	////////DATABASE UNIT ////////
 	public static final String TABLE_NAME = "disasms";
