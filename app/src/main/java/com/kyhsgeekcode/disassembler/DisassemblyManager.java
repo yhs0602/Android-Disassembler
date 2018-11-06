@@ -26,11 +26,11 @@ public class DisassemblyManager
 	{
 		return data;
 	}
-	public long getResumeAddress()
+	public long getResumeOffsetFromCode()
 	{
 		return lastAddress;
 	}
-	public void setResumeAddress(long addr)
+	public void setResumeOffsetFromCode(long addr)
 	{
 		lastAddress=addr;
 	}

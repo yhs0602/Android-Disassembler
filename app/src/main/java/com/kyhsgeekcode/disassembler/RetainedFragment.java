@@ -8,7 +8,7 @@ public class RetainedFragment extends Fragment {
     // data object we want to retain
     private DisassemblyManager data;
 	private byte[] filecontent;
-	private ELFUtil elfUtil;
+	private AbstractFile parsedFile;
 	private String path;
 
 	public void setPath(String path)
@@ -21,14 +21,14 @@ public class RetainedFragment extends Fragment {
 		return path;
 	}
 	
-	public void setElfUtil(ELFUtil elfUtil)
+	public void setParsedFile(AbstractFile elfUtil)
 	{
-		this.elfUtil = elfUtil;
+		this.parsedFile = elfUtil;
 	}
 
-	public ELFUtil getElfUtil()
+	public AbstractFile getParsedFile()
 	{
-		return elfUtil;
+		return parsedFile;
 	}
 	
 	public void setFilecontent(byte[] filecontent)

@@ -1,4 +1,4 @@
-# Version 1.2.0 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.2.1 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
 # Android-Disassembler
 Disassemble android shared libraries (aka .so files) (NDK, JNI) on Android. Capstone-based disassembler application on android.

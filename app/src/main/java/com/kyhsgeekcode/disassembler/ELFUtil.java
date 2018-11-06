@@ -3,28 +3,21 @@ package com.kyhsgeekcode.disassembler;
 import android.util.*;
 import java.io.*;
 import java.nio.*;
-import java.nio.channels.*;
 import java.util.*;
 import nl.lxtreme.binutils.elf.*;
-public class ELFUtil implements Closeable
+public class ELFUtil extends AbstractFile
 {
 	private String TAG="Disassembler elfutil";
-	ArrayList<Symbol> syms;
-	public List<Symbol> getSymbols()
-	{
-		if(syms==null)
-			syms=new ArrayList<>();
-		return syms;
-	}
-	public long getCodeSectionVirtAddr()
-	{
-		return codeVirtualAddress;
-	}
-	public long getCodeSectionLimit()
-	{
-		// TODO: Implement this method
-		return codeLimit;
-	}
+	//ArrayList<Symbol> syms;
+//	public long getCodeVirtAddr()
+//	{
+//		return codeVirtualAddress;
+//	}
+//	public long getCodeSectionLimit()
+//	{
+//		// TODO: Implement this method
+//		return codeLimit;
+//	}
 	@Override
 	public void close() throws IOException
 	{
@@ -33,19 +26,21 @@ public class ELFUtil implements Closeable
 	}
 
 	Elf elf;
-	public long getEntryPoint()
-	{
-		return entryPoint;
-	}
+//	public long getEntryPoint()
+//	{
+//		return entryPoint;
+//	}
+	@Override
 	public String toString()
 	{
 		return new StringBuilder(elf.toString())
-			.append(Arrays.toString(symstrings)).append("\n").append(info).toString();
+			//.append(Arrays.toString(symstrings))
+			.append("\n").append(info).toString();
 	}
-	public static int getWord(byte a, byte b, byte c, byte d)
-	{
-		return ((int)a << 24) & ((int)b << 16) & ((int)c << 8) & d;
-	}
+//	public static int getWord(byte a, byte b, byte c, byte d)
+//	{
+//		return ((int)a << 24) & ((int)b << 16) & ((int)c << 8) & d;
+//	}
 	/*
 	 public ELFUtil(File file) throws Exception
 	 {
@@ -78,21 +73,25 @@ public class ELFUtil implements Closeable
 	 ParseData();
 	 }
 	 */
-	public long getCodeSectionOffset()
+	@Override
+	public long getCodeSectionBase()
 	{
-		if (codeOffset != 0)
+		if (codeBase != 0)
 		{
-			return codeOffset;
+			return codeBase;
 		}
+		Log.e(TAG,"Code base 0?");
 		//Do some error
 		return 0L;
 	}
+	/*
 	public ELFUtil(FileChannel channel, byte[] filec) throws IOException
 	{
+		super(null);
 		elf = new Elf(channel);
 		fileContents = filec;
 		AfterConstructor();
-	}
+	}*/
 	public ELFUtil(File file, byte[] filec) throws IOException
 	{
 		elf = new Elf(file);
@@ -108,14 +107,14 @@ public class ELFUtil implements Closeable
 		//assertNotNull( programHeaders );
 
 		//dumpProgramHeaders( programHeaders );
-
+		machineType=elf.header.machineType;
 		Header header = elf.header;
 		//assertNotNull( header );
 		//bExecutable=header.elfType;
 		if (header.entryPoint == 0)
 		{
 			//Log.i(TAG, "file " + file.getName() + "doesnt have entry point. currently set to 0x30");
-			entryPoint = 0x30;
+			entryPoint = 0;
 		}
 		else
 		{
@@ -204,7 +203,7 @@ public class ELFUtil implements Closeable
 			{
 				symbuffer=elf.getSection(elf.getSectionHeaderByType(SectionType.SYMTAB));
 				ElfClass elfClass=elf.header.elfClass;
-				syms=new ArrayList<>();
+				symbols=new ArrayList<>();
 				if(elfClass.equals(ElfClass.CLASS_32))
 				{
 					while (symbuffer.hasRemaining())
@@ -226,7 +225,7 @@ public class ELFUtil implements Closeable
 						symbol.st_size=size;
 						symbol.st_value=value;
 						symbol.analyze();
-						syms.add(symbol);
+						symbols.add(symbol);
 						/*sb.append(sym_name).append("=").append(Integer.toHexString(value))
 							.append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
 							*/
@@ -252,7 +251,7 @@ public class ELFUtil implements Closeable
 						symbol.st_size=size;
 						symbol.st_value=value;
 						symbol.analyze();
-						syms.add(symbol);
+						symbols.add(symbol);
 					/*	sb.append(sym_name).append("=").append(Integer.toHexString(value))
 							.append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
 							*/
@@ -263,10 +262,10 @@ public class ELFUtil implements Closeable
 			{
 				Log.e(TAG,"",e);
 			}
-			if(syms==null)
-				syms=new ArrayList<>();
+			if(symbols==null)
+				symbols=new ArrayList<>();
 			if(dynsyms!=null)
-				syms.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
+				symbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
 
 			/*https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-35166
 			 Symbol Values
@@ -347,8 +346,8 @@ public class ELFUtil implements Closeable
 					Log.i(TAG, "name nonnull:name=" + name);
 					if (name.equals(".text"))
 					{
-						codeOffset = sh.fileOffset;
-						codeLimit = codeOffset + sh.size;
+						codeBase = sh.fileOffset;
+						codeLimit = codeBase + sh.size;
 						codeVirtualAddress = sh.virtualAddress;
 					}
 				}
@@ -371,76 +370,13 @@ public class ELFUtil implements Closeable
 		}
 		entryPoint = getWord((byte)0, (byte)0, (byte)0, (byte)0);
 	}*/
-	private long entryPoint;
-	private byte [] fileContents;
+	//private long entryPoint;
+	//private byte [] fileContents;
 	boolean bExecutable;
-	private long codeOffset=0L;
-	private long codeLimit=0L;
-	private long codeVirtualAddress=0L;
-	String[] symstrings;
-	class Symbol
-	{
-		boolean is64;
-		long      st_name;
-		long      st_value;
-		long      st_size;
-		short   st_info;
-		short  st_other;
-		short      st_shndx;
-		String name="";
-		String demangled="";
-		enum Bind{
-			STB_LOCAL,
-			STB_GLOBAL,
-			STB_WEAK
-		};
-		enum Type{
-			STT_NOTYPE,
-			STT_OBJECT,
-			STT_FUNC,
-			STT_SECTION,
-			STT_FILE,
-			STT_COMMON
-		};
-		Bind bind;
-		Type type;
-/*           #define STB_LOCAL  0
-#define STB_GLOBAL 1
-#define STB_WEAK   2
-
-#define STT_NOTYPE  0
-#define STT_OBJECT  1
-#define STT_FUNC    2
-#define STT_SECTION 3
-#define STT_FILE    4
-#define STT_COMMON  5
-#define STT_TLS     6       
-Oh. I Think I get it. `#define ELF_ST_BIND(x)    ((x) >> 4)` `#define ELF_ST_TYPE(x)    (((unsigned int) x) & 0xf)` that means that if `st_info == 34` then it means `STB_WEAK` **and** `STT_FUNC` because `34 >> 4 == 2` and `34 & 0xff == 2`. Is that right?
-     
-     
-     https://stackoverflow.com/q/48181509/8614565*/
-
-		public void analyze()
-		{
-			bind=Bind.values()[st_info>>4];
-			type=Type.values()[st_info&0xf];
-			demangled=Demangle(name);
-			if("".equals(demangled)||demangled==null)
-				demangled=name;
-			return;
-		}
-		@Override
-		public String toString()
-		{
-			StringBuilder sb=new StringBuilder();
-			sb.append(name).append(" at ").append(Long.toHexString(st_value))
-				.append(" with size ").append(st_size).append(" binding=")
-				.append(bind).append("&type=").append(type)
-				.append(" at section #").append(st_shndx);
-				
-			return sb.toString();
-		}
-		
-	}
-	private native String Demangle(String mangled);
+	//private long codeOffset=0L;
+	//private long codeLimit=0L;
+	//private long codeVirtualAddress=0L;
+	//String[] symstrings;
+	
+	public static native String Demangle(String mangled);
 }

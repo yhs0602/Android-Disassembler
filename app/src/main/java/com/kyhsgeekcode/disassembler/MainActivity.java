@@ -51,10 +51,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		dataFragment.setPath(fpath);
 	}
 
-	public void setElfUtil(ELFUtil elfUtil)
+	public void setParsedFile(AbstractFile parsedFile)
 	{
-		this.elfUtil = elfUtil;
-		dataFragment.setElfUtil(elfUtil);
+		this.parsedFile = parsedFile;
+		dataFragment.setParsedFile(parsedFile);
 	}
 
 	public void setFilecontent(byte[] filecontent)
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private static final String LASTPROJKEY = "lastProject";
 	String fpath;
 	byte[] filecontent=null;
-	ELFUtil elfUtil;
+	AbstractFile parsedFile;//Parsed file info
 	SharedPreferences setting;
 	SharedPreferences.Editor editor;
 	SharedPreferences settingPath;
@@ -225,56 +225,56 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					AlertSelFile();
 					return;
 				}
-				final List<String> ListItems = new ArrayList<>();
-				ListItems.add("Instant mode");
-				ListItems.add("Persist mode");
-				ShowSelDialog(ListItems,"Disassemble as...",new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int pos)
-						{
-							//String selectedText = items[pos].toString();
-							if (pos == 0)
-							{
-								instantMode = true;
-								ListItems.clear();
-								ListItems.add("Entry point");
-								ListItems.add("Custom address");
-								ShowSelDialog(ListItems,"Start from...",new DialogInterface.OnClickListener() {
-										public void onClick(DialogInterface dialog2, int pos)
-										{						
-											if (pos == 0)
-											{
-												instantEntry = elfUtil.getEntryPoint();
-												DisassembleInstant();
-											}
-											else if (pos == 1)
-											{
-												final EditText edittext=new EditText(MainActivity.this);
-												ShowEditDialog("Start from...","Enter address to start analyzing.",edittext,"OK",new DialogInterface.OnClickListener() {
-														public void onClick(DialogInterface dialog3, int which)
-														{
-															instantEntry = parseAddress(edittext.getText().toString());
-															DisassembleInstant();
-														}			
-													},"cancel",new DialogInterface.OnClickListener() {
-														public void onClick(DialogInterface dialog4, int which)
-														{
-															dialog4.dismiss();
-														}
-													});
-												//dialog2.dismiss();
-											}
-										}
-									});
-							}
-							else if (pos == 1)
-							{
-								DisassembleFile();
-							}
-						}
-					});
+				//final List<String> ListItems = new ArrayList<>();
+				//ListItems.add("Instant mode");
+				//ListItems.add("Persist mode");
+				//ShowSelDialog(ListItems,"Disassemble as...",new DialogInterface.OnClickListener() {
+				//		public void onClick(DialogInterface dialog, int pos)
+				//		{
+				//			//String selectedText = items[pos].toString();
+				//			if (pos == 0)
+				//			{
+				//				instantMode = true;
+				//				ListItems.clear();
+				//				ListItems.add("Entry point");
+				//				ListItems.add("Custom address");
+				//				ShowSelDialog(ListItems,"Start from...",new DialogInterface.OnClickListener() {
+				//						public void onClick(DialogInterface dialog2, int pos)
+				//						{						
+				//							if (pos == 0)
+				//							{
+				//								instantEntry = elfUtil.getEntryPoint();
+				//								DisassembleInstant();
+				//							}
+				//							else if (pos == 1)
+				//							{
+				//								final EditText edittext=new EditText(MainActivity.this);
+				//								ShowEditDialog("Start from...","Enter address to start analyzing.",edittext,"OK",new DialogInterface.OnClickListener() {
+				//										public void onClick(DialogInterface dialog3, int which)
+				//										{
+				//											instantEntry = parseAddress(edittext.getText().toString());
+				//											DisassembleInstant();
+				//										}			
+				//									},"cancel",new DialogInterface.OnClickListener() {
+				//										public void onClick(DialogInterface dialog4, int which)
+				//										{
+				//											dialog4.dismiss();
+				//										}
+				//									});
+				//								//dialog2.dismiss();
+				//							}
+				//						}
+				//					});
+				//			}
+				//			else if (pos == 1)
+				//			{
+								DisassembleFile(parsedFile.getEntryPoint());
+				//			}
+				//		}
+				//	});
 				break;
 			case R.id.btnShowdetail:
-				if (elfUtil == null)
+				if (parsedFile == null)
 				{
 					AlertSelFile();
 					return;
@@ -287,7 +287,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			case R.id.btnSaveDetails:
 				SaveDetail();
 				break;
-			case R.id.btAbort:
+			case R.id.btAbort://abort or resume
+				//boolean 
 				if(workerThread!=null)
 				{
 					if(workerThread.isAlive())
@@ -345,11 +346,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		if(toString==null)
 		{
-			return elfUtil.getEntryPoint();
+			return parsedFile.getEntryPoint();
 		}
 		if(toString.equals(""))
 		{
-			return elfUtil.getEntryPoint();
+			return parsedFile.getEntryPoint();
 		}
 		// TODO: Implement this method
 		try{
@@ -359,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		{
 			Toast.makeText(this,"Did you enter valid address?",3).show();
 		}
-		return elfUtil.getEntryPoint();
+		return parsedFile.getEntryPoint();
 	}
 
 	private void AlertSelFile()
@@ -758,7 +759,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			FileOutputStream fos=new FileOutputStream(file);
 			try
 			{
-				fos.write(elfUtil.toString().getBytes());
+				fos.write(parsedFile.toString().getBytes());
 			}
 			catch (IOException e)
 			{
@@ -780,7 +781,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private void ShowDetail()
 	{
-		etDetails.setText(elfUtil.toString());
+		etDetails.setText(parsedFile.toString());
 	}
 
 	private void DisassembleInstant()
@@ -789,7 +790,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 		long startaddress=instantEntry;//file offset
 		long index=startaddress;
-		long addr=elfUtil.getCodeSectionVirtAddr();
+		long addr=parsedFile.getCodeVirtAddr();
 		long limit=startaddress + 400;
 		if(limit>=filecontent.length)
 		{
@@ -856,22 +857,24 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 //		}
 //	};
 	ListViewItem lvi;
-	//TODO: DisassembleFile(long address, int amt);
-	private void DisassembleFile()
+	////TODO: DisassembleFile(long address, int amt);
+	private void DisassembleFile(final long offset)
 	{
 		Toast.makeText(this, "started", 2).show();
 		Log.v(TAG, "Strted disassm");
 		btDisasm.setEnabled(false);
 		btAbort.setEnabled(true);
 		btSavDisasm.setEnabled(false);
+		btAbort.setText("Pause");
 		//final ProgressDialog dialog= showProgressDialog("Disassembling...");
-		disasmResults.clear();
-		setupListView();
+		if(offset==parsedFile.getEntryPoint())
+			disasmResults.clear();//otherwise resume, not clear
+		//setupListView(); why was it called here?
 		mNotifyManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mBuilder = new Notification.Builder(this);
 		mBuilder.setContentTitle("Disassembler")
 			.setContentText("Disassembling in progress")
-			.setSmallIcon(R.drawable.cell_shape)
+			.setSmallIcon(R.drawable.ic_launcher)
 			.setOngoing(true)
 			.setProgress(100, 0, false);
 		/*Intent snoozeIntent = new Intent(this, MyBroadcastReceiver.class);
@@ -884,17 +887,24 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				@Override
 				public void run()
 				{
-					long start=elfUtil.getCodeSectionOffset();
+					long codesection=parsedFile.getCodeSectionBase();
+					long start=codesection+offset;//elfUtil.getCodeSectionOffset();
 					long index=start;
-					long limit=elfUtil.getCodeSectionLimit();
-					long addr=elfUtil.getCodeSectionVirtAddr();
+					long limit=parsedFile.getCodeSectionLimit();
+					long addr=parsedFile.getCodeVirtAddr()+offset;
 					Log.v(TAG, "code section point :" + Long.toHexString(index));
 					//ListViewItem lvi;
 					//	getFunctionNames();
 					long size=limit - start;
 					long leftbytes=size;
 					DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
-					dai.getAll(filecontent,start,size,addr/*, disasmResults*/);
+					long toresume=dai.getAll(filecontent,start,size,addr/*, disasmResults*/);
+					if(toresume<0)
+					{
+						AlertError("Failed to disassemble:"+toresume,new Exception());
+					}else{
+						disasmManager.setResumeOffsetFromCode(toresume);
+					}
 					disasmResults= adapter.itemList();
 					mNotifyManager.cancel(0);
 					final int len=disasmResults.size();
@@ -908,7 +918,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								tab2.invalidate();
 								//dialog.dismiss();
 								btDisasm.setEnabled(true);
-								btAbort.setEnabled(false);
+								btAbort.setText("Resume");
+								//btAbort.setTag("resume",(Object)true);
+								//btAbort.setEnabled(false);
 								btSavDisasm.setEnabled(true);
 								Toast.makeText(MainActivity.this, "done", 2).show();			
 							}
@@ -1073,10 +1085,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			//It should be handled
 			disasmManager= dataFragment.getDisasmManager();
 			filecontent=dataFragment.getFilecontent();
-			elfUtil=dataFragment.getElfUtil();
+			parsedFile=dataFragment.getParsedFile();
 			fpath=dataFragment.getPath();
-			if(elfUtil!=null)
-				symbolLvAdapter.addAll(elfUtil.getSymbols());
+			if(parsedFile!=null)
+				symbolLvAdapter.addAll(parsedFile.getSymbols());
 		}
 
         // the data is available in dataFragment.getData()
@@ -1110,7 +1122,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				@Override
 				public boolean onItemLongClick(AdapterView<?> parent, View view, int position,long  id)
 				{
-					ELFUtil.Symbol symbol=(ELFUtil.Symbol) parent.getItemAtPosition(position);
+					Symbol symbol=(Symbol) parent.getItemAtPosition(position);
 					long address=symbol.st_value;
 					//LongSparseArray arr;
 					Toast.makeText(MainActivity.this,"Jump to"+Long.toHexString(address),3).show();
@@ -1503,7 +1515,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 							catch(NumberFormatException nfe)
 							{
 								//not a number, lookup symbol table
-								for(ELFUtil.Symbol sym:elfUtil.syms)
+								List<Symbol> syms=parsedFile.getSymbols();
+								for(Symbol sym:syms)
 								{
 									if(sym.name!=null&&sym.name.equals(dest))
 									{
@@ -1738,68 +1751,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				// permissions this app might request
 		}
 	}
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		switch (requestCode)
-		{
-				/*case FILE_SELECT_CODE:
-				 if (resultCode == RESULT_OK)
-				 {
-				 // Get the Uri of the selected file
-				 Uri uri = data.getData();
-				 //File file=new File(uri.);
-				 //URI -> real file path
-				 try
-				 {
-				 String file_path;
-				 if (new File(uri.getPath()).exists() == false)
-				 {
-				 file_path = RealPathUtils.getRealPathFromURI(this, uri);
-				 }
-				 else
-				 {
-				 file_path = uri.getPath();
-				 }	
-				 etFilename.setText(file_path);
-				 fpath = file_path; //uri.getPath();
-				 File file=new File(file_path);
-				 long fsize=file.length();
-				 int index=0;
-				 filecontent = new byte[(int)fsize];
-				 DataInputStream in = new DataInputStream(new FileInputStream(fpath));
-				 int len,counter=0;
-				 byte[] b=new byte[1024];
-				 while ((len = in.read(b)) > 0)
-				 {
-				 for (int i = 0; i < len; i++)
-				 { // byte[] 버퍼 내용 출력
-				 //System.out.format("%02X ", b[i]);
-				 filecontent[index] = b[i];
-				 index++;
-				 counter++;
-				 }
-				 }
-				 elfUtil = new ELFUtil(file, filecontent);
-				 Toast.makeText(this, "success size=" + new Integer(index).toString(), 1).show();
-				 }
-				 catch (Exception e)
-				 {
-				 Toast.makeText(this, Log.getStackTraceString(e), 30).show();
-				 Log.e(TAG, "Nooo", e);
-				 } 	
-				 }
-				 break;
-				 */
-			case REQUEST_SELECT_FILE:
-				if (resultCode == Activity.RESULT_OK)
-				{
-					//OnChoosePath(data);
-				}
-		}
-		super.onActivityResult(requestCode, resultCode, data);
-	}
-	
+
 	private void OnChoosePath(Uri uri)
 	{
 		try
@@ -1807,22 +1759,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			InputStream is=(InputStream)getContentResolver().openInputStream(uri);
 			//ByteArrayOutputStream bis=new ByteArrayOutputStream();
 			setFilecontent(Utils.getBytes(is));
-			//filecontent=is.toString().getBytes();
-			/*filecontent=new byte[1024];
-			while(is.read(filecontent,0,1024)>0)
-			{
-				
-			}
-			is.read(filecontent);
-			is.close();*/
 			File tmpfile=new File(getExternalFilesDir("directopen"),"tmp.so");
 			tmpfile.createNewFile();
 			FileOutputStream fos=new FileOutputStream(tmpfile);
 			fos.write(filecontent);
 			//elfUtil=new ELFUtil(new FileChannel().transferFrom(Channels.newChannel(is),0,0),filecontent);
-			setElfUtil( new ELFUtil(tmpfile,filecontent));
+			
 			setFpath( tmpfile.getAbsolutePath());//uri.getPath();
-			AfterReadFully();
+			AfterReadFully(tmpfile);
 			
 		}
 		catch (IOException e)
@@ -1887,8 +1831,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 			}
 			in.close();
-			setElfUtil(new ELFUtil(file, filecontent));
-			AfterReadFully();
+			;
+			AfterReadFully(file);
 			Toast.makeText(this, "success size=" + index /*+ type.name()*/, 3).show();
 			
 			//OnOpenStream(fsize, path, index, file);
@@ -1900,39 +1844,26 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 	}
 
-	private void AfterReadFully() throws IOException
+	private void AfterReadFully(File file) throws IOException
 	{
-		shouldSave=true;
-		List<ELFUtil.Symbol> list=elfUtil.getSymbols();
-//		for(int i=0;i<list.size();++i){
-//			symbolLvAdapter.addItem(list.get(i));
-//			symbolLvAdapter.notifyDataSetChanged();
-//		}
-		symbolLvAdapter.addAll(list);
+		
 	//	symAdapter.setCellItems(list);
 		try
 		{
-			MachineType type=elfUtil.elf.header.machineType;
-			int arch=getArchitecture(type);
-			if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL)
-			{
-				Toast.makeText(this, "Maybe I don't support this machine:" + type.name(), 3).show();
-			}
-			else
-			{
-				int err=0;
-				if ((err = (new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))) != cs.CS_ERR_OK)
-				{
-					Log.e(TAG, "setmode err" + err);
-					Toast.makeText(this, "failed to set architecture" + err, 3).show();
-				}
-				//cs.setMode();
-			}
+			setParsedFile(new ELFUtil(file,filecontent));	
 		}
 		catch (Exception e)
 		{
 			//not an elf file. try PE parser
-			PE pe=PEParser.parse(fpath);
+			try{
+				setParsedFile(new PEFile(file,filecontent));
+			}catch(IOException f)
+			{
+				AlertError("failed to parse the file. please setup manually.",f);
+				setParsedFile(new RawFile(file));
+				//failed to parse the file. please setup manually.
+			}
+			/*PE pe=PEParser.parse(fpath);
 			if (pe != null)
 			{
 				PESignature ps =pe.getSignature();
@@ -1948,40 +1879,69 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				//What is it?
 				Toast.makeText(this, "The file seems that it is neither a valid Elf file or PE file!", 3).show();
 				throw new IOException(e);
-			}
-		}	
+			}*/
+		}
+		MachineType type=parsedFile.getMachineType();//elf.header.machineType;
+		int[] archs=getArchitecture(type);
+		int arch=archs[0];
+		int mode=0;
+		if(archs.length==2)
+			mode=archs[1];
+		if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL)
+		{
+			Toast.makeText(this, "Maybe I don't support this machine:" + type.name(), 3).show();
+		}
+		else
+		{
+			int err=0;
+			if ((err = Open(arch,/*CS_MODE_LITTLE_ENDIAN =*/ mode	/* little-endian mode (default mode)*/)) != cs.CS_ERR_OK)/*new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))*/
+			{
+				Log.e(TAG, "setmode type="+type.name()+" err="+err+"arch" +arch+"mode="+mode);
+				Toast.makeText(this, "failed to set architecture" + err + "arch="+arch, 3).show();
+			}else{
+				Toast.makeText(this,"MachineType="+type.name()+" arch="+arch,3).show();
+			}			
+		}
+		shouldSave=true;
+		List<Symbol> list=parsedFile.getSymbols();
+//		for(int i=0;i<list.size();++i){
+//			symbolLvAdapter.addItem(list.get(i));
+//			symbolLvAdapter.notifyDataSetChanged();
+//		}
+		symbolLvAdapter.itemList().clear();
+		symbolLvAdapter.addAll(list);
 		//fpath = path;
 	}
-	private int getArchitecture(MachineType type)
+	private int[] getArchitecture(MachineType type)
 	{
 		// TODO: Implement this method
 		switch(type)
 		{
 			case NONE://(0, "No machine"),
-				return CS_ARCH_ALL;
+				return new int[]{CS_ARCH_ALL};
 			case M32://(1, "AT&T WE 32100"),
 			case SPARC://(2, "SUN SPARC"),
-				return CS_ARCH_SPARC;
+				return new int[]{CS_ARCH_SPARC};
 			case i386: //(3, "Intel 80386"),
-				return CS_ARCH_X86;
+				return new int[]{CS_ARCH_X86,CS_MODE_32};
 			case m68K: //(4, "Motorola m68k family"),
 			case m88K: //(5, "Motorola m88k family"),
 			case i860: //(7, "Intel 80860"),
-				return CS_ARCH_X86;
+				return new int[]{CS_ARCH_X86,CS_MODE_32};
 			case MIPS: //(8, "MIPS R3000 big-endian"),
-				return CS_ARCH_MIPS;
+				return new int[]{CS_ARCH_MIPS};
 			case S370: //(9, "IBM System/370"),
 			case MIPS_RS3_LE: //(10, "MIPS R3000 little-endian"),
-				return CS_ARCH_MIPS;
+				return new int[]{CS_ARCH_MIPS};
 			case PARISC: //(15, "HPPA"),
 			case VPP500: //(17, "Fujitsu VPP500"),
 			case SPARC32PLUS: //(18, "Sun's \"v8plus\""),
 			case i960: //(19, "Intel 80960"),
-				return CS_ARCH_X86;
+				return new int[]{CS_ARCH_X86,CS_MODE_32};
 			case PPC: //(20, "PowerPC"),
-				return CS_ARCH_PPC;
+				return new int[]{CS_ARCH_PPC};
 			case PPC64: //(21, "PowerPC 64-bit"),
-				return CS_ARCH_PPC;
+				return new int[]{CS_ARCH_PPC};
 			case S390: //(22, "IBM S390"),
 
 			case V800: //(36, "NEC V800 series"),
@@ -1989,11 +1949,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			case RH32: //(38, "TRW RH-32"),
 			case RCE: //(39, "Motorola RCE"),
 			case ARM: //(40, "ARM"),
-				return CS_ARCH_ARM;
+				return new int[]{CS_ARCH_ARM};
 			case FAKE_ALPHA: //(41, "Digital Alpha"),
 			case SH: //(42, "Hitachi SH"),
 			case SPARCV9: //(43, "SPARC v9 64-bit"),
-				return CS_ARCH_SPARC;
+				return new int[]{CS_ARCH_SPARC};
 			case TRICORE: //(44, "Siemens Tricore"),
 			case ARC: //(45, "Argonaut RISC Core"),
 			case H8_300: //(46, "Hitachi H8/300"),
@@ -2001,9 +1961,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			case H8S: //(48, "Hitachi H8S"),
 			case H8_500: //(49, "Hitachi H8/500"),
 			case IA_64: //(50, "Intel Merced"),
-				return CS_ARCH_X86;
+				return new int[]{CS_ARCH_X86};
 			case MIPS_X: //(51, "Stanford MIPS-X"),
-				return CS_ARCH_MIPS;
+				return new int[]{CS_ARCH_MIPS};
 			case COLDFIRE: //(52, "Motorola Coldfire"),
 			case m68HC12: //(53, "Motorola M68HC12"),
 			case MMA: //(54, "Fujitsu MMA Multimedia Accelerator"),
@@ -2015,7 +1975,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			case ST100: //(60, "STMicroelectronic ST100 processor"),
 			case TINYJ: //(61, "Advanced Logic Corp. Tinyj emb.fam"),
 			case x86_64: //(62, "x86-64"),
-				return CS_ARCH_X86;
+				return new int[]{CS_ARCH_X86};
 			case PDSP: //(63, "Sony DSP Processor"),
 
 			case FX66: //(66, "Siemens FX66 microcontroller"),
@@ -2048,14 +2008,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			case ARC_A5: //(93, "ARC Cores Tangent-A5"),
 			case XTENSA: //(94, "Tensilica Xtensa Architecture"),
 			case AARCH64: //(183, "ARM AARCH64"),
-				return CS_ARCH_ARM64;
+				return new int[]{CS_ARCH_ARM64};
 			case TILEPRO: //(188, "Tilera TILEPro"),
 			case MICROBLAZE: //(189, "Xilinx MicroBlaze"),
-			case TILEGX: //(191, "Tilera TILE-Gx");
+			case TILEGX: //(191, "Tilera TILE-Gx")};
 
 		}
 		Log.e(TAG,"Unsupported machine!!"+type.name());
-		return CS_ARCH_ALL;
+		return new int[]{CS_ARCH_ALL};
 	}
 	public static final int CS_ARCH_ARM = 0;
 	public static final int CS_ARCH_ARM64 = 1;
@@ -2067,7 +2027,23 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	public static final int CS_ARCH_XCORE = 7;
 	public static final int CS_ARCH_MAX = 8;
 	public static final int CS_ARCH_ALL = 0xFFFF; // query id for cs_support()
-
+	
+    public static final int 	CS_MODE_LITTLE_ENDIAN = 0;	// little-endian mode (default mode)
+    public static final int 	CS_MODE_ARM = 0;	// 32-bit ARM
+    public static final int 	CS_MODE_16 = 1 << 1;	// 16-bit mode (X86)
+    public static final int 	CS_MODE_32 = 1 << 2;	// 32-bit mode (X86)
+    public static final int 	CS_MODE_64 = 1 << 3;	// 64-bit mode (X86; PPC)
+    public static final int 	CS_MODE_THUMB = 1 << 4;	// ARM's Thumb mode; including Thumb-2
+    public static final int 	CS_MODE_MCLASS = 1 << 5;	// ARM's Cortex-M series
+    public static final int 	CS_MODE_V8 = 1 << 6;	// ARMv8 A32 encodings for ARM
+    public static final int 	CS_MODE_MICRO = 1 << 4; // MicroMips mode (MIPS)
+    public static final int 	CS_MODE_MIPS3 = 1 << 5; // Mips III ISA
+    public static final int 	CS_MODE_MIPS32R6 = 1 << 6; // Mips32r6 ISA
+    public static final int 	CS_MODE_MIPSGP64 = 1 << 7; // General Purpose Registers are 64-bit wide (MIPS)
+    public static final int 	CS_MODE_V9 = 1 << 4; // SparcV9 mode (Sparc)
+    public static final int 	CS_MODE_BIG_ENDIAN = 1 << 31;	// big-endian mode
+    public static final int 	CS_MODE_MIPS32 = CS_MODE_32;	// Mips32 ISA (Mips)
+    public static final int 	CS_MODE_MIPS64 = CS_MODE_64;	// Mips64 ISA (Mips)
 	private String getRealPathFromURI(Uri uri)
 	{
 		String filePath = "";
@@ -2205,7 +2181,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	//  public native String  disassemble(byte [] bytes, long entry);
 	public native int Init();
 	public native void Finalize();
-
+	public native int Open(int arch,int mode);
     /* this is used to load the 'hello-jni' library on application
      * startup. The library has already been unpacked into
      * /data/data/com.example.hellojni/lib/libhello-jni.so at

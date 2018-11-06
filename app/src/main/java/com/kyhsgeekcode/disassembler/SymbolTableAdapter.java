@@ -8,7 +8,7 @@ import com.evrencoskun.tableview.adapter.recyclerview.holder.*;
 import com.kyhsgeekcode.disassembler.*;
 
 //I don't know what I should do to manipulate this!!!!
-public class SymbolTableAdapter extends AbstractTableAdapter<SymbolColHeader, SymbolRowHeader, ELFUtil.Symbol>
+public class SymbolTableAdapter extends AbstractTableAdapter<SymbolColHeader, SymbolRowHeader, Symbol>
 {
      public SymbolTableAdapter(Context context) {
          super(context); 
@@ -67,7 +67,7 @@ public class SymbolTableAdapter extends AbstractTableAdapter<SymbolColHeader, Sy
      @Override
      public void onBindCellViewHolder(AbstractViewHolder holder, Object cellItemModel, int 
              columnPosition, int rowPosition) {
-         ELFUtil.Symbol cell = (ELFUtil.Symbol) cellItemModel;
+         Symbol cell = (Symbol) cellItemModel;
  
          // Get the holder to update cell item text
          MyCellViewHolder viewHolder = (MyCellViewHolder) holder;

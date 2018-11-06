@@ -71,19 +71,25 @@ extern "C"
 			mem.vsnprintf=vsnprintf;
 			mem.realloc=realloc;
 			cs_option(NULL,CS_OPT_MEM,(size_t )&mem);
-			if ((e=cs_open(CS_ARCH_ARM, CS_MODE_ARM, & handle) )!= CS_ERR_OK)
+			handle=0;
+			return 0;
+		}
+		JNIEXPORT jint JNICALL Java_com_kyhsgeekcode_disassembler_MainActivity_Open(JNIEnv * env, jobject thiz,int arch,int mode)
+		{
+			cs_err e;
+			cs_close(&handle);
+			if ((e=cs_open((cs_arch)arch, (cs_mode)mode, & handle) )!= CS_ERR_OK)
 			{	
-				return /* env->NewStringUTF(errmsg(e));*/-1;
+				return /* env->NewStringUTF(errmsg(e));*/e;
 			}
 			cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
 			// turn on SKIPDATA mode
 			cs_option(handle, CS_OPT_SKIPDATA, CS_OPT_ON);
-
-			return 0;
 		}
 		JNIEXPORT void JNICALL Java_com_kyhsgeekcode_disassembler_MainActivity_Finalize(JNIEnv * env, jobject thiz)
 		{
 			cs_close(& handle);
+			handle=0;
 		}
 		
 		struct platform {
@@ -152,7 +158,8 @@ extern "C"
 		//Should fill LVI instead of DAR from now.
 		//Should fill Map insead of List ..
 		//No no.should fill adapter.
-		JNIEXPORT void JNICALL Java_com_kyhsgeekcode_disassembler_DisasmIterator_getAll(JNIEnv * env, jobject thiz,jbyteArray bytes, jlong offset, jlong size,jlong virtaddr/*, jobject arr*/)
+		//@returns the offset to resume later
+		JNIEXPORT jlong JNICALL Java_com_kyhsgeekcode_disassembler_DisasmIterator_getAll(JNIEnv * env, jobject thiz,jbyteArray bytes, jlong offset, jlong size,jlong virtaddr/*, jobject arr*/)
 		{
 			int bytelen=env->GetArrayLength(bytes);
 			jbyte *byte_buf;
@@ -187,35 +194,35 @@ extern "C"
 			
 			jfieldID fidMnemonic = env->GetFieldID(darcls, "mnemonic","Ljava/lang/String;");
 			if (fidMnemonic == NULL) {
-				return; /* failed to find the field */
+				return -1; /* failed to find the field */
 			}
 			jfieldID fidOPStr = env->GetFieldID(darcls, "op_str","Ljava/lang/String;");
 			if (fidOPStr == NULL) {
-				return; /* failed to find the field */
+				return -1; /* failed to find the field */
 			}
 			jfieldID fidAddr = env->GetFieldID( darcls, "address","J");
 			if (fidAddr == NULL) {
-				return; /* failed to find the field */
+				return -1; /* failed to find the field */
 			}
 			jfieldID fidID = env->GetFieldID( darcls, "id","I");
 			if (fidID == NULL) {
-				return; /* failed to find the field */
+				return -1; /* failed to find the field */
 			}
 			jfieldID fidSize = env->GetFieldID(darcls, "size","I");
 			if (fidSize == NULL) {
-				return; /* failed to find the field */
+				return -1; /* failed to find the field */
 			}
 			jfieldID fidbytes = env->GetFieldID( darcls, "bytes","[B");
 			if (fidbytes == NULL) {
-				return; /* failed to find the field */
+				return -1; /* failed to find the field */
 			}
 			jfieldID fidGroup = env->GetFieldID( darcls, "groups","[B");
 			if (fidGroup == NULL) {
-				return; /* failed to find the field */
+				return -1; /* failed to find the field */
 			}
 			jfieldID fidGroupCount = env->GetFieldID(darcls, "groups_count","B");
 			if (fidGroupCount == NULL) {
-				return; /* failed to find the field */
+				return -1; /* failed to find the field */
 			}
    			 // disassemble one instruction a time & store the result into @insn variable above
    			while(cs_disasm_iter(handle, &code, &code_size, &addr, insn)) {
@@ -228,7 +235,7 @@ extern "C"
 				/* Create a new string and overwrite the instance field */
 				jstring jstr = env->NewStringUTF( insn->mnemonic);
 				if (jstr == NULL) {
-					return; /* out of memory */
+					return -2; /* out of memory */
 				}
 				env->SetObjectField(dar, fidMnemonic, jstr);
 				env->DeleteLocalRef(jstr);
@@ -236,7 +243,7 @@ extern "C"
 				/* Create a new string and overwrite the instance field */
 			    jstr = env->NewStringUTF(insn->op_str);
 				if (jstr == NULL) {
-					return; /* out of memory */
+					return -2; /* out of memory */
 				}
 				env->SetObjectField(dar, fidOPStr, jstr);
 				env->DeleteLocalRef(jstr);	
@@ -315,8 +322,6 @@ extern "C"
 							const cs_xcore *xcore=&detail->xcore;
 						}
 					}
-					
-					
 				}
 										//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "afterdetail");
 				jobject lvi=env->NewObject(lvicls,ctorLvi,dar);
@@ -358,6 +363,7 @@ extern "C"
  		     cs_free(insn, 1);
 			//DisasmOne_sub(env,thiz,(unsigned char*)(byte_buf+shift)/*bytes*/,bytelen-shift,address);
 			env->ReleaseByteArrayElements(bytes, byte_buf, JNI_ABORT);
+			return (jlong)((long)code-(long)byte_buf);//return the number of processed bytes
 		}
 		
 		//public NativeLong cs_disasm2(NativeLong handle, byte[] code, NativeLong code_offset,NativeLong code_len,

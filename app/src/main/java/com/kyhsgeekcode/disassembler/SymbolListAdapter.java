@@ -11,21 +11,21 @@ import com.kyhsgeekcode.disassembler.ELFUtil.*;
 public class SymbolListAdapter extends BaseAdapter
 {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
-    private ArrayList<ELFUtil.Symbol> listViewItemList = new ArrayList<>() ;
+    private ArrayList<Symbol> listViewItemList = new ArrayList<>() ;
 
     public SymbolListAdapter()
 	{
 
     }
 
-	public void addAll(List<ELFUtil.Symbol> symbols)
+	public void addAll(List<Symbol> symbols)
 	{
 		listViewItemList.addAll(symbols);
 		notifyDataSetChanged();
 		return ;
 	}
 	//You should not modify
-	public ArrayList<ELFUtil.Symbol> itemList()
+	public ArrayList<Symbol> itemList()
 	{
 		return listViewItemList;
 	}
@@ -59,7 +59,7 @@ public class SymbolListAdapter extends BaseAdapter
 		
 		{
 			// Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
-			ELFUtil.Symbol listViewItem = listViewItemList.get(position);
+			Symbol listViewItem = listViewItemList.get(position);
 			
 			addrTextView.setText(Long.toHexString( listViewItem.st_value));
 			mangledTextView.setText(listViewItem.name);
@@ -86,7 +86,7 @@ public class SymbolListAdapter extends BaseAdapter
     }
 
 	// 아이템 데이터 추가를 위한 함수. 개발자가 원하는대로 작성 가능.
-    public void addItem(ELFUtil.Symbol item)
+    public void addItem(Symbol item)
 	{
         listViewItemList.add(item);
 		//notifyDataSetChanged();
