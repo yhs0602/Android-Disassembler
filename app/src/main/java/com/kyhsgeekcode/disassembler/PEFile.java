@@ -11,14 +11,20 @@ import android.util.*;
 public class PEFile extends AbstractFile
 {
 	private String TAG="Disassembler PE";
-	public PEFile(File file,byte[] filec) throws IOException
+	public PEFile(File file,byte[] filec) throws IOException, NotThisFormatException
 	{
 		pe = PEParser.parse(file);
+		
+		if(pe==null||pe.getSignature()==null||!pe.getSignature().isValid())
+		{
+			throw new NotThisFormatException();
+		}
 		DOSHeader dosh=pe.getDosHeader();
 		ImageData imd= pe.getImageData();
 		OptionalHeader oph=pe.getOptionalHeader();
-		byte[] bytes=imd.getArchitecture();
-		int machine=ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getShort()&0xFFFF;
+		int machine=pe.getCoffHeader().getMachine();
+		//byte[] bytes=imd.getArchitecture();
+		//int machine=ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getShort()&0xFFFF;
 		machineType=getMachineTypeFromPE(machine);
 		codeBase=oph.getBaseOfCode();
 		codeLimit=codeBase+oph.getSizeOfCode();
@@ -45,7 +51,7 @@ public class PEFile extends AbstractFile
 		for(int i=0;i<numnames;++i)
 		{
 			int namepos=bufNames.getInt();
-			Log.v(TAG,Elf.getZString(fileContents,namepos));
+			//Log.v(TAG,Elf.getZString(fileContents,namepos));
 		}
 		for(int i=0;i<id.size();++i)
 		{
@@ -59,17 +65,38 @@ public class PEFile extends AbstractFile
 	//https://docs.microsoft.com/ko-kr/windows/desktop/api/winnt/ns-winnt-_image_file_header
 	private MachineType getMachineTypeFromPE(int machine)
 	{
+		int h=org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_I386;
 		switch(machine)
 		{
-			case 0x014c:
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_I386:
 				return MachineType.i386;
-			case 0x0200:
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_IA64:
 				return MachineType.IA_64;
-			case 0x8664:
-				return MachineType.x86_64;		
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_AMD64:
+				return MachineType.x86_64;	
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_AM33:
+				return MachineType.ARC;//?
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_ARM:
+				return MachineType.ARM;
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_EBC:
+				return MachineType.XTENSA;//?
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_M32R:
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_MIPS16:
+				return MachineType.MIPS;
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_MIPSFPU:
+				return MachineType.MIPS;
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_MIPSFPU16:
+				return MachineType.MIPS;
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_POWERPC:
+				return MachineType.PPC;
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_POWERPCFP:
+				return MachineType.PPC;
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_R4000:
+				return MachineType.MIPS;
+			
 		}
 		//I don't know
-		return MachineType.ARM;
+		return nl.lxtreme.binutils.elf.MachineType.i386;
 	}
 	PE pe;
 	

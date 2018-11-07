@@ -39,6 +39,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	
 	private DisassemblyManager disasmManager;
 
+	LinearLayout llmainLinearLayoutSetupRaw;
+	
+	EditText etCodeBase;
+	EditText etEntryPoint;
+	EditText etCodeLimit;
+	EditText etVirtAddr;
+	TextView tvArch;
+	Button btFinishSetup;
+	
+	//RadioGridGroup rgdArch;
+	Spinner spinnerArch;
 	public void ExportDisasm()
 	{
 		ExportDisasm((Runnable)null);
@@ -76,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		// TODO: Implement this method
 		db=new DatabaseHelper(this,ProjectManager.createPath(proj.name)+"disasm.db");
+		disableEnableControls(false,llmainLinearLayoutSetupRaw);
 		OnChoosePath(proj.oriFilePath);
 		currentProject=proj;
 		setting=getSharedPreferences(SETTINGKEY,MODE_PRIVATE);
@@ -225,53 +237,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					AlertSelFile();
 					return;
 				}
-				//final List<String> ListItems = new ArrayList<>();
-				//ListItems.add("Instant mode");
-				//ListItems.add("Persist mode");
-				//ShowSelDialog(ListItems,"Disassemble as...",new DialogInterface.OnClickListener() {
-				//		public void onClick(DialogInterface dialog, int pos)
-				//		{
-				//			//String selectedText = items[pos].toString();
-				//			if (pos == 0)
-				//			{
-				//				instantMode = true;
-				//				ListItems.clear();
-				//				ListItems.add("Entry point");
-				//				ListItems.add("Custom address");
-				//				ShowSelDialog(ListItems,"Start from...",new DialogInterface.OnClickListener() {
-				//						public void onClick(DialogInterface dialog2, int pos)
-				//						{						
-				//							if (pos == 0)
-				//							{
-				//								instantEntry = elfUtil.getEntryPoint();
-				//								DisassembleInstant();
-				//							}
-				//							else if (pos == 1)
-				//							{
-				//								final EditText edittext=new EditText(MainActivity.this);
-				//								ShowEditDialog("Start from...","Enter address to start analyzing.",edittext,"OK",new DialogInterface.OnClickListener() {
-				//										public void onClick(DialogInterface dialog3, int which)
-				//										{
-				//											instantEntry = parseAddress(edittext.getText().toString());
-				//											DisassembleInstant();
-				//										}			
-				//									},"cancel",new DialogInterface.OnClickListener() {
-				//										public void onClick(DialogInterface dialog4, int which)
-				//										{
-				//											dialog4.dismiss();
-				//										}
-				//									});
-				//								//dialog2.dismiss();
-				//							}
-				//						}
-				//					});
-				//			}
-				//			else if (pos == 1)
-				//			{
-								DisassembleFile(parsedFile.getEntryPoint());
-				//			}
-				//		}
-				//	});
+				DisassembleFile(parsedFile.getEntryPoint());
 				break;
 			case R.id.btnShowdetail:
 				if (parsedFile == null)
@@ -297,10 +263,78 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					}
 				}
 				break;
+			case R.id.mainBTFinishSetup:
+				{
+					if(parsedFile==null){
+						AlertSelFile();
+						return;
+					}
+					if(!(parsedFile instanceof RawFile))
+					{
+						AlertError("Not a raw file, but enabled?",new Exception());
+						return;
+					}
+					String base=etCodeBase.getText().toString();
+					String entry=etEntryPoint.getText().toString();
+					String limit=etCodeLimit.getText().toString();
+					String virt=etVirtAddr.getText().toString();
+					//int checked=rgdArch.getCheckedRadioButtonId();
+					MachineType mct=MachineType.ARM;				
+					try{
+						//if(checked==R.id.rbAuto)
+					//	{
+							String s=(String) spinnerArch.getSelectedItem();
+							MachineType[] mcss=MachineType.values();
+							for(int i=0;i<mcss.length;++i)
+							{
+								if(s.equals(mcss[i].toString()))
+								{
+									mct=mcss[i];
+									break;
+								}
+							}
+							//mct=MachineType.valueOf(s);
+							//MachineType.
+						//}else{
+						//	RadioButton
+						//}
+						long lbase=Long.parseLong(base);
+						long llimit=Long.parseLong(limit);
+						long lentry=Long.parseLong(entry);
+						long lvirt=Long.parseLong(virt);
+						if(lbase>llimit)
+							throw new Exception("CS base<0");
+						if(llimit<=0)
+							throw new Exception("CS limit<0");
+						if(lentry>llimit||lentry<lbase)
+							throw new Exception("Entry point out of code section!");
+						if(lvirt<0)
+							throw new Exception("Virtual address<0");
+						parsedFile.codeBase=lbase;
+						parsedFile.codeLimit=llimit;
+						parsedFile.codeVirtualAddress=lvirt;
+						parsedFile.entryPoint=lentry;
+						parsedFile.machineType=mct;
+						AfterParse();
+					}catch(Exception e){
+						Log.e(TAG,"",e);
+						Toast.makeText(this,"Please enter valid values: "+e.getCause(),3).show();
+					}	
+				}
+				break;
 			default:
 				break;
 		}
-
+	}
+	//https://stackoverflow.com/a/8127716/8614565
+	private void disableEnableControls(boolean enable, ViewGroup vg){
+		for (int i = 0; i < vg.getChildCount(); i++){
+			View child = vg.getChildAt(i);
+			child.setEnabled(enable);
+			if (child instanceof ViewGroup){ 
+				disableEnableControls(enable, (ViewGroup)child);
+			}
+		}
 	}
 	//The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
 	public static void ShowEditDialog(Activity a,String title,String message,final EditText edittext,
@@ -1114,6 +1148,24 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		etFilename.setFocusable(false);
 		etFilename.setEnabled(false);
 
+		llmainLinearLayoutSetupRaw= (LinearLayout) findViewById(R.id.mainLinearLayoutSetupRaw);
+		disableEnableControls(false,llmainLinearLayoutSetupRaw);
+		
+		etCodeLimit= (EditText)  findViewById(R.id.mainETcodeLimit);
+		etCodeBase= (EditText)  findViewById(R.id.mainETcodeOffset);
+		etEntryPoint=(EditText)  findViewById(R.id.mainETentry);
+		etVirtAddr=(EditText) findViewById(R.id.mainETvirtaddr);
+		tvArch= (TextView) findViewById(R.id.mainTVarch);
+		btFinishSetup= (Button) findViewById(R.id.mainBTFinishSetup);
+		btFinishSetup.setOnClickListener(this);
+		//rgdArch= (RadioGridGroup) findViewById(R.id.mainRGDArch);
+		//rgdArch.check(R.id.rbAuto);
+		spinnerArch=(Spinner)findViewById(R.id.mainSpinnerArch);
+		//https://stackoverflow.com/a/13783744/8614565
+		String[] items = Arrays.toString(MachineType.class.getEnumConstants()).replaceAll("^.|.$", "").split(", ");	
+		ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+		spinnerArch.setAdapter(adapter);
+		
 		lvSymbols=(ListView)findViewById(R.id.symlistView);
 		//moved up
 		//symbolLvAdapter=new SymbolListAdapter();
@@ -1694,6 +1746,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					SharedPreferences.Editor edi=settingPath.edit();
 					edi.putString(DiskUtil.SC_PREFERENCE_KEY,path);
 					edi.commit();
+					disableEnableControls(false,llmainLinearLayoutSetupRaw);
 					OnChoosePath(path);
 					//Log.e("SELECTED_PATH", path);
 				}
@@ -1846,47 +1899,44 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private void AfterReadFully(File file) throws IOException
 	{
-		
 	//	symAdapter.setCellItems(list);
 		try
 		{
-			setParsedFile(new ELFUtil(file,filecontent));	
+			setParsedFile(new ELFUtil(file,filecontent));
+			AfterParse();
 		}
 		catch (Exception e)
 		{
 			//not an elf file. try PE parser
-			try{
+			try
+			{
 				setParsedFile(new PEFile(file,filecontent));
-			}catch(IOException f)
+				AfterParse();
+			}
+			catch(Exception|NotThisFormatException f)
 			{
 				AlertError("failed to parse the file. please setup manually.",f);
 				setParsedFile(new RawFile(file));
+				AllowRawSetup();
 				//failed to parse the file. please setup manually.
 			}
-			/*PE pe=PEParser.parse(fpath);
-			if (pe != null)
-			{
-				PESignature ps =pe.getSignature();
-				if (ps == null || !ps.isValid())
-				{
-					//What is it?
-					Toast.makeText(this, "The file seems that it is neither a valid Elf file or PE file!", 3).show();
-					throw new IOException(e);
-				}
-			}
-			else
-			{
-				//What is it?
-				Toast.makeText(this, "The file seems that it is neither a valid Elf file or PE file!", 3).show();
-				throw new IOException(e);
-			}*/
 		}
+	}
+
+	private void  AllowRawSetup()
+	{
+		disableEnableControls(true,llmainLinearLayoutSetupRaw);
+		return ;
+	}
+
+	private void AfterParse()
+	{
 		MachineType type=parsedFile.getMachineType();//elf.header.machineType;
 		int[] archs=getArchitecture(type);
 		int arch=archs[0];
 		int mode=0;
-		if(archs.length==2)
-			mode=archs[1];
+		if (archs.length == 2)
+			mode = archs[1];
 		if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL)
 		{
 			Toast.makeText(this, "Maybe I don't support this machine:" + type.name(), 3).show();
@@ -1894,15 +1944,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		else
 		{
 			int err=0;
-			if ((err = Open(arch,/*CS_MODE_LITTLE_ENDIAN =*/ mode	/* little-endian mode (default mode)*/)) != cs.CS_ERR_OK)/*new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))*/
+			if ((err = Open(arch,/*CS_MODE_LITTLE_ENDIAN =*/ mode)) != cs.CS_ERR_OK)/*new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))*/
 			{
-				Log.e(TAG, "setmode type="+type.name()+" err="+err+"arch" +arch+"mode="+mode);
-				Toast.makeText(this, "failed to set architecture" + err + "arch="+arch, 3).show();
-			}else{
-				Toast.makeText(this,"MachineType="+type.name()+" arch="+arch,3).show();
+				Log.e(TAG, "setmode type=" + type.name() + " err=" + err + "arch" + arch + "mode=" + mode);
+				Toast.makeText(this, "failed to set architecture" + err + "arch=" + arch, 3).show();
+			}
+			else
+			{
+				Toast.makeText(this, "MachineType=" + type.name() + " arch=" + arch, 3).show();
 			}			
 		}
-		shouldSave=true;
+		shouldSave = true;
 		List<Symbol> list=parsedFile.getSymbols();
 //		for(int i=0;i<list.size();++i){
 //			symbolLvAdapter.addItem(list.get(i));
@@ -1910,7 +1962,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 //		}
 		symbolLvAdapter.itemList().clear();
 		symbolLvAdapter.addAll(list);
-		//fpath = path;
 	}
 	private int[] getArchitecture(MachineType type)
 	{
@@ -2190,7 +2241,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	static{
 		System.loadLibrary("hello-jni");
 	}
-
+}
 	/*	OnCreate()
 	 vp = (ViewPager)findViewById(R.id.pager);
 	 Button btn_first = (Button)findViewById(R.id.btn_first);
@@ -2330,4 +2381,21 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	//	String result=sample.getText().toString();
 	//Toast toast = Toast.makeText(myActivity, result, Toast.LENGTH_LONG);
 	//toast.show();
-}
+	/*PE pe=PEParser.parse(fpath);
+	 if (pe != null)
+	 {
+	 PESignature ps =pe.getSignature();
+	 if (ps == null || !ps.isValid())
+	 {
+	 //What is it?
+	 Toast.makeText(this, "The file seems that it is neither a valid Elf file or PE file!", 3).show();
+	 throw new IOException(e);
+	 }
+	 }
+	 else
+	 {
+	 //What is it?
+	 Toast.makeText(this, "The file seems that it is neither a valid Elf file or PE file!", 3).show();
+	 throw new IOException(e);
+	 }*/
+

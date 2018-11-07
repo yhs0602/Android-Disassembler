@@ -81,56 +81,61 @@
 
 							</LinearLayout>
 
-							<com.kyhsgeekcode.disassembler.RadioGridGroup
-								android:layout_width="wrap_content"
+							<LinearLayout
 								android:layout_height="wrap_content"
-								android:layout_span="4">
+								android:layout_width="wrap_content"
+								android:orientation="vertical"
+								android:id="@+id/mainLinearLayoutSetupRaw">
 
-								<TableRow>
+								<EditText
+									android:layout_height="wrap_content"
+									android:layout_width="match_parent"
+									android:ems="10"
+									android:text="File offset of code section"
+									android:id="@+id/mainETcodeOffset"/>
 
-									<RadioButton
-										android:layout_height="wrap_content"
-										android:layout_width="wrap_content"
-										android:id="@+id/rbAuto"
-										android:text="Auto detect"/>
+								<EditText
+									android:layout_height="wrap_content"
+									android:layout_width="match_parent"
+									android:ems="10"
+									android:text="File offset of code end"
+									android:id="@+id/mainETcodeLimit"/>
 
-									<RadioButton
-										android:layout_height="wrap_content"
-										android:layout_width="wrap_content"
-										android:id="@+id/rbARM"
-										android:text="ARM"/>
+								<EditText
+									android:layout_height="wrap_content"
+									android:layout_width="match_parent"
+									android:ems="10"
+									android:text="code RVA of entry point"
+									android:id="@+id/mainETentry"/>
 
-									<RadioButton
-										android:layout_height="wrap_content"
-										android:layout_width="wrap_content"
-										android:id="@+id/rbARM64"
-										android:text="ARM64"/>
+								<EditText
+									android:layout_height="wrap_content"
+									android:layout_width="match_parent"
+									android:ems="10"
+									android:text="code virtual address"
+									android:id="@+id/mainETvirtaddr"/>
 
-								</TableRow>
+								<TextView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:textAppearance="?android:attr/textAppearanceMedium"
+									android:text="Architecture:"
+									android:id="@+id/mainTVarch"
+									android:layout_weight="1.0"/>
 
-								<TableRow>
+								<Spinner
+									android:layout_height="wrap_content"
+									android:layout_width="wrap_content"
+									android:id="@+id/mainSpinnerArch"
+									android:spinnerMode="dropdown"/>
 
-									<RadioButton
-										android:layout_height="wrap_content"
-										android:layout_width="wrap_content"
-										android:id="@+id/rbx86"
-										android:text="Intel x86"/>
+								<Button
+									android:layout_height="wrap_content"
+									android:layout_width="wrap_content"
+									android:text="Finish Setup"
+									android:id="@+id/mainBTFinishSetup"/>
 
-									<RadioButton
-										android:layout_height="wrap_content"
-										android:layout_width="wrap_content"
-										android:id="@+id/rbThumb"
-										android:text="ARM thumb"/>
-
-									<RadioButton
-										android:layout_height="wrap_content"
-										android:layout_width="wrap_content"
-										android:id="@+id/rbMIPS"
-										android:text="MIPS"/>
-
-								</TableRow>
-
-							</com.kyhsgeekcode.disassembler.RadioGridGroup>
+							</LinearLayout>
 
 						</LinearLayout>
 
