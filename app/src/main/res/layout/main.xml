@@ -83,37 +83,89 @@
 
 							<LinearLayout
 								android:layout_height="wrap_content"
-								android:layout_width="wrap_content"
+								android:layout_width="match_parent"
 								android:orientation="vertical"
 								android:id="@+id/mainLinearLayoutSetupRaw">
 
-								<EditText
+								<LinearLayout
 									android:layout_height="wrap_content"
 									android:layout_width="match_parent"
-									android:ems="10"
-									android:text="File offset of code section"
-									android:id="@+id/mainETcodeOffset"/>
+									android:orientation="horizontal">
 
-								<EditText
-									android:layout_height="wrap_content"
-									android:layout_width="match_parent"
-									android:ems="10"
-									android:text="File offset of code end"
-									android:id="@+id/mainETcodeLimit"/>
+									<TextView
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:text="foffs of CS"/>
 
-								<EditText
-									android:layout_height="wrap_content"
-									android:layout_width="match_parent"
-									android:ems="10"
-									android:text="code RVA of entry point"
-									android:id="@+id/mainETentry"/>
+									<EditText
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:ems="10"
+										android:id="@+id/mainETcodeOffset"
+										android:inputType="number"
+										android:layout_weight="1.0"/>
 
-								<EditText
+								</LinearLayout>
+
+								<LinearLayout
 									android:layout_height="wrap_content"
 									android:layout_width="match_parent"
-									android:ems="10"
-									android:text="code virtual address"
-									android:id="@+id/mainETvirtaddr"/>
+									android:orientation="horizontal">
+
+									<TextView
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:text="foofs of CS end"/>
+
+									<EditText
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:ems="10"
+										android:id="@+id/mainETcodeLimit"
+										android:inputType="number"
+										android:layout_weight="1.0"/>
+
+								</LinearLayout>
+
+								<LinearLayout
+									android:layout_height="wrap_content"
+									android:layout_width="match_parent"
+									android:orientation="horizontal">
+
+									<TextView
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:text="RVA of entry point"/>
+
+									<EditText
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:ems="10"
+										android:id="@+id/mainETentry"
+										android:inputType="number"
+										android:layout_weight="1.0"/>
+
+								</LinearLayout>
+
+								<LinearLayout
+									android:layout_height="wrap_content"
+									android:layout_width="match_parent"
+									android:orientation="horizontal">
+
+									<TextView
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:text="VirtualAddress"/>
+
+									<EditText
+										android:layout_height="wrap_content"
+										android:layout_width="wrap_content"
+										android:ems="10"
+										android:id="@+id/mainETvirtaddr"
+										android:inputType="number"
+										android:layout_weight="1.0"/>
+
+								</LinearLayout>
 
 								<TextView
 									android:layout_width="wrap_content"

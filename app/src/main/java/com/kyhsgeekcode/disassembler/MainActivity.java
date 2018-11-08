@@ -50,11 +50,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	
 	//RadioGridGroup rgdArch;
 	Spinner spinnerArch;
-	public void ExportDisasm()
-	{
-		ExportDisasm((Runnable)null);
-		return ;
-	}
+	
 
 	public void setFpath(String fpath)
 	{
@@ -306,7 +302,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 							throw new Exception("CS base<0");
 						if(llimit<=0)
 							throw new Exception("CS limit<0");
-						if(lentry>llimit||lentry<lbase)
+						if(lentry>llimit-lbase||lentry<0)
 							throw new Exception("Entry point out of code section!");
 						if(lvirt<0)
 							throw new Exception("Virtual address<0");
@@ -318,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						AfterParse();
 					}catch(Exception e){
 						Log.e(TAG,"",e);
-						Toast.makeText(this,"Please enter valid values: "+e.getCause(),3).show();
+						Toast.makeText(this,"Please enter valid values: "+e.getMessage(),3).show();
 					}	
 				}
 				break;
@@ -402,7 +398,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		Toast.makeText(this, "Please Select a file first.", 2).show();
 		showFileChooser();
 	}
-
+	
+	public void ExportDisasm()
+	{
+		ExportDisasm((Runnable)null);
+		return ;
+	}
+	
 	private void ExportDisasm(final Runnable runnable)
 	{
 		requestAppPermissions(this);
@@ -597,7 +599,39 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 		//SaveDetailOld();
 	}
+	
+	private void SaveDetail(File dir, File file)
+	{
+		dir.mkdirs();
+		try
+		{
+			file.createNewFile();
+		}
+		catch (IOException e)
+		{
+			Log.e(TAG, "", e);
+			Toast.makeText(this, "Something went wrong saving file", 3).show();
+		}
 
+		try
+		{
+			FileOutputStream fos=new FileOutputStream(file);
+			try
+			{
+				fos.write(parsedFile.toString().getBytes());
+			}
+			catch (IOException e)
+			{
+				Log.e(TAG, "", e);
+			}
+		}
+		catch (FileNotFoundException e)
+		{
+			Log.e(TAG, "", e);
+		}
+
+		AlertSaveSuccess(file);
+	}
 	private void SaveDetailNewProject(String projn)
 	{
 		// TODO: Implement this method
@@ -775,38 +809,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		SaveDetail(dir, file);
 	}
 
-	private void SaveDetail(File dir, File file)
-	{
-		dir.mkdirs();
-		try
-		{
-			file.createNewFile();
-		}
-		catch (IOException e)
-		{
-			Log.e(TAG, "", e);
-			Toast.makeText(this, "Something went wrong saving file", 3).show();
-		}
 	
-		try
-		{
-			FileOutputStream fos=new FileOutputStream(file);
-			try
-			{
-				fos.write(parsedFile.toString().getBytes());
-			}
-			catch (IOException e)
-			{
-				Log.e(TAG, "", e);
-			}
-		}
-		catch (FileNotFoundException e)
-		{
-			Log.e(TAG, "", e);
-		}
-
-		AlertSaveSuccess(file);
-	}
 
 	private void AlertSaveSuccess(File file)
 	{
@@ -1953,6 +1956,21 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			{
 				Toast.makeText(this, "MachineType=" + type.name() + " arch=" + arch, 3).show();
 			}			
+		}
+		if(!(parsedFile instanceof RawFile))
+		{
+			etCodeBase.setText(Long.toHexString(parsedFile.codeBase));
+			etCodeLimit.setText(Long.toHexString(parsedFile.codeLimit));
+			etEntryPoint.setText(Long.toHexString(parsedFile.entryPoint));
+			etVirtAddr.setText(Long.toHexString(parsedFile.codeVirtualAddress));
+			MachineType[] mcts=MachineType.values();
+			for(int i=0;i<mcts.length;++i)
+			{
+				if(mcts[i]==parsedFile.machineType)
+				{
+					spinnerArch.setSelection(i);
+				}
+			}	
 		}
 		shouldSave = true;
 		List<Symbol> list=parsedFile.getSymbols();

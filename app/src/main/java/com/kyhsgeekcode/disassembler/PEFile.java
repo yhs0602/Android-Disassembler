@@ -33,7 +33,7 @@ public class PEFile extends AbstractFile
 		fileContents=filec;
 		//Setup symbol table
 		symbols=new ArrayList<>();
-		ExportDirectory ed=imd.getExportTable();
+		/*ExportDirectory ed=imd.getExportTable();
 		ImportDirectory id=imd.getImportTable();
 		long numfuncs=ed.getAddressTableEntries();
 		long numnames=ed.getNumberOfNamePointers();
@@ -60,7 +60,7 @@ public class PEFile extends AbstractFile
 			ImportDirectoryTable t=id.getAddressTable(i);
 			ImportEntry r= t.getEntry(0);
 		
-		}
+		}*/
 	}
 	//https://docs.microsoft.com/ko-kr/windows/desktop/api/winnt/ns-winnt-_image_file_header
 	private MachineType getMachineTypeFromPE(int machine)
@@ -93,7 +93,18 @@ public class PEFile extends AbstractFile
 				return MachineType.PPC;
 			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_R4000:
 				return MachineType.MIPS;
-			
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_SH3:
+				return MachineType.MIPS;
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_SH3DSP:
+				return MachineType.MIPS;
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_SH4:
+				return MachineType.MIPS;
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_SH5:
+				return MachineType.MIPS;
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_THUMB:
+				return MachineType.MIPS;
+			case org.boris.pecoff4j.constant.MachineType.IMAGE_FILE_MACHINE_WCEMIPSV2:
+				return MachineType.MIPS;
 		}
 		//I don't know
 		return nl.lxtreme.binutils.elf.MachineType.i386;
