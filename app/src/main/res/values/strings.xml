@@ -11,6 +11,8 @@
 	<string name="send_feature_request">Send Feature request</string>
 	<string name="send_feature_request_detail">Send a feature request to the developer.</string>
 	
+	<string name="disasmTheme">Disassembly theme</string>
+	
 	
     <string name="choose_storage">Choose Storage</string>
     

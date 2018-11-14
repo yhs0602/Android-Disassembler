@@ -2,6 +2,9 @@
 	<item
         android:id="@+id/jumpto"
         android:title="goto"/>
+	<!--item
+        android:id="@+id/findsymbol"
+        android:title="Find symbol"/-->
 	<item
         android:id="@+id/save"
         android:title="save"/>
@@ -13,6 +16,6 @@
         android:title="rows"/-->
 	<item
         android:id="@+id/settings"
-        android:title="Settings"/>
+        android:title="Settings / Help"/>
 	
 </menu>

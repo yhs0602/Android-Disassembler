@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+
+	<TextView
+		android:id="@+id/colorpef_title"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:textColor="@android:color/black"
+		android:textSize="25sp"
+		android:text="Disassembly Highlight Settings"/>
+
+	<TextView
+		android:id="@+id/colorpref_subtitle"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:textColor="@android:color/black"
+		android:textSize="15sp"
+		android:text="Choose text colors and background colors"/>
+
+	<ListView
+		android:layout_height="match_parent"
+		android:layout_width="wrap_content"
+		android:layout_weight="1.0"
+		android:id="@+id/colorpref_list"/>
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:text="preview"
+		android:id="@+id/colorpref_preview"/>
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:orientation="horizontal">
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="Cancel"
+			android:id="@+id/colorprefdialogButtonCancel"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="OK"
+			android:id="@+id/colorprefdialogButtonOK"/>
+
+	</LinearLayout>
+
+</LinearLayout>
+

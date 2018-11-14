@@ -2,6 +2,8 @@ package com.kyhsgeekcode.disassembler;
 
 import android.content.*;
 import android.graphics.*;
+import android.text.*;
+import android.text.style.*;
 import android.view.*;
 import android.widget.*;
 import java.util.*;
@@ -11,10 +13,11 @@ public class ListViewAdapter extends BaseAdapter
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>() ;
 
+	ColorHelper colorHelper;
     // ListViewAdapter의 생성자
-    public ListViewAdapter()
+    public ListViewAdapter(ColorHelper ch)
 	{
-
+		colorHelper=ch;
     }
 
 	public void addAll(ArrayList<ListViewItem> data)
@@ -49,7 +52,7 @@ public class ListViewAdapter extends BaseAdapter
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.listview_item, parent, false);
         }
-
+		Palette palette=colorHelper.getPalette();
         // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
 		TextView addrTextView = (TextView) convertView.findViewById(R.id.tvAddr) ;
 		TextView bytesTextView = (TextView) convertView.findViewById(R.id.tvBytes) ;
@@ -64,13 +67,38 @@ public class ListViewAdapter extends BaseAdapter
 		//}
 		//else
 		{
-			// Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
+//			String text2 = text + CepVizyon.getPhoneCode() + "\n\n"
+//				+ getText(R.string.currentversion) + CepVizyon.getLicenseText();
+//
+//			Spannable spannable = new SpannableString(text2);
+//
+//			spannable.setSpan(new ForegroundColorSpan(Color.WHITE), text.length(), (text + CepVizyon.getPhoneCode()).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//
+//			myTextView.setText(spannable, TextView.BufferType.SPANNABLE);
 			ListViewItem listViewItem = listViewItemList.get(position);
-			if(listViewItem.isBranch()){
-				convertView.setBackgroundColor(0xFFFF00000);
-			}else{
-				convertView.setBackgroundColor(Color.WHITE);
-			}
+			DisasmResult dar=listViewItem.disasmResult;
+			//int bkColor=ColorHelper.getBkColor( listViewItem.disasmResult.groups,listViewItem.disasmResult.groups_count);
+			//int txtColor=ColorHelper.getTxtColor(listViewItem.disasmResult.groups,listViewItem.disasmResult.groups_count);
+			//if(listViewItem.isBranch()){
+			int defTxtColor=palette.getDefaultTxtColor();
+			int defBkColor=palette.getDefaultBkColor();
+			//convertView.setBackgroundColor(palette.getDefaultBkColor());
+			instTextView.setBackgroundColor(palette.getBkColorByGrps(dar.groups,dar.groups_count));
+			addrTextView.setBackgroundColor(defBkColor);
+			bytesTextView.setBackgroundColor(defBkColor);
+			commentTextView.setBackgroundColor(defBkColor);
+			condTextView.setBackgroundColor(defBkColor);
+			labelTextView.setBackgroundColor(defBkColor);
+			operandTextView.setBackgroundColor(palette.getBkColorByGrps(dar.groups,dar.groups_count));
+			
+			instTextView.setTextColor(palette.getTxtColorByGrps(dar.groups,dar.groups_count));
+			addrTextView.setTextColor(defTxtColor);
+			bytesTextView.setTextColor(defTxtColor);
+			commentTextView.setTextColor(defTxtColor);
+			condTextView.setTextColor(defTxtColor);
+			labelTextView.setTextColor(defTxtColor);
+			operandTextView.setTextColor(palette.getTxtColorByGrps(dar.groups,dar.groups_count));
+		
 			addrTextView.setText(listViewItem.getAddress());
 			bytesTextView.setText(listViewItem.getBytes());
 			commentTextView.setText(listViewItem.getComments());
@@ -78,10 +106,7 @@ public class ListViewAdapter extends BaseAdapter
 			instTextView.setText(listViewItem.getInstruction());
 			labelTextView.setText(listViewItem.getLabel());
 			operandTextView.setText(listViewItem.getOperands());
-			// 아이템 내 각 위젯에 데이터 반영
 			//    iconImageView.setImageDrawable(listViewItem.getIcon());
-			//   titleTextView.setText(listViewItem.getTitle());
-			//    descTextView.setText(listViewItem.getDesc());
 		}
         return convertView;
     }

@@ -1,4 +1,4 @@
-# Version 1.3.0 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.3.1 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
 # Android-Disassembler
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
@@ -14,6 +14,7 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 - Jump to address by symbols' names, or a hex address.
 
 # What's new
+ - Syntax colorizing.
  - Changed to Android Studio structure.
  - Doesn't require your email accounts when sending error reports
  - Easier bug report
@@ -58,7 +59,7 @@ Slow. Not recommended.
  This app used
  - [Capstone](https://github.com/aquynh/capstone) 
  - [Storage-Chooser](https://github.com/codekidX/storage-chooser)
- - [Colorpickerview](https://github.com/danielnilsson9/color-picker-view)
+ - [Colorpickerview](https://github.com/skydoves/ColorPickerView)
  - [Java-binutils](https://github.com/jawi/java-binutils)
  - [PECOFF4J](https://github.com/kichik/pecoff4j).
 
@@ -66,11 +67,7 @@ Slow. Not recommended.
 # TODO
  - fix bugs
  - add menus on clicking disassemblies.
- - add Syntax highlighting in disassemblies.
- - Add more project export options(zip, etc..)
- - Support exe files. (Why? I don't know..)
  - Organize spaghetti codes.
- - Add theme preferences.
  - Show prototypes of NDK/C standard APIs in the symbols tab.
 
 # XRefs

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal">
+
+	<TextView
+		android:layout_height="wrap_content"
+		android:layout_width="100dp"
+		android:text="Row"
+		android:padding="10dp"
+		android:background="@drawable/cell_shape"
+		android:id="@+id/colorPrefRowName"
+		android:layout_marginRight="10dp"
+		android:layout_marginLeft="10dp"
+		android:gravity="center_horizontal"/>
+
+	<Button
+		android:layout_height="match_parent"
+		android:layout_width="36dp"
+		android:text="text"
+		android:textSize="0sp"
+		android:id="@+id/colorprefitemrowButtonText"/>
+	<Button
+		android:layout_height="match_parent"
+		android:layout_width="36dp"
+		android:text="text"
+		android:textSize="0sp"
+		android:id="@+id/colorprefitemrowButtonBk"/>
+	
+</LinearLayout>
+

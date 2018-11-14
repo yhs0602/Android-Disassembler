@@ -1,21 +1,69 @@
 package com.kyhsgeekcode.disassembler;
 
-
 import android.app.*;
 import android.content.*;
-import android.media.*;
-import android.net.*;
 import android.os.*;
 import android.preference.*;
-import android.text.*;
 import android.util.*;
+import android.view.*;
 import java.io.*;
+import java.util.*;
+import android.widget.*;
 
-public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener
+public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener,Preference.OnPreferenceChangeListener
 {
-	private String TAG="Disassembler settings";
-
+	String prefnames[];
+	ColorHelper colorhelper;
+	@Override
+	public boolean onPreferenceChange(Preference p1, Object p2)
+	{
+		String key=p1.getKey();
+		if("predefinedcolor".equals(key))
+		{
+			int val=Integer.parseInt((String)p2);
+			if(val==prefnames.length)
+			{
+				//Add new
+				final EditText et=new EditText(this);
+				MainActivity.ShowEditDialog(this,"New theme","Set name for the theme..",et,
+					"Create", new DialogInterface.OnClickListener(){
+						@Override
+						public void onClick(DialogInterface p1,int  p2)
+						{
+							String nam=et.getText().toString();
+							final Palette palette=new Palette(nam,colorhelper.getPaletteFile(nam));
+							ColorPrefDialog cpd=new ColorPrefDialog(SettingsActivity.this, "New theme", new View.OnClickListener(){
+									@Override
+									public void onClick(View p1)
+									{
+										palette.Save();
+										colorhelper.addPalette(palette);
+										colorhelper.setPalette(palette.name);
+										return ;
+									}
+								}, palette);
+							cpd.show();
+							return ;
+						}
+					},
+					"Cancel", new DialogInterface.OnClickListener(){
+						@Override
+						public void onClick(DialogInterface p1,int  p2)
+						{
+							return ;
+						}
+					});
+				
+				
+				return false;
+			}
+			String name=prefnames[val-1];
+			colorhelper.setPalette(name);
+		}
+		return false;
+	}
 	
+	private String TAG="Disassembler settings";
 	@Override
 	public boolean onPreferenceClick(Preference p1)
 	{
@@ -67,7 +115,26 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//Intent intent=getIntent();
+		ColorHelper ch=ColorHelper.getInstance();//intent.getParcelableExtra("ColorHelper");
+		//prefnames=ch.names;
+		colorhelper=ch;
+		Set<String> ks=ch.palettes.keySet();
+		prefnames=new String[ks.size()+1];
+		ks.toArray(prefnames);
+		prefnames[prefnames.length-1]="Add new";
 		addPreferencesFromResource(R.xml.pref_settings);
+		//colorValues=getResources().getIntArray(R.array.predefinedcolor_values);
+		final ListPreference lp=(ListPreference) findPreference("predefinedcolor");
+		setListPreferenceData(lp);
+		lp.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+					setListPreferenceData(lp);
+					return false;
+				}
+			});
+		lp.setOnPreferenceChangeListener(this);
 		PreferenceScreen scrn=(PreferenceScreen) findPreference("openscrn");
 		//scrn.setOnPreferenceClickListener(this);
 		int cnt=scrn.getPreferenceCount();
@@ -80,72 +147,87 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 		//	setOnPreferenceChange(findPreference("autoUpdate_ringtone"));
 		MainActivity.requestAppPermissions(this);
 	}
-
-	private void setOnPreferenceChange(Preference mPreference) {
-		mPreference.setOnPreferenceChangeListener(onPreferenceChangeListener);
-		onPreferenceChangeListener.onPreferenceChange(
-			mPreference,
-			PreferenceManager.getDefaultSharedPreferences(
-				mPreference.getContext()).getString(
-				mPreference.getKey(), ""));
+//https://stackoverflow.com/a/13828912/8614565
+	private void setListPreferenceData(ListPreference lp)
+	{
+		ArrayList<CharSequence> arr=new ArrayList<>();
+		for(int i=0;i<prefnames.length;++i)
+		{
+			arr.add(""+(i+1));
+		}
+		CharSequence[] entryValues = new CharSequence[arr.size()];
+		arr.toArray(entryValues);
+		lp.setEntries(prefnames);
+		lp.setDefaultValue("1");
+		lp.setEntryValues(entryValues);
 	}
 
-	private Preference.OnPreferenceChangeListener onPreferenceChangeListener = new Preference.OnPreferenceChangeListener() {
-
-		@Override
-		public boolean onPreferenceChange(Preference preference, Object newValue) {
-			String stringValue = newValue.toString();
-
-			if (preference instanceof EditTextPreference) {
-				preference.setSummary(stringValue);
-
-			} else if (preference instanceof ListPreference) {
-				/*
-				 * ListPreference�� ��� stringValue�� entryValues�̱� ������ �ٷ� Summary��
-				 * ������� ���Ѵ� ��� ����� entries���� String� �ε��Ͽ� ����Ѵ�
-				 */
-
-				ListPreference listPreference = (ListPreference) preference;
-				int index = listPreference.findIndexOfValue(stringValue);
-
-				preference
-					.setSummary(index >= 0 ? listPreference.getEntries()[index]
-								: null);
-
-			} else if (preference instanceof RingtonePreference) {
-
-				/*
-				 RingtonePreference�� ��� stringValue��
-				 * content://media/internal/audio/media�� ����̱� ������
-				 * RingtoneManager� ����Ͽ� Summary�� ����Ѵ�
-				 * 
-				 * ����ϰ�� ""�̴�
-				 */
-
-				if (TextUtils.isEmpty(stringValue)) {
-					// Empty values correspond to 'silent' (no ringtone).
-					preference.setSummary("������ �����");
-				} else {
-					Ringtone ringtone = RingtoneManager.getRingtone(
-						preference.getContext(), Uri.parse(stringValue));
-
-					if (ringtone == null) {
-						// Clear the summary if there was a lookup error.
-						preference.setSummary(null);
-
-					} else {
-						String name = ringtone
-							.getTitle(preference.getContext());
-						preference.setSummary(name);
-					}
-				}
-			}
-
-			return true;
-		}
-
-	};
-
+//	private void setOnPreferenceChange(Preference mPreference) {
+//		mPreference.setOnPreferenceChangeListener(onPreferenceChangeListener);
+//		onPreferenceChangeListener.onPreferenceChange(
+//			mPreference,
+//			PreferenceManager.getDefaultSharedPreferences(
+//				mPreference.getContext()).getString(
+//				mPreference.getKey(), ""));
+//	}
+//
+//	private Preference.OnPreferenceChangeListener onPreferenceChangeListener = new Preference.OnPreferenceChangeListener() {
+//
+//		@Override
+//		public boolean onPreferenceChange(Preference preference, Object newValue) {
+//			
+//			String stringValue = newValue.toString();
+//
+//			if (preference instanceof EditTextPreference) {
+//				preference.setSummary(stringValue);
+//
+//			} else if (preference instanceof ListPreference) {
+//				/*
+//				 * ListPreference�� ��� stringValue�� entryValues�̱� ������ �ٷ� Summary��
+//				 * ������� ���Ѵ� ��� ����� entries���� String� �ε��Ͽ� ����Ѵ�
+//				 */
+//
+//				ListPreference listPreference = (ListPreference) preference;
+//				int index = listPreference.findIndexOfValue(stringValue);
+//
+//				preference
+//					.setSummary(index >= 0 ? listPreference.getEntries()[index]
+//								: null);
+//
+//			} else if (preference instanceof RingtonePreference) {
+//
+//				/*
+//				 RingtonePreference�� ��� stringValue��
+//				 * content://media/internal/audio/media�� ����̱� ������
+//				 * RingtoneManager� ����Ͽ� Summary�� ����Ѵ�
+//				 * 
+//				 * ����ϰ�� ""�̴�
+//				 */
+//
+//				if (TextUtils.isEmpty(stringValue)) {
+//					// Empty values correspond to 'silent' (no ringtone).
+//					preference.setSummary("������ �����");
+//				} else {
+//					Ringtone ringtone = RingtoneManager.getRingtone(
+//						preference.getContext(), Uri.parse(stringValue));
+//
+//					if (ringtone == null) {
+//						// Clear the summary if there was a lookup error.
+//						preference.setSummary(null);
+//
+//					} else {
+//						String name = ringtone
+//							.getTitle(preference.getContext());
+//						preference.setSummary(name);
+//					}
+//				}
+//			}
+//
+//			return true;
+//		}
+//
+//	};
+//
 	@Override
 	protected void onPause()
 	{
