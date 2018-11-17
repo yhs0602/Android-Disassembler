@@ -9,20 +9,16 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 - Disassembles the code sections.
 - Has various export options of the disassembly. (Reloadable raw file, compilable txt file, analytic text files, json, and  reloadable database)
 - Supports projects.
-- Supports launching from file browsers.
+- Supports **directly launching from file browsers**.
 - Supports many ABIs(arm,x86,x64,MIPS,PowerPC,...)
 - Jump to address by symbols' names, or a hex address.
 
 # What's new
  - Syntax colorizing.
- - Changed to Android Studio structure.
- - Doesn't require your email accounts when sending error reports
- - Easier bug report
- - Show symbols as an independent tab.
  - Support PE and other bin formats.
  
 # Usuage
-1. Choose an elf file to analyze.
+1. Choose a file to analyze.
 ![image](images/Screenshot_20181022-192706.png)
 1. Go to details tab.
 1. Press `Show details` button to see details.
@@ -35,7 +31,7 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 1. Go to disassembly tab.
 1. Press `disassemble` button.
 1. Choose persist mode(instant mode is deprecated)
-![image](images/Screenshot_20181022-193054.png)
+![image](images/Screenshot_20181113-230726.png)
 1. To export the disassembly, press `Export` button and choose the option.
 ![image](images/Screenshot_20181022-193127.png)
 
@@ -69,6 +65,9 @@ Slow. Not recommended.
  - add menus on clicking disassemblies.
  - Organize spaghetti codes.
  - Show prototypes of NDK/C standard APIs in the symbols tab.
+ - More sophisticated coorizing.
+ - Generate useful comments
+ - Provide assembly tutorials.
 
 # XRefs
 https://reverseengineering.stackexchange.com/a/18203/23870
