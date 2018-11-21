@@ -35,7 +35,6 @@ import android.support.v7.app.ActionBar.LayoutParams;
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
 {
-
 	private ArrayAdapter<String> autoSymAdapter ;
 	
 	private AutoCompleteTextView autocomplete;
@@ -57,8 +56,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	Spinner spinnerArch;
 
 	private ColorHelper colorHelper;
-
-
+	
 	public void setFpath(String fpath)
 	{
 		this.fpath = fpath;
@@ -115,11 +113,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			}
 			catch (ClassNotFoundException e)
 			{
-				AlertError("Error loading from raw",e);
+				AlertError(R.string.fail_loadraw,e);
 			}
 			catch (IOException e)
 			{
-				AlertError("Error loading from raw",e);
+				AlertError(R.string.fail_loadraw,e);
 			}
 		}
 		else
@@ -128,12 +126,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		if(disasmResults!=null)
 		{
-			//int len=disasmResults.size();
-			/*for(int i=0;i<len;++i)
-			 {
-			 adapter.addItem(disasmResults.get(i));
-			 adapter.notifyDataSetChanged();
-			 }*/
 			adapter.addAll(disasmResults);
 		}else{
 			disasmResults=new ArrayList<>();
@@ -193,9 +185,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
 
-	private NotificationManager mNotifyManager;
+	//private NotificationManager mNotifyManager;
 
-	private Notification.Builder mBuilder;
+	//private Notification.Builder mBuilder;
 
 	boolean instantMode;
 
@@ -321,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						AfterParse();
 					}catch(Exception e){
 						Log.e(TAG,"",e);
-						Toast.makeText(this,"Please enter valid values: "+e.getMessage(),3).show();
+						Toast.makeText(this,getString(R.string.err_invalid_value)+e.getMessage(),3).show();
 					}	
 				}
 				break;
@@ -793,44 +785,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		 */
 	}
 
-	private void  SaveDisasm(DatabaseHelper disasmF)
+	//18.11.22 revival!
+	//Will be used like generate-on-need array(sth like Paging)
+	private void DisassembleInstant(long offset)
 	{
-		
-		new SaveDBAsync().execute(disasmF);
-		return ;
-	}
-
-	private void AlertError(String p0, Exception e)
-	{
-		ShowErrorDialog(this,p0,e);
-		//ShowAlertDialog((Activity)this,p0,Log.getStackTraceString(e));
-		Log.e(TAG,p0,e);
-		return ;
-	}
-
-	private void SaveDetailOld()
-	{
-		Log.v(TAG, "Saving details");
-		File dir=new File("/sdcard/disasm/");
-		File file=new File(dir, new File(fpath).getName() + "_" + new Date(System.currentTimeMillis()).toString() + ".details.txt");
-		SaveDetail(dir, file);
-	}
-
-
-
-	private void AlertSaveSuccess(File file)
-	{
-		Toast.makeText(this, "Successfully saved to file: " + file.getPath(), 5).show();
-	}
-
-	private void ShowDetail()
-	{
-		etDetails.setText(parsedFile.toString());
-	}
-
-	private void DisassembleInstant()
-	{
-		Toast.makeText(this,"Not supported by now. Please just use persist mode instead.",3).show();
+		//Toast.makeText(this,"Not supported by now. Please just use persist mode instead.",3).show();
 
 		long startaddress=instantEntry;//file offset
 		long index=startaddress;
@@ -841,7 +800,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			Toast.makeText(this,"Odd address :(",3).show();
 			return;
 		}
-		btDisasm.setEnabled(false);
+		DisasmPager pager;
+		//btDisasm.setEnabled(false);
 		//disasmResults.clear();
 		//setupListView();
 		/*for (;;)
@@ -914,13 +874,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		if(offset==parsedFile.getEntryPoint())
 			disasmResults.clear();//otherwise resume, not clear
 		//setupListView(); why was it called here?
-		mNotifyManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mBuilder = new Notification.Builder(this);
-		mBuilder.setContentTitle("Disassembler")
+		//mNotifyManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		//mBuilder = new Notification.Builder(this);
+		/*mBuilder.setContentTitle("Disassembler")
 			.setContentText("Disassembling in progress")
 			.setSmallIcon(R.drawable.ic_launcher)
 			.setOngoing(true)
-			.setProgress(100, 0, false);
+			.setProgress(100, 0, false);*/
 		/*Intent snoozeIntent = new Intent(this, MyBroadcastReceiver.class);
 		 snoozeIntent.setAction(ACTION_SNOOZE);
 		 snoozeIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
@@ -934,7 +894,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		long addr=parsedFile.getCodeVirtAddr()+offset;
 		Log.v(TAG, "code section point :" + Long.toHexString(index));
 		long size=limit - start;//Size of CS
-		DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
+		DisasmIterator dai=new DisasmIterator
+							(MainActivity.this/*,mNotifyManager,mBuilder*/
+							,adapter,size);
 		listview.setOnScrollListener(new DisasmPager(adapter,dai));
 		dai.getSome(filecontent,start,size,addr,100/*, disasmResults*/);
 //		workerThread = new Thread(new Runnable(){
@@ -1091,25 +1053,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					finish();
 					return ;
 				}
-
-				/*
-				 private String[] getAccounts() {
-				 Pattern emailPattern = Patterns.EMAIL_ADDRESS;
-				 Account[] accounts = AccountManager.get(MainActivity.this).getAccounts();
-				 if(accounts==null)
-				 {
-				 return new String[]{""};
-				 }
-				 ArrayList<String> accs=new ArrayList<>();
-				 for (Account account : accounts) {
-				 if (emailPattern.matcher(account.name).matches()) {
-				 String email = account.name;
-				 accs.add(email);
-				 //Log.d(TAG, "email : " + email);
-				 }
-				 }
-				 return accs.toArray(new String[accs.size()]);
-				 }*/
+			
 			});
 		try
 		{
@@ -1363,6 +1307,24 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		ShowAlertDialog(a,"Permissions","- Read/Write storage(obvious)\r\n- GetAccounts: add email address info on crash report.\r\n\r\n For more information visit https://github.com/KYHSGeekCode/Android-Disassembler/");
 	}
+	private void ShowErrorDialog(Activity a,int title,final Throwable err)
+	{
+		android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(a);
+		builder.setTitle(title);
+		builder.setCancelable(false);
+		builder.setMessage(Log.getStackTraceString(err));
+		builder.setPositiveButton("OK", (DialogInterface.OnClickListener)null);
+		builder.setNegativeButton("Send error report", new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface p1,int  p2)
+				{
+
+					SendErrorReport(err);
+					return ;
+				}
+			});
+		builder.show();
+	}
 	private void ShowErrorDialog(Activity a,String title,final Throwable err)
 	{
 		android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(a);
@@ -1374,7 +1336,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				@Override
 				public void onClick(DialogInterface p1,int  p2)
 				{
-					
+
 					SendErrorReport(err);
 					return ;
 				}
@@ -1418,40 +1380,44 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		return Resources.getSystem().getDisplayMetrics().heightPixels;
 	}
-	/*
-	 private void CreateDisasmTopRow(TableRow tbrow0)
-	 {
-	 TextView tv0 = new TextView(MainActivity.this);
-	 tv0.setText(" Address ");
-	 tv0.setTextColor(Color.BLACK);
-	 tbrow0.addView(tv0);
-	 TextView tv1 = new TextView(MainActivity.this);
-	 tv1.setText(" Label ");
-	 tv1.setTextColor(Color.BLACK);
-	 tbrow0.addView(tv1);
-	 TextView tv2 = new TextView(MainActivity.this);
-	 tv2.setText(" Bytes ");
-	 tv2.setTextColor(Color.BLACK);
-	 tbrow0.addView(tv2);
-	 TextView tv3 = new TextView(MainActivity.this);
-	 tv3.setText(" Inst ");
-	 tv3.setTextColor(Color.BLACK);
-	 tbrow0.addView(tv3);
-	 TextView tv4 = new TextView(MainActivity.this);
-	 tv4.setText(" Cond ");
-	 tv4.setTextColor(Color.BLACK);
-	 tbrow0.addView(tv4);
-	 TextView tv5 = new TextView(MainActivity.this);
-	 tv5.setText(" Operands ");
-	 tv5.setTextColor(Color.BLACK);
-	 tbrow0.addView(tv5);
-	 TextView tv6 = new TextView(MainActivity.this);
-	 tv6.setText(" Comment ");
-	 tv6.setTextColor(Color.BLACK);
-	 AdjustShow(tv0, tv1, tv2, tv3, tv4, tv5, tv6);
-	 tbrow0.addView(tv6);
-	 }
-	 */
+	
+	private void  SaveDisasm(DatabaseHelper disasmF)
+	{
+		
+		new SaveDBAsync().execute(disasmF);
+		return ;
+	}
+
+	private void AlertError(int p0, Exception e)
+	{
+		ShowErrorDialog(this,p0,e);
+	}
+	private void AlertError(String p0, Exception e)
+	{
+		ShowErrorDialog(this,p0,e);
+		//ShowAlertDialog((Activity)this,p0,Log.getStackTraceString(e));
+		Log.e(TAG,p0,e);
+		return ;
+	}
+
+	private void SaveDetailOld()
+	{
+		Log.v(TAG, "Saving details");
+		File dir=new File("/sdcard/disasm/");
+		File file=new File(dir, new File(fpath).getName() + "_" + new Date(System.currentTimeMillis()).toString() + ".details.txt");
+		SaveDetail(dir, file);
+	}
+
+	private void AlertSaveSuccess(File file)
+	{
+		Toast.makeText(this, "Successfully saved to file: " + file.getPath(), 5).show();
+	}
+
+	private void ShowDetail()
+	{
+		etDetails.setText(parsedFile.toString());
+	}
+	
 	public void RefreshTable()
 	{
 		//tlDisasmTable.removeAllViews();
@@ -1488,11 +1454,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					}
 				},
 				new DialogInterface.OnClickListener(){
-
 					@Override
 					public void onClick(DialogInterface p1, int p2)
-					{
-						
+					{					
 						MainActivity.super.onBackPressed();
 						return ;
 					}
@@ -1525,11 +1489,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			cs.close();
 		cs = (Capstone) null;
 		//Finalize();
-		if (mNotifyManager != null)
+		/*if (mNotifyManager != null)
 		{
 			mNotifyManager.cancel(0);
 			mNotifyManager.cancelAll();
-		}
+		}*/
 		//maybe service needed.
 		/*if(workerThread!=null)
 		 {
@@ -1565,7 +1529,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        Log.d("test", "onOptionsItemSelected - 메뉴항목을 클릭했을 때 호출됨");
+    //    Log.d("test", "onOptionsItemSelected - 메뉴항목을 클릭했을 때 호출됨");
         int id = item.getItemId();
 		switch (id)
 		{
@@ -1633,7 +1597,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								return ;
 							}
 						},
-						"Cancel",(DialogInterface.OnClickListener)null);
+						"Cancel"/*R.string.symbol*/,(DialogInterface.OnClickListener)null);
 						ab.getWindow().setGravity(Gravity.TOP);
 					break;
 				}
@@ -1721,7 +1685,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private boolean isValidAddress(long address)
 	{
-
 		return true;
 	}
 
@@ -1752,30 +1715,30 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (Exception e)
 		{
-			AlertError("Failed to export zip",e);
+			AlertError(R.string.fail_exportzip,e);
 			targetFile=(File) null;
 		}
 		if(targetFile!=null)
 			AlertSaveSuccess(targetFile);
 		return ;
 	}
-	private View.OnClickListener leftListener = new View.OnClickListener() {
-		public void onClick(View v)
-		{
-			Toast.makeText(getApplicationContext(), "왼쪽버튼 클릭",
-						   Toast.LENGTH_SHORT).show();
-			mCustomDialog.dismiss();
-		}
-	};
-
-	private View.OnClickListener rightListener = new View.OnClickListener() {
-		public void onClick(View v)
-		{
-			Toast.makeText(getApplicationContext(), "오른쪽버튼 클릭",
-						   Toast.LENGTH_SHORT).show();
-		}
-	};
-
+//	private View.OnClickListener leftListener = new View.OnClickListener() {
+//		public void onClick(View v)
+//		{
+//			Toast.makeText(getApplicationContext(), "왼쪽버튼 클릭",
+//						   Toast.LENGTH_SHORT).show();
+//			mCustomDialog.dismiss();
+//		}
+//	};
+//
+//	private View.OnClickListener rightListener = new View.OnClickListener() {
+//		public void onClick(View v)
+//		{
+//			Toast.makeText(getApplicationContext(), "오른쪽버튼 클릭",
+//						   Toast.LENGTH_SHORT).show();
+//		}
+//	};
+//
 	//private static final int FILE_SELECT_CODE = 0;
 
 	private void showFileChooser()
@@ -1815,25 +1778,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 			});
 		//Intent i=new Intent(this, FileSelectorActivity.class);
-		//startActivityForResult(i, REQUEST_SELECT_FILE);		
-		/*
-		 Intent intent = new Intent();
-		 intent.setAction(Intent.ACTION_GET_CONTENT);
-		 //아래와 같이 할 경우 mime-type에 해당하는 파일만 선택 가능해집니다.
-		 intent.setType("application/*");
-		 intent.addCategory(Intent.CATEGORY_OPENABLE);
-		 try
-		 {
-		 startActivityForResult(
-		 Intent.createChooser(intent, "Select a File"),
-		 FILE_SELECT_CODE);
-		 }
-		 catch (android.content.ActivityNotFoundException ex)
-		 {
-		 // Potentially direct the user to the Market with a Dialog
-		 Toast.makeText(this, "Please install a File Manager.",
-		 Toast.LENGTH_SHORT).show();
-		 }*/
+		//startActivityForResult(i, REQUEST_SELECT_FILE);			
 	}
 	@Override
 	public void onRequestPermissionsResult(int requestCode,
@@ -1846,13 +1791,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					if (grantResults.length > 0
 						&& grantResults[0] == PackageManager.PERMISSION_GRANTED)
 					{
-
 						// permission was granted, yay! Do the
 						// contacts-related task you need to do.
-
 					}
 					else
 					{
+						Toast.makeText(this,R.string.permission_needed,5).show();
 						setting=getSharedPreferences(RATIONALSETTING,MODE_PRIVATE);
 						editor=setting.edit();
 						editor.putBoolean("show",true);
@@ -1887,7 +1831,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (IOException e)
 		{
-			AlertError("Failed to read file",e);
+			AlertError(R.string.fail_readfile,e);
 		}
 	}
 	/*
@@ -1897,7 +1841,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	 */
 
 	public static class Utils {
-
 		public static byte[] getBytes(InputStream is) throws IOException {
 
 			int len;
@@ -1917,8 +1860,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			}
 			return buf;
 		}
-
-
 	}
 
 	private void OnChoosePath(String p)//Intent data)
@@ -2480,4 +2421,55 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	 Toast.makeText(this, "The file seems that it is neither a valid Elf file or PE file!", 3).show();
 	 throw new IOException(e);
 	 }*/
-
+/*
+	 private void CreateDisasmTopRow(TableRow tbrow0)
+	 {
+	 TextView tv0 = new TextView(MainActivity.this);
+	 tv0.setText(" Address ");
+	 tv0.setTextColor(Color.BLACK);
+	 tbrow0.addView(tv0);
+	 TextView tv1 = new TextView(MainActivity.this);
+	 tv1.setText(" Label ");
+	 tv1.setTextColor(Color.BLACK);
+	 tbrow0.addView(tv1);
+	 TextView tv2 = new TextView(MainActivity.this);
+	 tv2.setText(" Bytes ");
+	 tv2.setTextColor(Color.BLACK);
+	 tbrow0.addView(tv2);
+	 TextView tv3 = new TextView(MainActivity.this);
+	 tv3.setText(" Inst ");
+	 tv3.setTextColor(Color.BLACK);
+	 tbrow0.addView(tv3);
+	 TextView tv4 = new TextView(MainActivity.this);
+	 tv4.setText(" Cond ");
+	 tv4.setTextColor(Color.BLACK);
+	 tbrow0.addView(tv4);
+	 TextView tv5 = new TextView(MainActivity.this);
+	 tv5.setText(" Operands ");
+	 tv5.setTextColor(Color.BLACK);
+	 tbrow0.addView(tv5);
+	 TextView tv6 = new TextView(MainActivity.this);
+	 tv6.setText(" Comment ");
+	 tv6.setTextColor(Color.BLACK);
+	 AdjustShow(tv0, tv1, tv2, tv3, tv4, tv5, tv6);
+	 tbrow0.addView(tv6);
+	 }
+	 */
+	 /*
+				 private String[] getAccounts() {
+				 Pattern emailPattern = Patterns.EMAIL_ADDRESS;
+				 Account[] accounts = AccountManager.get(MainActivity.this).getAccounts();
+				 if(accounts==null)
+				 {
+				 return new String[]{""};
+				 }
+				 ArrayList<String> accs=new ArrayList<>();
+				 for (Account account : accounts) {
+				 if (emailPattern.matcher(account.name).matches()) {
+				 String email = account.name;
+				 accs.add(email);
+				 //Log.d(TAG, "email : " + email);
+				 }
+				 }
+				 return accs.toArray(new String[accs.size()]);
+				 }*/

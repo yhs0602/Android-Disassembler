@@ -13,12 +13,17 @@
 	
 	<string name="disasmTheme">Disassembly theme</string>
 	
+	<string name="permission_needed">The storage permission is absolutely needed!!</string>
+	<string name="fail_readfile">Failed to read file!</string>
+	<string name="fail_exportzip">Failed to export zip</string>
+	<string name="fail_loadraw">Error loading from raw</string>
+	<string name="err_invalid_value">Please enter valid values: </string>
+	
+	<string name="cancel">Cancel</string>
+	
 	
     <string name="choose_storage">Choose Storage</string>
-    
-	
 	<string name="choose_external_storage">Choose External Storage</string>
-
     <string name="external_storage">External storage</string>
     <!-- Usb storage descripton -->
     <string name="usb_storage">USB storage</string>
