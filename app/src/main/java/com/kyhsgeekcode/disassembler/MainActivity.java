@@ -927,51 +927,62 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		 PendingIntent snoozePendingIntent =
 		 PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
 		 mBuilder.addAction(R.drawable.ic_launcher,"",snoozeIntent);*/
-		workerThread = new Thread(new Runnable(){
-				@Override
-				public void run()
-				{
-					long codesection=parsedFile.getCodeSectionBase();
-					long start=codesection+offset;//elfUtil.getCodeSectionOffset();
-					long index=start;
-					long limit=parsedFile.getCodeSectionLimit();
-					long addr=parsedFile.getCodeVirtAddr()+offset;
-					Log.v(TAG, "code section point :" + Long.toHexString(index));
-					//ListViewItem lvi;
-					//	getFunctionNames();
-					long size=limit - start;
-					long leftbytes=size;
-					DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
-					long toresume=dai.getAll(filecontent,start,size,addr/*, disasmResults*/);
-					if(toresume<0)
-					{
-						AlertError("Failed to disassemble:"+toresume,new Exception());
-					}else{
-						disasmManager.setResumeOffsetFromCode(toresume);
-					}
-					disasmResults= adapter.itemList();
-					mNotifyManager.cancel(0);
-					final int len=disasmResults.size();
-					//add xrefs
-
-					runOnUiThread(new Runnable(){
-							@Override
-							public void run()
-							{
-								listview.requestLayout();
-								tab2.invalidate();
-								//dialog.dismiss();
-								btDisasm.setEnabled(true);
-								btAbort.setText("Resume");
-								//btAbort.setTag("resume",(Object)true);
-								//btAbort.setEnabled(false);
-								btSavDisasm.setEnabled(true);
-								Toast.makeText(MainActivity.this, "done", 2).show();			
-							}
-						});
-					Log.v(TAG, "disassembly done");		
-				}});
-		workerThread.start();
+		long codesection=parsedFile.getCodeSectionBase();
+		long start=codesection+offset;//elfUtil.getCodeSectionOffset();
+		long index=start;
+		long limit=parsedFile.getCodeSectionLimit();
+		long addr=parsedFile.getCodeVirtAddr()+offset;
+		Log.v(TAG, "code section point :" + Long.toHexString(index));
+		long size=limit - start;//Size of CS
+		DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
+		listview.setOnScrollListener(new DisasmPager(adapter,dai));
+		dai.getSome(filecontent,start,size,addr,100/*, disasmResults*/);
+//		workerThread = new Thread(new Runnable(){
+//				@Override
+//				public void run()
+//				{
+//					long codesection=parsedFile.getCodeSectionBase();
+//					long start=codesection+offset;//elfUtil.getCodeSectionOffset();
+//					long index=start;
+//					long limit=parsedFile.getCodeSectionLimit();
+//					long addr=parsedFile.getCodeVirtAddr()+offset;
+//					Log.v(TAG, "code section point :" + Long.toHexString(index));
+//					//ListViewItem lvi;
+//					//	getFunctionNames();
+//					long size=limit - start;
+//					long leftbytes=size;
+//					DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
+//					
+//					long toresume=dai.getAll(filecontent,start,size,addr/*, disasmResults*/);
+//					if(toresume<0)
+//					{
+//						AlertError("Failed to disassemble:"+toresume,new Exception());
+//					}else{
+//						disasmManager.setResumeOffsetFromCode(toresume);
+//					}
+//					disasmResults= adapter.itemList();
+//					mNotifyManager.cancel(0);
+//					final int len=disasmResults.size();
+//					//add xrefs
+//
+//					runOnUiThread(new Runnable(){
+//							@Override
+//							public void run()
+//							{
+//								listview.requestLayout();
+//								tab2.invalidate();
+//								//dialog.dismiss();
+//								btDisasm.setEnabled(true);
+//								btAbort.setText("Resume");
+//								//btAbort.setTag("resume",(Object)true);
+//								//btAbort.setEnabled(false);
+//								btSavDisasm.setEnabled(true);
+//								Toast.makeText(MainActivity.this, "done", 2).show();			
+//							}
+//						});
+//					Log.v(TAG, "disassembly done");		
+//				}});
+//		workerThread.start();
 	}
 	View.OnClickListener rowClkListener= new OnClickListener() {
 		public void onClick(View view)
@@ -1031,7 +1042,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								 //,Manifest.permission.GET_ACCOUNTS
 							 }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
 	}
-
+	
+	public static void requestAppPermissions(Activity a,Runnable run)
+	{
+		requestAppPermissions(a);
+		run.run();
+	}
 	private static boolean  hasGetAccountPermissions(Context c)
 	{
 		
@@ -1109,8 +1125,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), 10).show();
 			android.os.Process.killProcess(android.os.Process.getGidForName(null));
 		}
-		requestAppPermissions(this);
-		colorHelper=new ColorHelper(this);
+		requestAppPermissions(this, new Runnable(){
+				@Override
+				public void run()
+				{
+					colorHelper=new ColorHelper(MainActivity.this);
+					return ;
+				}
+			});	
 
 		adapter = new ListViewAdapter(colorHelper);
 		symbolLvAdapter=new SymbolListAdapter();

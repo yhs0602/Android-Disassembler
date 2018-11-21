@@ -47,6 +47,12 @@ It can be loaded again to analyze again(though reloading is not implemented yet 
  - Database
 Slow. Not recommended.
 
+# Materials about assemblies
+ - [ARM](https://www.google.co.kr/url?sa=t&source=web&rct=j&url=http://arantxa.ii.uam.es/~gdrivera/sed/docs/ARMBook.pdf&ved=2ahUKEwjagIuEzOTeAhXHvLwKHeWcCnYQFjAAegQIBBAB&usg=AOvVaw2WWago0qaeDy06z0pgVR3n)
+ - [Intel](https://en.m.wikibooks.org/wiki/X86_Assembly)
+ - [Wiki](https://github.com/KYHSGeekCode/Android-Disassembler/wiki)
+
+
 # Build & Pull request
  - Use Android studio.
  - Any improvements are welcomed!
