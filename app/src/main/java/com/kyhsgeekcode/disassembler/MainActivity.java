@@ -31,10 +31,13 @@ import java.nio.channels.*;
 import com.evrencoskun.tableview.*;
 import java.util.zip.*;
 import android.support.v7.app.ActionBar.LayoutParams;
+import java.util.concurrent.*;
 
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
 {
+	Queue<Runnable> toDoAfterPermQueue=new LinkedBlockingQueue();
+	
 	private ArrayAdapter<String> autoSymAdapter ;
 	
 	private AutoCompleteTextView autocomplete;
@@ -1005,11 +1008,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 							 }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
 	}
 	
-	public static void requestAppPermissions(Activity a,Runnable run)
+	/*public static void requestAppPermissions(Activity a,Runnable run)
 	{
+
 		requestAppPermissions(a);
-		run.run();
-	}
+		//run.run();
+	}*/
 	private static boolean  hasGetAccountPermissions(Context c)
 	{
 		
@@ -1069,14 +1073,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), 10).show();
 			android.os.Process.killProcess(android.os.Process.getGidForName(null));
 		}
-		requestAppPermissions(this, new Runnable(){
+		toDoAfterPermQueue.add(new Runnable(){
 				@Override
 				public void run()
 				{
 					colorHelper=new ColorHelper(MainActivity.this);
 					return ;
 				}
-			});	
+			});
+		requestAppPermissions(this);	
 
 		adapter = new ListViewAdapter(colorHelper);
 		symbolLvAdapter=new SymbolListAdapter();
@@ -1793,6 +1798,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					{
 						// permission was granted, yay! Do the
 						// contacts-related task you need to do.
+						while(!toDoAfterPermQueue.isEmpty())
+						{
+							Runnable run=toDoAfterPermQueue.remove();
+							if(run!=null)
+								run.run();
+						}
 					}
 					else
 					{
