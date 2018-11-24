@@ -60,6 +60,71 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private ColorHelper colorHelper;
 	
+
+	//https://medium.com/@gurpreetsk/memory-management-on-android-using-ontrimmemory-f500d364bc1a
+    /**
+     * Release memory when the UI becomes hidden or when system resources become low.
+     * @param level the memory-related event that was raised.
+     */
+    public void onTrimMemory(int level) {
+		Log.v(TAG,"onTrimmemoory("+level+")called");
+        // Determine which lifecycle or system event was raised.
+        switch (level) {
+
+            case ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:
+
+                /*
+				 Release any UI objects that currently hold memory.
+
+				 "release your UI resources" is actually about things like caches. 
+				 You usually don't have to worry about managing views or UI components because the OS 
+				 already does that, and that's why there are all those callbacks for creating, starting, 
+				 pausing, stopping and destroying an activity.
+				 The user interface has moved to the background.
+				 */
+
+                break;
+
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL:
+
+                /*
+				 Release any memory that your app doesn't need to run.
+
+				 The device is running low on memory while the app is running.
+				 The event raised indicates the severity of the memory-related event.
+				 If the event is TRIM_MEMORY_RUNNING_CRITICAL, then the system will
+				 begin killing background processes.
+				 */
+
+                break;
+
+            case ComponentCallbacks2.TRIM_MEMORY_BACKGROUND:
+            case ComponentCallbacks2.TRIM_MEMORY_MODERATE:
+            case ComponentCallbacks2.TRIM_MEMORY_COMPLETE:
+
+                /*
+				 Release as much memory as the process can.
+				 The app is on the LRU list and the system is running low on memory.
+				 The event raised indicates where the app sits within the LRU list.
+				 If the event is TRIM_MEMORY_COMPLETE, the process will be one of
+				 the first to be terminated.
+				 */
+
+                break;
+
+            default:
+                /*
+				 Release any non-critical data structures.
+				 The app received an unrecognized memory level value
+				 from the system. Treat this as a generic low-memory message.
+				 */
+                break;
+        }
+	}
+	
+	
 	public void setFpath(String fpath)
 	{
 		this.fpath = fpath;
@@ -475,7 +540,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			try
 			{
 				StringBuilder sb=new StringBuilder();
-				ArrayList<ListViewItem> items=adapter.itemList();
+				/*ArrayList<ListViewItem>*/ListViewItem[] items=adapter.itemList();
 				for (ListViewItem lvi:items)
 				{
 					switch (mode)
@@ -790,19 +855,37 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	//18.11.22 revival!
 	//Will be used like generate-on-need array(sth like Paging)
-	private void DisassembleInstant(long offset)
+	private void DisassembleInstant(long foffset)
 	{
-		//Toast.makeText(this,"Not supported by now. Please just use persist mode instead.",3).show();
-
-		long startaddress=instantEntry;//file offset
-		long index=startaddress;
-		long addr=parsedFile.getCodeVirtAddr();
-		long limit=startaddress + 400;
-		if(limit>=filecontent.length)
-		{
-			Toast.makeText(this,"Odd address :(",3).show();
-			return;
-		}
+		//Toast.makeText(this,"Not supported by now. Please just use persist mode instead.",3).show();	
+//		if(limit>=filecontent.length)
+//		{
+//			Toast.makeText(this,"Odd address :(",3).show();
+//			return;
+//		}
+		//Toast.makeText(this, "started", 2).show();
+		Log.v(TAG, "Strted disassm foffs"+foffset);
+	//	btDisasm.setEnabled(false);
+	//	btAbort.setEnabled(true);
+		btSavDisasm.setEnabled(false);
+	//.	btAbort.setText("Pause");
+		//final ProgressDialog dialog= showProgressDialog("Disassembling...");
+	//	if(offset==parsedFile.getEntryPoint())
+	//		disasmResults.clear();//otherwise resume, not clear	
+		long codesection=parsedFile.getCodeSectionBase();
+		long start=codesection+foffset;//elfUtil.getCodeSectionOffset();
+	//	long index=start;
+		long limit=parsedFile.getCodeSectionLimit();
+		long addr=parsedFile.getCodeVirtAddr()+foffset;
+	//	Log.v(TAG, "code section point :" + Long.toHexString(index));
+		long size=limit - start;//Size of CS
+		DisasmIterator dai=new DisasmIterator
+		(MainActivity.this/*,mNotifyManager,mBuilder*/
+		 ,adapter,size);
+		listview.setOnScrollListener(new DisasmPager(adapter,dai));
+		dai.getSome(filecontent,start,size,addr,100/*, disasmResults*/);
+//		workerThread = new Thread(new Runnable(){
+//				@Over
 		DisasmPager pager;
 		//btDisasm.setEnabled(false);
 		//disasmResults.clear();

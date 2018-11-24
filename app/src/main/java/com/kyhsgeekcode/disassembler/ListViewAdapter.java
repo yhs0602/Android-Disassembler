@@ -7,12 +7,15 @@ import android.text.style.*;
 import android.view.*;
 import android.widget.*;
 import java.util.*;
+import android.util.*;
 
 public class ListViewAdapter extends BaseAdapter
 {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
-    private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>() ;
-
+    //private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>(100) ;
+	private /*ListViewItem[]*/LongSparseArray<ListViewItem> listViewItemList=new LongSparseArray<>();
+	private long lvLength=0;
+	
 	ColorHelper colorHelper;
     // ListViewAdapter의 생성자
     public ListViewAdapter(ColorHelper ch)
@@ -20,23 +23,31 @@ public class ListViewAdapter extends BaseAdapter
 		colorHelper=ch;
     }
 
-	public void addAll(ArrayList<ListViewItem> data)
+	public void addAll(/*ArrayList*/LongSparseArray<ListViewItem> data)
 	{
-		// TODO: Implement this method
-		listViewItemList.addAll(data);
+		//listViewItemList=new ListViewItem[data.size()];
+		//data.toArray(listViewItemList);
+		int siz=data.size();
+		for(int i=0;i<siz;++i)
+		{
+			long k=data.keyAt(i);
+			if(k>=0)
+				listViewItemList.put(k,data.valueAt(i));
+		}
+		//listViewItemList.addAll(data);
 		notifyDataSetChanged();
 	}
 	//You should not modify
 	public ArrayList<ListViewItem> itemList()
 	{
-		return listViewItemList;
+		return //new ArrayList<ListViewItem>().addAll(listViewItemList);
 	}
 
     // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
     @Override
     public int getCount()
 	{
-        return listViewItemList.size() ;
+        return listViewItemList.size();// lvLength;//listViewItemList//size() ;
     }
 
     // position에 위치한 데이터를 화면에 출력하는데 사용될 View를 리턴. : 필수 구현
@@ -75,7 +86,7 @@ public class ListViewAdapter extends BaseAdapter
 //			spannable.setSpan(new ForegroundColorSpan(Color.WHITE), text.length(), (text + CepVizyon.getPhoneCode()).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 //
 //			myTextView.setText(spannable, TextView.BufferType.SPANNABLE);
-			ListViewItem listViewItem = listViewItemList.get(position);
+			ListViewItem listViewItem = listViewItemList[position]//.get(position);
 			DisasmResult dar=listViewItem.disasmResult;
 			//int bkColor=ColorHelper.getBkColor( listViewItem.disasmResult.groups,listViewItem.disasmResult.groups_count);
 			//int txtColor=ColorHelper.getTxtColor(listViewItem.disasmResult.groups,listViewItem.disasmResult.groups_count);

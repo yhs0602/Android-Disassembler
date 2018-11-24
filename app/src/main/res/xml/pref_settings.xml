@@ -80,14 +80,14 @@
 			</Preference>
 				<Preference
 					android:summary="Hyeonseo Yang: A high school student"
-					android:title="KYHSGeekCode"
+					android:title="KYHSGeekCode - Maintainer/Developer"
 					android:key="kyhs">
 					<intent android:action="android.intent.action.VIEW"
 						android:data="https://stackoverflow.com/users/8614565/kyhsgeekcode" />
 				</Preference>
 				<Preference
 					android:summary="just a techy guy"
-					android:title="PramUkesh Venky"
+					android:title="PramUkesh Venky - Primary bug reporter"
 					android:key="venky">
 					<intent android:action="android.intent.action.VIEW"
 						android:data="https://github.com/PramUkesh" />
