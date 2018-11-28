@@ -4,23 +4,23 @@ import java.util.*;
 
 public class DisasmIterator
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-	public DisasmIterator(MainActivity activity,
-							//NotificationManager mNotifyManager,
-							//Notification.Builder mBuilder,
-							ListViewAdapter adapter,
-							long total)
-=======
+//<<<<<<< HEAD
+//<<<<<<< HEAD
+	//public DisasmIterator(MainActivity activity,
+	//						//NotificationManager mNotifyManager,
+	//						//Notification.Builder mBuilder,
+	//						ListViewAdapter adapter,
+	//						long total)
+//=======
+	//public DisasmIterator(MainActivity activity, NotificationManager mNotifyManager, Notification.Builder mBuilder, ListViewAdapter adapter,  long total)
+//>>>>>>> parent of 2644076... Update readme with assembly materials links
+//=======
 	public DisasmIterator(MainActivity activity, NotificationManager mNotifyManager, Notification.Builder mBuilder, ListViewAdapter adapter,  long total)
->>>>>>> parent of 2644076... Update readme with assembly materials links
-=======
-	public DisasmIterator(MainActivity activity, NotificationManager mNotifyManager, Notification.Builder mBuilder, ListViewAdapter adapter,  long total)
->>>>>>> parent of 2644076... Update readme with assembly materials links
+//>>>>>>> parent of 2644076... Update readme with assembly materials links
 	{
 		this.activity = activity;
-		//this.mNotifyManager = mNotifyManager;
-		//this.mBuilder = mBuilder;
+		this.mNotifyManager = mNotifyManager;
+		this.mBuilder = mBuilder;
 		this.total = total;
 		this.adapter=adapter;
 	}
@@ -53,8 +53,8 @@ public class DisasmIterator
 	public native int CSoption(int type, int vslue);
 	
 	MainActivity activity;
-	//NotificationManager mNotifyManager;
-	//Notification.Builder mBuilder;
+	NotificationManager mNotifyManager;
+	Notification.Builder mBuilder;
 	long total;
 	ListViewAdapter adapter;
 }

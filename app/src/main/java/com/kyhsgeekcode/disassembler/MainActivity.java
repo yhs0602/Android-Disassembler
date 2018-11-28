@@ -32,6 +32,7 @@ import com.evrencoskun.tableview.*;
 import java.util.zip.*;
 import android.support.v7.app.ActionBar.LayoutParams;
 import java.util.concurrent.*;
+import android.app.Notification.*;
 
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
@@ -59,6 +60,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	Spinner spinnerArch;
 
 	private ColorHelper colorHelper;
+
+	private NotificationManager mNotifyManager;
+
+	private Notification.Builder mBuilder;
 	
 
 	//https://medium.com/@gurpreetsk/memory-management-on-android-using-ontrimmemory-f500d364bc1a
@@ -540,7 +545,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			try
 			{
 				StringBuilder sb=new StringBuilder();
-				/*ArrayList<ListViewItem>*/ListViewItem[] items=adapter.itemList();
+				ArrayList<ListViewItem>/*ListViewItem[]*/ items=adapter.itemList();
 				for (ListViewItem lvi:items)
 				{
 					switch (mode)
@@ -880,13 +885,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	//	Log.v(TAG, "code section point :" + Long.toHexString(index));
 		long size=limit - start;//Size of CS
 		DisasmIterator dai=new DisasmIterator
-		(MainActivity.this/*,mNotifyManager,mBuilder*/
+		(MainActivity.this,mNotifyManager,mBuilder
 		 ,adapter,size);
-		listview.setOnScrollListener(new DisasmPager(adapter,dai));
-		dai.getSome(filecontent,start,size,addr,100/*, disasmResults*/);
+		//listview.setOnScrollListener(new DisasmPager(adapter,dai));
+	//	dai.getSome(filecontent,start,size,addr,100/*, disasmResults*/);
 //		workerThread = new Thread(new Runnable(){
 //				@Over
-		DisasmPager pager;
+		//DisasmPager pager;
 		//btDisasm.setEnabled(false);
 		//disasmResults.clear();
 		//setupListView();
@@ -960,33 +965,33 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		if(offset==parsedFile.getEntryPoint())
 			disasmResults.clear();//otherwise resume, not clear
 		//setupListView(); why was it called here?
-		//mNotifyManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		//mBuilder = new Notification.Builder(this);
-		/*mBuilder.setContentTitle("Disassembler")
+		mNotifyManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		mBuilder = new Notification.Builder(this);
+		mBuilder.setContentTitle("Disassembler")
 			.setContentText("Disassembling in progress")
 			.setSmallIcon(R.drawable.ic_launcher)
 			.setOngoing(true)
-			.setProgress(100, 0, false);*/
+			.setProgress(100, 0, false);
 		/*Intent snoozeIntent = new Intent(this, MyBroadcastReceiver.class);
 		 snoozeIntent.setAction(ACTION_SNOOZE);
 		 snoozeIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
 		 PendingIntent snoozePendingIntent =
 		 PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
 		 mBuilder.addAction(R.drawable.ic_launcher,"",snoozeIntent);*/
-<<<<<<< HEAD
-<<<<<<< HEAD
-		long codesection=parsedFile.getCodeSectionBase();
-		long start=codesection+offset;//elfUtil.getCodeSectionOffset();
-		long index=start;
-		long limit=parsedFile.getCodeSectionLimit();
-		long addr=parsedFile.getCodeVirtAddr()+offset;
-		Log.v(TAG, "code section point :" + Long.toHexString(index));
-		long size=limit - start;//Size of CS
-		DisasmIterator dai=new DisasmIterator
-							(MainActivity.this/*,mNotifyManager,mBuilder*/
-							,adapter,size);
-		listview.setOnScrollListener(new DisasmPager(adapter,dai));
-		dai.getSome(filecontent,start,size,addr,100/*, disasmResults*/);
+//<<<<<<< HEAD
+//<<<<<<< HEAD
+//		long codesection=parsedFile.getCodeSectionBase();
+//		long start=codesection+offset;//elfUtil.getCodeSectionOffset();
+//		long index=start;
+//		long limit=parsedFile.getCodeSectionLimit();
+//		long addr=parsedFile.getCodeVirtAddr()+offset;
+//		Log.v(TAG, "code section point :" + Long.toHexString(index));
+//		long size=limit - start;//Size of CS
+//		DisasmIterator dai=new DisasmIterator
+//							(MainActivity.this,mNotifyManager,mBuilder
+//							,adapter,size);
+//		listview.setOnScrollListener(new DisasmPager(adapter,dai));
+//		dai.getSome(filecontent,start,size,addr,100/*, disasmResults*/);
 //		workerThread = new Thread(new Runnable(){
 //				@Override
 //				public void run()
@@ -1033,9 +1038,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 //					Log.v(TAG, "disassembly done");		
 //				}});
 //		workerThread.start();
-=======
-=======
->>>>>>> parent of 2644076... Update readme with assembly materials links
+//=======
+//=======
+//>>>>>>> parent of 2644076... Update readme with assembly materials links
 		workerThread = new Thread(new Runnable(){
 				@Override
 				public void run()
@@ -1081,10 +1086,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					Log.v(TAG, "disassembly done");		
 				}});
 		workerThread.start();
-<<<<<<< HEAD
->>>>>>> parent of 2644076... Update readme with assembly materials links
-=======
->>>>>>> parent of 2644076... Update readme with assembly materials links
+//<<<<<<< HEAD
+//>>>>>>> parent of 2644076... Update readme with assembly materials links
+//=======
+//>>>>>>> parent of 2644076... Update readme with assembly materials links
 	}
 	View.OnClickListener rowClkListener= new OnClickListener() {
 		public void onClick(View view)
@@ -1126,7 +1131,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	}
 
 	public static final int REQUEST_WRITE_STORAGE_REQUEST_CODE=1;
-	public static void requestAppPermissions(Activity a)
+	public static void requestAppPermissions(final Activity a)
 	{
 		if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 		{
@@ -1137,15 +1142,26 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			Log.i(TAG, "Has permissions");
 			return;
 		}
-		showPermissionRationales(a);
-		a.requestPermissions(new String[] {
-								 Manifest.permission.READ_EXTERNAL_STORAGE,
-								 Manifest.permission.WRITE_EXTERNAL_STORAGE
-								 //,Manifest.permission.GET_ACCOUNTS
-							 }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
+		showPermissionRationales(a, new Runnable(){
+				@Override
+				public void run()
+				{
+					a.requestPermissions(new String[] {
+											 Manifest.permission.READ_EXTERNAL_STORAGE,
+											 Manifest.permission.WRITE_EXTERNAL_STORAGE
+											 //,Manifest.permission.GET_ACCOUNTS
+										 }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
+					return ;
+				}
+			});
+//		a.requestPermissions(new String[] {
+//								 Manifest.permission.READ_EXTERNAL_STORAGE,
+//								 Manifest.permission.WRITE_EXTERNAL_STORAGE
+//								 //,Manifest.permission.GET_ACCOUNTS
+//							 }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
+//<<<<<<< HEAD
+//<<<<<<< HEAD
 	
 	/*public static void requestAppPermissions(Activity a,Runnable run)
 	{
@@ -1153,12 +1169,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		requestAppPermissions(a);
 		//run.run();
 	}*/
-=======
-
->>>>>>> parent of 2644076... Update readme with assembly materials links
-=======
-
->>>>>>> parent of 2644076... Update readme with assembly materials links
+//=======
+//
+//>>>>>>> parent of 2644076... Update readme with assembly materials links
+//=======
+//
+//>>>>>>> parent of 2644076... Update readme with assembly materials links
 	private static boolean  hasGetAccountPermissions(Context c)
 	{
 		
@@ -1218,25 +1234,67 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), 10).show();
 			android.os.Process.killProcess(android.os.Process.getGidForName(null));
 		}
-<<<<<<< HEAD
-<<<<<<< HEAD
+//<<<<<<< HEAD
+//<<<<<<< HEAD
 		toDoAfterPermQueue.add(new Runnable(){
 				@Override
 				public void run()
 				{
 					colorHelper=new ColorHelper(MainActivity.this);
+					try
+					{
+						projectManager = new ProjectManager(MainActivity.this);
+						mProjNames=projectManager.strProjects();//new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);		
+					}
+					catch (IOException e)
+					{
+						AlertError("Failed to load projects",e);
+					}
+					// Set the adapter for the list view
+					mDrawerList.setAdapter(new ArrayAdapter<String>(MainActivity.this,
+																	R.layout.row, mProjNames));
+					
+					//https://www.androidpub.com/1351553
+					Intent intent = getIntent();
+					if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+						// User opened this app from file browser
+						String filePath = intent.getData().getPath();
+						Log.d(TAG,"intent path="+filePath);
+						String[] toks=filePath.split(Pattern.quote("."));
+						int last=toks.length-1;
+						String ext="";
+						if(last>=1){
+							ext=toks[last];
+							if("adp".equalsIgnoreCase(ext))
+							{
+								//User opened the project file
+								//now get the project name
+								File file=new File(filePath);
+								String pname=file.getName();
+								toks=pname.split(Pattern.quote("."));
+								projectManager.Open(toks[toks.length-2]);
+							}
+						}else{
+							//User opened pther files
+							OnChoosePath(intent.getData());
+						}
+					} else { // android.intent.action.MAIN	
+						String lastProj=setting.getString(LASTPROJKEY, "");
+						if(projectManager!=null)
+							projectManager.Open(lastProj);
+					}
 					return ;
 				}
 			});
-		requestAppPermissions(this);	
-=======
+//		requestAppPermissions(this);	
+//=======
+		//requestAppPermissions(this);
+//		colorHelper=new ColorHelper(this);
+//>>>>>>> parent of 2644076... Update readme with assembly materials links
+//=======
 		requestAppPermissions(this);
-		colorHelper=new ColorHelper(this);
->>>>>>> parent of 2644076... Update readme with assembly materials links
-=======
-		requestAppPermissions(this);
-		colorHelper=new ColorHelper(this);
->>>>>>> parent of 2644076... Update readme with assembly materials links
+		//colorHelper=new ColorHelper(this);
+//>>>>>>> parent of 2644076... Update readme with assembly materials links
 
 		adapter = new ListViewAdapter(colorHelper);
 		symbolLvAdapter=new SymbolListAdapter();
@@ -1363,60 +1421,20 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
 		boolean show=setting.getBoolean("show",true);
 		if(show){
-			showPermissionRationales();
-			editor=setting.edit();
+			//showPermissionRationales();
+			//editor=setting.edit();
 			editor.putBoolean("show",false);
 			editor.commit();
 		}
 		
 		mProjNames = new String[]{"Exception","happened"};
-		try
-		{
-			projectManager = new ProjectManager(this);
-			mProjNames=projectManager.strProjects();//new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);		
-		}
-		catch (IOException e)
-		{
-			AlertError("Failed to load projects",e);
-		}
+		
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-														R.layout.row, mProjNames));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+      mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
-		//https://www.androidpub.com/1351553
-		Intent intent = getIntent();
-		if (intent.getAction().equals(Intent.ACTION_VIEW)) {
-			// User opened this app from file browser
-			String filePath = intent.getData().getPath();
-			Log.d(TAG,"intent path="+filePath);
-			String[] toks=filePath.split(Pattern.quote("."));
-			int last=toks.length-1;
-			String ext="";
-			if(last>=1){
-				ext=toks[last];
-				if("adp".equalsIgnoreCase(ext))
-				{
-					//User opened the project file
-					//now get the project name
-					File file=new File(filePath);
-					String pname=file.getName();
-					toks=pname.split(Pattern.quote("."));
-					projectManager.Open(toks[toks.length-2]);
-				}
-			}else{
-				//User opened pther files
-				OnChoosePath(intent.getData());
-			}
-		} else { // android.intent.action.MAIN	
-			String lastProj=setting.getString(LASTPROJKEY, "");
-			if(projectManager!=null)
-				projectManager.Open(lastProj);
-		}
+		
 	}
 
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -1461,11 +1479,24 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private void showPermissionRationales()
 	{
-		showPermissionRationales(this);
+		showPermissionRationales(this,null);
 	}
-	public static void showPermissionRationales(Activity a)
+	public static void showPermissionRationales(final Activity a,final Runnable run)
 	{
-		ShowAlertDialog(a,"Permissions","- Read/Write storage(obvious)\r\n- GetAccounts: add email address info on crash report.\r\n\r\n For more information visit https://github.com/KYHSGeekCode/Android-Disassembler/");
+		ShowAlertDialog(a,"Permissions",
+		"- Read/Write storage(obvious)\r\n\r\n For more information visit https://github.com/KYHSGeekCode/Android-Disassembler/",
+			new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface p1,int  p2)
+				{
+					if(run!=null)
+						run.run();
+					//requestAppPermissions(a);
+					return ;
+				}
+				
+			
+		});
 	}
 	private void ShowErrorDialog(Activity a,int title,final Throwable err)
 	{
@@ -1503,15 +1534,18 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			});
 		builder.show();
 	}
-
-	public static void ShowAlertDialog(Activity a,String title,String content)
+	public static void ShowAlertDialog(Activity a,String title,String content,DialogInterface.OnClickListener listener)
 	{
 		android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(a);
 		builder.setTitle(title);
 		builder.setCancelable(false);
 		builder.setMessage(content);
-		builder.setPositiveButton("OK", (DialogInterface.OnClickListener)null);
+		builder.setPositiveButton("OK", listener);
 		builder.show();
+	}
+	public static void ShowAlertDialog(Activity a,String title,String content)
+	{
+		ShowAlertDialog(a,title,content,null);
 	}
 	public static void ShowYesNoCancelDialog(Activity a,String title,String content,
 											 DialogInterface.OnClickListener ok,
