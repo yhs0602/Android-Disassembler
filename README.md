@@ -48,6 +48,7 @@ It can be loaded again to analyze again(though reloading is not implemented yet 
 Slow. Not recommended.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Materials about assemblies
  - [ARM](https://www.google.co.kr/url?sa=t&source=web&rct=j&url=http://arantxa.ii.uam.es/~gdrivera/sed/docs/ARMBook.pdf&ved=2ahUKEwjagIuEzOTeAhXHvLwKHeWcCnYQFjAAegQIBBAB&usg=AOvVaw2WWago0qaeDy06z0pgVR3n)
  - [ARM BlackHat](https://www.google.com/url?q=https://www.blackhat.com/presentations/bh-europe-04/bh-eu-04-dehaas/bh-eu-04-dehaas.pdf&sa=U&ved=2ahUKEwjzg-OCg-3eAhUFT7wKHfXlABIQFjACegQIChAB&usg=AOvVaw0JFoqyycNHnqauD5yO6jIj)
@@ -55,6 +56,8 @@ Slow. Not recommended.
  - [Wiki](https://github.com/KYHSGeekCode/Android-Disassembler/wiki)
 
 
+=======
+>>>>>>> parent of 2644076... Update readme with assembly materials links
 =======
 >>>>>>> parent of 2644076... Update readme with assembly materials links
 # Build & Pull request

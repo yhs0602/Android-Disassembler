@@ -5,11 +5,15 @@ import java.util.*;
 public class DisasmIterator
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public DisasmIterator(MainActivity activity,
 							//NotificationManager mNotifyManager,
 							//Notification.Builder mBuilder,
 							ListViewAdapter adapter,
 							long total)
+=======
+	public DisasmIterator(MainActivity activity, NotificationManager mNotifyManager, Notification.Builder mBuilder, ListViewAdapter adapter,  long total)
+>>>>>>> parent of 2644076... Update readme with assembly materials links
 =======
 	public DisasmIterator(MainActivity activity, NotificationManager mNotifyManager, Notification.Builder mBuilder, ListViewAdapter adapter,  long total)
 >>>>>>> parent of 2644076... Update readme with assembly materials links

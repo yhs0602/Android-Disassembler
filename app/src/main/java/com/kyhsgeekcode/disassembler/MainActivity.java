@@ -974,6 +974,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		 PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
 		 mBuilder.addAction(R.drawable.ic_launcher,"",snoozeIntent);*/
 <<<<<<< HEAD
+<<<<<<< HEAD
 		long codesection=parsedFile.getCodeSectionBase();
 		long start=codesection+offset;//elfUtil.getCodeSectionOffset();
 		long index=start;
@@ -1033,6 +1034,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 //				}});
 //		workerThread.start();
 =======
+=======
+>>>>>>> parent of 2644076... Update readme with assembly materials links
 		workerThread = new Thread(new Runnable(){
 				@Override
 				public void run()
@@ -1078,6 +1081,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					Log.v(TAG, "disassembly done");		
 				}});
 		workerThread.start();
+<<<<<<< HEAD
+>>>>>>> parent of 2644076... Update readme with assembly materials links
+=======
 >>>>>>> parent of 2644076... Update readme with assembly materials links
 	}
 	View.OnClickListener rowClkListener= new OnClickListener() {
@@ -1139,6 +1145,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 							 }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
 	/*public static void requestAppPermissions(Activity a,Runnable run)
 	{
@@ -1146,6 +1153,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		requestAppPermissions(a);
 		//run.run();
 	}*/
+=======
+
+>>>>>>> parent of 2644076... Update readme with assembly materials links
 =======
 
 >>>>>>> parent of 2644076... Update readme with assembly materials links
@@ -1209,6 +1219,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			android.os.Process.killProcess(android.os.Process.getGidForName(null));
 		}
 <<<<<<< HEAD
+<<<<<<< HEAD
 		toDoAfterPermQueue.add(new Runnable(){
 				@Override
 				public void run()
@@ -1218,6 +1229,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 			});
 		requestAppPermissions(this);	
+=======
+		requestAppPermissions(this);
+		colorHelper=new ColorHelper(this);
+>>>>>>> parent of 2644076... Update readme with assembly materials links
 =======
 		requestAppPermissions(this);
 		colorHelper=new ColorHelper(this);
