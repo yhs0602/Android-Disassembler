@@ -4,11 +4,15 @@ import java.util.*;
 
 public class DisasmIterator
 {
+<<<<<<< HEAD
 	public DisasmIterator(MainActivity activity,
 							//NotificationManager mNotifyManager,
 							//Notification.Builder mBuilder,
 							ListViewAdapter adapter,
 							long total)
+=======
+	public DisasmIterator(MainActivity activity, NotificationManager mNotifyManager, Notification.Builder mBuilder, ListViewAdapter adapter,  long total)
+>>>>>>> parent of 2644076... Update readme with assembly materials links
 	{
 		this.activity = activity;
 		//this.mNotifyManager = mNotifyManager;
@@ -16,17 +20,7 @@ public class DisasmIterator
 		this.total = total;
 		this.adapter=adapter;
 	}
-	public native long getAll(byte[] bytes, 
-								long offset,
-								long size,
-								long virtaddr
-								/*,ArrayList<ListViewItem> arr*/);
-	public native long getSome(byte[] bytes,
-								long offset,
-								long size,
-								long virtaddr,
-								int num/*,ArrayList<ListViewItem> arr*/);
-	
+	public native long getAll(byte[] bytes, long offset, long size,long virtaddr/*,ArrayList<ListViewItem> arr*/);
 	public void AddItem(final ListViewItem lvi)
 	{
 		activity.runOnUiThread(new Runnable(){
