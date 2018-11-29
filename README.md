@@ -1,6 +1,4 @@
-# Notice: currently in huge chaos!
-
-# Version 1.3.1 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.3.2 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
 # Android-Disassembler
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
