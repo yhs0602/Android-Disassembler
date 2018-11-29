@@ -25,6 +25,8 @@ public class DisasmIterator
 		this.adapter=adapter;
 	}
 	public native long getAll(byte[] bytes, long offset, long size,long virtaddr/*,ArrayList<ListViewItem> arr*/);
+	public native long getSome(byte[] bytes, long offset, long size,long virtaddr,int count/*,ArrayList<ListViewItem> arr*/);
+	
 	public void AddItem(final ListViewItem lvi)
 	{
 		activity.runOnUiThread(new Runnable(){

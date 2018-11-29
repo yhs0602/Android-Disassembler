@@ -305,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					AlertSelFile();
 					return;
 				}
-				DisassembleFile(parsedFile.getEntryPoint());
+				DisassembleFile(0/*parsedFile.getEntryPoint()*/);
 				break;
 			case R.id.btnShowdetail:
 				if (parsedFile == null)
@@ -1056,7 +1056,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					long size=limit - start;
 					long leftbytes=size;
 					DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
-					long toresume=dai.getAll(filecontent,start,size,addr/*, disasmResults*/);
+					long toresume=dai.getSome(filecontent,start,size,addr,1000000/*, disasmResults*/);
 					if(toresume<0)
 					{
 						AlertError("Failed to disassemble:"+toresume,new Exception());
@@ -1135,11 +1135,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 		{
+			a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
+										(String[])null,
+										 new int[]{PackageManager.PERMISSION_GRANTED});
 			return;
 		}
 		if (hasReadPermissions(a) && hasWritePermissions(a)/*&&hasGetAccountPermissions(a)*/)
 		{
 			Log.i(TAG, "Has permissions");
+			a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
+										 (String[])null,
+										 new int[]{PackageManager.PERMISSION_GRANTED});
 			return;
 		}
 		showPermissionRationales(a, new Runnable(){
@@ -1236,11 +1242,96 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 //<<<<<<< HEAD
 //<<<<<<< HEAD
+		setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
+		setContentView(R.layout.main);
+		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());	
+		etDetails = (EditText) findViewById(R.id.detailText);
+		Button selectFile=(Button) findViewById(R.id.selFile);
+		selectFile.setOnClickListener(this);
+		btShowDetails = (Button) findViewById(R.id.btnShowdetail);
+		btShowDetails.setOnClickListener(this);
+		btDisasm = (Button) findViewById(R.id.btnDisasm);
+		btDisasm.setOnClickListener(this);
+		btSavDisasm = (Button) findViewById(R.id.btnSaveDisasm);
+		btSavDisasm.setOnClickListener(this);
+		btSavDit = (Button) findViewById(R.id.btnSaveDetails);
+		btSavDit.setOnClickListener(this);
+		btAbort = (Button) findViewById(R.id.btAbort);
+
+		btAbort.setOnClickListener(this);
+		btAbort.setEnabled(false);
+
+		etFilename = (EditText) findViewById(R.id.fileNameText);
+		etFilename.setFocusable(false);
+		etFilename.setEnabled(false);
+
+		llmainLinearLayoutSetupRaw= (LinearLayout) findViewById(R.id.mainLinearLayoutSetupRaw);
+		disableEnableControls(false,llmainLinearLayoutSetupRaw);
+
+		etCodeLimit= (EditText)  findViewById(R.id.mainETcodeLimit);
+		etCodeBase= (EditText)  findViewById(R.id.mainETcodeOffset);
+		etEntryPoint=(EditText)  findViewById(R.id.mainETentry);
+		etVirtAddr=(EditText) findViewById(R.id.mainETvirtaddr);
+		tvArch= (TextView) findViewById(R.id.mainTVarch);
+		btFinishSetup= (Button) findViewById(R.id.mainBTFinishSetup);
+		btFinishSetup.setOnClickListener(this);
+		//rgdArch= (RadioGridGroup) findViewById(R.id.mainRGDArch);
+		//rgdArch.check(R.id.rbAuto);
+		spinnerArch=(Spinner)findViewById(R.id.mainSpinnerArch);
+		//https://stackoverflow.com/a/13783744/8614565
+		String[] items = Arrays.toString(MachineType.class.getEnumConstants()).replaceAll("^.|.$", "").split(", ");	
+		ArrayAdapter<String> sadapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+		spinnerArch.setAdapter(sadapter);
+
+		lvSymbols=(ListView)findViewById(R.id.symlistView);
+		//moved up
+		//symbolLvAdapter=new SymbolListAdapter();
+		lvSymbols.setAdapter(symbolLvAdapter);
+		lvSymbols.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+				@Override
+				public boolean onItemLongClick(AdapterView<?> parent, View view, int position,long  id)
+				{
+					Symbol symbol=(Symbol) parent.getItemAtPosition(position);
+					long address=symbol.st_value;
+					//LongSparseArray arr;
+					Toast.makeText(MainActivity.this,"Jump to"+Long.toHexString(address),3).show();
+					tabHost.setCurrentTab(3);
+					jumpto(address);
+					return true;
+				}
+			});
+		//symAdapter = new SymbolTableAdapter(this.getApplicationContext());
+		//tvSymbols = (TableView)findViewById(R.id.content_container);
+		//tvSymbols.setAdapter(symAdapter);
+		autoSymAdapter = new ArrayAdapter<String> (this,android.R.layout.select_dialog_item);
+		//autocomplete.setThreshold(2);
+		//autocomplete.setAdapter(autoSymAdapter);
+
+		tabHost = (TabHost) findViewById(R.id.tabhost1);
+        tabHost.setup();
+		TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator("Overview");
+        TabHost.TabSpec tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator("Details");
+        TabHost.TabSpec tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator("Disassembly");
+		TabHost.TabSpec tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator("Symbols");
+		tabHost.addTab(tab0);
+        tabHost.addTab(tab1);
+		tabHost.addTab(tab3);
+        tabHost.addTab(tab2);
+
+		this.tab1 = (LinearLayout) findViewById(R.id.tab1);
+		this.tab2 = (LinearLayout) findViewById(R.id.tab2);
+
+		
 		toDoAfterPermQueue.add(new Runnable(){
 				@Override
 				public void run()
 				{
+					mProjNames = new String[]{"Exception","happened"};
 					colorHelper=new ColorHelper(MainActivity.this);
+					adapter = new ListViewAdapter(colorHelper);
 					try
 					{
 						projectManager = new ProjectManager(MainActivity.this);
@@ -1283,131 +1374,57 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						if(projectManager!=null)
 							projectManager.Open(lastProj);
 					}
+					disasmManager.setData(adapter.itemList());
+					// find the retained fragment on activity restarts
+					FragmentManager fm = getFragmentManager();
+					dataFragment = (RetainedFragment) fm.findFragmentByTag("data");
+
+					// create the fragment and data the first time
+					if (dataFragment == null) {
+						// add the fragment
+						dataFragment = new RetainedFragment();
+						fm.beginTransaction().add(dataFragment, "data").commit();
+						// load the data from the web
+						dataFragment.setDisasmManager(disasmManager);
+
+					}else{
+						//It should be handled
+						disasmManager= dataFragment.getDisasmManager();
+						filecontent=dataFragment.getFilecontent();
+						parsedFile=dataFragment.getParsedFile();
+						fpath=dataFragment.getPath();
+						if(parsedFile!=null){
+							symbolLvAdapter.itemList().clear();
+							symbolLvAdapter.addAll(parsedFile.getSymbols());
+							for(Symbol s:symbolLvAdapter.itemList())
+							{
+								autoSymAdapter.add(s.name);
+							}
+						}
+					}
+
+					// the data is available in dataFragment.getData()
+					
 					return ;
 				}
 			});
+		symbolLvAdapter=new SymbolListAdapter();
+		disasmManager=new DisassemblyManager();
+		
 //		requestAppPermissions(this);	
 //=======
 		//requestAppPermissions(this);
 //		colorHelper=new ColorHelper(this);
 //>>>>>>> parent of 2644076... Update readme with assembly materials links
 //=======
+		
 		requestAppPermissions(this);
 		//colorHelper=new ColorHelper(this);
 //>>>>>>> parent of 2644076... Update readme with assembly materials links
 
-		adapter = new ListViewAdapter(colorHelper);
-		symbolLvAdapter=new SymbolListAdapter();
-		disasmManager=new DisassemblyManager();
-		disasmManager.setData(adapter.itemList());
-		// find the retained fragment on activity restarts
-        FragmentManager fm = getFragmentManager();
-        dataFragment = (RetainedFragment) fm.findFragmentByTag("data");
-
-        // create the fragment and data the first time
-        if (dataFragment == null) {
-            // add the fragment
-            dataFragment = new RetainedFragment();
-            fm.beginTransaction().add(dataFragment, "data").commit();
-            // load the data from the web
-            dataFragment.setDisasmManager(disasmManager);
-
-        }else{
-			//It should be handled
-			disasmManager= dataFragment.getDisasmManager();
-			filecontent=dataFragment.getFilecontent();
-			parsedFile=dataFragment.getParsedFile();
-			fpath=dataFragment.getPath();
-			if(parsedFile!=null){
-				symbolLvAdapter.itemList().clear();
-				symbolLvAdapter.addAll(parsedFile.getSymbols());
-				for(Symbol s:symbolLvAdapter.itemList())
-				{
-					autoSymAdapter.add(s.name);
-				}
-			}
-		}
-
-        // the data is available in dataFragment.getData()
-
-        setContentView(R.layout.main);
-		etDetails = (EditText) findViewById(R.id.detailText);
-		Button selectFile=(Button) findViewById(R.id.selFile);
-		selectFile.setOnClickListener(this);
-		btShowDetails = (Button) findViewById(R.id.btnShowdetail);
-		btShowDetails.setOnClickListener(this);
-		btDisasm = (Button) findViewById(R.id.btnDisasm);
-		btDisasm.setOnClickListener(this);
-		btSavDisasm = (Button) findViewById(R.id.btnSaveDisasm);
-		btSavDisasm.setOnClickListener(this);
-		btSavDit = (Button) findViewById(R.id.btnSaveDetails);
-		btSavDit.setOnClickListener(this);
-		btAbort = (Button) findViewById(R.id.btAbort);
-
-		btAbort.setOnClickListener(this);
-		btAbort.setEnabled(false);
-
-		etFilename = (EditText) findViewById(R.id.fileNameText);
-		etFilename.setFocusable(false);
-		etFilename.setEnabled(false);
-
-		llmainLinearLayoutSetupRaw= (LinearLayout) findViewById(R.id.mainLinearLayoutSetupRaw);
-		disableEnableControls(false,llmainLinearLayoutSetupRaw);
-
-		etCodeLimit= (EditText)  findViewById(R.id.mainETcodeLimit);
-		etCodeBase= (EditText)  findViewById(R.id.mainETcodeOffset);
-		etEntryPoint=(EditText)  findViewById(R.id.mainETentry);
-		etVirtAddr=(EditText) findViewById(R.id.mainETvirtaddr);
-		tvArch= (TextView) findViewById(R.id.mainTVarch);
-		btFinishSetup= (Button) findViewById(R.id.mainBTFinishSetup);
-		btFinishSetup.setOnClickListener(this);
-		//rgdArch= (RadioGridGroup) findViewById(R.id.mainRGDArch);
-		//rgdArch.check(R.id.rbAuto);
-		spinnerArch=(Spinner)findViewById(R.id.mainSpinnerArch);
-		//https://stackoverflow.com/a/13783744/8614565
-		String[] items = Arrays.toString(MachineType.class.getEnumConstants()).replaceAll("^.|.$", "").split(", ");	
-		ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
-		spinnerArch.setAdapter(adapter);
-
-		lvSymbols=(ListView)findViewById(R.id.symlistView);
-		//moved up
-		//symbolLvAdapter=new SymbolListAdapter();
-		lvSymbols.setAdapter(symbolLvAdapter);
-		lvSymbols.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
-				@Override
-				public boolean onItemLongClick(AdapterView<?> parent, View view, int position,long  id)
-				{
-					Symbol symbol=(Symbol) parent.getItemAtPosition(position);
-					long address=symbol.st_value;
-					//LongSparseArray arr;
-					Toast.makeText(MainActivity.this,"Jump to"+Long.toHexString(address),3).show();
-					tabHost.setCurrentTab(3);
-					jumpto(address);
-					return true;
-				}
-			});
-		//symAdapter = new SymbolTableAdapter(this.getApplicationContext());
-		//tvSymbols = (TableView)findViewById(R.id.content_container);
-		//tvSymbols.setAdapter(symAdapter);
-		autoSymAdapter = new ArrayAdapter<String> (this,android.R.layout.select_dialog_item);
-		//autocomplete.setThreshold(2);
-		//autocomplete.setAdapter(autoSymAdapter);
 		
-		tabHost = (TabHost) findViewById(R.id.tabhost1);
-        tabHost.setup();
-		TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator("Overview");
-        TabHost.TabSpec tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator("Details");
-        TabHost.TabSpec tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator("Disassembly");
-		TabHost.TabSpec tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator("Symbols");
-		tabHost.addTab(tab0);
-        tabHost.addTab(tab1);
-		tabHost.addTab(tab3);
-        tabHost.addTab(tab2);
-
-		this.tab1 = (LinearLayout) findViewById(R.id.tab1);
-		this.tab2 = (LinearLayout) findViewById(R.id.tab2);
-
-		/*if (cs == null)
+		
+        /*if (cs == null)
 		 {
 		 Toast.makeText(this, "Failed to initialize the native engine", 3).show();
 		 android.os.Process.killProcess(android.os.Process.getGidForName(null));
@@ -1418,23 +1435,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		//	tlDisasmTable.addView(tbrow0);
 		setupListView();
 
-		setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
+		
 		boolean show=setting.getBoolean("show",true);
 		if(show){
 			//showPermissionRationales();
-			//editor=setting.edit();
+			editor=setting.edit();
 			editor.putBoolean("show",false);
 			editor.commit();
 		}
-		
-		mProjNames = new String[]{"Exception","happened"};
-		
-		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-      mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-		
 	}
 
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
