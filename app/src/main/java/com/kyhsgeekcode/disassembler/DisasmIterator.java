@@ -32,7 +32,17 @@ public class DisasmIterator
 		activity.runOnUiThread(new Runnable(){
 				@Override
 				public void run()
-				{
+				{	
+					long addr=lvi.disasmResult.address;
+					List<Symbol> syms= activity.parsedFile.symbols;
+					for(Symbol sym:syms)
+					{
+						if(sym.st_value==addr)
+						{
+							lvi.comments=sym.demangled;
+							break;
+						}
+					}
 					adapter.addItem(lvi);
 					adapter.notifyDataSetChanged();
 					return ;

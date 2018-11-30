@@ -110,5 +110,14 @@ public class PEFile extends AbstractFile
 		return nl.lxtreme.binutils.elf.MachineType.i386;
 	}
 	PE pe;
+
+	@Override
+	public String toString()
+	{
+		StringBuilder builder=new StringBuilder(super.toString());
+		builder.append(ls).append(ls);
+		builder.append(pe.toString());
+		return builder.toString();
+	}
 	
 }

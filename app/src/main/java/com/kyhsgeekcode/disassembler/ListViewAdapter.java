@@ -153,5 +153,7 @@ public class ListViewAdapter extends BaseAdapter
         listViewItemList.add(item);
 		//notifyDataSetChanged();
     }
+	
+	
 }
 //http://recipes4dev.tistory.com/m/43

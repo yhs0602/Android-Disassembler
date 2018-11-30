@@ -1332,6 +1332,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					mProjNames = new String[]{"Exception","happened"};
 					colorHelper=new ColorHelper(MainActivity.this);
 					adapter = new ListViewAdapter(colorHelper);
+					setupListView();
 					try
 					{
 						projectManager = new ProjectManager(MainActivity.this);
@@ -1433,7 +1434,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		//	TableRow tbrow0 = new TableRow(MainActivity.this);
 		//	CreateDisasmTopRow(tbrow0);		
 		//	tlDisasmTable.addView(tbrow0);
-		setupListView();
+		//setupListView();
 
 		
 		boolean show=setting.getBoolean("show",true);

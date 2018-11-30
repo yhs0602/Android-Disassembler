@@ -39,6 +39,27 @@ public abstract class AbstractFile implements Closeable
 			symbols=new ArrayList<>();
 		return symbols;
 	}
+
+	@Override
+	public String toString()
+	{
+		
+		StringBuilder builder=new StringBuilder("");
+		builder.append("File size: ").append(Integer.toHexString(fileContents.length))
+		.append(ls);
+		builder.append("File offset of CS: ").append(Long.toHexString(codeBase))
+		.append(ls);
+		builder.append("File offset of CS end :").append(Long.toHexString(codeLimit))
+		.append(ls);
+		builder.append("File offset of entry point: ").append(Long.toHexString(codeBase+entryPoint))
+		.append(ls);
+		builder.append("Virtual address of CS: ").append(Long.toHexString(codeVirtualAddress))
+		.append(ls);
+		builder.append("Virtual address of CS end: ").append(Long.toHexString(codeLimit+codeVirtualAddress))
+		.append(ls);
+		builder.append("Virtual address of EP: ").append(Long.toHexString(codeBase+entryPoint+codeVirtualAddress));
+		return builder.toString();
+	}
 //	public AbstractFile(File file) throws IOException
 //	{
 //		
@@ -47,6 +68,7 @@ public abstract class AbstractFile implements Closeable
 //	{
 //		
 //	}
+	String ls=System.lineSeparator();
 	long codeBase=0;
 	long codeLimit=0;
 	List<Symbol> symbols;
