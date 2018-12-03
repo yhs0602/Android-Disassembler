@@ -1,4 +1,4 @@
-# Version 1.3.2 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.3.3 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
 # Android-Disassembler
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
@@ -52,6 +52,18 @@ Slow. Not recommended.
  - [ARM BlackHat](https://www.google.com/url?q=https://www.blackhat.com/presentations/bh-europe-04/bh-eu-04-dehaas/bh-eu-04-dehaas.pdf&sa=U&ved=2ahUKEwjzg-OCg-3eAhUFT7wKHfXlABIQFjACegQIChAB&usg=AOvVaw0JFoqyycNHnqauD5yO6jIj)
  - [Intel](https://en.m.wikibooks.org/wiki/X86_Assembly)
  - [Wiki](https://github.com/KYHSGeekCode/Android-Disassembler/wiki)
+
+# Error Handling
+Here are some common issues and some solutons for them.
+ - The app crashes!
+
+   Sorry for inconvenience, please send an error report as an issue. **If you can't wait for the next stable version, please check / grant the read/write permission to the app.**
+   
+ - NotThisFormatException
+
+   Is it a well known executable file? (ELF:`.so, .o, .lib, .a, etc..`, PE:`.exe, .dll, .sys, ...`) Then please report me with the file you tried to disassemble.
+   If not, you need to press `OK` and **setup manually**.
+
 
 # Build & Pull request
  - Use Android studio.
