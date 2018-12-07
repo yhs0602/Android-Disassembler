@@ -16,7 +16,7 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 # What's new
  - Syntax colorizing.
  - Support PE and other bin formats.
- 
+
 # Usuage
 1. Choose a file to analyze.
 ![image](images/Screenshot_20181022-192706.png)
@@ -64,6 +64,7 @@ Here are some common issues and some solutons for them.
    Is it a well known executable file? (ELF:`.so, .o, .lib, .a, etc..`, PE:`.exe, .dll, .sys, ...`) Then please report me with the file you tried to disassemble.
    If not, you need to press `OK` and **setup manually**.
 
+### Feature requests are welcomed!
 
 # Build & Pull request
  - Use Android studio.
