@@ -8,6 +8,7 @@ import android.view.*;
 import android.widget.*;
 import java.util.*;
 import android.util.*;
+import android.content.res.*;
 
 public class ListViewAdapter extends BaseAdapter
 {
@@ -17,11 +18,23 @@ public class ListViewAdapter extends BaseAdapter
 	private long lvLength=0;
 	
 	ColorHelper colorHelper;
+	private int architecture;
     // ListViewAdapter의 생성자
-    public ListViewAdapter(ColorHelper ch)
+    public ListViewAdapter(int arch,ColorHelper ch)
 	{
 		colorHelper=ch;
+		architecture=arch;
     }
+
+	public void setArchitecture(int architecture)
+	{
+		this.architecture = architecture;
+	}
+
+	public int getArchitecture()
+	{
+		return architecture;
+	}
 
 	public void addAll(ArrayList/*LongSparseArra*/ <ListViewItem> data)
 	{
@@ -62,7 +75,7 @@ public class ListViewAdapter extends BaseAdapter
         if (convertView == null)
 		{
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.listview_item, parent, false);
+            convertView = inflater.inflate(R.layout.listview_item, parent, false);		
         }
 		Palette palette=colorHelper.getPalette();
         // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
@@ -73,6 +86,8 @@ public class ListViewAdapter extends BaseAdapter
 		TextView instTextView = (TextView) convertView.findViewById(R.id.tvInst) ;
 		TextView labelTextView = (TextView) convertView.findViewById(R.id.tvLabel) ;
 		TextView operandTextView = (TextView) convertView.findViewById(R.id.tvOperand) ;
+		operandTextView.getLayoutParams().width=(architecture==1)?dp260:dp180;
+		operandTextView.requestLayout();
 		//if (pos == 0)
 		//{
 		//	addrTextView.setTe
@@ -153,7 +168,12 @@ public class ListViewAdapter extends BaseAdapter
         listViewItemList.add(item);
 		//notifyDataSetChanged();
     }
-	
-	
+	public static int convertDpToPixel(float dp){
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        return Math.round(px);
+    }
+	public int dp180=convertDpToPixel(180);
+	public int dp260=convertDpToPixel(260);
 }
 //http://recipes4dev.tistory.com/m/43

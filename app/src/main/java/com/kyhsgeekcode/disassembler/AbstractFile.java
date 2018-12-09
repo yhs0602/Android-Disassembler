@@ -42,8 +42,7 @@ public abstract class AbstractFile implements Closeable
 
 	@Override
 	public String toString()
-	{
-		
+	{	
 		StringBuilder builder=new StringBuilder("");
 		builder.append("File size: ").append(Integer.toHexString(fileContents.length))
 		.append(ls);

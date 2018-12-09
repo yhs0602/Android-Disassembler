@@ -1331,7 +1331,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				{
 					mProjNames = new String[]{"Exception","happened"};
 					colorHelper=new ColorHelper(MainActivity.this);
-					adapter = new ListViewAdapter(colorHelper);
+					adapter = new ListViewAdapter(0,colorHelper);
 					setupListView();
 					try
 					{
@@ -2182,6 +2182,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 			}	
 		}
+		if(arch==CS_ARCH_X86)
+			adapter.setArchitecture(1);	//wider operands
 		shouldSave = true;
 		List<Symbol> list=parsedFile.getSymbols();
 //		for(int i=0;i<list.size();++i){
