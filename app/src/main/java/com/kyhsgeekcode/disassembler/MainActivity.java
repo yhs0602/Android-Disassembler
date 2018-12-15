@@ -65,7 +65,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private Notification.Builder mBuilder;
 	
-
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		if(colorHelper.isUpdatedColor())
+		{
+			listview.refreshDrawableState();
+			colorHelper.setUpdatedColor(false);
+		}
+		return;
+	}
 	//https://medium.com/@gurpreetsk/memory-management-on-android-using-ontrimmemory-f500d364bc1a
     /**
      * Release memory when the UI becomes hidden or when system resources become low.
@@ -140,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		this.parsedFile = parsedFile;
 		dataFragment.setParsedFile(parsedFile);
+		adapter.setFile(parsedFile);
 	}
 
 	public void setFilecontent(byte[] filecontent)
@@ -246,13 +257,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private Button btSavDisasm;
 
-	private Button btDisasm;
+	//private Button btDisasm;
 
 	private Button btShowDetails;
 
 	private Button btSavDit;
 
-	private Button btAbort;
+	//private Button btAbort;
 
 	private String[] mProjNames;
     private DrawerLayout mDrawerLayout;
@@ -299,14 +310,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			case R.id.selFile:
 				showFileChooser();
 				break;
-			case R.id.btnDisasm:
-				if (filecontent == null)
-				{
-					AlertSelFile();
-					return;
-				}
-				DisassembleFile(0/*parsedFile.getEntryPoint()*/);
-				break;
+			//case R.id.btnDisasm:
+				//if (filecontent == null)
+				//{
+				//	AlertSelFile();
+				//	return;
+				//}
+				//DisassembleFile(0/*parsedFile.getEntryPoint()*/);
+				//break;
 			case R.id.btnShowdetail:
 				if (parsedFile == null)
 				{
@@ -321,16 +332,16 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			case R.id.btnSaveDetails:
 				SaveDetail();
 				break;
-			case R.id.btAbort://abort or resume
+			//case R.id.btAbort://abort or resume
 				//boolean 
-				if(workerThread!=null)
+				/*if(workerThread!=null)
 				{
 					if(workerThread.isAlive())
 					{
 						workerThread.interrupt();
 					}
-				}
-				break;
+				}*/
+				//break;
 			case R.id.mainBTFinishSetup:
 				{
 					if(parsedFile==null){
@@ -930,7 +941,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		 }*/
 		//Currently not suported
 
-		btDisasm.setEnabled(true);
+		//btDisasm.setEnabled(true);
 	}
 
 	public final Runnable runnableRequestLayout=new Runnable(){
@@ -957,14 +968,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		Toast.makeText(this, "started", 2).show();
 		Log.v(TAG, "Strted disassm");
-		btDisasm.setEnabled(false);
-		btAbort.setEnabled(true);
+		//btDisasm.setEnabled(false);
+		//btAbort.setEnabled(true);
 		btSavDisasm.setEnabled(false);
-		btAbort.setText("Pause");
+		//btAbort.setText("Pause");
 		//final ProgressDialog dialog= showProgressDialog("Disassembling...");
-		if(offset==parsedFile.getEntryPoint())
-			disasmResults.clear();//otherwise resume, not clear
-		//setupListView(); why was it called here?
+		
+		//NOW there's no notion of pause or resume!!!!!
+		//if(offset==parsedFile.getEntryPoint())
+		//	disasmResults.clear();//otherwise resume, not clear
 		mNotifyManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mBuilder = new Notification.Builder(this);
 		mBuilder.setContentTitle("Disassembler")
@@ -1045,6 +1057,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				@Override
 				public void run()
 				{
+					
 					long codesection=parsedFile.getCodeSectionBase();
 					long start=codesection+offset;//elfUtil.getCodeSectionOffset();
 					long index=start;
@@ -1056,16 +1069,18 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					long size=limit - start;
 					long leftbytes=size;
 					DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
-					long toresume=dai.getSome(filecontent,start,size,addr,1000000/*, disasmResults*/);
-					if(toresume<0)
+					adapter.setDit(dai);
+					adapter.LoadMore(0,addr);
+					//long toresume=dai.getSome(filecontent,start,size,addr,1000000/*, disasmResults*/);
+					/*if(toresume<0)
 					{
 						AlertError("Failed to disassemble:"+toresume,new Exception());
 					}else{
 						disasmManager.setResumeOffsetFromCode(toresume);
-					}
+					}*/
 					disasmResults= adapter.itemList();
 					mNotifyManager.cancel(0);
-					final int len=disasmResults.size();
+					//final int len=disasmResults.size();
 					//add xrefs
 
 					runOnUiThread(new Runnable(){
@@ -1075,8 +1090,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								listview.requestLayout();
 								tab2.invalidate();
 								//dialog.dismiss();
-								btDisasm.setEnabled(true);
-								btAbort.setText("Resume");
+								//btDisasm.setEnabled(true);
+								//btAbort.setText("Resume");
 								//btAbort.setTag("resume",(Object)true);
 								//btAbort.setEnabled(false);
 								btSavDisasm.setEnabled(true);
@@ -1253,16 +1268,16 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		selectFile.setOnClickListener(this);
 		btShowDetails = (Button) findViewById(R.id.btnShowdetail);
 		btShowDetails.setOnClickListener(this);
-		btDisasm = (Button) findViewById(R.id.btnDisasm);
-		btDisasm.setOnClickListener(this);
+		//btDisasm = (Button) findViewById(R.id.btnDisasm);
+		//btDisasm.setOnClickListener(this);
 		btSavDisasm = (Button) findViewById(R.id.btnSaveDisasm);
 		btSavDisasm.setOnClickListener(this);
 		btSavDit = (Button) findViewById(R.id.btnSaveDetails);
 		btSavDit.setOnClickListener(this);
-		btAbort = (Button) findViewById(R.id.btAbort);
+		//btAbort = (Button) findViewById(R.id.btAbort);
 
-		btAbort.setOnClickListener(this);
-		btAbort.setEnabled(false);
+		//btAbort.setOnClickListener(this);
+		//btAbort.setEnabled(false);
 
 		etFilename = (EditText) findViewById(R.id.fileNameText);
 		etFilename.setFocusable(false);
@@ -1331,7 +1346,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				{
 					mProjNames = new String[]{"Exception","happened"};
 					colorHelper=new ColorHelper(MainActivity.this);
-					adapter = new ListViewAdapter(0,colorHelper);
+					adapter = new ListViewAdapter((AbstractFile)null,colorHelper);
 					setupListView();
 					try
 					{
@@ -1578,6 +1593,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         listview.setAdapter(adapter);
 		listview.setOnItemClickListener(new DisasmClickListener(this));
 		adapter.addAll(disasmManager.getData());
+		listview.setOnScrollListener(adapter);
 	}
 	public static int getScreenHeight()
 	{
@@ -2196,6 +2212,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		{
 			autoSymAdapter.add(s.name);
 		}
+		DisassembleFile(0/*parsedFile.getEntryPoint()*/);
 	}
 	private int[] getArchitecture(MachineType type)
 	{

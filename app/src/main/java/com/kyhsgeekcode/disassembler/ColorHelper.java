@@ -10,6 +10,18 @@ public class ColorHelper// implements Parcelable
 	String[] names;
 	static ColorHelper theInstance;
 
+	private boolean bUpdatedColor;
+
+	public void setUpdatedColor(boolean b)
+	{
+		bUpdatedColor=b;
+	}
+	public boolean isUpdatedColor()
+	{
+		// TODO: Implement this method
+		return bUpdatedColor;
+	}
+
 	public void addPalette(Palette palette)
 	{
 		palettes.put(palette.name,palette);
@@ -109,6 +121,7 @@ public class ColorHelper// implements Parcelable
 	public void setPalette(String name)
 	{
 		this.palette = palettes.get(name);
+		setUpdatedColor(true);
 	}
 
 	public Palette getPalette()

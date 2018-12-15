@@ -268,11 +268,11 @@
 								android:layout_width="match_parent"
 								android:orientation="horizontal">
 
-								<Button
+								<!--Button
 									android:layout_height="wrap_content"
 									android:text="Disassemble"
 									android:layout_width="wrap_content"
-									android:id="@+id/btnDisasm"/>
+									android:id="@+id/btnDisasm"/-->
 
 								<Button
 									android:layout_height="wrap_content"
@@ -280,11 +280,11 @@
 									android:layout_width="wrap_content"
 									android:id="@+id/btnSaveDisasm"/>
 
-								<Button
+								<!--Button
 									android:layout_height="wrap_content"
 									android:layout_width="wrap_content"
 									android:text="Abort"
-									android:id="@+id/btAbort"/>
+									android:id="@+id/btAbort"/-->
 
 							</LinearLayout>
 

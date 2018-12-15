@@ -10,45 +10,103 @@ import java.util.*;
 import android.util.*;
 import android.content.res.*;
 
-public class ListViewAdapter extends BaseAdapter
+public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollListener
 {
-    // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
-    private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>(100) ;
-	//private /*ListViewItem[]*/LongSparseArray<ListViewItem> listViewItemList=new LongSparseArray<>();
-	private long lvLength=0;
+	public static final int INSERT_COUNT=100;
+
+	private String TAG="Disassembler LV";
+
+	public void setDit(DisasmIterator dit)
+	{
+		this.dit = dit;
+	}
+
+	//thanks to http://www.tipssoft.com/bulletin/board.php?bo_table=FAQ&wr_id=1188
+	//Smooth, but performance hit
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
+	{
+		Log.v(TAG,"onScroll("+firstVisibleItem+","+visibleItemCount+","+totalItemCount);
+		// 리스트뷰가 구성이 완료되어 보이는 경우
+		if(view.isShown()){
+			// 리스트뷰의 *0* 번 인덱스 항목이 리스트뷰의 상단에 보이고 있는 경우
+			if(firstVisibleItem == totalItemCount-visibleItemCount) {
+				// 항목을 추가한다.
+				ListViewItem lvi=(ListViewItem)getItem(totalItemCount-1);//itemsNew.get(totalItemCount-1);
+				LoadMore(totalItemCount,lvi.disasmResult.address+lvi.disasmResult.size);
+//				String str;
+//				for(int i = 0; i < INSERT_COUNT; i++) {
+//					str = "리스트뷰 항목 - " + (totalItemCount + i + 1);
+//					addItem(str, 0);
+//				}
+				// *0*totalitemcount-1 번 인덱스 항목 *위*below 로 INSERT_COUNT 개수의 항목이 추가되었으므로
+				// //기존의 0 번 인덱스 항목은 INSERT_COUNT 번 인덱스가 되었다.
+				// 기존 *0*tic-1번 항목이 보여져서 항목이 추가될때 해당 항목의 모든 영역이
+				// 보이지않았을 수도 있으므로 이미 모든 영역이 노출됐던 INSERT_COUNT + 1
+				// 항목을 보이도록 설정하여 스크롤을 부드럽게 보이도록 한다.
+				//view.setSelection();
+			}
+		}
+	}
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState)
+	{
+	}
 	
-	ColorHelper colorHelper;
-	private int architecture;
-    // ListViewAdapter의 생성자
-    public ListViewAdapter(int arch,ColorHelper ch)
+	//Lazy, efficient
+	/*
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
 	{
-		colorHelper=ch;
-		architecture=arch;
-    }
-
-	public void setArchitecture(int architecture)
-	{
-		this.architecture = architecture;
 	}
 
-	public int getArchitecture()
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState)
 	{
-		return architecture;
+		// 리스트뷰가 구성이 완료되어 보이는 경우
+		if(view.isShown()){
+			if(scrollState == SCROLL_STATE_IDLE) {
+				// 리스트뷰의 0 번 인덱스 항목이 리스트뷰의 상단에 보이고 있는 경우
+				if(view.getFirstVisiblePosition() == 0) {
+					// 항목을 추가한다.
+					String str;
+					for(int i = 0; i < INSERT_COUNT; i++) {
+						str = "리스트뷰 항목 - " + (m_list_count + i + 1);
+						m_adapter.insert(str, 0);
+					}
+					m_list_count += INSERT_COUNT;
+					// 0 번 인덱스 항목 위로 INSERT_COUNT 개수의 항목이 추가되었으므로
+					// 기존의 0 번 인덱스 항목은 INSERT_COUNT 번 인덱스가 되었다.
+					// 호출 빈도가 매우 적은 onScrollStateChanged 에서는 기존 0번 항목이 보여져서
+					// 항목이 추가될때 해당 항목의 모든 영역이 보였을 가능성이 크므로
+					// 해당 항목을 보이도록 설정한다.
+					view.setSelection(INSERT_COUNT);
+				}
+			}
+		}
 	}
+	*/
+	AbstractFile file;
+    // Use: arr+arr/arr+lsa/ll+lsa,...
+    private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>(100) ;
+
+	public void setFile(AbstractFile file)
+	{
+		this.file = file;
+	}
+
+	public AbstractFile getFile()
+	{
+		return file;
+	}
+	//private /*ListViewItem[]*/LongSparseArray<ListViewItem> listViewItemList=new LongSparseArray<>();
+	//private long lvLength=0;
+	//LinkedList ll;
 
 	public void addAll(ArrayList/*LongSparseArra*/ <ListViewItem> data)
 	{
 		listViewItemList.addAll(data);
-		//listViewItemList=new ListViewItem[data.size()];
-		//data.toArray(listViewItemList);
-		/*int siz=data.size();
-		for(int i=0;i<siz;++i)
-		{
-			///long k=data.keyAt(i);
-			//if(k>=0)
-				listViewItemList.add//put(k,data.valueAt(i));
-		}*/
-		//listViewItemList.addAll(data);
 		notifyDataSetChanged();
 	}
 	//You should not modify
@@ -56,13 +114,6 @@ public class ListViewAdapter extends BaseAdapter
 	{
 		return listViewItemList;//new ArrayList<ListViewItem>().addAll(listViewItemList);
 	}
-
-    // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
-    @Override
-    public int getCount()
-	{
-        return listViewItemList.size();// lvLength;//listViewItemList//size() ;
-    }
 
     // position에 위치한 데이터를 화면에 출력하는데 사용될 View를 리턴. : 필수 구현
     @Override
@@ -102,7 +153,7 @@ public class ListViewAdapter extends BaseAdapter
 //			spannable.setSpan(new ForegroundColorSpan(Color.WHITE), text.length(), (text + CepVizyon.getPhoneCode()).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 //
 //			myTextView.setText(spannable, TextView.BufferType.SPANNABLE);
-			ListViewItem listViewItem = listViewItemList/*[position];*/.get(position);
+			ListViewItem listViewItem = (ListViewItem) getItem(position);//listViewItemList/*[position];*/.get(position);
 			DisasmResult dar=listViewItem.disasmResult;
 			//int bkColor=ColorHelper.getBkColor( listViewItem.disasmResult.groups,listViewItem.disasmResult.groups_count);
 			//int txtColor=ColorHelper.getTxtColor(listViewItem.disasmResult.groups,listViewItem.disasmResult.groups_count);
@@ -137,37 +188,127 @@ public class ListViewAdapter extends BaseAdapter
 		}
         return convertView;
     }
-
-    // 지정한 위치(position)에 있는 데이터와 관계된 아이템(row)의 ID를 리턴. : 필수 구현
-    @Override
-    public long getItemId(int position)
+	
+	//New method
+	//private int [] address;
+	//position->address
+	SparseArray<Long> address=new SparseArray<Long>();
+	//address->item
+	private LongSparseArray <ListViewItem> itemsNew=new LongSparseArray<>();
+	int writep=0;
+	
+	DisasmIterator dit;
+	
+	//@address eq virtualaddress
+	public void LoadMore(int position,long address)
 	{
-        return position ;
+		//this.address.clear();
+		Log.d(TAG,"LoadMore"+position+","+writep+","+address);
+		writep=position;
+		dit.getSome(file.fileContents,address-file.codeVirtualAddress,file.fileContents.length,address,100);
+	}
+	// Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
+	@Override
+	public int getCount()
+	{
+		return address.size();//listViewItemList.size();// lvLength;//listViewItemList//size() ;
+	}
+
+    @Override
+    public Object getItem(int position)
+	{
+		long addr=address.get(position);
+		ListViewItem lvi=itemsNew.get(addr);
+		if(lvi==null)
+		{
+			LoadMore(position,addr);
+		}
+        return lvi;
     }
 
-    // 지정한 위치(position)에 있는 데이터 리턴 : 필수 구현
+    public void addItem(ListViewItem item)
+	{
+        itemsNew.put(item.disasmResult.address,item);
+		address.put(writep,new Long(item.disasmResult.address));
+		writep++;//continuously add
+		//notifyDataSetChanged();
+    }
+	
+	public void OnJumpTo(/*int position,*/long address)
+	{
+		//refreshing is inevitable, and backward is ignored.
+		//cause: useless
+		//however will implement backStack
+		this.address.clear();
+		LoadMore(/**/0,address);
+	}
+ /*
+	 public void addAll(ArrayList/*LongSparseArra <ListViewItem> data)
+	{
+		listViewItemList.addAll(data);
+		notifyDataSetChanged();
+	}
+	//You should not modify
+	public ArrayList<ListViewItem> itemList()
+	{
+		return listViewItemList;//new ArrayList<ListViewItem>().addAll(listViewItemList);
+	}
+	
+     // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
+	 @Override
+	 public int getCount()
+	 {
+	 return listViewItemList.size();// lvLength;//listViewItemList//size() ;
+	 }
+	 
     @Override
     public Object getItem(int position)
 	{
         return listViewItemList.get(position) ;
     }
-
-    // 아이템 데이터 추가를 위한 함수. 개발자가 원하는대로 작성 가능.
-    public void addItem(DisasmResult disasm)
-	{
-        ListViewItem item = new ListViewItem(disasm);
-		//    item.setIcon(icon);
-		// item.setTitle(title);
-		//    item.setDesc(desc);
-        listViewItemList.add(item);
-		//notifyDataSetChanged();
-    }
-	// 아이템 데이터 추가를 위한 함수. 개발자가 원하는대로 작성 가능.
+	
     public void addItem(ListViewItem item)
 	{
         listViewItemList.add(item);
 		//notifyDataSetChanged();
     }
+	*/
+	
+	//?!!!
+    // 지정한 위치(position)에 있는 데이터와 관계된 아이템(row)의 ID를 리턴. : 필수 구현
+    @Override
+    public long getItemId(int position)
+	{
+        return position;
+    }
+	
+	public void addItem(DisasmResult disasm)
+	{
+        ListViewItem item = new ListViewItem(disasm);
+        addItem(item);
+		//notifyDataSetChanged();
+    }
+	ColorHelper colorHelper;
+	private int architecture;
+
+    public ListViewAdapter(AbstractFile file,ColorHelper ch)
+	{
+		this.file=file;
+		colorHelper=ch;
+		architecture=0;//FIXME:clarification needed but OK now
+		//address=//new long[file.fileContents.length];//Use sparseArray if oom
+    }
+
+	public void setArchitecture(int architecture)
+	{
+		this.architecture = architecture;
+	}
+
+	public int getArchitecture()
+	{
+		return architecture;
+	}
+	//https://stackoverflow.com/a/48351453/8614565
 	public static int convertDpToPixel(float dp){
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
         float px = dp * (metrics.densityDpi / 160f);

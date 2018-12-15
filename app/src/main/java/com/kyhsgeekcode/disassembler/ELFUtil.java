@@ -120,6 +120,7 @@ public class ELFUtil extends AbstractFile
 		{
 			entryPoint = header.entryPoint;
 		}
+		//Analyze ExportAddressTable(DynSym)
 		if (elf.dynamicTable != null)
 		{ 
 			StringBuilder sb=new StringBuilder();

@@ -12,6 +12,7 @@ import android.widget.*;
 
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener,Preference.OnPreferenceChangeListener
 {
+	
 	String prefnames[];
 	ColorHelper colorhelper;
 	@Override
