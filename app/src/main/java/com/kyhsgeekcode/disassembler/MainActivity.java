@@ -169,8 +169,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	}
 	@Override
 	public void onOpen(ProjectManager.Project proj)
-	{
-		
+	{	
 		db=new DatabaseHelper(this,ProjectManager.createPath(proj.name)+"disasm.db");
 		disableEnableControls(false,llmainLinearLayoutSetupRaw);
 		OnChoosePath(proj.oriFilePath);
@@ -192,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			{
 				FileInputStream fis = new FileInputStream(file);
 				ObjectInputStream ois = new ObjectInputStream(fis);
-				disasmResults = (ArrayList<ListViewItem>)ois.readObject();
+				disasmResults = (LongSparseArray<ListViewItem>)ois.readObject();
 				ois.close();
 			}
 			catch (ClassNotFoundException e)
@@ -206,13 +205,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		else
 		{
-			disasmResults=(ArrayList<ListViewItem>) db.getAll();
+			disasmResults=new LongSparseArray<>();//(LongSparseArray<ListViewItem>) db.getAll();
 		}
 		if(disasmResults!=null)
 		{
-			adapter.addAll(disasmResults);
+			adapter.addAll(disasmResults,new SparseArray<Long>());
 		}else{
-			disasmResults=new ArrayList<>();
+			disasmResults=new LongSparseArray<>();
 		}
 		shouldSave=true;
 		return ;
@@ -243,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private ListViewAdapter adapter;
 
 	private ListView listview;
-	ArrayList<ListViewItem> disasmResults=new ArrayList<>();
+	/*ArrayList*/LongSparseArray<ListViewItem> disasmResults=new LongSparseArray<>();
 
 	//private TableLayout tlDisasmTable;
 
@@ -522,6 +521,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	}
 
+	//FIXME, TODO
 	private void ExportDisasmSub(int mode)
 	{
 		Log.v(TAG, "Saving disassembly");
@@ -556,7 +556,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			try
 			{
 				StringBuilder sb=new StringBuilder();
-				ArrayList<ListViewItem>/*ListViewItem[]*/ items=adapter.itemList();
+				ArrayList<ListViewItem>/*ListViewItem[]*/ items=new ArrayList<>();
+				//items.addAll(adapter.itemList());
 				for (ListViewItem lvi:items)
 				{
 					switch (mode)
@@ -1390,7 +1391,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						if(projectManager!=null)
 							projectManager.Open(lastProj);
 					}
-					disasmManager.setData(adapter.itemList());
+					disasmManager.setData(adapter.itemList(),adapter.getAddress());
 					// find the retained fragment on activity restarts
 					FragmentManager fm = getFragmentManager();
 					dataFragment = (RetainedFragment) fm.findFragmentByTag("data");
@@ -1592,7 +1593,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		listview = (ListView) findViewById(R.id.listview);
         listview.setAdapter(adapter);
 		listview.setOnItemClickListener(new DisasmClickListener(this));
-		adapter.addAll(disasmManager.getData());
+		adapter.addAll(disasmManager.getItems(),disasmManager.getAddress());
 		listview.setOnScrollListener(adapter);
 	}
 	public static int getScreenHeight()
@@ -1872,38 +1873,47 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		if(isValidAddress(address))
 		{
-
-		}
-		ListViewItem lv=new ListViewItem(new DisasmResult());
-		lv.disasmResult.address=address;
-		int index=Collections.binarySearch(adapter.itemList(), lv, new Comparator<ListViewItem>(){
-				@Override
-				public int compare(ListViewItem p1, ListViewItem p2)
-				{
-					if(p1==null)
-						return -1;
-					if(p2==null)
-						return 1;
-					if(p1.disasmResult==null)
-						return -1;
-					if(p2.disasmResult==null)
-						return 1;
-					return (int)(p1.disasmResult.address-p2.disasmResult.address);
-				}			
-			});
-		if(index<0)
-		{
-			//not found
+			//ListViewItem lv=new ListViewItem(new DisasmResult());
+			//lv.disasmResult.address=address;
+			ListViewItem lvi=adapter.itemList().get(address);/*Collections.binarySearch(adapter.itemList(), lv, new Comparator<ListViewItem>(){
+					@Override
+					public int compare(ListViewItem p1, ListViewItem p2)
+					{
+						if(p1==null)
+							return -1;
+						if(p2==null)
+							return 1;
+						if(p1.disasmResult==null)
+							return -1;
+						if(p2.disasmResult==null)
+							return 1;
+						return (int)(p1.disasmResult.address-p2.disasmResult.address);
+					}			
+				});*/
+			//adapter.getAddress()
+			//if(lvi==null)
+			{
+				//not found
+				adapter.OnJumpTo(address);
+				listview.setSelection(0);
+			//}else{
+			//	listview.setSelection();
+				//listview.setScrollX(index);
+				//listview.smoothScrollToPosition(index); too slow
+			}
 		}else{
-			listview.setSelection(index);
-			//listview.setScrollX(index);
-			//listview.smoothScrollToPosition(index); too slow
+			Toast.makeText(this,"please enter a valid address..",3).show();
 		}
+		
+		
+		
 		return ;
 	}
 
 	private boolean isValidAddress(long address)
 	{
+		if(address>(parsedFile.fileContents.length+parsedFile.codeVirtualAddress))
+			return false;
 		return true;
 	}
 
@@ -2212,6 +2222,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		{
 			autoSymAdapter.add(s.name);
 		}
+		adapter.Clear();
 		DisassembleFile(0/*parsedFile.getEntryPoint()*/);
 	}
 	private int[] getArchitecture(MachineType type)

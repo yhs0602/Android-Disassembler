@@ -2,16 +2,17 @@ package com.kyhsgeekcode.disassembler;
 
 
 import android.content.*;
-import android.graphics.*;
+import android.util.*;
 import android.view.*;
 import android.widget.*;
 import java.util.*;
-import com.kyhsgeekcode.disassembler.ELFUtil.*;
 
 public class SymbolListAdapter extends BaseAdapter
 {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     private ArrayList<Symbol> listViewItemList = new ArrayList<>() ;
+
+	private String TAG="Disassembler sym";
 
     public SymbolListAdapter()
 	{
@@ -20,6 +21,7 @@ public class SymbolListAdapter extends BaseAdapter
 
 	public void addAll(List<Symbol> symbols)
 	{
+		Log.d(TAG,"addall sym calls len="+symbols.size());
 		listViewItemList.addAll(symbols);
 		notifyDataSetChanged();
 		return ;

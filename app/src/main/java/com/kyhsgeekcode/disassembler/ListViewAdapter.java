@@ -12,10 +12,26 @@ import android.content.res.*;
 
 public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollListener
 {
-	public static final int INSERT_COUNT=100;
+	public static final int INSERT_COUNT=80;
 
 	private String TAG="Disassembler LV";
 
+//	public void setAddress(SparseArray<Long> address)
+//	{
+//		this.address = address;
+//	}
+//
+	public SparseArray<Long> getAddress()
+	{
+		return address;
+	}
+
+	public void Clear()
+	{
+		address.clear();
+		itemsNew.clear();
+	}
+	
 	public void setDit(DisasmIterator dit)
 	{
 		this.dit = dit;
@@ -89,7 +105,7 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 	*/
 	AbstractFile file;
     // Use: arr+arr/arr+lsa/ll+lsa,...
-    private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>(100) ;
+   // private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>(100) ;
 
 	public void setFile(AbstractFile file)
 	{
@@ -104,15 +120,23 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 	//private long lvLength=0;
 	//LinkedList ll;
 
-	public void addAll(ArrayList/*LongSparseArra*/ <ListViewItem> data)
+	public void addAll(/*ArrayList*/LongSparseArray <ListViewItem> data,SparseArray<Long> addr)
 	{
-		listViewItemList.addAll(data);
+		this.itemsNew=data;//.clone();
+		this.address=addr;//.clone();
+		//for(;;)
+		//{
+			
+		//	break;
+		//}
+		//listViewItemList.addAll(data);
+		//itemsNew=data;
 		notifyDataSetChanged();
 	}
 	//You should not modify
-	public ArrayList<ListViewItem> itemList()
+	public /*ArrayList*/LongSparseArray<ListViewItem> itemList()
 	{
-		return listViewItemList;//new ArrayList<ListViewItem>().addAll(listViewItemList);
+		return itemsNew;///*listViewItemList;//*/new ArrayList<ListViewItem>().addAll(listViewItemList);
 	}
 
     // position에 위치한 데이터를 화면에 출력하는데 사용될 View를 리턴. : 필수 구현
@@ -205,7 +229,7 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 		//this.address.clear();
 		Log.d(TAG,"LoadMore"+position+","+writep+","+address);
 		writep=position;
-		dit.getSome(file.fileContents,address-file.codeVirtualAddress,file.fileContents.length,address,100);
+		dit.getSome(file.fileContents,address-file.codeVirtualAddress,file.fileContents.length,address,INSERT_COUNT);
 	}
 	// Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
 	@Override
