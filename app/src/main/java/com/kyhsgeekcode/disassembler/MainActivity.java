@@ -1305,12 +1305,19 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		lvSymbols=(ListView)findViewById(R.id.symlistView);
 		//moved up
 		//symbolLvAdapter=new SymbolListAdapter();
+		symbolLvAdapter=new SymbolListAdapter();
 		lvSymbols.setAdapter(symbolLvAdapter);
 		lvSymbols.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
 				@Override
 				public boolean onItemLongClick(AdapterView<?> parent, View view, int position,long  id)
 				{
 					Symbol symbol=(Symbol) parent.getItemAtPosition(position);
+					if(symbol.type!=Symbol.Type.STT_FUNC)
+					{
+						Toast.makeText(MainActivity.this,"This is not a function.",3).show();
+						return true;
+					}
+						
 					long address=symbol.st_value;
 					//LongSparseArray arr;
 					Toast.makeText(MainActivity.this,"Jump to"+Long.toHexString(address),3).show();
@@ -1425,7 +1432,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					return ;
 				}
 			});
-		symbolLvAdapter=new SymbolListAdapter();
+		
 		disasmManager=new DisassemblyManager();
 		
 //		requestAppPermissions(this);	
@@ -1810,6 +1817,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 									{
 										if(sym.name!=null&&sym.name.equals(dest))
 										{
+											if(sym.type!=Symbol.Type.STT_FUNC)
+											{
+												Toast.makeText(MainActivity.this,"This is not a function.",3).show();
+												return ;
+											}
 											jumpto(sym.st_value);
 										}
 									}

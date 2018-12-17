@@ -268,6 +268,20 @@ public class ELFUtil extends AbstractFile
 			if(dynsyms!=null)
 				symbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
 
+			//sort it
+			Collections.sort(symbols, new Comparator<Symbol>(){
+					@Override
+					public int compare(Symbol p1, Symbol p2)
+					{
+						if(p1.type==p2.type)
+							return 0;
+						if(p1.type==Symbol.Type.STT_FUNC)
+							return -1;
+						if(p2.type==Symbol.Type.STT_FUNC)
+							return 1;
+						return 0;
+					}
+			});
 			/*https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-35166
 			 Symbol Values
 			 Symbol table entries for different object file types have slightly different interpretations for the st_value member.
