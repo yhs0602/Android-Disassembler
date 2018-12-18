@@ -1,4 +1,5 @@
-# Version 1.3.3 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.4.0 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+### Sorry, saved raw disasms are now incompatible with this version!
 
 # Android-Disassembler
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
@@ -12,10 +13,13 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 - Supports **directly launching from file browsers**.
 - Supports many ABIs(arm,x86,x64,MIPS,PowerPC,...)
 - Jump to address by symbols' names, or a hex address.
+- Syntax colorizing.
+- Support PE and other bin formats.
+
 
 # What's new
- - Syntax colorizing.
- - Support PE and other bin formats.
+ - Sort symbols if needed.
+ - No need to press `Disassemble` button!
 
 # Usuage
 1. Choose a file to analyze.
@@ -29,9 +33,7 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 ![image](images/Screenshot_20181022-193032.png)
 ![image](images/Screenshot_20181022-193042.png)
 1. Go to disassembly tab.
-1. Press `disassemble` button.
-1. Choose persist mode(instant mode is deprecated)
-![image](images/Screenshot_20181113-230726.png)
+![image](images/Screenshot_20181217-112755.png)
 1. To export the disassembly, press `Export` button and choose the option.
 ![image](images/Screenshot_20181022-193127.png)
 
@@ -80,13 +82,12 @@ Here are some common issues and some solutons for them.
 
 
 # TODO
- - fix bugs
- - add menus on clicking disassemblies.
- - Organize spaghetti codes.
+ - add jump feature on clicking disassemblies.
  - Show prototypes of NDK/C standard APIs in the symbols tab.
- - More sophisticated coorizing.
- - Generate useful comments
+ - More sophisticated colorizing.
+ - Generate more useful comments
  - Provide assembly tutorials.
+ - Parse PLT/IAT, EAT
 
 # XRefs
 https://reverseengineering.stackexchange.com/a/18203/23870

@@ -37,7 +37,7 @@ import android.app.Notification.*;
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
 {
-	Queue<Runnable> toDoAfterPermQueue=new LinkedBlockingQueue();
+	Queue<Runnable> toDoAfterPermQueue=new LinkedBlockingQueue<>();
 	
 	private ArrayAdapter<String> autoSymAdapter ;
 	

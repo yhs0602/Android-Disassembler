@@ -241,7 +241,10 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
     @Override
     public Object getItem(int position)
 	{
-		long addr=address.get(position);
+		Long addrl=address.get(position);
+		if(addrl==null)
+			;//? FIXME. crashes when rotated screen here, NPE.
+		long addr=addrl.longValue();
 		ListViewItem lvi=itemsNew.get(addr);
 		if(lvi==null)
 		{
