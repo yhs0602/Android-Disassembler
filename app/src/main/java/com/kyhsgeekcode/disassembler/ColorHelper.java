@@ -12,6 +12,13 @@ public class ColorHelper// implements Parcelable
 
 	private boolean bUpdatedColor;
 
+	int architecture;
+	public void setArchitecture(int arch)
+	{
+		architecture=arch;
+		return ;
+	}
+
 	public void setUpdatedColor(boolean b)
 	{
 		bUpdatedColor=b;
@@ -121,6 +128,7 @@ public class ColorHelper// implements Parcelable
 	public void setPalette(String name)
 	{
 		this.palette = palettes.get(name);
+		palette.arch=architecture;
 		setUpdatedColor(true);
 	}
 

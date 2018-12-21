@@ -8,6 +8,15 @@ import nl.lxtreme.binutils.elf.*;
 
 public abstract class AbstractFile implements Closeable
 {
+	public void setPath(String path)
+	{
+		this.path = path;
+	}
+
+	public String getPath()
+	{
+		return path;
+	}
 	public MachineType getMachineType()
 	{
 		return machineType;
@@ -75,4 +84,5 @@ public abstract class AbstractFile implements Closeable
 	long entryPoint=0;
 	long codeVirtualAddress=0;
 	MachineType machineType;
+	String path="";
 }

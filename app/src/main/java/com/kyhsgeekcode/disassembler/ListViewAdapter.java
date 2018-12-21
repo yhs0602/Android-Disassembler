@@ -185,21 +185,21 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 			int defTxtColor=palette.getDefaultTxtColor();
 			int defBkColor=palette.getDefaultBkColor();
 			//convertView.setBackgroundColor(palette.getDefaultBkColor());
-			instTextView.setBackgroundColor(palette.getBkColorByGrps(dar.groups,dar.groups_count));
+			instTextView.setBackgroundColor(palette.getBkColorByGrps(dar.groups,dar.groups_count,dar.id));
 			addrTextView.setBackgroundColor(defBkColor);
 			bytesTextView.setBackgroundColor(defBkColor);
 			commentTextView.setBackgroundColor(defBkColor);
 			condTextView.setBackgroundColor(defBkColor);
 			labelTextView.setBackgroundColor(defBkColor);
-			operandTextView.setBackgroundColor(palette.getBkColorByGrps(dar.groups,dar.groups_count));
+			operandTextView.setBackgroundColor(palette.getBkColorByGrps(dar.groups,dar.groups_count,dar.id));
 			
-			instTextView.setTextColor(palette.getTxtColorByGrps(dar.groups,dar.groups_count));
+			instTextView.setTextColor(palette.getTxtColorByGrps(dar.groups,dar.groups_count,dar.id));
 			addrTextView.setTextColor(defTxtColor);
 			bytesTextView.setTextColor(defTxtColor);
 			commentTextView.setTextColor(defTxtColor);
 			condTextView.setTextColor(defTxtColor);
 			labelTextView.setTextColor(defTxtColor);
-			operandTextView.setTextColor(palette.getTxtColorByGrps(dar.groups,dar.groups_count));
+			operandTextView.setTextColor(palette.getTxtColorByGrps(dar.groups,dar.groups_count,dar.id));
 		
 			addrTextView.setText(listViewItem.getAddress());
 			bytesTextView.setText(listViewItem.getBytes());

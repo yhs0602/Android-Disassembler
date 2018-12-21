@@ -21,6 +21,10 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
  - Sort symbols if needed.
  - No need to press `Disassemble` button!
 
+# New theme!
+ - KYHSGeekCode theme
+ ![image](images/Screenshot_20181221-215203.png)![image](images/Screenshot_20181221-215647.png)![image](images/Screenshot_20181221-215703.png)
+
 # Usuage
 1. Choose a file to analyze.
 ![image](images/Screenshot_20181022-192706.png)

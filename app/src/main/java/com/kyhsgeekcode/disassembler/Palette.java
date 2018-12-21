@@ -4,15 +4,16 @@ import android.graphics.*;
 import android.util.*;
 import java.io.*;
 import capstone.*;
+import java.util.*;
 
 public class Palette
 {
 	int colors[][];
 	String name;
 	File src;
-
+	int arch=Capstone.CS_ARCH_ARM;
 	private String TAG="Disassembler palette";
-	
+
 	public Palette(String name, File src)
 	{
 		colors = new int[Rows.$VALUES.length][2];
@@ -23,10 +24,10 @@ public class Palette
 			try
 			{
 				src.createNewFile();
-				for(int i=0;i<colors.length;++i)
+				for (int i=0;i < colors.length;++i)
 				{
-					colors[i][0]=Color.GREEN;
-					colors[i][1]=Color.BLACK;
+					colors[i][0] = Color.GREEN;
+					colors[i][1] = Color.BLACK;
 				}
 				Save();
 			}
@@ -50,10 +51,84 @@ public class Palette
 		}
 
 	}
+	static Set<Integer> Arm64CallIns=new HashSet<>();
+	static Set<Integer> ArmCallIns=new HashSet<>();
+	{
+		ArmCallIns.add(new Integer(Arm_const.ARM_INS_BL));
+		ArmCallIns.add(new Integer(Arm_const.ARM_INS_BLX));
+		Arm64CallIns.add(new Integer(Arm64_const.ARM64_INS_BL));
+		Arm64CallIns.add(new Integer(Arm64_const.ARM64_INS_BR));
+	}
+	static Set<Integer> ArmPushIns=new HashSet<>();
+	{
+		ArmPushIns.add(new Integer(Arm_const.ARM_INS_PUSH));
+	}
+	static Set<Integer> X86PushIns=new HashSet<>();
+	{
+		X86PushIns.add(new Integer(X86_const.X86_INS_PUSH));
+		X86PushIns.add(new Integer(X86_const.X86_INS_PUSHAW));
+		X86PushIns.add(new Integer(X86_const.X86_INS_PUSHAL));
+		X86PushIns.add(new Integer(X86_const.X86_INS_PUSHF));
+		X86PushIns.add(new Integer(X86_const.X86_INS_PUSHFD));
+		X86PushIns.add(new Integer(X86_const.X86_INS_PUSHFQ));	
+	}
+	static Set<Integer> ArmPopIns=new HashSet<>();
+	{
+		ArmPopIns.add(new Integer(Arm_const.ARM_INS_POP));
+	}
+	static Set<Integer> X86PopIns=new HashSet<>();
+	{
+		X86PopIns.add(new Integer(X86_const.X86_INS_POP));
+		X86PopIns.add(new Integer(X86_const.X86_INS_POPAL));
+		X86PopIns.add(new Integer(X86_const.X86_INS_POPF));
+		X86PopIns.add(new Integer(X86_const.X86_INS_POPFD));
+		X86PopIns.add(new Integer(X86_const.X86_INS_POPFQ));
+		X86PopIns.add(new Integer(X86_const.X86_INS_POPAW));	
+	}
 
-	public int getTxtColorByGrps(byte[] groups, int cnt)
+	public int getTxtColorByGrps(byte[] groups, int cnt, int id)
 	{
 		int color=getDefaultTxtColor();
+		Integer ID=new Integer(id);
+		switch (arch)
+		{
+			case Capstone.CS_ARCH_ARM:
+				{
+					if (ArmCallIns.contains(ID))
+					{
+						return getTxtColor(grpToEnumInt(Capstone.CS_GRP_CALL));
+					}
+					if (ArmPushIns.contains(ID))
+					{
+						return getTxtColor(6);
+					}
+					if (ArmPopIns.contains(ID))
+					{
+						return getTxtColor(7);
+					}
+					break;
+				}
+			case Capstone.CS_ARCH_ARM64:
+				{
+					if(Arm64CallIns.contains(ID))
+					{
+						return getTxtColor(grpToEnumInt(Capstone.CS_GRP_CALL));
+					}
+					break;
+				}
+			case Capstone.CS_ARCH_X86:
+				{
+					if (X86PushIns.contains(ID))
+					{
+						return getTxtColor(6);
+					}
+					if (X86PopIns.contains(ID))
+					{
+						return getTxtColor(7);
+					}
+					break;
+				}
+		}
 		//Log.v(TAG,"bkgroup="+groups[i]);
 		for (int i=0;i < cnt && i < groups.length;++i)
 		{
@@ -66,9 +141,49 @@ public class Palette
 		return color;
 	}
 
-	public int getBkColorByGrps(byte[] groups,int cnt)
+	public int getBkColorByGrps(byte[] groups, int cnt, int id)
 	{
 		int color=getDefaultBkColor();
+		Integer ID=new Integer(id);
+		switch (arch)
+		{
+			case Capstone.CS_ARCH_ARM:
+				{
+					if (ArmCallIns.contains(ID))
+					{
+						return getBkColor(grpToEnumInt(Capstone.CS_GRP_CALL));
+					}
+					if (ArmPushIns.contains(ID))
+					{
+						return getBkColor(6);
+					}
+					if (ArmPopIns.contains(ID))
+					{
+						return getBkColor(7);
+					}
+					break;
+				}
+			case Capstone.CS_ARCH_ARM64:
+				{
+					if(Arm64CallIns.contains(ID))
+					{
+						return getBkColor(grpToEnumInt(Capstone.CS_GRP_CALL));
+					}
+					break;
+				}
+			case Capstone.CS_ARCH_X86:
+				{
+					if (X86PushIns.contains(ID))
+					{
+						return getBkColor(6);
+					}
+					if (X86PopIns.contains(ID))
+					{
+						return getBkColor(7);
+					}
+					break;
+				}
+		}
 		//Log.v(TAG,"bkgroup="+groups[i]);
 		for (int i=0;i < cnt && i < groups.length;++i)
 		{

@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		this.parsedFile = parsedFile;
 		dataFragment.setParsedFile(parsedFile);
 		adapter.setFile(parsedFile);
+		
 	}
 
 	public void setFilecontent(byte[] filecontent)
@@ -2151,6 +2152,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private void AfterReadFully(File file) throws IOException
 	{
 		//	symAdapter.setCellItems(list);
+		getSupportActionBar().setTitle("Disassembler("+file.getName()+")");
 		try
 		{
 			setParsedFile(new ELFUtil(file,filecontent));
@@ -2220,8 +2222,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 			}	
 		}
-		if(arch==CS_ARCH_X86)
+		if(arch==CS_ARCH_X86){
 			adapter.setArchitecture(1);	//wider operands
+			colorHelper.setArchitecture(arch);
+		}
 		shouldSave = true;
 		List<Symbol> list=parsedFile.getSymbols();
 //		for(int i=0;i<list.size();++i){
