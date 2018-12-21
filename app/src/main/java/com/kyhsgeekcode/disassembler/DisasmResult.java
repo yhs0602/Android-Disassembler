@@ -313,6 +313,9 @@ public class DisasmResult implements Serializable
 	byte op_count=0;
 	//Should be arch specific? if then we need to create a class
 	
+	
+	
+	
 	////////DATABASE UNIT ////////
 	public static final String TABLE_NAME = "disasms";
 

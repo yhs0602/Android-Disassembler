@@ -55,7 +55,7 @@ public class Palette
 	{
 		int color=getDefaultTxtColor();
 		//Log.v(TAG,"bkgroup="+groups[i]);
-		for (int i=0;i < cnt;++i)
+		for (int i=0;i < cnt && i < groups.length;++i)
 		{
 			int eni=grpToEnumInt(groups[i] & 0xFF);
 			if (eni == -1)
@@ -70,7 +70,7 @@ public class Palette
 	{
 		int color=getDefaultBkColor();
 		//Log.v(TAG,"bkgroup="+groups[i]);
-		for (int i=0;i < cnt;++i)
+		for (int i=0;i < cnt && i < groups.length;++i)
 		{
 			int eni=grpToEnumInt(groups[i] & 0xFF);
 			if (eni == -1)
@@ -163,11 +163,11 @@ public class Palette
 	public int grpToEnumInt(int grp)
 	{
 		if (grp > Capstone.CS_GRP_IRET)
-			return 0;
+			return -1;
 		switch (grp)
 		{
 			case Capstone.CS_GRP_INVALID:
-				return 0;
+				return -1;
 			case Capstone.CS_GRP_JUMP:
 				return 2;
 			case Capstone.CS_GRP_CALL:
