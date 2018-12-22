@@ -185,10 +185,13 @@
 									android:layout_height="wrap_content"
 									android:layout_width="wrap_content"
 									android:text="Finish Setup"
-									android:id="@+id/mainBTFinishSetup"/>
-
+									android:id="@+id/mainBTFinishSetup"/>					
 							</LinearLayout>
-
+							<Button
+								android:layout_height="wrap_content"
+								android:layout_width="wrap_content"
+								android:text="Override autosetup"
+								android:id="@+id/mainBTOverrideAuto"/>
 						</LinearLayout>
 
 						<LinearLayout

@@ -69,8 +69,7 @@ public class ListViewItem implements Serializable
 
 	public boolean isBranch()
 	{
-		// TODO: Implement this method
-		return false; //disasmResult.isBranch();
+		return disasmResult.isBranch();
 	}
 	
 	public void setAddress(String address)

@@ -1,4 +1,4 @@
-# Version 1.4.0 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.4.1 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 ### Sorry, saved raw disasms are now incompatible with this version!
 
 # Android-Disassembler
@@ -15,19 +15,22 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 - Jump to address by symbols' names, or a hex address.
 - Syntax colorizing.
 - Support PE and other bin formats.
-
+- Sort symbols if needed.
+- No need to press `Disassemble` button!
 
 # What's new
- - Sort symbols if needed.
- - No need to press `Disassemble` button!
+- Colorize PUSH/POP instructions.
+- Colorize ARM arch instructions better.
+- Added **Follow Jump** menu for jump instructions.(*With BackStack*)
+- Can override auto parse setup
 
-# New theme!
- - KYHSGeekCode theme
- ![image](images/Screenshot_20181221-215203.png)![image](images/Screenshot_20181221-215647.png)![image](images/Screenshot_20181221-215703.png)
+# New [theme](https://github.com/KYHSGeekCode/Android-Disassembler/tree/master/themes)!
+ - KYHSGeekCode theme!
+ ![image](images/Screenshot_20181221-215203.png)![image](images/Screenshot_20181221-215647.png)![image](images/Screenshot_20181222-173614.png)
 
 # Usuage
 1. Choose a file to analyze.
-![image](images/Screenshot_20181022-192706.png)
+![image](images/Screenshot_20181222-213649.png)
 1. Go to details tab.
 1. Press `Show details` button to see details.
 ![image](images/Screenshot_20181022-192953.png)
@@ -92,6 +95,9 @@ Here are some common issues and some solutons for them.
  - Generate more useful comments
  - Provide assembly tutorials.
  - Parse PLT/IAT, EAT
+
+# Thanks
+https://reverseengineering.stackexchange.com/a/20124/23870
 
 # XRefs
 https://reverseengineering.stackexchange.com/a/18203/23870

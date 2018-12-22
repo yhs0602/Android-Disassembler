@@ -2,6 +2,20 @@
 	<item
         android:id="@+id/jumpto"
         android:title="goto"/>
+	<item
+        android:id="@+id/find"
+        android:title="find">
+		<menu>
+			<item
+				android:id="@+id/findcall"
+				android:showAsAction="never"
+				android:title="Calls"/>
+			<item
+				android:id="@+id/findjump"
+				android:showAsAction="never"
+				android:title="Jumps"/>
+		</menu>
+	</item>
 	<!--item
         android:id="@+id/findsymbol"
         android:title="Find symbol"/-->

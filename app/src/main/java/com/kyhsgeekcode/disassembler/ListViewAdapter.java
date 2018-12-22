@@ -21,6 +21,11 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 //		this.address = address;
 //	}
 //
+	long currentAddress=0;
+	public long getCurrentAddress()
+	{
+		return currentAddress;
+	}
 	public SparseArray<Long> getAddress()
 	{
 		return address;
@@ -42,7 +47,10 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
 	{
-		Log.v(TAG,"onScroll("+firstVisibleItem+","+visibleItemCount+","+totalItemCount);
+		if(totalItemCount<2)
+			return;
+		currentAddress=((ListViewItem)getItem(firstVisibleItem)).disasmResult.address;
+		//Log.v(TAG,"onScroll("+firstVisibleItem+","+visibleItemCount+","+totalItemCount);
 		// 리스트뷰가 구성이 완료되어 보이는 경우
 		if(view.isShown()){
 			// 리스트뷰의 *0* 번 인덱스 항목이 리스트뷰의 상단에 보이고 있는 경우
@@ -243,7 +251,7 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 	{
 		Long addrl=address.get(position);
 		if(addrl==null)
-			;//? FIXME. crashes when rotated screen here, NPE.
+			return new ListViewItem();//? FIXME. crashes when rotated screen here, NPE.
 		long addr=addrl.longValue();
 		ListViewItem lvi=itemsNew.get(addr);
 		if(lvi==null)
@@ -268,6 +276,7 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 		//however will implement backStack
 		this.address.clear();
 		LoadMore(/**/0,address);
+		currentAddress=address;
 	}
  /*
 	 public void addAll(ArrayList/*LongSparseArra <ListViewItem> data)

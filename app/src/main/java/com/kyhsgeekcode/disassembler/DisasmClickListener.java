@@ -9,9 +9,9 @@ import android.view.View.*;
 
 public class DisasmClickListener implements AdapterView.OnItemClickListener
 {
-	Activity activity;
+	MainActivity activity;
 	
-	public DisasmClickListener(Activity activity)
+	public DisasmClickListener(MainActivity activity)
 	{
 		this.activity = activity;
 	}
@@ -19,16 +19,16 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener
 	public void onItemClick(AdapterView<?> parent, View p2, int position, long id)
 	{
 		final ListViewItem lvi=(ListViewItem) parent.getItemAtPosition(position);
-		DisasmResult dar=lvi.disasmResult;
+		final DisasmResult dar=lvi.disasmResult;
 		menus = new ArrayList<>();
 		menus.add(EDIT_COMMENT);
-		if (dar.isBranch())
+		if (dar.isBranch()||dar.isCall())
 		{
-
+			menus.add(JUMP);
 		}
 		if (!menus.isEmpty())
 		{
-			MainActivity.ShowSelDialog(activity, menus, lvi.toSimpleString() + " at " + lvi.address, new DialogInterface.OnClickListener(){
+			MainActivity.ShowSelDialog((Activity)activity, menus, lvi.toSimpleString() + " at " + lvi.address, new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface p1, int p2)
 					{
@@ -37,7 +37,7 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener
 						{
 							final EditText et=new EditText(activity);
 							et.setText(lvi.getComments());
-							MainActivity.ShowEditDialog(activity, EDIT_COMMENT, EDIT_COMMENT, et
+							MainActivity.ShowEditDialog((Activity)activity, EDIT_COMMENT, EDIT_COMMENT, et
 								, "OK", new DialogInterface.OnClickListener(){
 									@Override
 									public void onClick(DialogInterface p1, int p2)
@@ -49,9 +49,10 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener
 								}, "Cancel", (DialogInterface.OnClickListener)null);
 							//context,title msg et, y yc n nc
 						}
-						else
+						else if(JUMP.equals(item))
 						{
-
+							long target=dar.address+dar.jumpOffset;//NOT an offset?? FIXME
+							activity.jumpto(target);
 						}
 						return ;
 					}	
@@ -61,4 +62,5 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener
 	}
 	List<String> menus=new ArrayList<>();
 	final String EDIT_COMMENT="Edit comment";
+	final String JUMP="Follow jump";
 }

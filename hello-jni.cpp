@@ -155,11 +155,13 @@ extern "C"
 			return 1; // continue listening for events
 		}
 		*/
+		
+		
 		//Should fill LVI instead of DAR from now.
 		//Should fill Map insead of List ..
 		//No no.should fill adapter.
 		//@returns the offset to resume later
-		JNIEXPORT jlong JNICALL Java_com_kyhsgeekcode_disassembler_DisasmIterator_getAll(JNIEnv * env, jobject thiz,jbyteArray bytes, jlong offset, jlong size,jlong virtaddr/*, jobject arr*/)
+		JNIEXPORT jlong JNICALL Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv * env, jobject thiz,jbyteArray bytes, jlong offset, jlong size,jlong virtaddr,jint count/*, jobject arr*/)
 		{
 			int bytelen=env->GetArrayLength(bytes);
 			jbyte *byte_buf;
@@ -224,13 +226,23 @@ extern "C"
 			if (fidGroupCount == NULL) {
 				return -1; /* failed to find the field */
 			}
+			jfieldID fidJumpOffset = env->GetFieldID(darcls, "jumpOffset","J");
+			if (fidJumpOffset == NULL) {
+				return -1; /* failed to find the field */
+			}
+			jfieldID fidArch = env->GetFieldID(darcls, "arch","I");
+			if (fidArch == NULL) {
+				return -1; /* failed to find the field */
+			}
+			//int counter=0;
    			 // disassemble one instruction a time & store the result into @insn variable above
-   			while(cs_disasm_iter(handle, &code, &code_size, &addr, insn)) {
-			      // analyze disassembled instruction in @insn variable ...
-    			  // NOTE: @code, @code_size & @address variables are all updated
-      			  // to point to the next instruction after each iteration.
-				  						__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "inloop");
+   			while(cs_disasm_iter(handle, &code, &code_size, &addr, insn)&&done<count) {
+			    // analyze disassembled instruction in @insn variable ...
+    			// NOTE: @code, @code_size & @address variables are all updated
+      			// to point to the next instruction after each iteration.
+				//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "inloop");
 				jobject dar=env->NewObject(darcls,ctor);
+				env->SetIntField(dar, fidArch,arch );
 				
 				/* Create a new string and overwrite the instance field */
 				jstring jstr = env->NewStringUTF( insn->mnemonic);
@@ -286,16 +298,29 @@ extern "C"
 					env->DeleteLocalRef(job2);		
 					env->SetByteField(dar, fidGroupCount, detail->groups_count);
 					//now get the operands, etc..
+					long jumpOffset;
 					switch(arch)
 					{
 						case CS_ARCH_X86:	// X86 architecture (including x86 & x86-64)
 						{
 							const cs_x86 *x86=&detail->x86;
-							
+							jumpOffset=X86_REL_ADDR(*insn);
 						}
 						case CS_ARCH_ARM:	// ARM architecture (including Thumb, Thumb-2)
 						{
 							const cs_arm *arm=&detail->arm;
+							switch(arm->op_count)
+							{
+								case 0:
+									break;
+								case 1:	//B xx
+									jumpOffset=arm->operands[0].type==ARM_OP_IMM ? (arm->operands[0].imm-insn->address):0;
+									break;
+								case 2: //mov pc,#0
+									jumpOffset=arm->operands[1].type==ARM_OP_IMM ? (arm->operands[1].imm-insn->address):0;
+									break;
+								//TODO: parse PLT
+							}
 						}
 						case CS_ARCH_ARM64:		// ARM-64, also called AArch64
 						{
@@ -322,6 +347,7 @@ extern "C"
 							const cs_xcore *xcore=&detail->xcore;
 						}
 					}
+					env->SetLongField(dar, fidJumpOffset,jumpOffset);
 				}
 										//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "afterdetail");
 				jobject lvi=env->NewObject(lvicls,ctorLvi,dar);
@@ -365,7 +391,10 @@ extern "C"
 			env->ReleaseByteArrayElements(bytes, byte_buf, JNI_ABORT);
 			return (jlong)((long)code-(long)byte_buf);//return the number of processed bytes
 		}
-		
+		JNIEXPORT jlong JNICALL Java_com_kyhsgeekcode_disassembler_DisasmIterator_getAll(JNIEnv * env, jobject thiz,jbyteArray bytes, jlong offset, jlong size,jlong virtaddr/*, jobject arr*/)
+		{
+			return Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(env, thiz, bytes, offset, size, virtaddr, 2148483647);
+		}		
 		//public NativeLong cs_disasm2(NativeLong handle, byte[] code, NativeLong code_offset,NativeLong code_len,
 			//						long addr, NativeLong count, PointerByReference insn);
 		CAPSTONE_EXPORT size_t CAPSTONE_API cs_disasm2(csh handle, const uint8_t *code,size_t code_offset,

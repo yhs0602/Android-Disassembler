@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	EditText etVirtAddr;
 	TextView tvArch;
 	Button btFinishSetup;
+	Button btOverrideSetup;
 
 	//RadioGridGroup rgdArch;
 	Spinner spinnerArch;
@@ -350,8 +351,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					}
 					if(!(parsedFile instanceof RawFile))
 					{
-						AlertError("Not a raw file, but enabled?",new Exception());
-						return;
+						//AlertError("Not a raw file, but enabled?",new Exception());
+						//return;
 					}
 					String base=etCodeBase.getText().toString();
 					String entry=etEntryPoint.getText().toString();
@@ -372,11 +373,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								break;
 							}
 						}
-						//mct=MachineType.valueOf(s);
-						//MachineType.
-						//}else{
-						//	RadioButton
-						//}
 						long lbase=Long.parseLong(base);
 						long llimit=Long.parseLong(limit);
 						long lentry=Long.parseLong(entry);
@@ -401,6 +397,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					}	
 				}
 				break;
+			case R.id.mainBTOverrideAuto:
+			{
+				AllowRawSetup();
+				break;
+			}
 			default:
 				break;
 		}
@@ -1295,6 +1296,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		tvArch= (TextView) findViewById(R.id.mainTVarch);
 		btFinishSetup= (Button) findViewById(R.id.mainBTFinishSetup);
 		btFinishSetup.setOnClickListener(this);
+		btOverrideSetup=(Button)findViewById(R.id.mainBTOverrideAuto);
+		btOverrideSetup.setOnClickListener(this);
 		//rgdArch= (RadioGridGroup) findViewById(R.id.mainRGDArch);
 		//rgdArch.check(R.id.rbAuto);
 		spinnerArch=(Spinner)findViewById(R.id.mainSpinnerArch);
@@ -1661,6 +1664,18 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	@Override
 	public void onBackPressed()
 	{
+		if(tabHost.getCurrentTab()==3)
+		{
+			if(!jmpBackstack.empty())
+			{
+				jumpto(jmpBackstack.pop());
+				jmpBackstack.pop();
+				return;
+			}else{
+				tabHost.setCurrentTab(2);
+				return;
+			}
+		}
 		if(shouldSave&& currentProject==null)
 		{
 			ShowYesNoCancelDialog((Activity)this,"Save project?","",
@@ -1834,15 +1849,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						ab.getWindow().setGravity(Gravity.TOP);
 					break;
 				}
-			/*case R.id.findsymbol:
+			case R.id.find:
 				{
-					
-					//setAdapter(adapter);
-					LayoutParams layout = new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-					getSupportActionBar().setCustomView(autocomplete, layout); 
+					//TODO: SHOW SEARCH DIALOG
+					//e.g. find regs access, find string, find calls, find cmps, find xors, etc...
 					break;
-				}
-			*/
+				}		
 			case R.id.save:
 				{
 					//if(currentProject==null)
@@ -1882,13 +1894,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
         return super.onOptionsItemSelected(item);
     }
-	private void jumpto(long address)
+	Stack<Long> jmpBackstack=new Stack<>();
+	public void jumpto(long address)
 	{
 		if(isValidAddress(address))
 		{
 			//ListViewItem lv=new ListViewItem(new DisasmResult());
 			//lv.disasmResult.address=address;
-			ListViewItem lvi=adapter.itemList().get(address);/*Collections.binarySearch(adapter.itemList(), lv, new Comparator<ListViewItem>(){
+			//ListViewItem lvi=adapter.itemList().get(address);
+			/*Collections.binarySearch(adapter.itemList(), lv, new Comparator<ListViewItem>(){
 					@Override
 					public int compare(ListViewItem p1, ListViewItem p2)
 					{
@@ -1907,6 +1921,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			//if(lvi==null)
 			{
 				//not found
+				jmpBackstack.push(new Long(adapter.getCurrentAddress()));
 				adapter.OnJumpTo(address);
 				listview.setSelection(0);
 			//}else{
@@ -2222,10 +2237,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 			}	
 		}
-		if(arch==CS_ARCH_X86){
-			adapter.setArchitecture(1);	//wider operands
-			colorHelper.setArchitecture(arch);
-		}
+		//if(arch==CS_ARCH_X86){
+		adapter.setArchitecture(arch);	//wider operands
+		colorHelper.setArchitecture(arch);
+		
+		//}
 		shouldSave = true;
 		List<Symbol> list=parsedFile.getSymbols();
 //		for(int i=0;i<list.size();++i){
