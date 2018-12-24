@@ -1,4 +1,4 @@
-# Version 1.4.1 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.4.1.1 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 ### Sorry, saved raw disasms are now incompatible with this version!
 
 # Android-Disassembler
@@ -72,6 +72,12 @@ Here are some common issues and some solutons for them.
 
    Is it a well known executable file? (ELF:`.so, .o, .lib, .a, etc..`, PE:`.exe, .dll, .sys, ...`) Then please report me with the file you tried to disassemble.
    If not, you need to press `OK` and **setup manually**.
+
+# Theme management
+You can download the theme.zip here.
+ 1. Unzip it to `/storage/emulated/0/themes/` or `/sdcard/themes`.
+ 1. Done. You can now use this in settings menu(in app)
+
 
 ### Feature requests are welcomed!
 

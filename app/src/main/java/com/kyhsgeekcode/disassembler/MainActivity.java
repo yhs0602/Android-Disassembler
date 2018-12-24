@@ -1,7 +1,6 @@
 package com.kyhsgeekcode.disassembler;
 
 import android.*;
-import android.accounts.*;
 import android.app.*;
 import android.content.*;
 import android.content.pm.*;
@@ -19,28 +18,21 @@ import android.view.View.*;
 import android.widget.*;
 import capstone.*;
 import com.codekidlabs.storagechooser.*;
+import com.codekidlabs.storagechooser.utils.*;
 import java.io.*;
 import java.util.*;
-import java.util.regex.*;
-import nl.lxtreme.binutils.elf.*;
-import org.boris.pecoff4j.*;
-import org.boris.pecoff4j.io.*;
-import com.codekidlabs.storagechooser.utils.*;
-import com.kyhsgeekcode.disassembler.ProjectManager.*;
-import java.nio.channels.*;
-import com.evrencoskun.tableview.*;
-import java.util.zip.*;
-import android.support.v7.app.ActionBar.LayoutParams;
 import java.util.concurrent.*;
-import android.app.Notification.*;
+import java.util.regex.*;
+import java.util.zip.*;
+import nl.lxtreme.binutils.elf.*;
 
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
 {
 	Queue<Runnable> toDoAfterPermQueue=new LinkedBlockingQueue<>();
-	
+
 	private ArrayAdapter<String> autoSymAdapter ;
-	
+
 	private AutoCompleteTextView autocomplete;
 
 	private RetainedFragment dataFragment;
@@ -65,15 +57,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private NotificationManager mNotifyManager;
 
 	private Notification.Builder mBuilder;
-	
+
 	@Override
 	protected void onResume()
 	{
 		super.onResume();
-		if(colorHelper.isUpdatedColor())
-		{
-			listview.refreshDrawableState();
-			colorHelper.setUpdatedColor(false);
+		if(colorHelper!=null){
+			if(colorHelper.isUpdatedColor())
+			{
+				listview.refreshDrawableState();
+				colorHelper.setUpdatedColor(false);
+			}	
 		}
 		return;
 	}
@@ -139,8 +133,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 break;
         }
 	}
-	
-	
+
+
 	public void setFpath(String fpath)
 	{
 		this.fpath = fpath;
@@ -152,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		this.parsedFile = parsedFile;
 		dataFragment.setParsedFile(parsedFile);
 		adapter.setFile(parsedFile);
-		
+
 	}
 
 	public void setFilecontent(byte[] filecontent)
@@ -311,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			case R.id.selFile:
 				showFileChooser();
 				break;
-			//case R.id.btnDisasm:
+				//case R.id.btnDisasm:
 				//if (filecontent == null)
 				//{
 				//	AlertSelFile();
@@ -333,15 +327,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			case R.id.btnSaveDetails:
 				SaveDetail();
 				break;
-			//case R.id.btAbort://abort or resume
+				//case R.id.btAbort://abort or resume
 				//boolean 
 				/*if(workerThread!=null)
-				{
-					if(workerThread.isAlive())
-					{
-						workerThread.interrupt();
-					}
-				}*/
+				 {
+				 if(workerThread.isAlive())
+				 {
+				 workerThread.interrupt();
+				 }
+				 }*/
 				//break;
 			case R.id.mainBTFinishSetup:
 				{
@@ -398,10 +392,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 				break;
 			case R.id.mainBTOverrideAuto:
-			{
-				AllowRawSetup();
-				break;
-			}
+				{
+					AllowRawSetup();
+					break;
+				}
 			default:
 				break;
 		}
@@ -466,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		{
 			return parsedFile.getEntryPoint();
 		}
-		
+
 		try{
 			long l= Long.decode(toString);
 			return l;
@@ -504,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					@Override
 					public void onClick(DialogInterface p1,int  p2)
 					{
-						
+
 						String projn=etName.getText().toString();
 						SaveDisasmNewProject(projn,runnable);
 						return ;
@@ -654,7 +648,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					@Override
 					public void onClick(DialogInterface p1,int  p2)
 					{
-						
+
 						String projn=etName.getText().toString();
 						SaveDetailNewProject(projn);
 						if(runnable!=null)
@@ -666,7 +660,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					@Override
 					public void onClick(DialogInterface p1, int p2)
 					{
-						
+
 						return ;
 					}				
 				});
@@ -720,7 +714,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	}
 	private void SaveDetailNewProject(String projn)
 	{
-		
+
 		try
 		{
 			ProjectManager.Project proj=projectManager.newProject(projn, fpath);
@@ -884,25 +878,25 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 //		}
 		//Toast.makeText(this, "started", 2).show();
 		Log.v(TAG, "Strted disassm foffs"+foffset);
-	//	btDisasm.setEnabled(false);
-	//	btAbort.setEnabled(true);
+		//	btDisasm.setEnabled(false);
+		//	btAbort.setEnabled(true);
 		btSavDisasm.setEnabled(false);
-	//.	btAbort.setText("Pause");
+		//.	btAbort.setText("Pause");
 		//final ProgressDialog dialog= showProgressDialog("Disassembling...");
-	//	if(offset==parsedFile.getEntryPoint())
-	//		disasmResults.clear();//otherwise resume, not clear	
+		//	if(offset==parsedFile.getEntryPoint())
+		//		disasmResults.clear();//otherwise resume, not clear	
 		long codesection=parsedFile.getCodeSectionBase();
 		long start=codesection+foffset;//elfUtil.getCodeSectionOffset();
-	//	long index=start;
+		//	long index=start;
 		long limit=parsedFile.getCodeSectionLimit();
 		long addr=parsedFile.getCodeVirtAddr()+foffset;
-	//	Log.v(TAG, "code section point :" + Long.toHexString(index));
+		//	Log.v(TAG, "code section point :" + Long.toHexString(index));
 		long size=limit - start;//Size of CS
 		DisasmIterator dai=new DisasmIterator
 		(MainActivity.this,mNotifyManager,mBuilder
 		 ,adapter,size);
 		//listview.setOnScrollListener(new DisasmPager(adapter,dai));
-	//	dai.getSome(filecontent,start,size,addr,100/*, disasmResults*/);
+		//	dai.getSome(filecontent,start,size,addr,100/*, disasmResults*/);
 //		workerThread = new Thread(new Runnable(){
 //				@Over
 		//DisasmPager pager;
@@ -976,7 +970,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		btSavDisasm.setEnabled(false);
 		//btAbort.setText("Pause");
 		//final ProgressDialog dialog= showProgressDialog("Disassembling...");
-		
+
 		//NOW there's no notion of pause or resume!!!!!
 		//if(offset==parsedFile.getEntryPoint())
 		//	disasmResults.clear();//otherwise resume, not clear
@@ -1060,7 +1054,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				@Override
 				public void run()
 				{
-					
+
 					long codesection=parsedFile.getCodeSectionBase();
 					long start=codesection+offset;//elfUtil.getCodeSectionOffset();
 					long index=start;
@@ -1076,11 +1070,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					adapter.LoadMore(0,addr);
 					//long toresume=dai.getSome(filecontent,start,size,addr,1000000/*, disasmResults*/);
 					/*if(toresume<0)
-					{
-						AlertError("Failed to disassemble:"+toresume,new Exception());
-					}else{
-						disasmManager.setResumeOffsetFromCode(toresume);
-					}*/
+					 {
+					 AlertError("Failed to disassemble:"+toresume,new Exception());
+					 }else{
+					 disasmManager.setResumeOffsetFromCode(toresume);
+					 }*/
 					disasmResults= adapter.itemList();
 					mNotifyManager.cancel(0);
 					//final int len=disasmResults.size();
@@ -1154,7 +1148,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 		{
 			a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
-										(String[])null,
+										 (String[])null,
 										 new int[]{PackageManager.PERMISSION_GRANTED});
 			return;
 		}
@@ -1186,13 +1180,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	}
 //<<<<<<< HEAD
 //<<<<<<< HEAD
-	
-	/*public static void requestAppPermissions(Activity a,Runnable run)
-	{
 
-		requestAppPermissions(a);
-		//run.run();
-	}*/
+	/*public static void requestAppPermissions(Activity a,Runnable run)
+	 {
+
+	 requestAppPermissions(a);
+	 //run.run();
+	 }*/
 //=======
 //
 //>>>>>>> parent of 2644076... Update readme with assembly materials links
@@ -1201,7 +1195,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 //>>>>>>> parent of 2644076... Update readme with assembly materials links
 	private static boolean  hasGetAccountPermissions(Context c)
 	{
-		
+
 		return c.checkSelfPermission(Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED;
 	}
 
@@ -1224,7 +1218,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				@Override
 				public void uncaughtException(Thread p1, Throwable p2)
 				{
-					
+
 					Toast.makeText(MainActivity.this,Log.getStackTraceString(p2),3).show();
 					if(p2 instanceof SecurityException)
 					{
@@ -1242,7 +1236,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					finish();
 					return ;
 				}
-			
+
 			});
 		try
 		{
@@ -1321,7 +1315,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						Toast.makeText(MainActivity.this,"This is not a function.",3).show();
 						return true;
 					}
-						
+
 					long address=symbol.st_value;
 					//LongSparseArray arr;
 					Toast.makeText(MainActivity.this,"Jump to"+Long.toHexString(address),3).show();
@@ -1351,7 +1345,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		this.tab1 = (LinearLayout) findViewById(R.id.tab1);
 		this.tab2 = (LinearLayout) findViewById(R.id.tab2);
 
-		
+
 		toDoAfterPermQueue.add(new Runnable(){
 				@Override
 				public void run()
@@ -1372,7 +1366,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					// Set the adapter for the list view
 					mDrawerList.setAdapter(new ArrayAdapter<String>(MainActivity.this,
 																	R.layout.row, mProjNames));
-					
+
 					//https://www.androidpub.com/1351553
 					Intent intent = getIntent();
 					if (intent.getAction().equals(Intent.ACTION_VIEW)) {
@@ -1432,26 +1426,26 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					}
 
 					// the data is available in dataFragment.getData()
-					
+
 					return ;
 				}
 			});
-		
+
 		disasmManager=new DisassemblyManager();
-		
+
 //		requestAppPermissions(this);	
 //=======
 		//requestAppPermissions(this);
 //		colorHelper=new ColorHelper(this);
 //>>>>>>> parent of 2644076... Update readme with assembly materials links
 //=======
-		
+
 		requestAppPermissions(this);
 		//colorHelper=new ColorHelper(this);
 //>>>>>>> parent of 2644076... Update readme with assembly materials links
 
-		
-		
+
+
         /*if (cs == null)
 		 {
 		 Toast.makeText(this, "Failed to initialize the native engine", 3).show();
@@ -1463,7 +1457,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		//	tlDisasmTable.addView(tbrow0);
 		//setupListView();
 
-		
+
 		boolean show=setting.getBoolean("show",true);
 		if(show){
 			//showPermissionRationales();
@@ -1520,7 +1514,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	public static void showPermissionRationales(final Activity a,final Runnable run)
 	{
 		ShowAlertDialog(a,"Permissions",
-		"- Read/Write storage(obvious)\r\n\r\n For more information visit https://github.com/KYHSGeekCode/Android-Disassembler/",
+			"- Read/Write storage(obvious)\r\n\r\n For more information visit https://github.com/KYHSGeekCode/Android-Disassembler/",
 			new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface p1,int  p2)
@@ -1530,9 +1524,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					//requestAppPermissions(a);
 					return ;
 				}
-				
-			
-		});
+
+
+			});
 	}
 	private void ShowErrorDialog(Activity a,int title,final Throwable err)
 	{
@@ -1611,10 +1605,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		return Resources.getSystem().getDisplayMetrics().heightPixels;
 	}
-	
+
 	private void  SaveDisasm(DatabaseHelper disasmF)
 	{
-		
+
 		new SaveDBAsync().execute(disasmF);
 		return ;
 	}
@@ -1648,7 +1642,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		etDetails.setText(parsedFile.toString());
 	}
-	
+
 	public void RefreshTable()
 	{
 		//tlDisasmTable.removeAllViews();
@@ -1733,10 +1727,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		cs = (Capstone) null;
 		//Finalize();
 		/*if (mNotifyManager != null)
-		{
-			mNotifyManager.cancel(0);
-			mNotifyManager.cancelAll();
-		}*/
+		 {
+		 mNotifyManager.cancel(0);
+		 mNotifyManager.cancelAll();
+		 }*/
 		//maybe service needed.
 		/*if(workerThread!=null)
 		 {
@@ -1753,18 +1747,18 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         return true;
     }
 	/*@Override
-    public boolean onPrepareOptionsMenu(Menu menu)
-	{
-        Log.d("test", "onPrepareOptionsMenu - 옵션메뉴가 " +
-			  "화면에 보여질때 마다 호출됨");
-		/* // 로그인 한 상태: 로그인은 안보이게, 로그아웃은 보이게
-		 menu.getItem(0).setEnabled(true);
-		 }else{ // 로그 아웃 한 상태 : 로그인 보이게, 로그아웃은 안보이게
-		 menu.getItem(0).setEnabled(false);
-		 menu.getItem(1).setEnabled(true);
-		 
-        return super.onPrepareOptionsMenu(menu);
-    }*/
+	 public boolean onPrepareOptionsMenu(Menu menu)
+	 {
+	 Log.d("test", "onPrepareOptionsMenu - 옵션메뉴가 " +
+	 "화면에 보여질때 마다 호출됨");
+	 /* // 로그인 한 상태: 로그인은 안보이게, 로그아웃은 보이게
+	 menu.getItem(0).setEnabled(true);
+	 }else{ // 로그 아웃 한 상태 : 로그인 보이게, 로그아웃은 안보이게
+	 menu.getItem(0).setEnabled(false);
+	 menu.getItem(1).setEnabled(true);
+
+	 return super.onPrepareOptionsMenu(menu);
+	 }*/
 	@Override
     public boolean onOptionsItemSelected(MenuItem item)
 	{
@@ -1772,7 +1766,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-    //    Log.d("test", "onOptionsItemSelected - 메뉴항목을 클릭했을 때 호출됨");
+		//    Log.d("test", "onOptionsItemSelected - 메뉴항목을 클릭했을 때 호출됨");
         int id = item.getItemId();
 		switch (id)
 		{
@@ -1812,7 +1806,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 							}
 						}
 					};
-					
+
 					autocomplete.setAdapter(autoSymAdapter);
 					android.app.AlertDialog ab=	ShowEditDialog("Goto an address/symbol","Enter a hex address or a symbol",autocomplete,
 						"Go", new DialogInterface.OnClickListener(){
@@ -1846,7 +1840,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 							}
 						},
 						"Cancel"/*R.string.symbol*/,(DialogInterface.OnClickListener)null);
-						ab.getWindow().setGravity(Gravity.TOP);
+					ab.getWindow().setGravity(Gravity.TOP);
 					break;
 				}
 			case R.id.find:
@@ -1903,20 +1897,20 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			//lv.disasmResult.address=address;
 			//ListViewItem lvi=adapter.itemList().get(address);
 			/*Collections.binarySearch(adapter.itemList(), lv, new Comparator<ListViewItem>(){
-					@Override
-					public int compare(ListViewItem p1, ListViewItem p2)
-					{
-						if(p1==null)
-							return -1;
-						if(p2==null)
-							return 1;
-						if(p1.disasmResult==null)
-							return -1;
-						if(p2.disasmResult==null)
-							return 1;
-						return (int)(p1.disasmResult.address-p2.disasmResult.address);
-					}			
-				});*/
+			 @Override
+			 public int compare(ListViewItem p1, ListViewItem p2)
+			 {
+			 if(p1==null)
+			 return -1;
+			 if(p2==null)
+			 return 1;
+			 if(p1.disasmResult==null)
+			 return -1;
+			 if(p2.disasmResult==null)
+			 return 1;
+			 return (int)(p1.disasmResult.address-p2.disasmResult.address);
+			 }			
+			 });*/
 			//adapter.getAddress()
 			//if(lvi==null)
 			{
@@ -1924,17 +1918,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				jmpBackstack.push(new Long(adapter.getCurrentAddress()));
 				adapter.OnJumpTo(address);
 				listview.setSelection(0);
-			//}else{
-			//	listview.setSelection();
+				//}else{
+				//	listview.setSelection();
 				//listview.setScrollX(index);
 				//listview.smoothScrollToPosition(index); too slow
 			}
 		}else{
 			Toast.makeText(this,"please enter a valid address..",3).show();
 		}
-		
-		
-		
+
+
+
 		return ;
 	}
 
@@ -2240,7 +2234,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		//if(arch==CS_ARCH_X86){
 		adapter.setArchitecture(arch);	//wider operands
 		colorHelper.setArchitecture(arch);
-		
+
 		//}
 		shouldSave = true;
 		List<Symbol> list=parsedFile.getSymbols();
@@ -2259,7 +2253,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	}
 	private int[] getArchitecture(MachineType type)
 	{
-		
+
 		switch(type)
 		{
 			case NONE://(0, "No machine"),
