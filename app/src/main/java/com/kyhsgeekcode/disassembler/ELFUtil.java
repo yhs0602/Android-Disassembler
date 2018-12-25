@@ -33,9 +33,16 @@ public class ELFUtil extends AbstractFile
 	@Override
 	public String toString()
 	{
-		return new StringBuilder(elf.toString())
+		StringBuilder sb=new StringBuilder();
+		importSymbols=getImportSymbols();
+		for(PLT plt:importSymbols)
+		{
+			sb.append(plt).append(System.lineSeparator());
+		}
+		sb.append(elf.toString())
 			//.append(Arrays.toString(symstrings))
-			.append("\n").append(info).toString();
+			.append("\n").append(info);
+			return sb.toString();
 	}
 //	public static int getWord(byte a, byte b, byte c, byte d)
 //	{
@@ -95,6 +102,7 @@ public class ELFUtil extends AbstractFile
 	public ELFUtil(File file, byte[] filec) throws IOException
 	{
 		elf = new Elf(file);
+		setPath(file.getPath());
 		fileContents = filec;
 		AfterConstructor();
 	}
@@ -204,7 +212,7 @@ public class ELFUtil extends AbstractFile
 			{
 				symbuffer=elf.getSection(elf.getSectionHeaderByType(SectionType.SYMTAB));
 				ElfClass elfClass=elf.header.elfClass;
-				symbols=new ArrayList<>();
+				exportSymbols=new ArrayList<>();
 				if(elfClass.equals(ElfClass.CLASS_32))
 				{
 					while (symbuffer.hasRemaining())
@@ -226,7 +234,7 @@ public class ELFUtil extends AbstractFile
 						symbol.st_size=size;
 						symbol.st_value=value;
 						symbol.analyze();
-						symbols.add(symbol);
+						exportSymbols.add(symbol);
 						/*sb.append(sym_name).append("=").append(Integer.toHexString(value))
 							.append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
 							*/
@@ -252,7 +260,7 @@ public class ELFUtil extends AbstractFile
 						symbol.st_size=size;
 						symbol.st_value=value;
 						symbol.analyze();
-						symbols.add(symbol);
+						exportSymbols.add(symbol);
 					/*	sb.append(sym_name).append("=").append(Integer.toHexString(value))
 							.append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
 							*/
@@ -263,13 +271,13 @@ public class ELFUtil extends AbstractFile
 			{
 				Log.e(TAG,"",e);
 			}
-			if(symbols==null)
-				symbols=new ArrayList<>();
+			if(exportSymbols==null)
+				exportSymbols=new ArrayList<>();
 			if(dynsyms!=null)
-				symbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
+				exportSymbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
 
 			//sort it
-			Collections.sort(symbols, new Comparator<Symbol>(){
+			Collections.sort(exportSymbols, new Comparator<Symbol>(){
 					@Override
 					public int compare(Symbol p1, Symbol p2)
 					{
@@ -345,6 +353,10 @@ public class ELFUtil extends AbstractFile
 			 Many symbols have associated sizes. For example, a data object's size is the number of bytes contained in the object. This member holds 0 if the symbol has no size or an unknown size.
 
 			 */
+			 
+			 //Now prepare IAT(PLT/GOT)
+			 importSymbols=ParsePLT(path);
+			 
 			info = sb.toString();
 			//Log.i(TAG, "info=" + info);
 		}
@@ -394,4 +406,5 @@ public class ELFUtil extends AbstractFile
 	//String[] symstrings;
 	
 	public static native String Demangle(String mangled);
+	public static native List<PLT> ParsePLT(String filepath);
 }

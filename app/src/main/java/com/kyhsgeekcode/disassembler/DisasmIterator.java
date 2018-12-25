@@ -34,7 +34,7 @@ public class DisasmIterator
 				public void run()
 				{	
 					long addr=lvi.disasmResult.address;
-					List<Symbol> syms= activity.parsedFile.symbols;
+					List<Symbol> syms= activity.parsedFile.exportSymbols;
 					for(Symbol sym:syms)
 					{
 						if(sym.st_value==addr)

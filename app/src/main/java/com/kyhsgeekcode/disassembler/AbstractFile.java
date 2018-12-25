@@ -42,13 +42,19 @@ public abstract class AbstractFile implements Closeable
 	{
 		return codeVirtualAddress;
 	}
-	public List<Symbol> getSymbols()
+	public List<Symbol> getExportSymbols()
 	{
-		if(symbols==null)
-			symbols=new ArrayList<>();
-		return symbols;
+		if(exportSymbols==null)
+			exportSymbols=new ArrayList<>();
+		return exportSymbols;
 	}
 
+	public List<PLT> getImportSymbols()
+	{
+		if(importSymbols==null)
+			importSymbols=new ArrayList<>();
+		return importSymbols;
+	}
 	@Override
 	public String toString()
 	{	
@@ -79,7 +85,8 @@ public abstract class AbstractFile implements Closeable
 	String ls=System.lineSeparator();
 	long codeBase=0;
 	long codeLimit=0;
-	List<Symbol> symbols;
+	List<Symbol> exportSymbols;
+	List<PLT> importSymbols;
 	byte[] fileContents;
 	long entryPoint=0;
 	long codeVirtualAddress=0;

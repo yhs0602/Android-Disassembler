@@ -1352,8 +1352,35 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				{
 					mProjNames = new String[]{"Exception","happened"};
 					colorHelper=new ColorHelper(MainActivity.this);
+					if(disasmManager==null)
+						disasmManager=new DisassemblyManager();
 					adapter = new ListViewAdapter((AbstractFile)null,colorHelper);
 					setupListView();
+					disasmManager.setData(adapter.itemList(),adapter.getAddress());
+					// find the retained fragment on activity restarts
+					FragmentManager fm = getFragmentManager();
+					dataFragment = (RetainedFragment) fm.findFragmentByTag("data");
+					if (dataFragment == null) {
+						// add the fragment
+						dataFragment = new RetainedFragment();
+						fm.beginTransaction().add(dataFragment, "data").commit();
+						// load the data from the web
+						dataFragment.setDisasmManager(disasmManager);
+					}else{
+						//It should be handled
+						disasmManager= dataFragment.getDisasmManager();
+						filecontent=dataFragment.getFilecontent();
+						parsedFile=dataFragment.getParsedFile();
+						fpath=dataFragment.getPath();
+						if(parsedFile!=null){
+							symbolLvAdapter.itemList().clear();
+							symbolLvAdapter.addAll(parsedFile.getExportSymbols());
+							for(Symbol s:symbolLvAdapter.itemList())
+							{
+								autoSymAdapter.add(s.name);
+							}
+						}
+					}
 					try
 					{
 						projectManager = new ProjectManager(MainActivity.this);
@@ -1386,6 +1413,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								String pname=file.getName();
 								toks=pname.split(Pattern.quote("."));
 								projectManager.Open(toks[toks.length-2]);
+							}else{
+								//User opened pther files
+								OnChoosePath(intent.getData());
 							}
 						}else{
 							//User opened pther files
@@ -1396,42 +1426,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						if(projectManager!=null)
 							projectManager.Open(lastProj);
 					}
-					disasmManager.setData(adapter.itemList(),adapter.getAddress());
-					// find the retained fragment on activity restarts
-					FragmentManager fm = getFragmentManager();
-					dataFragment = (RetainedFragment) fm.findFragmentByTag("data");
-
+					
 					// create the fragment and data the first time
-					if (dataFragment == null) {
-						// add the fragment
-						dataFragment = new RetainedFragment();
-						fm.beginTransaction().add(dataFragment, "data").commit();
-						// load the data from the web
-						dataFragment.setDisasmManager(disasmManager);
-
-					}else{
-						//It should be handled
-						disasmManager= dataFragment.getDisasmManager();
-						filecontent=dataFragment.getFilecontent();
-						parsedFile=dataFragment.getParsedFile();
-						fpath=dataFragment.getPath();
-						if(parsedFile!=null){
-							symbolLvAdapter.itemList().clear();
-							symbolLvAdapter.addAll(parsedFile.getSymbols());
-							for(Symbol s:symbolLvAdapter.itemList())
-							{
-								autoSymAdapter.add(s.name);
-							}
-						}
-					}
-
 					// the data is available in dataFragment.getData()
 
 					return ;
 				}
 			});
-
-		disasmManager=new DisassemblyManager();
 
 //		requestAppPermissions(this);	
 //=======
@@ -1822,7 +1823,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								catch(NumberFormatException nfe)
 								{
 									//not a number, lookup symbol table
-									List<Symbol> syms=parsedFile.getSymbols();
+									List<Symbol> syms=parsedFile.getExportSymbols();
 									for(Symbol sym:syms)
 									{
 										if(sym.name!=null&&sym.name.equals(dest))
@@ -2076,15 +2077,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			InputStream is=(InputStream)getContentResolver().openInputStream(uri);
 			//ByteArrayOutputStream bis=new ByteArrayOutputStream();
 			setFilecontent(Utils.getBytes(is));
-			File tmpfile=new File(getExternalFilesDir("directopen"),"tmp.so");
+			File tmpfile=new File(getFilesDir(),"tmp.so");
 			tmpfile.createNewFile();
 			FileOutputStream fos=new FileOutputStream(tmpfile);
 			fos.write(filecontent);
 			//elfUtil=new ELFUtil(new FileChannel().transferFrom(Channels.newChannel(is),0,0),filecontent);
-
 			setFpath( tmpfile.getAbsolutePath());//uri.getPath();
 			AfterReadFully(tmpfile);
-
 		}
 		catch (IOException e)
 		{
@@ -2237,7 +2236,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 		//}
 		shouldSave = true;
-		List<Symbol> list=parsedFile.getSymbols();
+		List<Symbol> list=parsedFile.getExportSymbols();
 //		for(int i=0;i<list.size();++i){
 //			symbolLvAdapter.addItem(list.get(i));
 //			symbolLvAdapter.notifyDataSetChanged();

@@ -32,7 +32,25 @@ public class PEFile extends AbstractFile
 		entryPoint=oph.getAddressOfEntryPoint();
 		fileContents=filec;
 		//Setup symbol table
-		symbols=new ArrayList<>();
+		exportSymbols=new ArrayList<>();
+		importSymbols=new ArrayList<>();
+//		ImportDirectory idir= imd.getImportTable();
+//		int numofIAT=idir.size();
+//		for(int i=0;i<numofIAT;++i)
+//		{
+//			//ImportDirectoryTable idt=idir.getNameTable(i);
+//			//int numofEntry=idt.size();
+//			//for(int j=0;j<numofEntry;++j)
+//			{
+//				//ImportEntry ie=idt.getEntry(j);
+//				PLT plt=new PLT();
+//				plt.name=idir.getName(i);
+//				//plt.address=ie.getOrdinal();
+//				//plt.value=ie.getVal();
+//				importSymbols.add(plt);
+//			}
+//			importSymbols.add(new PLT());
+//		}
 		/*ExportDirectory ed=imd.getExportTable();
 		ImportDirectory id=imd.getImportTable();
 		long numfuncs=ed.getAddressTableEntries();
@@ -116,6 +134,11 @@ public class PEFile extends AbstractFile
 	{
 		StringBuilder builder=new StringBuilder(super.toString());
 		builder.append(ls).append(ls);
+		for(PLT plt:importSymbols)
+		{
+			builder.append(plt.toString());
+			builder.append(ls);
+		}
 		builder.append(pe.toString());
 		return builder.toString();
 	}
