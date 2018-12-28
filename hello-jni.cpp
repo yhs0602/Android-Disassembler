@@ -38,7 +38,6 @@ extern "C"
 		const char * errmsg(cs_err e);
 		static void print_insn_detail(string &buf,cs_insn *ins);
 
-		
 		const char * errmsg(cs_err e)
 		{
 			switch(e)
@@ -414,6 +413,66 @@ extern "C"
 			env->ReleaseStringUTFChars(mangled,cstr);
 			return ret;
 		}
+		
+		#include"plthook/plthook.h"
+		JNIEXPORT jobject JNICALL Java_com_kyhsgeekcode_disassembler_ELFUtil_ParsePLT(JNIEnv * env, jobject thiz,jstring filepath)
+		{
+			const char* filename=env->GetStringUTFChars(filepath,NULL);
+			jclass pltcls = env->FindClass("com/kyhsgeekcode/disassembler/PLT");
+			__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "PLT");
+			jclass listcls = env->FindClass("java/util/ArrayList");
+			__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "ArrayList");
+			//jclass thecls = env->GetObjectClass(thiz);
+						//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "thizclass");
+			jmethodID ctor = env->GetMethodID(pltcls,"<init>","()V");
+						__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "pltinit");
+			jmethodID ctorList = env->GetMethodID(listcls,"<init>","()V");
+			//jmethodID ctorLong = env->GetMethodID(longcls,"<init>","(Ljava/lang/Long;)V");
+			//jmethodID java_util_List_add  = env->GetMethodID(mapcls, "add", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+			__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "listinit");
+			//	jmethodID java_util_Map_put  = env->GetMethodID(mapcls, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+			//__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "arraylistaddmethod"
+			jmethodID java_util_List_add  = env->GetMethodID(listcls, "add", "(Ljava/lang/Object;)Z");
+			jobject listobj=env->NewObject(listcls,ctorList);
+			plthook_t *plthook;
+			unsigned int pos = 0; /* This must be initialized with zero. */
+			const char *name;
+			void **addr;
+			if (plthook_open(&plthook, filename) != 0)
+			{
+				__android_log_print(ANDROID_LOG_ERROR, "Disassembler","plthook_open error: %s\n", plthook_error());
+				return NULL;
+			}
+			jfieldID fidName = env->GetFieldID(pltcls, "name","Ljava/lang/String;");
+			if (fidName == NULL) {
+				return NULL; /* failed to find the field */
+			}
+			jfieldID fidAddress = env->GetFieldID(pltcls, "address","J");
+			if (fidAddress == NULL) {
+				return NULL; /* failed to find the field */
+			}
+			jfieldID fidValue = env->GetFieldID(pltcls, "value","J");
+			if (fidValue == NULL) {
+				return NULL; /* failed to find the field */
+			}
+			while (plthook_enum(plthook, &pos, &name, &addr) == 0)
+			{
+				jobject plt=env->NewObject(pltcls,ctor);
+				jstring jname=env->NewStringUTF(name);
+				env->SetObjectField(plt,fidName,jname);
+				env->DeleteLocalRef(jname);
+				env->SetLongField(plt,fidAddress,(long)addr);
+				env->SetLongField(plt,fidValue,*((unsigned long*)addr));
+				env->CallBooleanMethod(listobj,java_util_List_add,plt);
+				env->DeleteLocalRef(plt);
+				__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler","%p(%p) %s\n", addr, *addr, name);
+			}
+			plthook_close(plthook);
+			env->ReleaseStringUTFChars(filepath,filename);
+			
+			return listobj;
+		}
+		
 	static void print_string_hex(string buf,char *comment, unsigned char *str, size_t len)
 	{
 		unsigned char *c;
