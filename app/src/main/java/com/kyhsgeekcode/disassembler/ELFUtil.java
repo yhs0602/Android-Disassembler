@@ -355,7 +355,28 @@ public class ELFUtil extends AbstractFile
 			 */
 			 
 			 //Now prepare IAT(PLT/GOT)
-			 importSymbols=ParsePLT(path);
+			 //get .got
+			 for(SectionHeader hdr:sections)
+			 {
+				 if(".plt".equalsIgnoreCase(hdr.getName()))
+				 {
+					 //plt is code
+//					 000173ec __android_log_print@plt:
+//					 173ec:       e28fc600        add     ip, pc, #0, 12  ; ip!=pc?
+//					 173f0:       e28cca11        add     ip, ip, #69632  ; addr of got? 
+//					 173f4:       e5bcf9f4        ldr     pc, [ip, #2548]!; index=2548
+//						 000173f8 sleep@plt:
+//					 173f8:       e28fc600        add     ip, pc, #0, 12
+//					 173fc:       e28cca11        add     ip, ip, #69632
+//					 17400:       e5bcf9ec        ldr     pc, [ip, #2540]!
+//					 ...
+					 ByteBuffer buf=elf.getSection(hdr);
+					 
+				 }
+			 }
+			 dynsymbuffer=elf.getSection(elf.getSectionHeaderByType(SectionType.PROGBITS));
+			 
+			// importSymbols=ParsePLT(path);
 			 
 			info = sb.toString();
 			//Log.i(TAG, "info=" + info);
