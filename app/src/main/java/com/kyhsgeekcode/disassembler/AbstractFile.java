@@ -71,7 +71,7 @@ public abstract class AbstractFile implements Closeable
 		.append(ls);
 		builder.append("Virtual address of CS end: ").append(Long.toHexString(codeLimit+codeVirtualAddress))
 		.append(ls);
-		builder.append("Virtual address of EP: ").append(Long.toHexString(codeBase+entryPoint+codeVirtualAddress));
+		builder.append("Virtual address of EP: ").append(Long.toHexString(entryPoint+codeVirtualAddress));
 		return builder.toString();
 	}
 //	public AbstractFile(File file) throws IOException

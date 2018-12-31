@@ -58,6 +58,28 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private Notification.Builder mBuilder;
 
+	private static final int TAB_EXPORT = 2;
+
+	private static final int TAB_DISASM = 3;
+
+	public void showToast(String s)
+	{
+		Toast.makeText(this,s,3).show();
+	}
+	
+	public void showToast(int resid)
+	{
+		Toast.makeText(this,resid,3).show();
+	}
+	
+	public void setClipBoard(String s)
+	{
+		ClipboardManager cb=(ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
+		cb.setText(s);
+		//Toast.makeText(this,"Copied to clipboard:"+s,3).show();
+		return ;
+	}
+
 	@Override
 	protected void onResume()
 	{
@@ -1319,7 +1341,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					long address=symbol.st_value;
 					//LongSparseArray arr;
 					Toast.makeText(MainActivity.this,"Jump to"+Long.toHexString(address),3).show();
-					tabHost.setCurrentTab(3);
+					tabHost.setCurrentTab(TAB_DISASM);
 					jumpto(address);
 					return true;
 				}
@@ -1659,7 +1681,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	@Override
 	public void onBackPressed()
 	{
-		if(tabHost.getCurrentTab()==3)
+		if(tabHost.getCurrentTab()==TAB_DISASM)
 		{
 			if(!jmpBackstack.empty())
 			{
@@ -1667,7 +1689,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				jmpBackstack.pop();
 				return;
 			}else{
-				tabHost.setCurrentTab(2);
+				tabHost.setCurrentTab(TAB_EXPORT);
 				return;
 			}
 		}
@@ -1834,8 +1856,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 												return ;
 											}
 											jumpto(sym.st_value);
+											return;
 										}
 									}
+									showToast("No such symbol available");
 								}
 								return ;
 							}
@@ -1916,6 +1940,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			//if(lvi==null)
 			{
 				//not found
+				tabHost.setCurrentTab(TAB_DISASM);
 				jmpBackstack.push(new Long(adapter.getCurrentAddress()));
 				adapter.OnJumpTo(address);
 				listview.setSelection(0);

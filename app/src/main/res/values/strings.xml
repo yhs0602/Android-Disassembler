@@ -19,6 +19,9 @@
 	<string name="fail_loadraw">Error loading from raw</string>
 	<string name="err_invalid_value">Please enter valid values: </string>
 	
+	<string name="copied">Copied!</string>
+	
+	
 	<string name="cancel">Cancel</string>
 	
 	

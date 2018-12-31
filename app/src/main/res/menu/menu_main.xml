@@ -4,7 +4,7 @@
         android:title="goto"/>
 	<item
         android:id="@+id/find"
-        android:title="find">
+        android:title="find(Not yet)">
 		<menu>
 			<item
 				android:id="@+id/findcall"
@@ -12,8 +12,14 @@
 				android:title="Calls"/>
 			<item
 				android:id="@+id/findjump"
-				android:showAsAction="never"
 				android:title="Jumps"/>
+			<item
+				android:id="@+id/findpc"
+				android:title="Instructions affecting PC"/>
+			<item
+				android:id="@+id/findxor"
+				android:showAsAction="never"
+				android:title="XOR/EORs (excluding zeroing)"/>
 		</menu>
 	</item>
 	<!--item

@@ -112,9 +112,35 @@ public class PEFile extends AbstractFile
 				Log.v(TAG, "addraddr=" + addraddr);
 				sym.st_value = ByteBuffer.wrap(filec, (int)addraddr, (int)(filec.length - addraddr)).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0x7FFFFFFF;
 				Log.v(TAG, sym.toString());
+				sym.type=Symbol.Type.STT_FUNC;
 				exportSymbols.add(sym);
 			}
 		}
+		//parse TLS
+		byte[] tlsb=imd.getTlsTable();
+		if(tlsb!=null)
+		{
+			ByteBuffer tlsBuf=ByteBuffer.wrap( tlsb).order(ByteOrder.LITTLE_ENDIAN);
+			/*Dword 6*/
+			while(tlsBuf.remaining()>0)
+			{
+				int StartAddressOfRawData = tlsBuf.getInt();
+				int EndAddressOfRawData = tlsBuf.getInt();
+				int AddressOfIndex = tlsBuf.getInt();
+				int AddressOfCallBacks = tlsBuf.getInt();
+				int SizeOfZeroFill = tlsBuf.getInt();
+				int Characteristics = tlsBuf.getInt();
+				TLS tls=new TLS();
+				tls.StartAddressOfRawData=StartAddressOfRawData;
+				tls.EndAddressOfRawData=EndAddressOfRawData;
+				tls.AddressOfIndex=AddressOfIndex;
+				tls.AddressOfCallBacks=AddressOfCallBacks;
+				tls.SizeOfZeroFill=SizeOfZeroFill;
+				tls.Characteristics=Characteristics;
+				tlss.add(tls);
+			}
+		}
+		
 	}
 	//https://docs.microsoft.com/ko-kr/windows/desktop/api/winnt/ns-winnt-_image_file_header
 	private MachineType getMachineTypeFromPE(int machine)
@@ -165,6 +191,7 @@ public class PEFile extends AbstractFile
 	}
 	PE pe;
 
+	ArrayList<TLS> tlss=new ArrayList<>();
 	@Override
 	public String toString()
 	{
@@ -185,8 +212,42 @@ public class PEFile extends AbstractFile
 			builder.append(plt.toString());
 			builder.append(ls);
 		}
+		
+		builder.append("======Thread Local Storage Table=====");
+		builder.append(ls);
+		for (TLS tls:tlss)
+		{
+			builder.append(tls.toString());
+			builder.append(ls);
+		}
 		builder.append(pe.toString());
 		return builder.toString();
 	}
-
+	class TLS
+	{
+		int StartAddressOfRawData ;
+		int EndAddressOfRawData ;
+		int AddressOfIndex ;
+		int AddressOfCallBacks  ;
+		int SizeOfZeroFill  ;
+		int Characteristics ;
+		@Override
+		public String toString()
+		{
+			StringBuilder sb=new StringBuilder("TLS at ");
+			sb.append(StartAddressOfRawData);
+			sb.append("~");
+			sb.append(EndAddressOfRawData);
+			sb.append("(Index at ");
+			sb.append(AddressOfIndex);
+			sb.append("), callback at ");
+			sb.append(AddressOfCallBacks);
+			sb.append(", zerofillsize=");
+			sb.append(SizeOfZeroFill);
+			sb.append(", characteristics=");
+			sb.append(Characteristics);
+			return sb.toString();
+		}
+		
+	}
 }

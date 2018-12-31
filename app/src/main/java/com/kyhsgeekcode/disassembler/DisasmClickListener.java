@@ -1,11 +1,10 @@
 package com.kyhsgeekcode.disassembler;
 
 import android.app.*;
+import android.content.*;
 import android.view.*;
 import android.widget.*;
 import java.util.*;
-import android.content.*;
-import android.view.View.*;
 
 public class DisasmClickListener implements AdapterView.OnItemClickListener
 {
@@ -22,6 +21,8 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener
 		final DisasmResult dar=lvi.disasmResult;
 		menus = new ArrayList<>();
 		menus.add(EDIT_COMMENT);
+		menus.add(COPY);
+		//menus.add(PATCH);
 		if (dar.isBranch()||dar.isCall())
 		{
 			menus.add(JUMP);
@@ -49,6 +50,12 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener
 								}, "Cancel", (DialogInterface.OnClickListener)null);
 							//context,title msg et, y yc n nc
 						}
+						else if(COPY.equals(item))
+						{
+							//List<String> its=new ArrayList<>();		
+							activity.setClipBoard(dar.toString());
+							activity.showToast(R.string.copied);
+						}
 						else if(JUMP.equals(item))
 						{
 							long target=dar.address+dar.jumpOffset;//NOT an offset?? FIXME
@@ -62,5 +69,7 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener
 	}
 	List<String> menus=new ArrayList<>();
 	final String EDIT_COMMENT="Edit comment";
+	final String COPY="Copy to clipboard";
+	final String PATCH="Patch assembly";
 	final String JUMP="Follow jump";
 }
