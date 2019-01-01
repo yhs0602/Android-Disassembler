@@ -66,6 +66,20 @@ public class ListViewItem implements Serializable
 		
 		return builder.toString();
 	}
+	
+	public String toCodeString()
+	{
+		StringBuilder sb=new StringBuilder("L_"+address);
+		sb.append(":");
+		sb.append("\t");
+		sb.append(instruction);
+		sb.append(" ");
+		sb.append(operands);
+		sb.append("\t;");
+		sb.append(comments);
+		//sb.append(System.lineSeparator());
+		return sb.toString();
+	}
 
 	public boolean isBranch()
 	{

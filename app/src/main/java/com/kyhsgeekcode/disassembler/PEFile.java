@@ -113,6 +113,8 @@ public class PEFile extends AbstractFile
 				sym.st_value = ByteBuffer.wrap(filec, (int)addraddr, (int)(filec.length - addraddr)).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0x7FFFFFFF;
 				Log.v(TAG, sym.toString());
 				sym.type=Symbol.Type.STT_FUNC;
+				sym.bind=Symbol.Bind.STB_GLOBAL;
+				sym.demangled=sym.name;
 				exportSymbols.add(sym);
 			}
 		}

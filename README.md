@@ -1,4 +1,4 @@
-# Version 1.4.1.1 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.4.2 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 ### Sorry, saved raw disasms are now incompatible with this version!
 
 # Android-Disassembler
@@ -17,12 +17,15 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 - Support PE and other bin formats.
 - Sort symbols if needed.
 - No need to press `Disassemble` button!
-
-# What's new
 - Colorize PUSH/POP instructions.
 - Colorize ARM arch instructions better.
 - Added **Follow Jump** menu for jump instructions.(*With BackStack*)
 - Can override auto parse setup
+
+# What's new
+- You can copy an instruction to the clipboard.
+- It now parses *IAT, EAT* of PE headers.
+- Fixed bugs.
 
 # New [theme](https://github.com/KYHSGeekCode/Android-Disassembler/tree/master/themes)!
  - KYHSGeekCode theme!
@@ -33,12 +36,16 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 ![image](images/Screenshot_20181222-213649.png)
 1. Go to details tab.
 1. Press `Show details` button to see details.
+(ELF)
 ![image](images/Screenshot_20181022-192953.png)
+(PE)
+![image](images/Screenshot_20190101-133237.png)
 1. Press `Save to file` button to save it.
 1. Go to Symbols tab.
 1. You can see symbols found in the elf file, their demangled names(if they exist), addresses, and their properties.
 ![image](images/Screenshot_20181022-193032.png)
 ![image](images/Screenshot_20181022-193042.png)
+![image](images/Screenshot_20190101-133256.png)
 1. Go to disassembly tab.
 ![image](images/Screenshot_20181217-112755.png)
 1. To export the disassembly, press `Export` button and choose the option.
@@ -95,12 +102,16 @@ You can download the theme.zip here.
 
 
 # TODO
- - add jump feature on clicking disassemblies.
  - Show prototypes of NDK/C standard APIs in the symbols tab.
  - More sophisticated colorizing.
  - Generate more useful comments
  - Provide assembly tutorials.
- - Parse PLT/IAT, EAT
+ - Fix crashes/symbols bug.
+ - Add pseudo-virtual machine to debug.
+ - Allow users to analyze active processes.
+ - Allow root file chooser.
+ - Add arrow beside the disassembly.
+ - Row selection
 
 # Thanks
 https://reverseengineering.stackexchange.com/a/20124/23870

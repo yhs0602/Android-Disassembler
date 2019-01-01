@@ -5,6 +5,7 @@ import android.content.*;
 import android.view.*;
 import android.widget.*;
 import java.util.*;
+import nl.lxtreme.binutils.elf.*;
 
 public class DisasmClickListener implements AdapterView.OnItemClickListener
 {
@@ -53,12 +54,12 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener
 						else if(COPY.equals(item))
 						{
 							//List<String> its=new ArrayList<>();		
-							activity.setClipBoard(dar.toString());
+							activity.setClipBoard(lvi.toCodeString());//toString());
 							activity.showToast(R.string.copied);
 						}
 						else if(JUMP.equals(item))
 						{
-							long target=dar.address+dar.jumpOffset;//NOT an offset?? FIXME
+							long target= dar.address+dar.jumpOffset;//NOT an offset?? FIXME
 							activity.jumpto(target);
 						}
 						return ;

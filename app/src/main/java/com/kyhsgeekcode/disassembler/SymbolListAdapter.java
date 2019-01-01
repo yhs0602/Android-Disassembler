@@ -67,8 +67,10 @@ public class SymbolListAdapter extends BaseAdapter
 			mangledTextView.setText(listViewItem.name);
 			demangledTextView.setText(listViewItem.demangled);
 			try{
-			propTextView.setText(listViewItem.bind.toString()+listViewItem.type.toString());
-			}catch(NullPointerException e){}
+				propTextView.setText(listViewItem.bind.toString()+listViewItem.type.toString());
+			}catch(NullPointerException e){
+				
+			}
 		}
         return convertView;
     }
