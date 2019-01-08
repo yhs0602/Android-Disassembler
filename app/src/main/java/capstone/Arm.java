@@ -3,8 +3,8 @@
 
 package capstone;
 
-import com.sun.jna.Structure;
-import com.sun.jna.Union;
+//import com.sun.jna.Structure;
+//import com.sun.jna.Union;
 
 import java.util.List;
 import java.util.Arrays;
@@ -13,48 +13,48 @@ import static capstone.Arm_const.*;
 
 public class Arm {
 
-  public static class MemType extends Structure {
+  public static class MemType/* extends Structure*/ {
     public int base;
     public int index;
     public int scale;
     public int disp;
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("base", "index", "scale", "disp");
-    }
+    }*/
   }
 
-  public static class OpValue extends Union {
+  public static class OpValue/* extends Union*/ {
     public int reg;
     public int imm;
     public double fp;
     public MemType mem;
     public int setend;
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("reg", "imm", "fp", "mem", "setend");
-    }
+    }*/
   }
 
-  public static class OpShift extends Structure {
+  public static class OpShift/* extends Structure*/ {
     public int type;
     public int value;
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("type","value");
-    }
+    }*/
   }
 
-  public static class Operand extends Structure {
+  public static class Operand/* extends Structure*/ {
     public int vector_index;
     public OpShift shift;
     public int type;
     public OpValue value;
     public boolean subtracted;
-
+/*
     public void read() {
       readField("vector_index");
       readField("type");
@@ -76,7 +76,7 @@ public class Arm {
     @Override
     public List getFieldOrder() {
       return Arrays.asList("vector_index", "shift", "type", "value", "subtracted");
-    }
+    }*/
   }
 
   public static class UnionOpInfo extends Capstone.UnionOpInfo {
@@ -96,7 +96,7 @@ public class Arm {
     public UnionOpInfo() {
       op = new Operand[36];
     }
-
+/*
     public void read() {
       readField("usermode");
       readField("vector_size");
@@ -117,7 +117,7 @@ public class Arm {
     public List getFieldOrder() {
       return Arrays.asList("usermode", "vector_size", "vector_data",
           "cps_mode", "cps_flag", "cc", "update_flags", "writeback", "mem_barrier", "op_count", "op");
-    }
+    }*/
   }
 
   public static class OpInfo extends Capstone.OpInfo {

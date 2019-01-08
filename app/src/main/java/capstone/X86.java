@@ -3,8 +3,8 @@
 
 package capstone;
 
-import com.sun.jna.Structure;
-import com.sun.jna.Union;
+//import com.sun.jna.Structure;
+//import com.sun.jna.Union;
 
 import java.util.List;
 import java.util.Arrays;
@@ -13,40 +13,40 @@ import static capstone.X86_const.*;
 
 public class X86 {
 
-  public static class MemType extends Structure {
+  public static class MemType/* extends Structure */{
     public int segment;
     public int base;
     public int index;
     public int scale;
     public long disp;
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("segment", "base", "index", "scale", "disp");
-    }
+    }*/
   }
 
-  public static class OpValue extends Union {
+  public static class OpValue/* extends Union */{
     public int reg;
     public long imm;
     public double fp;
     public MemType mem;
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("reg", "imm", "fp", "mem");
-    }
+    }*/
   }
 
-  public static class Operand extends Structure {
+  public static class Operand/* extends Structure*/ {
     public int type;
     public OpValue value;
     public byte size;
     public int avx_bcast;
     public boolean avx_zero_opmask;
-
+/*
     public void read() {
-      super.read();
+    //  super.read();
       if (type == X86_OP_MEM)
         value.setType(MemType.class);
       if (type == X86_OP_FP)
@@ -57,13 +57,13 @@ public class X86 {
         value.setType(Integer.TYPE);
       if (type == X86_OP_INVALID)
         return;
-      readField("value");
+    //  readField("value");
     }
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("type", "value", "size", "avx_bcast", "avx_zero_opmask");
-    }
+    }*/
   }
 
   public static class UnionOpInfo extends Capstone.UnionOpInfo {
@@ -91,12 +91,12 @@ public class X86 {
       opcode = new byte[4];
       prefix = new byte[4];
     }
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("prefix", "opcode", "rex", "addr_size",
           "modrm", "sib", "disp", "sib_index", "sib_scale", "sib_base", "sse_cc", "avx_cc", "avx_sae", "avx_rm", "op_count", "op");
-    }
+    }*/
   }
 
   public static class OpInfo extends Capstone.OpInfo {

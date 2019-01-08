@@ -3,8 +3,8 @@
 
 package capstone;
 
-import com.sun.jna.Structure;
-import com.sun.jna.Union;
+//import com.sun.jna.Structure;
+//import com.sun.jna.Union;
 
 import java.util.List;
 import java.util.Arrays;
@@ -13,18 +13,18 @@ import static capstone.Arm64_const.*;
 
 public class Arm64 {
 
-  public static class MemType extends Structure {
+  public static class MemType /*extends Structure*/ {
     public int base;
     public int index;
     public int disp;
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("base", "index", "disp");
-    }
+    }*/
   }
 
-  public static class OpValue extends Union {
+  public static class OpValue/* extends Union*/ {
     public int reg;
     public long imm;
     public double fp;
@@ -33,32 +33,32 @@ public class Arm64 {
     public int sys;
     public int prefetch;
     public int barrier;
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("reg", "imm", "fp", "mem", "pstate", "sys", "prefetch", "barrier");
-    }
+    }*/
   }
 
-  public static class OpShift extends Structure {
+  public static class OpShift/* extends Structure*/ {
     public int type;
     public int value;
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("type","value");
-    }
+    }*/
   }
 
-  public static class Operand extends Structure {
+  public static class Operand /*extends Structure*/ {
     public int vector_index;
     public int vas;
     public int vess;
     public OpShift shift;
     public int ext;
     public int type;
-    public OpValue value;
-
+  //  public OpValue value;
+/*
     public void read() {
       readField("type");
       if (type == ARM64_OP_MEM)
@@ -80,7 +80,7 @@ public class Arm64 {
     @Override
     public List getFieldOrder() {
       return Arrays.asList("vector_index", "vas", "vess", "shift", "ext", "type", "value");
-    }
+    }*/
   }
 
   public static class UnionOpInfo extends Capstone.UnionOpInfo {
@@ -94,7 +94,7 @@ public class Arm64 {
     public UnionOpInfo() {
       op = new Operand[8];
     }
-
+/*
     public void read() {
       readField("cc");
       readField("_update_flags");
@@ -108,7 +108,7 @@ public class Arm64 {
     @Override
     public List getFieldOrder() {
       return Arrays.asList("cc", "_update_flags", "_writeback", "op_count", "op");
-    }
+    }*/
   }
 
   public static class OpInfo extends Capstone.OpInfo {

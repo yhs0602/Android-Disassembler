@@ -3,32 +3,32 @@
 
 package capstone;
 
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import com.sun.jna.NativeLong;
-import com.sun.jna.ptr.NativeLongByReference;
-import com.sun.jna.Structure;
-import com.sun.jna.Union;
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.PointerByReference;
-import com.sun.jna.ptr.IntByReference;
+//import com.sun.jna.Library;
+//import com.sun.jna.Native;
+//import com.sun.jna.NativeLong;
+//import com.sun.jna.ptr.NativeLongByReference;
+//import com.sun.jna.Structure;
+//import com.sun.jna.Union;
+//import com.sun.jna.Pointer;
+//import com.sun.jna.ptr.PointerByReference;
+//import com.sun.jna.ptr.IntByReference;
 
 import java.util.List;
 import java.util.Arrays;
 import java.lang.RuntimeException;
-import com.sun.jna.*;
+//import com.sun.jna.*;
 
 public class Capstone
 {
 
 	protected static abstract class OpInfo
 	{};
-	protected static abstract class UnionOpInfo extends Structure
+	protected static abstract class UnionOpInfo// extends Structure
 	{};
 
-	public static class UnionArch extends Union
+	public static class UnionArch //extends Union
 	{
-		public static class ByValue extends UnionArch implements Union.ByValue
+		public static class ByValue extends UnionArch// implements Union.ByValue
 		{};
 
 		public Arm.UnionOpInfo arm;
@@ -41,7 +41,7 @@ public class Capstone
 		public Xcore.UnionOpInfo xcore;
 	}
 
-	protected static class _cs_insn extends Structure
+	protected static class _cs_insn// extends Structure
 	{
 		// instruction ID.
 		public int id;
@@ -66,7 +66,7 @@ public class Capstone
 			java.util.Arrays.fill(mnemonic, (byte) 0);
 			java.util.Arrays.fill(op_str, (byte) 0);
 		}
-
+/*
 		public _cs_insn(Pointer p)
 		{
 			this();
@@ -78,12 +78,12 @@ public class Capstone
 		public List getFieldOrder()
 		{
 			return Arrays.asList("id", "address", "size", "bytes", "mnemonic", "op_str", "cs_detail");
-		}
+		}*/
 	}
 
-	protected static class _cs_detail extends Structure
+	protected static class _cs_detail //extends Structure
 	{
-		public static class ByReference extends _cs_detail implements Structure.ByReference
+		public static class ByReference extends _cs_detail// implements Structure.ByReference
 		{};
 
 		// list of all implicit registers being read.
@@ -97,17 +97,17 @@ public class Capstone
 		public byte groups_count;
 
 		public UnionArch arch;
-
+/*
 		@Override
 		public List getFieldOrder()
 		{
 			return Arrays.asList("regs_read", "regs_read_count", "regs_write", "regs_write_count", "groups", "groups_count", "arch");
-		}
+		}*/
 	}
 
 	public static class CsInsn
 	{
-		private NativeLong csh;
+		//private NativeLong csh;
 		private CS cs;
 		private _cs_insn raw;
 		private int arch;
@@ -129,7 +129,7 @@ public class Capstone
 		// list of semantic groups this instruction belongs to.
 		public byte[] groups;
 		public OpInfo operands;
-
+/*
 		public CsInsn(_cs_insn insn, int _arch, NativeLong _csh, CS _cs, boolean diet)
 		{
 			id = insn.id;
@@ -221,11 +221,13 @@ public class Capstone
 
 			return op_info;
 		}
+		*/
 		int opCount;
 		int opIndex;
 		int regRead;
 		int regWrite;
 		byte[] bytes;
+		/*
 		public int opCount(int type)
 		{
 			return cs.cs_op_count(csh, raw.getPointer(), type);
@@ -269,20 +271,20 @@ public class Capstone
 		public boolean group(int gid)
 		{
 			return cs.cs_insn_group(csh, raw.getPointer(), gid) != 0;
-		}
+		}*/
 		public byte[] bytes()
 		{
 			return raw.bytes;
-		}
+		}/*
 		@Override
 		protected void finalize() throws Throwable
 		{
 			// TODO: Implement this method
 			super.finalize();
 			cs.cs_free(raw.getPointer(),new NativeLong(1));
-		}	
+		}	*/
 	}
-
+/*
 	private CsInsn[] fromArrayRaw(_cs_insn[] arr_raw)
 	{
 		CsInsn[] arr = new CsInsn[arr_raw.length];
@@ -294,18 +296,18 @@ public class Capstone
 
 		return arr;
 	}
-
-	private interface CS extends Library
+*/
+	private interface CS// extends Library
 	{
-		public int cs_open(int arch, int mode, NativeLongByReference handle);
+		/*public int cs_open(int arch, int mode, NativeLongByReference handle);
 		public NativeLong cs_disasm(NativeLong handle, byte[] code, NativeLong code_len,
 									long addr, NativeLong count, PointerByReference insn);
 		public void cs_free(Pointer p, NativeLong count);
 		public int cs_close(NativeLongByReference handle);
 		public int cs_option(NativeLong handle, int option, NativeLong optionValue);
-
+*/
 		public int cs_setup_mem();
-		public NativeLong cs_disasm2(NativeLong handle, byte[] code, NativeLong code_offset,NativeLong code_len,
+	/*	public NativeLong cs_disasm2(NativeLong handle, byte[] code, NativeLong code_offset,NativeLong code_len,
 									long addr, NativeLong count, PointerByReference insn);
 		
 		
@@ -320,7 +322,7 @@ public class Capstone
 		public byte cs_reg_write(NativeLong csh, Pointer insn, int id);
 		public int cs_errno(NativeLong csh);
 		public int cs_version(IntByReference major, IntByReference minor);
-		public boolean cs_support(int query);
+		*/public boolean cs_support(int query);
 	}
 
 	// Capstone API version
@@ -410,8 +412,8 @@ public class Capstone
 
 	protected class NativeStruct
 	{
-		private NativeLong csh;
-		private NativeLongByReference handleRef;
+		//private NativeLong csh;
+		//private NativeLongByReference handleRef;
 	}
 	protected class NativeOptmem
 	{
@@ -422,11 +424,11 @@ public class Capstone
 		 cs_free_t free;
 		 cs_vsnprintf_t vsnprintf;
 		 } cs_opt_mem;*/
-		Function malloc;
-		Function calloc;
-		Function realloc;
-		Function free;
-		Function vsnprintf;
+		//Function malloc;
+		//Function calloc;
+		//Function realloc;
+		//Function free;
+		//Function vsnprintf;
 	}
 
 	private static final CsInsn[] EMPTY_INSN = new CsInsn[0];
@@ -438,75 +440,75 @@ public class Capstone
 	private int syntax;
 	private int detail;
 	private boolean diet;
-
+/*
 	public Capstone(int arch, int mode)
 	{
-		cs = (CS)Native.loadLibrary("capstone", CS.class);
+		//cs = (CS)Native.loadLibrary("capstone", CS.class);
 		int err=0;
-		int version = cs.cs_version(null, null);
-		if (version != (CS_API_MAJOR << 8) + CS_API_MINOR)
+		//int version = cs.cs_version(null, null);
+		//if (version != (CS_API_MAJOR << 8) + CS_API_MINOR)
 		{
-			throw new RuntimeException("Different API version between core & binding (CS_ERR_VERSION)");
+		//	throw new RuntimeException("Different API version between core & binding (CS_ERR_VERSION)");
 		}
 		this.arch = arch;
 		this.mode = mode;
-		ns = new NativeStruct();
-		ns.handleRef = new NativeLongByReference();
+		//ns = new NativeStruct();
+	//	ns.handleRef = new NativeLongByReference();
 		//NativeOptmem nom=new NativeOptmem();
 		//nom.calloc = Function.getFunction("c", "calloc");
 		//err = cs.cs_option((NativeLong)null, CS_OPT_MEM,new NativeLongByReference().getNativeLong);
 		cs.cs_setup_mem();
-		if ((err = cs.cs_open(arch, mode, ns.handleRef)) != CS_ERR_OK)
+		//if ((err = cs.cs_open(arch, mode, ns.handleRef)) != CS_ERR_OK)
 		{
-			throw new RuntimeException("ERROR: Wrong arch or mode" + err);
+		//	throw new RuntimeException("ERROR: Wrong arch or mode" + err);
 		}
-		ns.csh = ns.handleRef.getValue();
+		//ns.csh = ns.handleRef.getValue();
 		this.detail = CS_OPT_OFF;
 		this.diet = cs.cs_support(CS_SUPPORT_DIET);
 	}
 
 	// return combined API version
-	public int version()
+	//public int version()
 	{
-		return cs.cs_version(null, null);
-	}
+		//return cs.cs_version(null, null);
+	}*/
 
 	// set Assembly syntax
 	public void setSyntax(int syntax)
 	{
-		if (cs.cs_option(ns.csh, CS_OPT_SYNTAX, new NativeLong(syntax)) == CS_ERR_OK)
+		//if (cs.cs_option(ns.csh, CS_OPT_SYNTAX, new NativeLong(syntax)) == CS_ERR_OK)
 		{
 			this.syntax = syntax;
 		}
-		else
+		//else
 		{
-			throw new RuntimeException("ERROR: Failed to set assembly syntax");
+		//	throw new RuntimeException("ERROR: Failed to set assembly syntax");
 		}
 	}
 
 	// set detail option at run-time
 	public void setDetail(int opt)
 	{
-		if (cs.cs_option(ns.csh, CS_OPT_DETAIL, new NativeLong(opt)) == CS_ERR_OK)
+	//	if (cs.cs_option(ns.csh, CS_OPT_DETAIL, new NativeLong(opt)) == CS_ERR_OK)
 		{
 			this.detail = opt;
 		}
-		else
+		//else
 		{
-			throw new RuntimeException("ERROR: Failed to set detail option");
+	//		throw new RuntimeException("ERROR: Failed to set detail option");
 		}
 	}
 
 	// set mode option at run-time
 	public void setMode(int opt)
 	{
-		if (cs.cs_option(ns.csh, CS_OPT_MODE, new NativeLong(opt)) == CS_ERR_OK)
+		//if (cs.cs_option(ns.csh, CS_OPT_MODE, new NativeLong(opt)) == CS_ERR_OK)
 		{
 			this.mode = opt;
 		}
-		else
+	//	else
 		{
-			throw new RuntimeException("ERROR: Failed to set mode option");
+		//	throw new RuntimeException("ERROR: Failed to set mode option");
 		}
 	}
 
@@ -518,10 +520,10 @@ public class Capstone
 	}
 
 	// destructor automatically caled at destroyed time.
-	public int close()
+	/*public int close()
 	{
-		return cs.cs_close(ns.handleRef);
-	}
+		//return cs.cs_close(ns.handleRef);
+	}*/
 
 	/**
 	 * Disassemble instructions from @code assumed to be located at @address,
@@ -531,10 +533,10 @@ public class Capstone
 	 * @param address The address of the first machine code byte.
 	 * @return the array of successfully disassembled instructions, empty if no instruction could be disassembled.
 	 */
-	public CsInsn[] disasm(byte[] code, long address)
+	/*public CsInsn[] disasm(byte[] code, long address)
 	{
 		return disasm(code, address, 0);
-	}
+	}*/
 
 	/**
 	 * Disassemble up to @count instructions from @code assumed to be located at @address,
@@ -545,9 +547,9 @@ public class Capstone
 	 * @param count The maximum number of instructions to disassemble, 0 for no maximum.
 	 * @return the array of successfully disassembled instructions, empty if no instruction could be disassembled.
 	 */
-	public CsInsn[] disasm(byte[] code, long address, long count)
+	//public CsInsn[] disasm(byte[] code, long address, long count)
 	{
-		PointerByReference insnRef = new PointerByReference();
+		/*PointerByReference insnRef = new PointerByReference();
 
 		NativeLong c = cs.cs_disasm(ns.csh, code, new NativeLong(code.length), address, new NativeLong(count), insnRef);
 
@@ -565,11 +567,11 @@ public class Capstone
 		// cs.cs_free(p, c);
 		// FIXME(danghvu): Can't free because memory is still inside CsInsn
 
-		return allInsn;
+		return allInsn;*/
 	}
-	public CsInsn[] disasm(byte[] code,long offset, long length,long address, long count)
+	//public CsInsn[] disasm(byte[] code,long offset, long length,long address, long count)
 	{
-		PointerByReference insnRef = new PointerByReference();
+		/*PointerByReference insnRef = new PointerByReference();
 
 		NativeLong c = cs.cs_disasm2(ns.csh, code,new NativeLong(offset), new NativeLong(length), address, new NativeLong(count), insnRef);
 
@@ -586,7 +588,7 @@ public class Capstone
 		// free allocated memory
 		// cs.cs_free(p, c);
 		// FIXME(danghvu): Can't free because memory is still inside CsInsn
-
-		return allInsn; 
+*/
+		//return allInsn; 
 	}
 }

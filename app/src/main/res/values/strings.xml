@@ -23,7 +23,7 @@
 	
 	
 	<string name="cancel">Cancel</string>
-	
+	<string name="ok">Ok</string>
 	
     <string name="choose_storage">Choose Storage</string>
 	<string name="choose_external_storage">Choose External Storage</string>

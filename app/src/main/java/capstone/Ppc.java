@@ -3,8 +3,8 @@
 
 package capstone;
 
-import com.sun.jna.Structure;
-import com.sun.jna.Union;
+//import com.sun.jna.Structure;
+//import com.sun.jna.Union;
 
 import java.util.List;
 import java.util.Arrays;
@@ -13,38 +13,38 @@ import static capstone.Ppc_const.*;
 
 public class Ppc {
 
-  public static class MemType extends Structure {
+  public static class MemType /*extends Structure*/ {
     public int base;
     public int disp;
 
-    @Override
+  /*  @Override
     public List getFieldOrder() {
       return Arrays.asList("base", "disp");
-    }
+    }*/
   }
 
-  public static class CrxType extends Structure {
+  public static class CrxType/* extends Structure*/ {
     public int scale;
     public int reg;
     public int cond;
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("scale", "reg", "cond");
-    }
+    }*/
   }
 
-  public static class OpValue extends Union {
+  public static class OpValue/* extends Union*/ {
     public int reg;
     public int imm;
     public MemType mem;
     public CrxType crx;
   }
 
-  public static class Operand extends Structure {
+  public static class Operand/* extends Structure*/ {
     public int type;
     public OpValue value;
-
+/*
     public void read() {
       readField("type");
       if (type == PPC_OP_MEM)
@@ -61,7 +61,7 @@ public class Ppc {
     @Override
     public List getFieldOrder() {
       return Arrays.asList("type", "value");
-    }
+    }*/
   }
 
   public static class UnionOpInfo extends Capstone.UnionOpInfo {
@@ -75,7 +75,7 @@ public class Ppc {
     public UnionOpInfo() {
       op = new Operand[8];
     }
-
+/*
     public void read() {
       readField("bc");
       readField("bh");
@@ -89,7 +89,7 @@ public class Ppc {
     @Override
     public List getFieldOrder() {
       return Arrays.asList("bc", "bh", "update_cr0", "op_count", "op");
-    }
+    }*/
   }
 
   public static class OpInfo extends Capstone.OpInfo {

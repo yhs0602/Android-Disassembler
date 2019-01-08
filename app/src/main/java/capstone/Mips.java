@@ -3,8 +3,8 @@
 
 package capstone;
 
-import com.sun.jna.Structure;
-import com.sun.jna.Union;
+//import com.sun.jna.Structure;
+//import com.sun.jna.Union;
 
 import java.util.List;
 import java.util.Arrays;
@@ -13,31 +13,31 @@ import static capstone.Mips_const.*;
 
 public class Mips {
 
-  public static class MemType extends Structure {
+  public static class MemType /*extends Structure*/ {
     public int base;
     public long disp;
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("base", "disp");
-    }
+    }*/
   }
 
-  public static class OpValue extends Union {
+  public static class OpValue/* extends Union */{
     public int reg;
     public long imm;
     public MemType mem;
-
+/*
     @Override
     public List getFieldOrder() {
       return Arrays.asList("reg", "imm", "mem");
-    }
+    }*/
   }
 
-  public static class Operand extends Structure {
+  public static class Operand /*extends Structure*/ {
     public int type;
     public OpValue value;
-
+/*
     public void read() {
       super.read();
       if (type == MIPS_OP_MEM)
@@ -53,7 +53,7 @@ public class Mips {
     @Override
     public List getFieldOrder() {
       return Arrays.asList("type", "value");
-    }
+    }*/
   }
 
   public static class UnionOpInfo extends Capstone.UnionOpInfo {
@@ -63,18 +63,18 @@ public class Mips {
     public UnionOpInfo() {
       op = new Operand[8];
     }
-
+/*
     public void read() {
       readField("op_count");
       op = new Operand[op_count];
       if (op_count != 0)
         readField("op");
-    }
+    }*/
 
-    @Override
+/*    @Override
     public List getFieldOrder() {
       return Arrays.asList("op_count", "op");
-    }
+    }*/
   }
 
   public static class OpInfo extends Capstone.OpInfo {

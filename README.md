@@ -1,8 +1,9 @@
-# Version 1.4.2 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
-### Sorry, saved raw disasms are now incompatible with this version!
+# Android-Disassembler - Analyze your malicious app on your phone
 
-# Android-Disassembler
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
+
+# Version 1.4.3 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+### Sorry, saved raw disasms are now incompatible with this version!
 
 # Features
 - Shows details of elf files.
@@ -21,15 +22,16 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 - Colorize ARM arch instructions better.
 - Added **Follow Jump** menu for jump instructions.(*With BackStack*)
 - Can override auto parse setup
-
-# What's new
 - You can copy an instruction to the clipboard.
 - It now parses *IAT, EAT* of PE headers.
-- Fixed bugs.
 
-# New [theme](https://github.com/KYHSGeekCode/Android-Disassembler/tree/master/themes)!
- - KYHSGeekCode theme!
- ![image](images/Screenshot_20181221-215203.png)![image](images/Screenshot_20181221-215647.png)![image](images/Screenshot_20181222-173614.png)
+# What's new
+
+- Fixed bugs.
+- You can now choose the columns to view.
+
+# [Themes Download](https://github.com/KYHSGeekCode/Android-Disassembler/tree/master/themes)
+ Good themes usually help you recognize some important instructions easily.
 
 # Usuage
 1. Choose a file to analyze.
@@ -48,10 +50,11 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 ![image](images/Screenshot_20190101-133256.png)
 1. Go to disassembly tab.
 ![image](images/Screenshot_20181217-112755.png)
+ ![image](images/Screenshot_20181221-215203.png)![image](images/Screenshot_20181221-215647.png)![image](images/Screenshot_20181222-173614.png)
 1. To export the disassembly, press `Export` button and choose the option.
 ![image](images/Screenshot_20181022-193127.png)
 
-# Export mode
+# Export mode (Currently may not work well)
  - Raw
 Uses java's intrinsic serialization, and super fast.
  - Classic
@@ -84,6 +87,7 @@ Here are some common issues and some solutons for them.
 You can download the theme.zip here.
  1. Unzip it to `/storage/emulated/0/themes/` or `/sdcard/themes`.
  1. Done. You can now use this in settings menu(in app)
+ 1. To rename/remove themes, just rename/remove the files.
 
 
 ### Feature requests are welcomed!
@@ -106,12 +110,19 @@ You can download the theme.zip here.
  - More sophisticated colorizing.
  - Generate more useful comments
  - Provide assembly tutorials.
- - Fix crashes/symbols bug.
+ - Fix symbols bug.
  - Add pseudo-virtual machine to debug.
  - Allow users to analyze active processes.
  - Allow root file chooser.
  - Add arrow beside the disassembly.
  - Row selection
+ - Better support for thumb assemblies
+ - Support .NET assemblies
+ - Add compatibility for OllyDbg's `.udd/.bak` files
+
+# Help wanted!
+ - X86 jumping address calculation creates negative values.
+ - Don't the symbols' names look odd?
 
 # Thanks
 https://reverseengineering.stackexchange.com/a/20124/23870

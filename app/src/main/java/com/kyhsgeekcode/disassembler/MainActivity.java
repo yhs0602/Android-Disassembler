@@ -11,9 +11,9 @@ import android.net.*;
 import android.os.*;
 import android.provider.*;
 import android.support.v4.widget.*;
+import android.view.*;
 import android.support.v7.app.*;
 import android.util.*;
-import android.view.*;
 import android.view.View.*;
 import android.widget.*;
 import capstone.*;
@@ -61,6 +61,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private static final int TAB_EXPORT = 2;
 
 	private static final int TAB_DISASM = 3;
+
+	private ColumnSetting columnSetting=new ColumnSetting();
+
+	public ColumnSetting getColumns()
+	{
+		return columnSetting;
+	}
 
 	public void showToast(String s)
 	{
@@ -255,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	boolean showCondition=true;
 	boolean showOperands=true;
 	boolean showComment=true;
-	private CustomDialog mCustomDialog;
+	private ChooseColumnDialog mCustomDialog;
 
 	private ListViewAdapter adapter;
 
@@ -370,10 +377,20 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						//AlertError("Not a raw file, but enabled?",new Exception());
 						//return;
 					}
-					String base=etCodeBase.getText().toString();
-					String entry=etEntryPoint.getText().toString();
-					String limit=etCodeLimit.getText().toString();
-					String virt=etVirtAddr.getText().toString();
+					String base;
+					String entry;
+					String limit;
+					String virt;
+					try{
+						 base=etCodeBase.getText().toString();
+						 entry=etEntryPoint.getText().toString();
+						 limit=etCodeLimit.getText().toString();
+						 virt=etVirtAddr.getText().toString();
+					}catch(NullPointerException e)
+					{
+						Log.e(TAG,"Error",e);
+						return;
+					}
 					//int checked=rgdArch.getCheckedRadioButtonId();
 					MachineType mct=MachineType.ARM;				
 					try{
@@ -383,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						MachineType[] mcss=MachineType.values();
 						for(int i=0;i<mcss.length;++i)
 						{
-							if(s.equals(mcss[i].toString()))
+							if(mcss[i].toString().equals(s))
 							{
 								mct=mcss[i];
 								break;
@@ -1153,15 +1170,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		startActivity(Intent.createChooser(emailIntent, "Send crash report as an issue by email"));
 	}
 
-	public void AdjustShow(TextView t1v, TextView t2v, TextView t3v, TextView t4v, TextView t5v, TextView t6v, TextView t7v)
+	public void AdjustShow(TextView tvAddr, TextView tvLabel, TextView tvBytes, TextView tvInst, TextView tvCondition, TextView tvOperands, TextView tvComments)
 	{
-		t1v.setVisibility(isShowAddress() ? View.VISIBLE: View.GONE);
-		t2v.setVisibility(isShowLabel() ? View.VISIBLE: View.GONE);
-		t3v.setVisibility(isShowBytes() ? View.VISIBLE: View.GONE);
-		t4v.setVisibility(isShowInstruction() ? View.VISIBLE: View.GONE);
-		t5v.setVisibility(isShowCondition() ? View.VISIBLE: View.GONE);
-		t6v.setVisibility(isShowOperands() ? View.VISIBLE: View.GONE);
-		t7v.setVisibility(isShowComment() ? View.VISIBLE: View.GONE);
+		tvAddr.setVisibility(isShowAddress() ? View.VISIBLE: View.GONE);
+		tvLabel.setVisibility(isShowLabel() ? View.VISIBLE: View.GONE);
+		tvBytes.setVisibility(isShowBytes() ? View.VISIBLE: View.GONE);
+		tvInst.setVisibility(isShowInstruction() ? View.VISIBLE: View.GONE);
+		tvCondition.setVisibility(isShowCondition() ? View.VISIBLE: View.GONE);
+		tvOperands.setVisibility(isShowOperands() ? View.VISIBLE: View.GONE);
+		tvComments.setVisibility(isShowComment() ? View.VISIBLE: View.GONE);
 	}
 
 	public static final int REQUEST_WRITE_STORAGE_REQUEST_CODE=1;
@@ -1376,7 +1393,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					colorHelper=new ColorHelper(MainActivity.this);
 					if(disasmManager==null)
 						disasmManager=new DisassemblyManager();
-					adapter = new ListViewAdapter((AbstractFile)null,colorHelper);
+					adapter = new ListViewAdapter((AbstractFile)null,colorHelper,MainActivity.this);
 					setupListView();
 					disasmManager.setData(adapter.itemList(),adapter.getAddress());
 					// find the retained fragment on activity restarts
@@ -1666,18 +1683,18 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		etDetails.setText(parsedFile.toString());
 	}
 
-	public void RefreshTable()
-	{
-		//tlDisasmTable.removeAllViews();
-		//TableRow tbrow0 = new TableRow(MainActivity.this);
-		//CreateDisasmTopRow(tbrow0);		
-		//tlDisasmTable.addView(tbrow0);
-		//for(int i=0;i<disasmResults.size();++i)
-		//{
-		//AddOneRow(disasmResults.get(i));
-		//}
-		//tlDisasmTable.refreshDrawableState();
-	}
+//	public void RefreshTable()
+//	{
+//		//tlDisasmTable.removeAllViews();
+//		//TableRow tbrow0 = new TableRow(MainActivity.this);
+//		//CreateDisasmTopRow(tbrow0);		
+//		//tlDisasmTable.addView(tbrow0);
+//		//for(int i=0;i<disasmResults.size();++i)
+//		//{
+//		//AddOneRow(disasmResults.get(i));
+//		//}
+//		//tlDisasmTable.refreshDrawableState();
+//	}
 	@Override
 	public void onBackPressed()
 	{
@@ -1746,7 +1763,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		 {}*/
 		Finalize();
 		if (cs != null)
-			cs.close();
+			;//cs.close();
 		cs = (Capstone) null;
 		//Finalize();
 		/*if (mNotifyManager != null)
@@ -1799,17 +1816,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					startActivity(SettingActivity);
 				}
 				break;
-				/*case R.id.rows:
+			case R.id.chooserow:
 				 {
-				 mCustomDialog = new CustomDialog((Activity)this, 
-				 "Select rows to view", // 제목
-				 "Choose rows(Nothing happens)", // 내용 
-				 (View.OnClickListener)null, // 왼쪽 버튼 이벤트
-				 rightListener); // 오른쪽 버튼 이벤트
-				 mCustomDialog.show();
+					 mCustomDialog = new ChooseColumnDialog((Activity)this, 
+						 "Select columns to view", // Title
+						 "Choose columns", // Content
+						 leftListener, // left
+						 (View.OnClickListener) null); // right
+						 mCustomDialog.show();
 				 break;
 				 }
-				 */
+				 
 			case R.id.jumpto:
 				{
 					if(parsedFile==null){
@@ -1962,6 +1979,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		if(address>(parsedFile.fileContents.length+parsedFile.codeVirtualAddress))
 			return false;
+		if(address<0)
+			return false;
 		return true;
 	}
 
@@ -2008,14 +2027,27 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 //		}
 //	};
 //
-//	private View.OnClickListener rightListener = new View.OnClickListener() {
-//		public void onClick(View v)
-//		{
-//			Toast.makeText(getApplicationContext(), "오른쪽버튼 클릭",
-//						   Toast.LENGTH_SHORT).show();
-//		}
-//	};
-//
+	private View.OnClickListener leftListener = new View.OnClickListener() {
+		public void onClick(View v)
+		{
+			ColumnSetting cs=(ColumnSetting) v.getTag();
+			/*String hint=(String) ((Button)v).getHint();
+			hint=hint.substring(1,hint.length()-1);
+			Log.v(TAG,"Hint="+hint);
+			String [] parsed=hint.split(", ",0);
+			Log.v(TAG,Arrays.toString(parsed));*/
+			columnSetting=cs;
+			setShowAddress(cs.showAddress/*Boolean.valueOf(parsed[1]*/);///*v.getTag(CustomDialog.TAGAddress)*/);
+			setShowLabel(cs.showLabel/*Boolean.valueOf(parsed[0]*/);///*v.getTag(CustomDialog.TAGLabel)*/);
+			setShowBytes(cs.showBytes/*Boolean.valueOf(parsed[2]*/);///*v.getTag(CustomDialog.TAGBytes)*/);
+			setShowInstruction(cs.showInstruction/*Boolean.valueOf(parsed[3]*/);///*v.getTag(CustomDialog.TAGInstruction)*/);
+			setShowComment(cs.showComments/*Boolean.valueOf(parsed[4]*/);///*v.getTag(CustomDialog.TAGComment)*/);
+			setShowOperands(cs.showOperands/*Boolean.valueOf(parsed[6]*/);///*v.getTag(CustomDialog.TAGOperands)*/);
+			setShowCondition(cs.showConditions/*Boolean.valueOf(parsed[5]*/);///*v.getTag(CustomDialog.TAGCondition)*/);
+			listview.requestLayout();
+		}
+	};
+
 	//private static final int FILE_SELECT_CODE = 0;
 
 	private void showFileChooser()

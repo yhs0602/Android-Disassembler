@@ -6,11 +6,12 @@ import android.view.*;
 import android.widget.*;
 import java.util.*;
 import nl.lxtreme.binutils.elf.*;
+import android.util.*;
 
 public class DisasmClickListener implements AdapterView.OnItemClickListener
 {
 	MainActivity activity;
-	
+	private String TAG="Disassembler";
 	public DisasmClickListener(MainActivity activity)
 	{
 		this.activity = activity;
@@ -31,6 +32,8 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener
 		if (!menus.isEmpty())
 		{
 			MainActivity.ShowSelDialog((Activity)activity, menus, lvi.toSimpleString() + " at " + lvi.address, new DialogInterface.OnClickListener(){
+
+					
 					@Override
 					public void onClick(DialogInterface p1, int p2)
 					{
@@ -54,12 +57,13 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener
 						else if(COPY.equals(item))
 						{
 							//List<String> its=new ArrayList<>();		
-							activity.setClipBoard(lvi.toCodeString());//toString());
+							activity.setClipBoard(lvi.toCodeString(activity.getColumns()));//toString());
 							activity.showToast(R.string.copied);
 						}
 						else if(JUMP.equals(item))
-						{
+						{						
 							long target= dar.address+dar.jumpOffset;//NOT an offset?? FIXME
+							Log.d(TAG,"jump"+Long.toHexString( dar.address)+","+Long.toHexString(dar.jumpOffset)+Long.toHexString(target));
 							activity.jumpto(target);
 						}
 						return ;

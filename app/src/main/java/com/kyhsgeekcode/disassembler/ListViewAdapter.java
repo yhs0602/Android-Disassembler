@@ -22,6 +22,8 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 //	}
 //
 	long currentAddress=0;
+
+	private MainActivity mainactivity;
 	public long getCurrentAddress()
 	{
 		return currentAddress;
@@ -140,6 +142,7 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 		//listViewItemList.addAll(data);
 		//itemsNew=data;
 		notifyDataSetChanged();
+	
 	}
 	//You should not modify
 	public /*ArrayList*/LongSparseArray<ListViewItem> itemList()
@@ -151,7 +154,7 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
 	{
-        final int pos = position;
+       // final int pos = position;
         final Context context = parent.getContext();
 
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
@@ -169,6 +172,7 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 		TextView instTextView = (TextView) convertView.findViewById(R.id.tvInst) ;
 		TextView labelTextView = (TextView) convertView.findViewById(R.id.tvLabel) ;
 		TextView operandTextView = (TextView) convertView.findViewById(R.id.tvOperand) ;
+		mainactivity.AdjustShow(addrTextView,labelTextView,bytesTextView,instTextView,condTextView,operandTextView,commentTextView);
 		operandTextView.getLayoutParams().width=(architecture==1)?dp260:dp180;
 		operandTextView.requestLayout();
 		//if (pos == 0)
@@ -327,12 +331,13 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 	ColorHelper colorHelper;
 	private int architecture;
 
-    public ListViewAdapter(AbstractFile file,ColorHelper ch)
+    public ListViewAdapter(AbstractFile file,ColorHelper ch,MainActivity ma)
 	{
 		this.file=file;
 		colorHelper=ch;
 		architecture=0;//FIXME:clarification needed but OK now
 		//address=//new long[file.fileContents.length];//Use sparseArray if oom
+		mainactivity=ma;
     }
 
 	public void setArchitecture(int architecture)

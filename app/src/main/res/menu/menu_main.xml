@@ -3,6 +3,9 @@
         android:id="@+id/jumpto"
         android:title="goto"/>
 	<item
+        android:id="@+id/chooserow"
+        android:title="Choose rows"/>
+	<item
         android:id="@+id/find"
         android:title="find(Not yet)">
 		<menu>
@@ -20,6 +23,9 @@
 				android:id="@+id/findxor"
 				android:showAsAction="never"
 				android:title="XOR/EORs (excluding zeroing)"/>
+			<item
+				android:id="@+id/findentries"
+				android:title="Function entries (Heuristic)"/>
 		</menu>
 	</item>
 	<!--item

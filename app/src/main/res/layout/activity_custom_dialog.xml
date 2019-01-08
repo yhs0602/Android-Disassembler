@@ -90,13 +90,13 @@
 				android:id="@+id/btn_left"
 				android:layout_width="150dp"
 				android:layout_height="wrap_content"
-				android:text="확인"/>
+				android:text="@+string/ok"/>
 
 			<Button
 				android:id="@+id/btn_right"
 				android:layout_width="150dp"
 				android:layout_height="wrap_content"
-				android:text="취소"/>
+				android:text="@+string/cancel"/>
 
 		</LinearLayout>
 
