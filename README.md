@@ -33,6 +33,7 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 # Usuage
 1. Choose a file to analyze.
 ![image](images/Screenshot_20181222-213649.png)
+ - To change chooser, go to settings and change.
 1. Go to details tab.
 1. Press `Show details` button to see details.
 (ELF)
