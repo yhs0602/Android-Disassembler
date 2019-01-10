@@ -25,6 +25,7 @@ import java.util.concurrent.*;
 import java.util.regex.*;
 import java.util.zip.*;
 import nl.lxtreme.binutils.elf.*;
+import com.stericson.RootTools.*;
 
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
@@ -244,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private static final int REQUEST_SELECT_FILE = 123;
 	private static final int BULK_SIZE = 1024;
-	private static final String SETTINGKEY="setting";
+	public static final String SETTINGKEY="setting";
 	private static final String LASTPROJKEY = "lastProject";
 	String fpath;
 	byte[] filecontent=null;
@@ -2062,32 +2063,57 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			tmp=tmp.getParentFile();
 			prepath=tmp.getAbsolutePath();
 		}
-		StorageChooser chooser = new StorageChooser.Builder()
-			.withActivity(MainActivity.this)
-			.withFragmentManager(getFragmentManager())
-			.withMemoryBar(true)
-			.allowCustomPath(true)
-			.setType(StorageChooser.FILE_PICKER)
-			.actionSave(true)
-			//.withPreference(settingPath)
-			.withPredefinedPath(prepath)
-			.build();
-// Show dialog whenever you want by
-		chooser.show();
-// get path that the user has chosen
-		chooser.setOnSelectListener(new StorageChooser.OnSelectListener() {
-				@Override
-				public void onSelect(String path) {
-					SharedPreferences.Editor edi=settingPath.edit();
-					edi.putString(DiskUtil.SC_PREFERENCE_KEY,path);
-					edi.commit();
-					disableEnableControls(false,llmainLinearLayoutSetupRaw);
-					OnChoosePath(path);
-					//Log.e("SELECTED_PATH", path);
-				}
-			});
-		//Intent i=new Intent(this, FileSelectorActivity.class);
-		//startActivityForResult(i, REQUEST_SELECT_FILE);			
+		SharedPreferences spPicker=getSharedPreferences(SETTINGKEY,MODE_PRIVATE);
+		int picker=spPicker.getInt("Picker",0);
+		switch(picker)
+		{
+			case 0:
+				StorageChooser chooser = new StorageChooser.Builder()
+					.withActivity(MainActivity.this)
+					.withFragmentManager(getFragmentManager())
+					.withMemoryBar(true)
+					.allowCustomPath(true)
+					.setType(StorageChooser.FILE_PICKER)
+					.actionSave(true)
+					//.withPreference(settingPath)
+					.withPredefinedPath(prepath)
+					.build();
+					// Show dialog whenever you want by
+				chooser.show();
+				// get path that the user has chosen
+				chooser.setOnSelectListener(new StorageChooser.OnSelectListener() {
+						@Override
+						public void onSelect(String path) {
+							SharedPreferences.Editor edi=settingPath.edit();
+							edi.putString(DiskUtil.SC_PREFERENCE_KEY,path);
+							edi.commit();
+							disableEnableControls(false,llmainLinearLayoutSetupRaw);
+							OnChoosePath(path);
+							//Log.e("SELECTED_PATH", path);
+						}
+					});
+				break;
+			case 1:
+				Intent i=new Intent(this, com.kyhsgeekcode.rootpicker.FileSelectorActivity.class);
+				startActivityForResult(i, REQUEST_SELECT_FILE);		
+				break;
+		}	//	
+	}
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == REQUEST_SELECT_FILE)
+        {
+            if (resultCode == Activity.RESULT_OK)
+            {
+                String path=data.getStringExtra("path");
+                SharedPreferences.Editor edi=settingPath.edit();
+				edi.putString(DiskUtil.SC_PREFERENCE_KEY,path);
+				edi.commit();
+				disableEnableControls(false,llmainLinearLayoutSetupRaw);
+				OnChoosePath(path);
+            }
+        }
 	}
 	@Override
 	public void onRequestPermissionsResult(int requestCode,
@@ -2129,12 +2155,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private void OnChoosePath(Uri uri)
 	{
+		File tmpfile=new File(getFilesDir(),"tmp.so");	
 		try
 		{
 			InputStream is=(InputStream)getContentResolver().openInputStream(uri);
 			//ByteArrayOutputStream bis=new ByteArrayOutputStream();
 			setFilecontent(Utils.getBytes(is));
-			File tmpfile=new File(getFilesDir(),"tmp.so");
+			
 			tmpfile.createNewFile();
 			FileOutputStream fos=new FileOutputStream(tmpfile);
 			fos.write(filecontent);
@@ -2144,6 +2171,36 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (IOException e)
 		{
+			if(e.getMessage().contains("Permission denied"))
+			{
+				if(RootTools.isRootAvailable())
+				{
+					while(!RootTools.isAccessGiven())
+					{
+						Toast.makeText(this,"This file requires root to read.",3).show();
+						RootTools.offerSuperUser(this);
+					}
+					try{
+						RootTools.copyFile(uri.getPath(),tmpfile.getPath(),false,false);
+						setFilecontent(Utils.getBytes(new FileInputStream(tmpfile)));
+						setFpath( tmpfile.getAbsolutePath());//uri.getPath();		
+						AfterReadFully(tmpfile);
+						return;
+					}
+					catch (IOException f)
+					{
+						Log.e(TAG,"",f);
+						//?
+					}
+				}
+				else
+				{
+					Toast.makeText(this,"This file requires root permission to read.",3).show();
+				}			
+			}else{
+				Log.e(TAG,"",e);
+				//Toast.makeText(this,"Not needed",3).show();
+			}
 			AlertError(R.string.fail_readfile,e);
 		}
 	}
@@ -2171,15 +2228,16 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					bos.write(buf, 0, len);
 				buf = bos.toByteArray();
 			}
+			is.close();
 			return buf;
 		}
 	}
 
-	private void OnChoosePath(String p)//Intent data)
+	private void OnChoosePath(String path)//Intent data)
 	{
 		try
 		{
-			String path=p;//data.getStringExtra("com.jourhyang.disasmarm.path");
+			//String path=path;//data.getStringExtra("com.jourhyang.disasmarm.path");
 			File file=new File(path);
 			setFpath(path);
 			etFilename.setText(file.getAbsolutePath());
@@ -2200,16 +2258,47 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					counter++;
 				}
 			}
-			in.close();
-			;
+			in.close();		
 			AfterReadFully(file);
 			Toast.makeText(this, "success size=" + index /*+ type.name()*/, 3).show();
 
 			//OnOpenStream(fsize, path, index, file);
-		}catch (Exception e)
+		}catch (IOException e)
 		{
+			if(e.getMessage().contains("Permission denied"))
+			{
+				File tmpfile=new File(getFilesDir(),"tmp.so");
+				if(RootTools.isRootAvailable())
+				{
+					while(!RootTools.isAccessGiven())
+					{
+						Toast.makeText(this,"This file requires root to read.",3).show();
+						RootTools.offerSuperUser(this);
+					}
+					try{
+						RootTools.copyFile(path,tmpfile.getPath(),false,false);
+						setFilecontent(Utils.getBytes(new FileInputStream(tmpfile)));
+						setFpath( tmpfile.getAbsolutePath());//uri.getPath();		
+						AfterReadFully(tmpfile);
+						return;
+					}
+					catch (IOException f)
+					{
+						Log.e(TAG,"",f);
+						//?
+					}
+				}
+				else
+				{
+					Toast.makeText(this,"This file requires root permission to read.",3).show();
+				}			
+			}else{
+				Log.e(TAG,"",e);
+				//Toast.makeText(this,"Not needed",3).show();
+			}
+			AlertError(R.string.fail_readfile,e);
 			//Log.e(TAG, "", e);
-			AlertError("Failed to open and parse the file",e);
+			//AlertError("Failed to open and parse the file",e);
 			//Toast.makeText(this, Log.getStackTraceString(e), 30).show();
 		}
 	}

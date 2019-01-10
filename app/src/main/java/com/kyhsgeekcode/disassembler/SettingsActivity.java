@@ -39,6 +39,9 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 									{
 										palette.Save();
 										colorhelper.addPalette(palette);
+										SharedPreferences sp=getSharedPreferences(MainActivity.SETTINGKEY,MODE_PRIVATE);
+										SharedPreferences.Editor ed=sp.edit();
+										ed.putString("PaletteName",palette.name).commit();
 										colorhelper.setPalette(palette.name);
 										return ;
 									}
@@ -59,7 +62,27 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 				return false;
 			}
 			String name=prefnames[val-1];
+			SharedPreferences sp=getSharedPreferences(MainActivity.SETTINGKEY,MODE_PRIVATE);
+			SharedPreferences.Editor ed=sp.edit();
+			ed.putString("PaletteName",name).commit();
 			colorhelper.setPalette(name);
+		}else if("filepicker".equals(key))
+		{
+			
+			int val=Integer.parseInt((String)p2);
+			SharedPreferences sp=getSharedPreferences(MainActivity.SETTINGKEY,MODE_PRIVATE);
+			SharedPreferences.Editor ed=sp.edit();	
+			/*switch(val)
+			{
+				case 0:
+					
+					//CodeKidX
+					break;
+				case 1:
+					//root
+					break;
+			}*/
+			ed.putInt("Picker",val).commit();
 		}
 		return false;
 	}
@@ -136,6 +159,10 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 				}
 			});
 		lp.setOnPreferenceChangeListener(this);
+		
+		final ListPreference lp2=(ListPreference) findPreference("filepicker");
+		lp2.setOnPreferenceChangeListener(this);
+		
 		PreferenceScreen scrn=(PreferenceScreen) findPreference("openscrn");
 		//scrn.setOnPreferenceClickListener(this);
 		int cnt=scrn.getPreferenceCount();

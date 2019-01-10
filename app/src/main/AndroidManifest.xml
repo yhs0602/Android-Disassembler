@@ -42,7 +42,7 @@
 		<!--activity android:name=".MadeByActivity"/-->
 		<!--activity android:name=".OpenSourceActivity"/-->
 		<activity android:name=".FileSelectorActivity"/>
-
+		<activity android:name="com.kyhsgeekcode.rootpicker.FileSelectorActivity"/>
     </application>
 
 </manifest>

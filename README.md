@@ -2,8 +2,9 @@
 
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
 
-# Version 1.4.3 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
-### Sorry, saved raw disasms are now incompatible with this version!
+# Version 1.4.4 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+
+# What's new : Root file chooser!
 
 # Features
 - Shows details of elf files.
@@ -24,10 +25,6 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 - Can override auto parse setup
 - You can copy an instruction to the clipboard.
 - It now parses *IAT, EAT* of PE headers.
-
-# What's new
-
-- Fixed bugs.
 - You can now choose the columns to view.
 
 # [Themes Download](https://github.com/KYHSGeekCode/Android-Disassembler/tree/master/themes)
@@ -73,6 +70,9 @@ Slow. Not recommended.
  - [Wiki](https://github.com/KYHSGeekCode/Android-Disassembler/wiki)
 
 # Error Handling
+
+### Sorry, saved raw disasms are now incompatible with this version!
+
 Here are some common issues and some solutons for them.
  - The app crashes!
 
@@ -103,6 +103,7 @@ You can download the theme.zip here.
  - [Colorpickerview](https://github.com/skydoves/ColorPickerView)
  - [Java-binutils](https://github.com/jawi/java-binutils)
  - [PECOFF4J](https://github.com/kichik/pecoff4j).
+ - [Root File Chooser](https://github.com/KYHSGeekCode/RootFilePicker)
 
 
 # TODO
@@ -113,7 +114,6 @@ You can download the theme.zip here.
  - Fix symbols bug.
  - Add pseudo-virtual machine to debug.
  - Allow users to analyze active processes.
- - Allow root file chooser.
  - Add arrow beside the disassembly.
  - Row selection
  - Better support for thumb assemblies
