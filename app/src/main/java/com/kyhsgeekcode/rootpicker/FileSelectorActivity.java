@@ -104,7 +104,18 @@ public class FileSelectorActivity extends ListActivity
 		{
 			Toast.makeText(this, "Failed to copy ls", 3).show();
 		}
-		getDir(root);
+		SharedPreferences sp=getSharedPreferences("com.kyhsgeekcode.rootpicker.last", MODE_PRIVATE);
+		String startpath=sp.getString("lastpath", root);
+		if (new File(startpath).canRead())
+		{
+			getDir(startpath);
+		}
+		else
+		{
+			getDirRoot(startpath);
+		}
+
+		//getDir(root);
 	}
 
 	private void getDir(String dirPath)
@@ -117,8 +128,8 @@ public class FileSelectorActivity extends ListActivity
 		File[] files = f.listFiles();
 		if (!dirPath.equals(root))
 		{
-			items.add(new Item(root,root));
-			items.add(new Item("../",f.getParent()));
+			items.add(new Item(root, root));
+			items.add(new Item("../", f.getParent()));
 
 			/*
 			 item.add(root);
@@ -126,16 +137,18 @@ public class FileSelectorActivity extends ListActivity
 			 item.add("../");
 			 path.add(f.getParent());*/
 		}
-
-		for (int i = 0; i < files.length; i++)
+		if (files != null)
 		{
-			File file = files[i];
-			items.add(new Item(file.isDirectory()?file.getName()+"/":file.getName(),file.getPath()));
-			/*path.add(file.getPath());
-			 if (file.isDirectory())
-			 item.add(file.getName() + "/");
-			 else
-			 item.add(file.getName());*/
+			for (int i = 0; i < files.length; i++)
+			{
+				File file = files[i];
+				items.add(new Item(file.isDirectory() ?file.getName() + "/": file.getName(), file.getPath()));
+				/*path.add(file.getPath());
+				 if (file.isDirectory())
+				 item.add(file.getName() + "/");
+				 else
+				 item.add(file.getName());*/
+			}
 		}
 		RefreshList();
 	}
@@ -146,7 +159,7 @@ public class FileSelectorActivity extends ListActivity
 		String p=items.get(position).path;
 		final File file = new File(p);
 		/*path.get(position)*/
-		if (file.isDirectory()||items.get(position).caption.endsWith("/"))
+		if (file.isDirectory() || items.get(position).caption.endsWith("/"))
 		{
 			if (file.canRead())
 				getDir(p);
@@ -164,6 +177,8 @@ public class FileSelectorActivity extends ListActivity
 				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which)
 					{
+						SharedPreferences sp=getSharedPreferences("com.kyhsgeekcode.rootpicker.last", MODE_PRIVATE);
+						sp.edit().putString("lastpath", file.getAbsoluteFile().getParent() + "/").commit();
 						Intent result = new Intent("RootPicker.ACTION");
 						result.putExtra("path", file.getAbsolutePath());
 						setResult(Activity.RESULT_OK, result);
@@ -186,8 +201,8 @@ public class FileSelectorActivity extends ListActivity
 			items = new ArrayList<>();
 			if (!dirPath.equals(root))
 			{
-				items.add(new Item(root,root));
-				items.add(new Item("../",new File(dirPath).getParent()));
+				items.add(new Item(root, root));
+				items.add(new Item("../", new File(dirPath).getParent()));
 				/*
 				 item.add(root);
 				 path.add(root);
@@ -198,7 +213,7 @@ public class FileSelectorActivity extends ListActivity
 			for (int i = 0; i < entries.size(); i++)
 			{
 				DirEnt file = entries.get(i);
-				items.add(new Item(file.isDirectory()? file.getName()+"/":file.getName(),dirPath+"/"+file.getName()));
+				items.add(new Item(file.isDirectory() ? file.getName() + "/": file.getName(), dirPath + "/" + file.getName()));
 				/*path.add(dirPath + "/" + file.name);
 				 if (file.isDirectory())
 				 item.add(file.getName() + "/");
@@ -227,42 +242,44 @@ public class FileSelectorActivity extends ListActivity
 				@Override
 				public int compare(FileSelectorActivity.Item p1, FileSelectorActivity.Item p2)
 				{
-					int cdir=compareDir(p1,p2);
-					if(cdir==0)
+					int cdir=compareDir(p1, p2);
+					if (cdir == 0)
 					{
-						if(p1.caption.endsWith("/"))
+						if (p1.caption.endsWith("/"))
 						{
-							if(p1.caption.equals("/"))
+							if (p1.caption.equals("/"))
 							{
 								return -1;
 							}
-							if(p2.caption.equals("/"))
+							if (p2.caption.equals("/"))
 							{
 								return 1;
 							}
-							if(p1.caption.equals("../"))
+							if (p1.caption.equals("../"))
 							{
 								return -1;
 							}
-							if(p2.caption.equals("../"))
+							if (p2.caption.equals("../"))
 							{
 								return 1;
 							}
 							return p1.caption.compareTo(p2.caption);
-						}else
+						}
+						else
 						{
 							return p1.caption.compareTo(p2.caption);
 						}
-					}else
+					}
+					else
 					{
 						return cdir;
 					}
 				}
 				int compareDir(Item p1, Item p2)
 				{
-					if(p1.caption.endsWith("/"))
+					if (p1.caption.endsWith("/"))
 					{
-						if(p2.caption.endsWith("/"))
+						if (p2.caption.endsWith("/"))
 						{
 							return 0;
 						}
@@ -270,7 +287,8 @@ public class FileSelectorActivity extends ListActivity
 						{
 							return -1;
 						}
-					}else if(p2.caption.endsWith("/"))
+					}
+					else if (p2.caption.endsWith("/"))
 					{
 						return 1;
 					}
@@ -278,7 +296,7 @@ public class FileSelectorActivity extends ListActivity
 				}
 			});
 		ArrayList<String> item=new ArrayList<>();
-		for(Item i:items)
+		for (Item i:items)
 		{
 			item.add(i.caption);
 		};
@@ -438,7 +456,7 @@ public class FileSelectorActivity extends ListActivity
 
 		public boolean isDirectory()
 		{		
-			return (type & 4)!=0;
+			return (type & 4) != 0;
 		}
 
 		public String getName()

@@ -15,7 +15,9 @@ public class ProjectManager
 	//		Proj1
 	//			Proj1.ada
 	//			details.txt
-	//			disasm.db
+	//			disasm.db --> .bak/.udd (Only save changed comments, instructions, ....)
+	//          .asm is only created when Exported
+	//          only load->parsing
 	//      Proj1.zip
 	
 	String[] strprojects=new String[]{"Create new"};

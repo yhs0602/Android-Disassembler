@@ -2320,12 +2320,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				setParsedFile(new PEFile(file,filecontent));
 				AfterParse();
 			}
-			catch(Exception|NotThisFormatException f)
+			catch(NotThisFormatException f)
 			{
-				AlertError("failed to parse the file. please setup manually.",f);
+				ShowAlertDialog(this,"Failed to parse the file. please setup manually.","");
 				setParsedFile(new RawFile(file));
 				AllowRawSetup();
 				//failed to parse the file. please setup manually.
+			}catch(Exception g)
+			{
+				AlertError("failed to parse the file. please setup manually.",g);
+				setParsedFile(new RawFile(file));
+				AllowRawSetup();
 			}
 		}
 	}
