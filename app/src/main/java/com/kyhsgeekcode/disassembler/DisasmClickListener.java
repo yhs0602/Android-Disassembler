@@ -63,7 +63,7 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener
 						else if(JUMP.equals(item))
 						{						
 							long target= dar.address+dar.jumpOffset;//NOT an offset?? FIXME
-							Log.d(TAG,"jump"+Long.toHexString( dar.address)+","+Long.toHexString(dar.jumpOffset)+Long.toHexString(target));
+							Log.d(TAG,"jump"+Long.toHexString( dar.address)+","+Long.toHexString(dar.jumpOffset)+","+Long.toHexString(target));
 							activity.jumpto(target);
 						}
 						return ;

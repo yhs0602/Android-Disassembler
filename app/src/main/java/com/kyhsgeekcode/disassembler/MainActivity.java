@@ -898,6 +898,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			progress.setProgress(a[0]);
 			//Log.d(TAG + " onProgressUpdate", "You are in progress update ... " + a[0]);
 		}
+		
 		/*
 		 protected void onPostExecute(Void result) {
 		 super.onPostExecute(result);
@@ -905,10 +906,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		 }
 		 */
 	}
-
+	
 	//18.11.22 revival!
+	//19.01 Deprecated
 	//Will be used like generate-on-need array(sth like Paging)
-	private void DisassembleInstant(long foffset)
+	/*private void DisassembleInstant(long foffset)
 	{
 		//Toast.makeText(this,"Not supported by now. Please just use persist mode instead.",3).show();	
 //		if(limit>=filecontent.length)
@@ -936,7 +938,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		(MainActivity.this,mNotifyManager,mBuilder
 		 ,adapter,size);
 		//listview.setOnScrollListener(new DisasmPager(adapter,dai));
-		//	dai.getSome(filecontent,start,size,addr,100/*, disasmResults*/);
+		//	dai.getSome(filecontent,start,size,addr,100/*, disasmResults*///);
 //		workerThread = new Thread(new Runnable(){
 //				@Over
 		//DisasmPager pager;
@@ -979,7 +981,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		//Currently not suported
 
 		//btDisasm.setEnabled(true);
-	}
+	//}
 
 	public final Runnable runnableRequestLayout=new Runnable(){
 		@Override
@@ -1014,13 +1016,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		//NOW there's no notion of pause or resume!!!!!
 		//if(offset==parsedFile.getEntryPoint())
 		//	disasmResults.clear();//otherwise resume, not clear
-		mNotifyManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		/*mNotifyManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		mBuilder = new Notification.Builder(this);
 		mBuilder.setContentTitle("Disassembler")
 			.setContentText("Disassembling in progress")
 			.setSmallIcon(R.drawable.ic_launcher)
 			.setOngoing(true)
-			.setProgress(100, 0, false);
+			.setProgress(100, 0, false);*/
 		/*Intent snoozeIntent = new Intent(this, MyBroadcastReceiver.class);
 		 snoozeIntent.setAction(ACTION_SNOOZE);
 		 snoozeIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
@@ -1094,7 +1096,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				@Override
 				public void run()
 				{
-
 					long codesection=parsedFile.getCodeSectionBase();
 					long start=codesection+offset;//elfUtil.getCodeSectionOffset();
 					long index=start;
@@ -1105,7 +1106,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					//	getFunctionNames();
 					long size=limit - start;
 					long leftbytes=size;
-					DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
+					DisasmIterator dai=new DisasmIterator(MainActivity.this,/*mNotifyManager,mBuilder,*/adapter,size);
 					adapter.setDit(dai);
 					adapter.LoadMore(0,addr);
 					//long toresume=dai.getSome(filecontent,start,size,addr,1000000/*, disasmResults*/);
@@ -2074,11 +2075,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					.withMemoryBar(true)
 					.allowCustomPath(true)
 					.setType(StorageChooser.FILE_PICKER)
-					.actionSave(true)
+					.actionSave(true)		
 					//.withPreference(settingPath)
-					.withPredefinedPath(prepath)
+				//	.withPredefinedPath(prepath)
+					.shouldResumeSession(true)
+					.showHidden(true)
 					.build();
 					// Show dialog whenever you want by
+				//chooser.getsConfig().setPrimaryPath(prepath);
 				chooser.show();
 				// get path that the user has chosen
 				chooser.setOnSelectListener(new StorageChooser.OnSelectListener() {
@@ -2326,9 +2330,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				setParsedFile(new RawFile(file));
 				AllowRawSetup();
 				//failed to parse the file. please setup manually.
-			}catch(Exception g)
+			}
+			catch(Exception g)
 			{
-				AlertError("failed to parse the file. please setup manually.",g);
+				AlertError("Unexpected exception: failed to parse the file. please setup manually.",g);
 				setParsedFile(new RawFile(file));
 				AllowRawSetup();
 			}
@@ -2384,7 +2389,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		//if(arch==CS_ARCH_X86){
 		adapter.setArchitecture(arch);	//wider operands
 		colorHelper.setArchitecture(arch);
-
 		//}
 		shouldSave = true;
 		List<Symbol> list=parsedFile.getExportSymbols();

@@ -36,6 +36,9 @@ extern "C"
 	{
 		csh handle;
 		const char * errmsg(cs_err e);
+		
+		int arch=CS_ARCH_ARM;
+		
 		static void print_insn_detail(string &buf,cs_insn *ins);
 
 		const char * errmsg(cs_err e)
@@ -73,17 +76,19 @@ extern "C"
 			handle=0;
 			return 0;
 		}
-		JNIEXPORT jint JNICALL Java_com_kyhsgeekcode_disassembler_MainActivity_Open(JNIEnv * env, jobject thiz,int arch,int mode)
+		JNIEXPORT jint JNICALL Java_com_kyhsgeekcode_disassembler_MainActivity_Open(JNIEnv * env, jobject thiz,int arch1,int mode)
 		{
 			cs_err e;
 			cs_close(&handle);
-			if ((e=cs_open((cs_arch)arch, (cs_mode)mode, & handle) )!= CS_ERR_OK)
+			if ((e=cs_open((cs_arch)arch1, (cs_mode)mode, & handle) )!= CS_ERR_OK)
 			{	
 				return /* env->NewStringUTF(errmsg(e));*/e;
 			}
 			cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
 			// turn on SKIPDATA mode
 			cs_option(handle, CS_OPT_SKIPDATA, CS_OPT_ON);
+			arch=arch1;
+			return CS_ERR_OK;
 		}
 		JNIEXPORT void JNICALL Java_com_kyhsgeekcode_disassembler_MainActivity_Finalize(JNIEnv * env, jobject thiz)
 		{
@@ -111,7 +116,7 @@ extern "C"
 			return cs_option(NULL,CS_OPT_MEM,(size_t )&mem);		
 			//return 0;
 		}
-		int arch=CS_ARCH_ARM;
+		
 		JNIEXPORT jint JNICALL Java_com_kyhsgeekcode_disassembler_DisasmIterator_CSoption(JNIEnv * env, jobject thiz,jint arg1,jint arg2)
 		{
 			if(arg1==CS_OPT_MODE)
@@ -297,14 +302,15 @@ extern "C"
 					env->DeleteLocalRef(job2);		
 					env->SetByteField(dar, fidGroupCount, detail->groups_count);
 					//now get the operands, etc..
-					long jumpOffset;
+					long jumpOffset=0;
 					switch(arch)
 					{
 						case CS_ARCH_X86:	// X86 architecture (including x86 & x86-64)
 						{
 							const cs_x86 *x86=&detail->x86;
-							jumpOffset=X86_REL_ADDR(*insn);
+							jumpOffset=X86_REL_ADDR(*insn)-insn->address;
 						}
+						break;// IMPORTANT!!!!!!!!!!!!!!!!
 						case CS_ARCH_ARM:	// ARM architecture (including Thumb, Thumb-2)
 						{
 							const cs_arm *arm=&detail->arm;
@@ -321,30 +327,50 @@ extern "C"
 								//TODO: parse PLT
 							}
 						}
+						break;
 						case CS_ARCH_ARM64:		// ARM-64, also called AArch64
 						{
 							const cs_arm64 *arm64=&detail->arm64;
+							switch(arm64->op_count)
+							{
+								case 0:
+									break;
+								case 1:	//B xx
+									jumpOffset=arm64->operands[0].type==ARM64_OP_IMM ? (arm64->operands[0].imm-insn->address):0;
+									break;
+								case 2: //mov pc,#0
+									jumpOffset=arm64->operands[1].type==ARM64_OP_IMM ? (arm64->operands[1].imm-insn->address):0;
+									break;
+								//TODO: parse PLT
+							}
+							
 						}
+						break;
 						case CS_ARCH_MIPS:		// Mips architecture
 						{
 							const cs_mips *mips=&detail->mips;
 						}
+						break;
 						case CS_ARCH_PPC:		// PowerPC architecture
 						{
 							const cs_ppc *ppc=&detail->ppc;
 						}
+						break;
 						case CS_ARCH_SPARC:		// Sparc architecture
 						{
 							const cs_sparc *sparc=&detail->sparc;
 						}
+						break;
 						case CS_ARCH_SYSZ:		// SystemZ architecture
 						{
 							const cs_sysz *sysz=&detail->sysz;
 						}
+						break;
 						case CS_ARCH_XCORE:		// XCore architecture
 						{
 							const cs_xcore *xcore=&detail->xcore;
 						}
+						break;
 					}
 					env->SetLongField(dar, fidJumpOffset,jumpOffset);
 				}

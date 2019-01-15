@@ -241,7 +241,7 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
 		//this.address.clear();
 		Log.d(TAG,"LoadMore"+position+","+writep+","+address);
 		writep=position;
-		dit.getSome(file.fileContents,address-file.codeVirtualAddress,file.fileContents.length,address,INSERT_COUNT);
+		dit.getSome(file.fileContents,address+file.codeBase-file.codeVirtualAddress/*address-file.codeVirtualAddress*/,file.fileContents.length,address,INSERT_COUNT);
 	}
 	// Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
 	@Override

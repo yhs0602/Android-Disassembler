@@ -2,9 +2,9 @@
 
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
 
-# Version 1.4.4 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.4.5 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
-# What's new : Root file chooser!
+## What's new : Go to last browsed folder(issue #, file chooser session), Fixed jump address issues, Fixed VirtualAddress calculation for disassembly(Sorry for inconvenience, and I highly recommend updating the app to this version)
 
 # Features
 - Shows details of elf files.
@@ -26,6 +26,9 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 - You can copy an instruction to the clipboard.
 - It now parses *IAT, EAT* of PE headers.
 - You can now choose the columns to view.
+- Supports analyzing system files(which are not accessible without root permission) for rooted phones.
+- Friendlier message for non-parsable files.
+- The storage chooser now retains the session, so that it remembers the last browsed folder.
 
 # [Themes Download](https://github.com/KYHSGeekCode/Android-Disassembler/tree/master/themes)
  Good themes usually help you recognize some important instructions easily.
@@ -109,7 +112,7 @@ You can download the theme.zip here.
 
 # TODO
  - Show prototypes of NDK/C standard APIs in the symbols tab.
- - More sophisticated colorizing.
+ - More sophisticated colorizing
  - Generate more useful comments
  - Provide assembly tutorials.
  - Fix symbols bug.
@@ -122,7 +125,6 @@ You can download the theme.zip here.
  - Add compatibility for OllyDbg's `.udd/.bak` files
 
 # Help wanted!
- - X86 jumping address calculation creates negative values.
  - Don't the symbols' names look odd?
 
 # Thanks
