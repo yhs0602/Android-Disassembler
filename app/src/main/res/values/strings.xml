@@ -33,4 +33,6 @@
     <string name="text_freespace">%1$s free</string>
     <string name="toast_threshold_breached">%1$s is not sufficient for current operation. Please clear out some space.</string>
     <string name="toast_not_readable">The storage you have chosen is not accessible.</string>
+	
+	<string name="banner_ad_unit_id">ca-app-pub-1064966062299374~9116700670</string>
 </resources>

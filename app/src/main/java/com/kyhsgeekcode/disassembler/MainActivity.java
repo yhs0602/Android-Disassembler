@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	Button btFinishSetup;
 	Button btOverrideSetup;
 
+	TextView tvHex, tvAscii;
+	
 	//RadioGridGroup rgdArch;
 	Spinner spinnerArch;
 
@@ -1378,14 +1380,20 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         TabHost.TabSpec tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator("Details");
         TabHost.TabSpec tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator("Disassembly");
 		TabHost.TabSpec tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator("Symbols");
+		TabHost.TabSpec tab4 = tabHost.newTabSpec("5").setContent(R.id.tab4).setIndicator("Hex View");
+		
 		tabHost.addTab(tab0);
         tabHost.addTab(tab1);
+		tabHost.addTab(tab4);
 		tabHost.addTab(tab3);
         tabHost.addTab(tab2);
-
+		
 		this.tab1 = (LinearLayout) findViewById(R.id.tab1);
 		this.tab2 = (LinearLayout) findViewById(R.id.tab2);
 
+		tvHex=(TextView)findViewById(R.id.hexTextView);
+		tvAscii=(TextView)findViewById(R.id.hexTextViewAscii);
+		
 
 		toDoAfterPermQueue.add(new Runnable(){
 				@Override
@@ -2311,6 +2319,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		//	symAdapter.setCellItems(list);
 		getSupportActionBar().setTitle("Disassembler("+file.getName()+")");
+		tvHex.setText(getHexString());
 		try
 		{
 			setParsedFile(new ELFUtil(file,filecontent));
@@ -2340,7 +2349,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 	}
 
-	private void  AllowRawSetup()
+	private void AllowRawSetup()
 	{
 		disableEnableControls(true,llmainLinearLayoutSetupRaw);
 		return ;

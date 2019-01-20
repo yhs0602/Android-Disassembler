@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="match_parent"
+	android:layout_width="match_parent"
+	android:orientation="horizontal">
+
+	<LinearLayout
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:orientation="vertical"
+		android:layout_weight="1.0">
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:text="00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F"
+			android:id="@+id/hexTextViewCols"
+			android:textSize="12sp"
+			android:gravity="right|center_vertical"
+			android:textColor="#0C03F2"/>
+
+		<TextView
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+			android:text="Text"
+			android:id="@+id/hexTextView"
+			android:textSize="12sp"/>
+
+	</LinearLayout>
+
+	<LinearLayout
+		android:layout_height="match_parent"
+		android:layout_width="match_parent"
+		android:orientation="vertical"
+		android:layout_weight="2">
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:text="0 1 2 3 4 5 6 7 8 9 A B C D E F"
+			android:id="@+id/hexTextViewAsciiCol"
+			android:textSize="11sp"
+			android:gravity="center_vertical|center_horizontal"/>
+
+		<TextView
+			android:layout_height="match_parent"
+			android:layout_width="match_parent"
+			android:text="Text"
+			android:id="@+id/hexTextViewAscii"
+			android:textSize="11sp"/>
+
+	</LinearLayout>
+
+</LinearLayout>
+

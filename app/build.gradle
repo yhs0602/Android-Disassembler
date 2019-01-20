@@ -1,30 +1,41 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "21.1.0"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         applicationId "com.kyhsgeekcode.disassembler"
-        minSdkVersion 16
-        targetSdkVersion 25
+        minSdkVersion 20
+        targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName "1.4.5"
+		//multiDexEnabled true
     }
     buildTypes {
         release {
             minifyEnabled false
+			//useProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+		debug {
+			minifyEnabled false
+			//useProguard false
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+		}
     }
 }
 
 dependencies {
+	//compile 'com.google.android.gms:play-services-ads-lite:+'
+	//compile 'com.android.support:customtabs:27.1.1'
 	compile 'com.android.support:appcompat-v7:25.+'
+	//compile 'com.google.android.gms:play-services-ads:+'
 	compile 'com.github.codekidX:storage-chooser:2.0'
 	//compile 'com.github.skydoves:colorpickerpreference:1.0.5'
 	compile 'com.github.skydoves:colorpickerview:2.0.1'
+	//compile 'com.android.support:multidex:1.0.1'
 	//compile 'com.android.support:support-v4:27.+'
-	compile 'com.evrencoskun.library:tableview:0.8.8' 
+	//compile 'com.evrencoskun.library:tableview:0.8.8' 
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
