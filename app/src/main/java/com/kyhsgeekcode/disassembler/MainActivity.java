@@ -61,12 +61,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private Notification.Builder mBuilder;
 
-	private static final int TAB_EXPORT = 2;
+	private static final int TAB_EXPORT = 3;
 
-	private static final int TAB_DISASM = 3;
+	private static final int TAB_DISASM = 4;
 
 	private ColumnSetting columnSetting=new ColumnSetting();
 
+	HexManager hexManager=new HexManager();
+	
 	public ColumnSetting getColumns()
 	{
 		return columnSetting;
@@ -2319,7 +2321,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		//	symAdapter.setCellItems(list);
 		getSupportActionBar().setTitle("Disassembler("+file.getName()+")");
-		tvHex.setText(getHexString());
+		hexManager.setBytes(filecontent);
+		hexManager.Show(tvHex,0);
 		try
 		{
 			setParsedFile(new ELFUtil(file,filecontent));

@@ -26,10 +26,16 @@
 					android:layout_height="match_parent"
 					android:orientation="vertical">
 
-					<TabWidget
-						android:id="@android:id/tabs"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"/>
+					<HorizontalScrollView
+						android:layout_height="wrap_content"
+						android:layout_width="match_parent">
+
+						<TabWidget
+							android:id="@android:id/tabs"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"/>
+
+					</HorizontalScrollView>
 
 					<FrameLayout
 						android:id="@android:id/tabcontent"
@@ -185,13 +191,16 @@
 									android:layout_height="wrap_content"
 									android:layout_width="wrap_content"
 									android:text="Finish Setup"
-									android:id="@+id/mainBTFinishSetup"/>					
+									android:id="@+id/mainBTFinishSetup"/>
+
 							</LinearLayout>
+
 							<Button
 								android:layout_height="wrap_content"
 								android:layout_width="wrap_content"
 								android:text="Override autosetup"
 								android:id="@+id/mainBTOverrideAuto"/>
+
 						</LinearLayout>
 
 						<LinearLayout
@@ -271,23 +280,11 @@
 								android:layout_width="match_parent"
 								android:orientation="horizontal">
 
-								<!--Button
-									android:layout_height="wrap_content"
-									android:text="Disassemble"
-									android:layout_width="wrap_content"
-									android:id="@+id/btnDisasm"/-->
-
 								<Button
 									android:layout_height="wrap_content"
 									android:text="Export"
 									android:layout_width="wrap_content"
 									android:id="@+id/btnSaveDisasm"/>
-
-								<!--Button
-									android:layout_height="wrap_content"
-									android:layout_width="wrap_content"
-									android:text="Abort"
-									android:id="@+id/btAbort"/-->
 
 							</LinearLayout>
 
@@ -303,6 +300,7 @@
 							</HorizontalScrollView>
 
 						</LinearLayout>
+
 						<LinearLayout
 							android:id="@+id/tab4"
 							android:orientation="horizontal"
@@ -310,6 +308,7 @@
 							android:layout_width="match_parent"
 							android:layout_height="match_parent"
 							android:layout_gravity="center_horizontal">
+
 							<LinearLayout
 								android:layout_height="match_parent"
 								android:layout_width="match_parent"
@@ -356,8 +355,9 @@
 									android:textSize="11sp"/>
 
 							</LinearLayout>
-								
+
 						</LinearLayout>
+
 					</FrameLayout>
 
 				</LinearLayout>

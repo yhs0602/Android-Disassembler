@@ -123,6 +123,9 @@ You can download the theme.zip here.
  - Better support for thumb assemblies
  - Support .NET assemblies
  - Add compatibility for OllyDbg's `.udd/.bak` files
+ - Add compatibility for IDA's produce files.
+ - About to add Hex view, calculator, and any other utilities.
+ - About to post this app on the play store!
 
 # Help wanted!
  - Don't the symbols' names look odd?

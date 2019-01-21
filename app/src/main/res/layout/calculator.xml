@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:text="Large Text"
+		android:gravity="right|center_vertical"
+		android:padding="10dp"/>
+
+	<GridLayout
+		columnCount="1"
+		android:layout_height="match_parent"
+		android:layout_width="wrap_content"
+		rowCount="1"
+		android:columnCount="4">
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="="
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:orientation="vertical"
+			android:layout_column="1"
+			android:layout_columnSpan="3">
+
+			<RadioGroup
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:orientation="horizontal">
+
+				<RadioButton
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="Hex"
+					android:padding="8dp"
+					android:id="@+id/calculatorRBHex"/>
+
+				<RadioButton
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="Dec"
+					android:padding="8dp"
+					android:id="@+id/calculatorRBDec"/>
+
+				<RadioButton
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="Bin"
+					android:padding="8dp"
+					android:id="@+id/calculatorRBBin"/>
+
+				<RadioButton
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:text="Oct"
+					android:padding="8dp"
+					android:id="@+id/calculatorRBOct"/>
+
+			</RadioGroup>
+
+			<LinearLayout
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+				android:orientation="horizontal">
+
+				<RadioGroup
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:orientation="horizontal">
+
+					<RadioButton
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="Deg"
+						android:padding="8dp"
+						android:id="@+id/calculatorRBHex"/>
+
+					<RadioButton
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="Rad"
+						android:padding="8dp"
+						android:id="@+id/calculatorRBDec"/>
+
+				</RadioGroup>
+
+				<RadioGroup
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:orientation="horizontal">
+
+					<RadioButton
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="Signed"
+						android:padding="8dp"
+						android:id="@+id/calculatorRBHex"/>
+
+					<RadioButton
+						android:layout_height="wrap_content"
+						android:layout_width="wrap_content"
+						android:text="Unsigned"
+						android:padding="8dp"
+						android:id="@+id/calculatorRBDec"/>
+
+				</RadioGroup>
+
+			</LinearLayout>
+
+		</LinearLayout>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="+"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="-"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="×"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="÷"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="&amp;"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="|"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="^"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="!"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="SHL"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="SHR"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="ROL"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="ROR"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="BYTE"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="WORD"
+			android:padding="20dp"
+			android:textSize="18sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="DWORD"
+			android:padding="20dp"
+			android:textSize="14sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="QWORD"
+			android:padding="20dp"
+			android:textSize="14sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="C"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="D"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="E"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="F"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="8"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="9"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="A"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="B"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="4"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="5"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="6"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="7"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="0"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="1"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="2"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+		<Button
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:text="3"
+			android:padding="20dp"
+			android:textSize="20sp"/>
+
+	</GridLayout>
+
+</LinearLayout>
+
