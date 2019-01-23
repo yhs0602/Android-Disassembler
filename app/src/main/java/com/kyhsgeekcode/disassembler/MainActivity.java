@@ -411,10 +411,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								break;
 							}
 						}
-						long lbase=Long.parseLong(base);
-						long llimit=Long.parseLong(limit);
-						long lentry=Long.parseLong(entry);
-						long lvirt=Long.parseLong(virt);
+						long lbase=Long.parseLong(base,16);
+						long llimit=Long.parseLong(limit,16);
+						long lentry=Long.parseLong(entry,16);
+						long lvirt=Long.parseLong(virt,16);
 						if(lbase>llimit)
 							throw new Exception("CS base<0");
 						if(llimit<=0)

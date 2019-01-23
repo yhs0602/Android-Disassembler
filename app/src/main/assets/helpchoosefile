@@ -1,0 +1,25 @@
+<Choosing a file>
+You can choose file when you click "choose file" button.
+The file picker opens and you can choose the file to analyze.
+This app supports linux ELF file format, windows PE file format internally.
+However, you may open the other file formats though you have to enter some meta-data yourself.
+
+<How can I choose files at "/data/data/..." or "/system/...", not in "/storage/emulated/0" or "/sdcard"?>
+You can use the root file picker developed by KYHSGeekCode(me) to analyze files that require root permission to access.
+(Of course you need to have and grant the root permission to this app)
+
+<Please setup manually?>
+This message means that the app failed to recognize the selected file's format, and couldn't extract the required data for analyzing.
+In this case, you need to enter the file's meta-data such as:
+
+ - foffs of CS : File offset of Code Section start.
+ - foofs of CS end : File offset of Code Section end.
+ - RVA of entry point : Relative Virtual address of entry point.
+ - VirtualAddress : Virtual Address of code section.
+ - Architecture : The target machine of the file.
+ 
+ After setting these data, press "FINISH SETUP" button.
+ 
+ <Overriding autosetup>
+ If you think the app is misparsing the file header, you can OVERRIDE the metadata for analyzing.
+ After re-entering the metadata, press "FINISH SETUP".
