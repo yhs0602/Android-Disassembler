@@ -3,11 +3,11 @@ import java.util.*;
 
 public class Calculator
 {
-	public static String Calc(String infix)
+	public static Data Calc(String infix)
 	{
 		return CalcPostfix(toPostfix(infix));
 	}
-	public static String CalcPostfix(List<Token> postfix)
+	public static Data CalcPostfix(List<Token> postfix)
 	{
 		Stack<Token> operands=new Stack<>();
 		for(Token tok:postfix)
@@ -17,12 +17,12 @@ public class Calculator
 				operands.push(tok);
 			}else if (tok.isOperator())
 			{
-				Token t=((Operator)tok).calc(operands);
+				Token t=new Token(((Operator)tok).calc(operands));
 				if(t!=null)
 					operands.push(t);
 			}
 		}
-		return operands.pop().toString();
+		return operands.pop().getValue();
 	}
 	public static List<Token> toPostfix(String infix)
 	{
@@ -39,7 +39,7 @@ public class Calculator
 					operatorStack.push((Operator)tok);
 				}else{
 					Operator op1=operatorStack.peek();
-					int cmp=op1.compareTo(tok);
+					int cmp=op1.compareTo((Operator)tok);
 					if(cmp>0)
 					{
 						while(!operatorStack.isEmpty())

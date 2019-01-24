@@ -7,7 +7,14 @@ public class Token
 	}
 	public Token(char[] src, int start, int n)
 	{
-		
+		String s=new String(src,start,n);
+		if(Character.isDigit(src[start]))
+		{
+			data=new Data(Double.parseDouble(s));
+		} else {
+			//Var or functions
+			data= new Data(0);
+		}
 	}
 	public Token(String s)
 	{
@@ -35,4 +42,13 @@ public class Token
 	};
 	Type type;
 	String name;
+	Data data;
+	public Data getValue()
+	{
+		return data;
+	}
+	public Token(Data data)
+	{
+		this.data=data;
+	}
 }

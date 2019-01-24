@@ -3,7 +3,7 @@ import android.widget.*;
 
 public class HexManager
 {
-	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+	public final static char[] hexArray = "0123456789ABCDEF".toCharArray();
 	byte [] bytes;
 	String sep=System.lineSeparator();
 	public void Show(TextView tv,int startaddress)

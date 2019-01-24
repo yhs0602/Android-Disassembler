@@ -3,11 +3,10 @@ package com.kyhsgeekcode.disassembler.Calc;
 //unary operator:??
 import java.util.*;
 
-public class Operator extends Token implements Comparable
+public class Operator extends Token implements Comparable<Operator>
 {
-
 	@Override
-	public int compareTo(Object p1)
+	public int compareTo(Operator p1)
 	{
 		
 		return 0;
@@ -25,8 +24,37 @@ public class Operator extends Token implements Comparable
 	{
 		super(src,start,n);
 	}
-	public Token calc(Stack<Token> stack)
+	public Data calc(Stack<Token> stack)
 	{
+		switch(operation)
+		{
+			case PLUS:
+				return new Data(stack.pop().getValue().getDouble()+stack.pop().getValue().getDouble());
+			case MINUS:
+				return new Data(-stack.pop().getValue().getDouble()+stack.pop().getValue().getDouble());
+			case MOV:
+			{
+				Data data1=stack.pop().getValue();
+				Data dataDest=stack.pop().getValue();
+				return dataDest.set(data1);
+			}
+			//case 
+		}
 		return null;
 	}
+	Operation operation;
+	enum Operation
+	{
+		//order by priority
+		PLUS,
+		MINUS,
+		MULT,
+		DIV,
+		SHR,
+		SHL,
+		ROR,
+		ROL,
+		POWER,
+		MOV
+	};
 }

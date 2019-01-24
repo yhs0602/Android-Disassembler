@@ -68,6 +68,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private ColumnSetting columnSetting=new ColumnSetting();
 
 	HexManager hexManager=new HexManager();
+
+	private GridView gvHex;
+
+	private GridView gvAscii;
 	
 	public ColumnSetting getColumns()
 	{
@@ -1393,10 +1397,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		this.tab1 = (LinearLayout) findViewById(R.id.tab1);
 		this.tab2 = (LinearLayout) findViewById(R.id.tab2);
 
-		tvHex=(TextView)findViewById(R.id.hexTextView);
-		tvAscii=(TextView)findViewById(R.id.hexTextViewAscii);
+		//tvHex=(TextView)findViewById(R.id.hexTextView);
+		//tvAscii=(TextView)findViewById(R.id.hexTextViewAscii);
 		
-
+		gvHex = (GridView)findViewById(R.id.mainGridViewHex);
+		gvAscii = (GridView)findViewById(R.id.mainGridViewAscii);
 		toDoAfterPermQueue.add(new Runnable(){
 				@Override
 				public void run()
@@ -2321,8 +2326,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 		//	symAdapter.setCellItems(list);
 		getSupportActionBar().setTitle("Disassembler("+file.getName()+")");
-		hexManager.setBytes(filecontent);
-		hexManager.Show(tvHex,0);
+		//hexManager.setBytes(filecontent);
+		//hexManager.Show(tvHex,0);
+		gvHex.setAdapter(new HexGridAdapter(filecontent));
+		gvAscii.setAdapter(new HexAsciiAdapter(filecontent));
 		try
 		{
 			setParsedFile(new ELFUtil(file,filecontent));
