@@ -2,9 +2,6 @@ package com.kyhsgeekcode.disassembler.Calc;
 
 public class Token
 {
-	public Token(){
-		
-	}
 	public Token(char[] src, int start, int n)
 	{
 		String s=new String(src,start,n);
@@ -13,8 +10,11 @@ public class Token
 			data=new Data(Double.parseDouble(s));
 		} else {
 			//Var or functions
+			name=s;
 			data= new Data(0);
 		}
+		//TODO
+		type=Type.OPERAND;
 	}
 	public Token(String s)
 	{
@@ -51,4 +51,10 @@ public class Token
 	{
 		this.data=data;
 	}
+	@Override
+	public String toString()
+	{
+		return "name="+name+",type="+type+",data="+data;
+	}
+	
 }

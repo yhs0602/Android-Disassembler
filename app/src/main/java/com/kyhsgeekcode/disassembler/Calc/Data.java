@@ -93,6 +93,13 @@ public class Data
 		}
 		return "";
 	}
+
+	@Override
+	public String toString()
+	{
+		return getString();
+	}
+	
 	enum Type
 	{
 		LONG,

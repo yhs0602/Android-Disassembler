@@ -26,10 +26,18 @@ import java.util.regex.*;
 import java.util.zip.*;
 import nl.lxtreme.binutils.elf.*;
 import com.stericson.RootTools.*;
+import android.widget.AdapterView.*;
+import android.widget.AbsListView.*;
+import com.kyhsgeekcode.disassembler.Calc.*;
 
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
 {
+	
+	View touchSource;
+	
+	View clickSource;
+	
 	Queue<Runnable> toDoAfterPermQueue=new LinkedBlockingQueue<>();
 
 	private ArrayAdapter<String> autoSymAdapter ;
@@ -1402,6 +1410,79 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		
 		gvHex = (GridView)findViewById(R.id.mainGridViewHex);
 		gvAscii = (GridView)findViewById(R.id.mainGridViewAscii);
+		
+		gvHex.setOnTouchListener(new OnTouchListener() {
+										 @Override
+										 public boolean onTouch(View v, MotionEvent event) {
+											 if(touchSource == null)
+												 touchSource = v;
+
+											 if(v == touchSource) {
+												 gvAscii.dispatchTouchEvent(event);
+												 if(event.getAction() == MotionEvent.ACTION_UP) {
+													 clickSource = v;
+													 touchSource = null;
+												 }
+											 }
+
+											 return false;
+										 }
+									 });
+		gvHex.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					if(parent == clickSource) {
+						// Do something with the ListView was clicked
+					}
+				}
+			});/*
+		gvHex.setOnScrollListener(new OnScrollListener() {
+				@Override
+				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+					if(view == clickSource) 
+						gvAscii.setSelectionFromTop(firstVisibleItem, view.getChildAt(0).getTop()/* + offset);
+				}
+
+				@Override
+				public void onScrollStateChanged(AbsListView view, int scrollState) {}
+			});*/
+		gvAscii.setOnTouchListener(new OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					if(touchSource == null)
+						touchSource = v;
+
+					if(v == touchSource) {
+						gvHex.dispatchTouchEvent(event);
+						if(event.getAction() == MotionEvent.ACTION_UP) {
+							clickSource = v;
+							touchSource = null;
+						}
+					}
+
+					return false;
+				}
+			});
+		gvAscii.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+					if(parent == clickSource) {
+						// Do something with the ListView was clicked
+					}
+				}
+			});
+			/*
+		gvAscii.setOnScrollListener(new OnScrollListener() {
+				@Override
+				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+					if(view == clickSource) 
+						gvHex.setSelectionFromTop(firstVisibleItem, view.getChildAt(0).getTop()/* + offset);
+				}
+
+				@Override
+				public void onScrollStateChanged(AbsListView view, int scrollState) {}
+			});
+			*/
 		toDoAfterPermQueue.add(new Runnable(){
 				@Override
 				public void run()
@@ -1943,6 +2024,18 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 					break;
 				}
+			case R.id.calc:
+			{
+				final EditText et=new EditText(this);
+				ShowEditDialog("", "", et, "OK", new DialogInterface. OnClickListener(){
+						@Override
+						public void onClick(DialogInterface p1,int  p2)
+						{
+							Toast.makeText(MainActivity.this,Calculator.Calc(et.getText().toString()).toString(),3).show();
+							return ;
+						}
+					}, "Cancel", (DialogInterface.OnClickListener)null);
+			}
 
 		}
         return super.onOptionsItemSelected(item);

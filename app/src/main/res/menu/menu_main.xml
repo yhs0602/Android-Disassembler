@@ -4,7 +4,7 @@
         android:title="goto"/>
 	<item
         android:id="@+id/chooserow"
-        android:title="Choose rows"/>
+        android:title="Choose columns"/>
 	<item
         android:id="@+id/find"
         android:title="find(Not yet)">
@@ -37,9 +37,9 @@
 	<item
         android:id="@+id/export"
         android:title="export project as zip"/>
-    <!--item
-        android:id="@+id/rows"
-        android:title="rows"/-->
+    <item
+        android:id="@+id/calc"
+        android:title="Open calculator"/>
 	<item
         android:id="@+id/settings"
         android:title="Settings / Help"/>
