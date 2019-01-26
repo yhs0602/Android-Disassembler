@@ -17,31 +17,31 @@ public class Operator extends Token implements Comparable<Operator>
 		if(myp==null)
 			return -1;
 		if(youp==null)
-			return -1;
-		
+			return -1;		
 		return -myp.compareTo(youp);
 	}
 	
 	//public double 
-	private Operator(String s){
+	public Operator(String s){
 		super(s,Type.OPERATOR);
 		if(operation==null)
 		{
 			operation=str2op.get(s);
 		}
 		if(operation==null)
-			operation=Operation.PLUS;
+			operation=Operation.MULT;
 	}
 	public Operator(char c)
 	{
 		this(""+c);
 		operation=ch2op.get(c);
 		if(operation==null)
-			operation=Operation.PLUS;	
+			operation=Operation.MULT;	
 	}
 	public Operator(char [] src, int start, int n)
 	{
-		super(src,start,n);
+		this(new String(src,start,n));
+		//type=Type.OPERATOR;
 	}
 	public Data calc(Stack<Token> stack)
 	{
@@ -67,6 +67,78 @@ public class Operator extends Token implements Comparable<Operator>
 				Data data2=stack.pop().getValue();
 				return new Data(data2.getDouble()/data1.getDouble());
 			}
+			case REMAINDER:
+			{
+				Data data1=stack.pop().getValue();
+				Data data2=stack.pop().getValue();
+				return new Data(data2.getDouble()%data1.getDouble());
+			}
+			case POWER:
+				{
+					Data data1=stack.pop().getValue();
+					Data data2=stack.pop().getValue();
+					return new Data(Math.pow(data2.getDouble(),data1.getDouble()));
+				}
+			case SHR:
+				{
+					Data data1=stack.pop().getValue();
+					Data data2=stack.pop().getValue();
+					return new Data(data2.getLong()>>data1.getLong());
+				}
+			case SHL:
+				{
+					Data data1=stack.pop().getValue();
+					Data data2=stack.pop().getValue();
+					return new Data(data2.getLong()<<data1.getLong());
+				}
+			case ASHR:
+				{
+					Data data1=stack.pop().getValue();
+					Data data2=stack.pop().getValue();
+					return new Data(data2.getLong()>>>data1.getLong());
+				}
+			case ASHL://Dummy
+				{
+					Data data1=stack.pop().getValue();
+					Data data2=stack.pop().getValue();
+					return new Data(data2.getLong()<<data1.getLong());
+				}
+			case BAND:
+			{
+				return new Data(stack.pop().getValue().getLong()&stack.pop().getValue().getLong());
+			}
+			case BXOR:
+				{
+					return new Data(stack.pop().getValue().getLong()^stack.pop().getValue().getLong());
+				}
+			case BOR:
+				{
+					return new Data(stack.pop().getValue().getLong()|stack.pop().getValue().getLong());
+				}
+			case LOR:
+			{
+				return new Data((stack.pop().getValue().getLong()|stack.pop().getValue().getLong())!=0?1:0);
+			}
+			case LAND:
+				{
+					return new Data((stack.pop().getValue().getLong()&stack.pop().getValue().getLong())!=0?1:0);
+				}
+			case LNOT:
+				{
+					return new Data((stack.pop().getValue().getLong())!=0?0:1);
+				}
+			case BNOT:
+			{
+				return new Data(~stack.pop().getValue().getLong());
+			}
+			case EQ:
+			{
+				return new Data(stack.pop().getValue().equals(stack.pop().getValue())?1:0);
+			}
+			case NE:
+				{
+					return new Data(stack.pop().getValue().equals(stack.pop().getValue())?0:1);
+				}
 		}
 		return null;
 	}
@@ -74,14 +146,16 @@ public class Operator extends Token implements Comparable<Operator>
 	enum Operation
 	{
 		//order by priority
-		PLUS,
-		MINUS,
+		//PLUS,
+		//MINUS,
 		MULT,
 		DIV,
 		SHR,
 		SHL,
 		ROR,
 		ROL,
+		ASHR,
+		ASHL,
 		POWER,
 		MOV,
 		SEDC,
@@ -137,7 +211,7 @@ public class Operator extends Token implements Comparable<Operator>
 		SEMICOLON
 	};
 	static final Map<Character,Operation> ch2op=new HashMap<>();
-	{
+	static{
 		ch2op.put('+',Operation.ADD);
 		ch2op.put('-',Operation.SUB);
 		ch2op.put('*',Operation.MULT);
@@ -146,21 +220,25 @@ public class Operator extends Token implements Comparable<Operator>
 		ch2op.put('/',Operation.DIV);
 		ch2op.put('=',Operation.MOV);
 		ch2op.put('(',Operation.LPAR);
+		ch2op.put(')',Operation.RPAR);
 	}
 	static final Map<String,Operation> str2op=new HashMap<>();
-	{
+	static{
 		str2op.put(">>",Operation.SHR);
 		str2op.put("<<",Operation.SHL);
-		str2op.put(">>>",Operation.ROR);
-		str2op.put("<<<",Operation.ROL);
+		str2op.put(">>>",Operation.ASHR);
+		str2op.put("<<<",Operation./*A*/SHL);
+		str2op.put("<<<<",Operation.ROL);
+		str2op.put(">>>>",Operation.ROR);
 		str2op.put("**",Operation.POWER);
 		str2op.put("++",Operation.PINC);
 		str2op.put("--",Operation.PDEC);
+		//str2op.put("*",Operation.MULT);
 		//str2op.put('/',Operation.DIV);
 		//str2op.put('=',Operation.MOV);
 	}
 	static final Map<Operation,Integer> op2priority=new HashMap<>();
-	{
+	static{
 		op2priority.put(Operation.SINC,1);
 		op2priority.put(Operation.SDEC,1);
 		op2priority.put(Operation.LPAR,1);
