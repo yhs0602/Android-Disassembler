@@ -2027,7 +2027,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			case R.id.calc:
 			{
 				final EditText et=new EditText(this);
-				ShowEditDialog("", "", et, "OK", new DialogInterface. OnClickListener(){
+				ShowEditDialog("Calculator", "Enter an expression to measure", et, "OK", new DialogInterface. OnClickListener(){
 						@Override
 						public void onClick(DialogInterface p1,int  p2)
 						{
@@ -2035,6 +2035,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 							return ;
 						}
 					}, "Cancel", (DialogInterface.OnClickListener)null);
+			}
+			break;
+			case R.id.donate:
+			{
+				Intent intent=new Intent(this,DonateActivity.class);
+				startActivity(intent);
 			}
 
 		}
@@ -2079,9 +2085,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}else{
 			Toast.makeText(this,"please enter a valid address..",3).show();
 		}
-
-
-
 		return ;
 	}
 

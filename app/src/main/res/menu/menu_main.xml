@@ -43,5 +43,7 @@
 	<item
         android:id="@+id/settings"
         android:title="Settings / Help"/>
-	
+	<item
+        android:id="@+id/donate"
+        android:title="Donate(See ad)"/>
 </menu>

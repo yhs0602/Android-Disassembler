@@ -15,7 +15,7 @@ public class DonateActivity extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_donate);
 
        /* MobileAds.initialize(this,
 							 "ca-app-pub-3940256099942544~3347511713");

@@ -1,12 +1,10 @@
 package com.kyhsgeekcode.disassembler.Calc;
 
-
 import android.util.*;
 import java.util.*;
 
 public class StringParser
 {
-
 	private String TAG="Disassembler parser";
 	public StringParser(String s)
 	{
@@ -24,16 +22,26 @@ public class StringParser
 			}
 			int s=i;
 			Log.v(TAG,"s="+s);
-			while(i<chars.length&&Character.isJavaIdentifierPart(chars[i])){
+			while(i<chars.length&&(Character.isJavaIdentifierPart(chars[i])||chars[i]=='.')){
 				i++;
-				Log.v(TAG,"JavaId"+i);
+				//Log.v(TAG,"JavaId"+i);
 			}
 			if(i!=s)
-				return new Token(chars,s,i-s);
+			{
+				String str= new String(chars,s,i-s);
+				if(Operator.str2op.keySet().contains(str))
+				{
+					return new Operator(str);
+				}
+				else{
+					return new Token(str);
+				}	
+			}
+				
 			//TODO: CHECK MORE CHARS
 			if(str2opks==null)
 				str2opks=Operator.str2op.keySet();
-			for(String chs:str2opks)
+			for(String chs:Operator.keyList)
 			{
 				int reqlen=chs.length();
 				Log.v(TAG,"chs="+chs+reqlen);
@@ -52,6 +60,7 @@ public class StringParser
 			}
 			if(ch2opks==null)
 				ch2opks=Operator.ch2op.keySet();
+			
 			if(i<chars.length)
 			{
 				Log.v(TAG,"ci="+chars[i]);

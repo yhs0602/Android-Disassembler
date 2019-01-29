@@ -1,7 +1,6 @@
 package com.kyhsgeekcode.disassembler.Calc;
-import java.util.*;
 import android.util.*;
-import org.apache.commons.codec.binary.*;
+import java.util.*;
 
 public class Calculator
 {
@@ -41,66 +40,80 @@ public class Calculator
 		}
 		return operands.pop().getValue();
 	}
+	//Time to support unary operator!
+	//2019. 01. 29
+	
 	public static List<Token> toPostfix(String infix)
 	{
 		StringParser sp=new StringParser(infix);
 		Stack<Operator> operatorStack=new Stack<>();
 		List<Token> postfix=new ArrayList<>();
 		Token tok;
+		Token prevTok=null;
 		while ((tok = sp.getToken()) != null)
 		{
 			Log.v(TAG, "Token=(" + tok + ")");
 			if (tok.isOperator())
 			{
-				if (operatorStack.isEmpty())
+				//-,+ are not able to be determined without context.
+				if(prevTok==null||prevTok.isOperator())
 				{
-					Log.v(TAG, "op stack is empty, pushing " + tok);
+					//unary?
+					Log.v(TAG,tok+" is unary?");
 					operatorStack.push((Operator)tok);
-				}
-				else
-				{
-					Operator op1=operatorStack.peek();
-					if (((Operator)tok).operation == Operator.Operation.LPAR)
+				}else{
+					if (operatorStack.isEmpty())
 					{
+						Log.v(TAG, "op stack is empty, pushing " + tok);
 						operatorStack.push((Operator)tok);
-					}
-					else if(((Operator)tok).operation==Operator.Operation.RPAR)
-					{
-						while (!operatorStack.isEmpty())
-						{
-							Operator pp=operatorStack.pop();
-							if(pp.operation!=Operator.Operation.LPAR)
-								postfix.add(pp);
-							else
-								break;
-						}
 					}
 					else
 					{
-						int cmp=op1.compareTo((Operator)tok);
-						if (cmp >= 0)//op1 priority is higher than this token
+						Operator op1=operatorStack.peek();
+						if (((Operator)tok).operation == Operator.Operation.LPAR)
+						{
+							operatorStack.push((Operator)tok);
+						}
+						else if(((Operator)tok).operation==Operator.Operation.RPAR)
 						{
 							while (!operatorStack.isEmpty())
 							{
-								Operator pp=operatorStack.peek();
+								Operator pp=operatorStack.pop();
 								if(pp.operation!=Operator.Operation.LPAR)
-									postfix.add(operatorStack.pop());
+									postfix.add(pp);
 								else
 									break;
 							}
-							operatorStack.push((Operator)tok);
 						}
-						else if (cmp < 0) //new token has higher priority
+						else
 						{
-							operatorStack.push((Operator)tok);
+							int cmp=op1.compareTo((Operator)tok);
+							if (cmp >= 0)//op1 priority is higher than this token
+							{
+								while (!operatorStack.isEmpty())
+								{
+									Operator pp=operatorStack.peek();
+									if(pp.operation!=Operator.Operation.LPAR)
+										postfix.add(operatorStack.pop());
+									else
+										break;
+								}
+								operatorStack.push((Operator)tok);
+							}
+							else if (cmp < 0) //new token has higher priority
+							{
+								operatorStack.push((Operator)tok);
+							}
 						}
 					}
 				}
+				
 			}
 			else/* if ( tok.isOperand())*/
 			{
 				postfix.add(tok);
 			}
+			prevTok=tok;
 		}
 		while (!operatorStack.isEmpty())
 		{

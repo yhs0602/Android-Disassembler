@@ -3,9 +3,11 @@ package com.kyhsgeekcode.disassembler.Calc;
 //unary operator:??
 import java.util.*;
 import com.kyhsgeekcode.disassembler.Calc.Operator.*;
+import java.math.*;
 
 public class Operator extends Token implements Comparable<Operator>
 {
+	
 	//returns positive if this is higher
 	@Override
 	public int compareTo(Operator p1)
@@ -139,6 +141,87 @@ public class Operator extends Token implements Comparable<Operator>
 				{
 					return new Data(stack.pop().getValue().equals(stack.pop().getValue())?0:1);
 				}
+			case SIN:
+			{
+				return new Data(Math.sin( stack.pop().getValue().getDouble()));
+			}
+			case COS:
+			{
+				return new Data(Math.cos(stack.pop().getValue().getDouble()));
+			}
+			case TAN:
+			{
+				return new Data(Math.tan(stack.pop().getValue().getDouble()));
+			}
+			case ASIN:
+				{
+					return new Data(Math.asin( stack.pop().getValue().getDouble()));
+				}
+			case ACOS:
+				{
+					return new Data(Math.acos(stack.pop().getValue().getDouble()));
+				}
+			case ATAN:
+				{
+					return new Data(Math.atan(stack.pop().getValue().getDouble()));
+				}
+			case CSC:
+				{
+					return new Data(1.0/Math.sin( stack.pop().getValue().getDouble()));
+				}
+			case SEC:
+				{
+					return new Data(1.0/Math.cos(stack.pop().getValue().getDouble()));
+				}
+			case COT:
+				{
+					return new Data(1.0/Math.tan(stack.pop().getValue().getDouble()));
+				}
+			case EXP:
+				{
+					return new Data(Math.exp( stack.pop().getValue().getDouble()));
+				}
+			case LN:
+				{
+					return new Data(Math.log(stack.pop().getValue().getDouble()));
+				}
+			case LOG2:
+				{
+					return new Data(Math.log(stack.pop().getValue().getDouble())/Math.log(2));
+				}
+			case SINH:
+				{
+					return new Data(Math.sinh( stack.pop().getValue().getDouble()));
+				}
+			case COSH:
+				{
+					return new Data(Math.cosh(stack.pop().getValue().getDouble()));
+				}
+			case TANH:
+				{
+					return new Data(Math.tanh(stack.pop().getValue().getDouble()));
+				}
+			case HEX:
+				{
+					return new Data(Long.toHexString( stack.pop().getValue().getLong()));
+				}
+			case OCT:
+				{
+					return new Data(Long.toOctalString(stack.pop().getValue().getLong()));
+				}
+			case BIN:
+				{
+					return new Data(Long.toBinaryString(stack.pop().getValue().getLong()));
+				}
+			case DEC:
+			{
+				return new Data(stack.pop().getValue().getString());
+			}
+			case POLAR:
+				{
+					return new Data(Math.sin( stack.pop().getValue().getDouble()));
+				}
+			
 		}
 		return null;
 	}
@@ -208,7 +291,30 @@ public class Operator extends Token implements Comparable<Operator>
 		MOVOR,
 		MOVXOR,
 		COMMA,
-		SEMICOLON
+		SEMICOLON,
+		
+		SIN,
+		COS,
+		TAN,
+		EXP,
+		LN,
+		LOG2,
+		SINH,
+		COSH,
+		TANH,
+		ASIN,
+		ACOS,
+		ATAN,
+		SEC,
+		CSC,
+		COT,
+		SQRT,
+		
+		HEX,
+		BIN,
+		OCT,
+		DEC,
+		POLAR
 	};
 	static final Map<Character,Operation> ch2op=new HashMap<>();
 	static{
@@ -221,8 +327,10 @@ public class Operator extends Token implements Comparable<Operator>
 		ch2op.put('=',Operation.MOV);
 		ch2op.put('(',Operation.LPAR);
 		ch2op.put(')',Operation.RPAR);
+		
 	}
 	static final Map<String,Operation> str2op=new HashMap<>();
+	static final List<String> keyList=new ArrayList<>();
 	static{
 		str2op.put(">>",Operation.SHR);
 		str2op.put("<<",Operation.SHL);
@@ -233,9 +341,45 @@ public class Operator extends Token implements Comparable<Operator>
 		str2op.put("**",Operation.POWER);
 		str2op.put("++",Operation.PINC);
 		str2op.put("--",Operation.PDEC);
+		
+		str2op.put("sin",Operation.SIN);
+		str2op.put("cos",Operation.COS);
+		str2op.put("exp",Operation.EXP);
+		str2op.put("ln",Operation.LN);
+		str2op.put("log2",Operation.LOG2);
+		str2op.put("tan",Operation.TAN)
+		;str2op.put("sinh",Operation.SINH);
+		str2op.put("cosh",Operation.COSH);
+		str2op.put("tanh",Operation.TANH);
+		str2op.put("asin",Operation.ASIN);
+		str2op.put("acos",Operation.ACOS);
+		str2op.put("atan",Operation.ATAN);
+		str2op.put("sec",Operation.SEC);
+		str2op.put("csc",Operation.CSC);
+		str2op.put("cot",Operation.COT);
+		str2op.put("cosec",Operation.CSC);
+		
+		
+		str2op.put("hex",Operation.HEX);
+		str2op.put("bin",Operation.BIN);
+		str2op.put("oct",Operation.OCT);
+		str2op.put("dec",Operation.DEC);
+		str2op.put("polar",Operation.POLAR);
+		
+		str2op.put("sqrt",Operation.SQRT);
+		str2op.put("√",Operation.SQRT);
 		//str2op.put("*",Operation.MULT);
 		//str2op.put('/',Operation.DIV);
 		//str2op.put('=',Operation.MOV);
+		Set ks=str2op.keySet();
+		keyList.addAll(ks);
+		Collections.sort(keyList, new Comparator<String>(){
+				@Override
+				public int compare(String p1, String p2)
+				{
+					return p2.length()-p1.length();
+				}
+			});
 	}
 	static final Map<Operation,Integer> op2priority=new HashMap<>();
 	static{

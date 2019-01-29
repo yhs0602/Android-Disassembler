@@ -52,7 +52,7 @@
 		<!--activity android:name=".OpenSourceActivity"/-->
 		<activity android:name=".FileSelectorActivity"/>
 		<activity android:name="com.kyhsgeekcode.rootpicker.FileSelectorActivity"/>
-			
+		<activity android:name=".DonateActivity"/>
 		<!--activity android:name="com.google.android.gms.ads.AdActivity"
 			android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
 			android:theme="@android:style/Theme.Translucent" /-->
