@@ -10,7 +10,6 @@ public class Token
 	public Token(String s)
 	{
 		name = s;
-
 		if (Character.isDigit(s.charAt(0)))
 		{
 			try
