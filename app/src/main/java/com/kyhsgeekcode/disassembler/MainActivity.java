@@ -2426,7 +2426,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		//hexManager.Show(tvHex,0);
 		gvHex.setAdapter(new HexGridAdapter(filecontent));
 		gvAscii.setAdapter(new HexAsciiAdapter(filecontent));
-		new Analyzer(filecontent).searchStrings();
+		//new Analyzer(filecontent).searchStrings();
 		try
 		{
 			setParsedFile(new ELFUtil(file,filecontent));
