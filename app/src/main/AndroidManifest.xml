@@ -19,6 +19,9 @@
 		android:resizeableActivity = "true"
 		android:largeHeap="true"
 		>
+		<meta-data
+			android:name="com.google.android.gms.ads.APPLICATION_ID"
+			android:value="ca-app-pub-1064966062299374~9116700670"/>
 		<!--android:name=".EnableMultidex"-->
         <activity
             android:name=".MainActivity"

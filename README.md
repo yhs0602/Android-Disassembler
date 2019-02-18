@@ -1,3 +1,5 @@
+[![Play Store Info](https://img.shields.io/badge/Play_Store-v3.0.5-36B0C1.svg?style=flat-square)](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler)
+[<img src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge-border.png" width="200" alt="Get Android Disassembler on Google Play" />](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler "Get Android Disassembler on Google Play")
 # Android-Disassembler - Analyze your malicious app on your phone
 
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.

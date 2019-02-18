@@ -11,11 +11,5 @@
 		android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/thank_you" />
 
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:textAppearance="?android:attr/textAppearanceLarge"
-		android:text="Large Text"/>
-
 </LinearLayout>
 
