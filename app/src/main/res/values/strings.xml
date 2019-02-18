@@ -35,4 +35,35 @@
     <string name="toast_not_readable">The storage you have chosen is not accessible.</string>
 	
 	<string name="banner_ad_unit_id">ca-app-pub-1064966062299374~9116700670</string>
+    <string name="Location">Location:</string>
+    <string name="FileSize">File size:</string>
+    <string name="FoffsCS">File offset of CS:</string>
+    <string name="FoffsCSEd">File offset of CS end :</string>
+    <string name="FoffsEP">File offset of entry point:</string>
+    <string name="VAofCS">Virtual address of CS:</string>
+    <string name="VAofCSE">Virtual address of CS end:</string>
+    <string name="VAofEP">Virtual address of EP:</string>
+    <string name="address">Address</string>
+    <string name="label">Label</string>
+    <string name="instruction">Instruction</string>
+    <string name="condition">Condition</string>
+    <string name="operands">Operands</string>
+    <string name="comment">Comment</string>
+    <string name="thank_you">Thank you</string>
+    <string name="disassembly_highlight_settings">Disassembly Highlight Settings</string>
+    <string name="preview">preview</string>ㄴ
+    <string name="select_any_file_to_disassemble_or_project_from_the_drawer_left">Select any file to disassemble, or project from the drawer left.</string>
+    <string name="select_file">Select file</string>
+    <string name="architecture">Architecture:</string>
+    <string name="finish_setup">Finish Setup</string>
+    <string name="override_autosetup">Override autosetup</string>
+    <string name="show_details">Show details</string>
+    <string name="save_details_to_file">Save Details to file</string>
+    <string name="export">Export</string>
+    <string name="choose_columns">Choose columns</string>
+    <string name="property">Property</string>
+    <string name="open_calculator">Open calculator</string>
+    <string name="save">save</string>
+    <string name="donate_see_ad">See ad / Donate</string>
+    <string name="settings_help">Settings / Help</string>
 </resources>

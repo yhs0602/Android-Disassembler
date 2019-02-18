@@ -1,10 +1,13 @@
 package com.kyhsgeekcode.disassembler;
 
 //represents a raw file and interface
-import java.io.*;
-import java.nio.channels.*;
-import java.util.*;
-import nl.lxtreme.binutils.elf.*;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import nl.lxtreme.binutils.elf.MachineType;
 
 public abstract class AbstractFile implements Closeable
 {
@@ -59,19 +62,19 @@ public abstract class AbstractFile implements Closeable
 	public String toString()
 	{	
 		StringBuilder builder=new StringBuilder("");
-		builder.append("File size: ").append(Integer.toHexString(fileContents.length))
+        builder.append(R.string.FileSize).append(Integer.toHexString(fileContents.length))
 		.append(ls);
-		builder.append("File offset of CS: ").append(Long.toHexString(codeBase))
+        builder.append(R.string.FoffsCS).append(Long.toHexString(codeBase))
 		.append(ls);
-		builder.append("File offset of CS end :").append(Long.toHexString(codeLimit))
+        builder.append(R.string.FoffsCSEd).append(Long.toHexString(codeLimit))
 		.append(ls);
-		builder.append("File offset of entry point: ").append(Long.toHexString(codeBase+entryPoint))
+        builder.append(R.string.FoffsEP).append(Long.toHexString(codeBase + entryPoint))
 		.append(ls);
-		builder.append("Virtual address of CS: ").append(Long.toHexString(codeVirtualAddress))
+        builder.append(R.string.VAofCS).append(Long.toHexString(codeVirtualAddress))
 		.append(ls);
-		builder.append("Virtual address of CS end: ").append(Long.toHexString(codeLimit+codeVirtualAddress))
+        builder.append(R.string.VAofCSE).append(Long.toHexString(codeLimit + codeVirtualAddress))
 		.append(ls);
-		builder.append("Virtual address of EP: ").append(Long.toHexString(entryPoint+codeVirtualAddress));
+        builder.append(R.string.VAofEP).append(Long.toHexString(entryPoint + codeVirtualAddress));
 		return builder.toString();
 	}
 //	public AbstractFile(File file) throws IOException

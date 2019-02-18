@@ -1,10 +1,21 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.graphics.*;
-import android.util.*;
-import java.io.*;
-import capstone.*;
-import java.util.*;
+import android.graphics.Color;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.HashSet;
+import java.util.Set;
+
+import capstone.Arm64_const;
+import capstone.Arm_const;
+import capstone.Capstone;
+import capstone.X86_const;
 
 public class Palette
 {
@@ -16,7 +27,7 @@ public class Palette
 
 	public Palette(String name, File src)
 	{
-		colors = new int[Rows.$VALUES.length][2];
+        colors = new int[Rows.values().length][2];
 		this.name = name;
 		this.src = src;
 		if (!src.exists())//Default

@@ -1,9 +1,11 @@
 package com.kyhsgeekcode.disassembler;
-import android.content.*;
-import android.os.*;
-import android.util.*;
-import java.io.*;
-import java.util.*;
+
+import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.File;
+import java.util.HashMap;
 
 public class ColorHelper// implements Parcelable
 {
@@ -25,7 +27,6 @@ public class ColorHelper// implements Parcelable
 	}
 	public boolean isUpdatedColor()
 	{
-		// TODO: Implement this method
 		return bUpdatedColor;
 	}
 

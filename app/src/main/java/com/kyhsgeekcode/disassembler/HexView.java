@@ -1,7 +1,9 @@
 package com.kyhsgeekcode.disassembler;
-import android.content.*;
-import android.view.*;
-import android.graphics.*;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.view.MotionEvent;
+import android.view.View;
 
 public class HexView extends View
 {
@@ -26,6 +28,7 @@ public class HexView extends View
 	@Override
 	public void draw(Canvas canvas)
 	{
+		super.draw(canvas);
 		int w=getMeasuredWidth();
 		int h=getMeasuredHeight();
 		//if min w->scrollable
@@ -38,16 +41,16 @@ public class HexView extends View
 	{
 		switch(event.getAction())
 		{
-			case event.ACTION_DOWN:
+            case MotionEvent.ACTION_DOWN:
 				isScrolling=true;
 				break;
-			case event.ACTION_MOVE:
+            case MotionEvent.ACTION_MOVE:
 				if(isScrolling)
 				{
 					
 				}
 				break;
-			case event.ACTION_UP:
+            case MotionEvent.ACTION_UP:
 				isScrolling=false;
 				break;
 		}

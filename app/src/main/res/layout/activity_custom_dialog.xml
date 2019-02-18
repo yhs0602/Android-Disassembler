@@ -38,13 +38,13 @@
 			<CheckBox
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
-				android:text="Address"
+                android:text="@string/address"
 				android:id="@+id/activitycustomdialogCheckBoxAddress"/>
 
 			<CheckBox
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
-				android:text="Label"
+                android:text="@string/label"
 				android:id="@+id/activitycustomdialogCheckBoxLabel"/>
 
 			<CheckBox
@@ -56,25 +56,25 @@
 			<CheckBox
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
-				android:text="Instruction"
+                android:text="@string/instruction"
 				android:id="@+id/activitycustomdialogCheckBoxInstruction"/>
 
 			<CheckBox
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
-				android:text="Condition"
+                android:text="@string/condition"
 				android:id="@+id/activitycustomdialogCheckBoxCondition"/>
 
 			<CheckBox
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
-				android:text="Operands"
+                android:text="@string/operands"
 				android:id="@+id/activitycustomdialogCheckBoxOperands"/>
 
 			<CheckBox
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
-				android:text="Comment"
+                android:text="@string/comment"
 				android:id="@+id/activitycustomdialogCheckBoxComment"/>
 
 		</GridLayout>

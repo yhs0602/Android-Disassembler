@@ -12,7 +12,7 @@
 		android:gravity="center"
 		android:textColor="@android:color/black"
 		android:textSize="25sp"
-		android:text="Disassembly Highlight Settings"/>
+        android:text="@string/disassembly_highlight_settings" />
 
 	<TextView
 		android:id="@+id/colorpref_subtitle"
@@ -33,7 +33,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:textAppearance="?android:attr/textAppearanceLarge"
-		android:text="preview"
+        android:text="@string/preview"
 		android:id="@+id/colorpref_preview"/>
 
 	<LinearLayout
@@ -44,13 +44,13 @@
 		<Button
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			android:text="Cancel"
+            android:text="@string/cancel"
 			android:id="@+id/colorprefdialogButtonCancel"/>
 
 		<Button
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			android:text="OK"
+            android:text="@string/ok"
 			android:id="@+id/colorprefdialogButtonOK"/>
 
 	</LinearLayout>

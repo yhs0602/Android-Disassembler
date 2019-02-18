@@ -10,6 +10,7 @@ package nl.lxtreme.binutils.elf;
 /**
  * Represent the various types of ABIs that exist (extracted from "elf.h" file from libc6-dev package).
  */
+@SuppressWarnings("ALL")
 public enum AbiType {
     SYSV(0, "UNIX System V ABI"),
     HPUX(1, "HP-UX"),
