@@ -64,6 +64,6 @@
     <string name="property">Property</string>
     <string name="open_calculator">Open calculator</string>
     <string name="save">save</string>
-    <string name="donate_see_ad">See ad / Donate</string>
+    <string name="donate_see_ad">See ad</string>
     <string name="settings_help">Settings / Help</string>
 </resources>

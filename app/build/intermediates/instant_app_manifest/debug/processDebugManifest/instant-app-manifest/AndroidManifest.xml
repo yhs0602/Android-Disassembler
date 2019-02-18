@@ -16,7 +16,9 @@
 
     <meta-data
         android:name="android.support.VERSION"
-        android:value="25.3.0" /> <!-- uses-permission android:name="android.permission.GET_ACCOUNTS" / -->
+        android:value="25.3.0" />
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- uses-permission android:name="android.permission.GET_ACCOUNTS" / -->
     <application
         android:allowBackup="true"
         android:debuggable="true"
@@ -26,7 +28,9 @@
         android:resizeableActivity="true"
         android:testOnly="true"
         android:theme="@style/AppTheme" >
-
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-1064966062299374~9116700670" />
         <!-- android:name=".EnableMultidex" -->
         <activity
             android:name="com.kyhsgeekcode.disassembler.MainActivity"
@@ -75,7 +79,25 @@
         -->
         <meta-data
             android:name="android.support.VERSION"
-            android:value="25.4.0" />
+            android:value="26.1.0" /> <!-- Include the AdActivity and InAppPurchaseActivity configChanges and themes. -->
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent" />
+
+        <provider
+            android:name="com.google.android.gms.ads.MobileAdsInitProvider"
+            android:authorities="com.kyhsgeekcode.disassembler.mobileadsinitprovider"
+            android:exported="false"
+            android:initOrder="100" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="android.arch.lifecycle.VERSION"
+            android:value="27.0.0-SNAPSHOT" />
 
         <provider
             android:name="com.android.tools.ir.server.InstantRunContentProvider"

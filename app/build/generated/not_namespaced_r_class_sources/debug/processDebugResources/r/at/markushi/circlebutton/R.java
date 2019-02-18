@@ -12,13 +12,13 @@ public final class R {
     public static final class attr {
         private attr() {}
 
-        public static final int cb_color = 0x7f04004e;
-        public static final int cb_pressedRingWidth = 0x7f04004f;
+        public static final int cb_color = 0x7f040057;
+        public static final int cb_pressedRingWidth = 0x7f040058;
     }
     public static final class styleable {
         private styleable() {}
 
-        public static final int[] CircleButton = { 0x7f04004e, 0x7f04004f };
+        public static final int[] CircleButton = { 0x7f040057, 0x7f040058 };
         public static final int CircleButton_cb_color = 0;
         public static final int CircleButton_cb_pressedRingWidth = 1;
     }

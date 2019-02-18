@@ -20,7 +20,12 @@ android {
         pickFirst 'lib/armeabi-v7a/libhello-jni.so'
         pickFirst 'lib/x86/libhello-jni.so'
     }*/
-
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -35,9 +40,9 @@ android {
 }
 
 dependencies {
-    //compile 'com.google.android.gms:play-services-ads-lite:+'
+    implementation 'com.google.android.gms:play-services-ads:+'
     //compile 'com.android.support:customtabs:27.1.1'
-    implementation 'com.android.support:appcompat-v7:25.+'
+    implementation 'com.android.support:appcompat-v7:26.+'
     //compile 'com.google.android.gms:play-services-ads:+'
     implementation 'com.github.codekidX:storage-chooser:2.0'
     //compile 'com.github.skydoves:colorpickerpreference:1.0.5'
@@ -45,7 +50,7 @@ dependencies {
     //compile 'com.android.support:multidex:1.0.1'
     //compile 'com.android.support:support-v4:27.+'
     //compile 'com.evrencoskun.library:tableview:0.8.8'
-    compile  fileTree(dir: 'libs', include: ['*.jar'])
+    implementation  fileTree(dir: 'libs', include: ['*.jar'])
 }
 /*
 dependencies {
