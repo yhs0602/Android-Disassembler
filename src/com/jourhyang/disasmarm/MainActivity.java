@@ -10,7 +10,7 @@ import android.graphics.*;
 import android.net.*;
 import android.os.*;
 import android.provider.*;
-import android.support.v4.content.*;
+//import android.support.v4.content.*;
 import android.util.*;
 import android.view.*;
 import android.view.View.*;
@@ -407,7 +407,7 @@ public class MainActivity extends Activity implements Button.OnClickListener
 						final ListViewItem lvi=new ListViewItem(dar);
 						if(lvi.isBranch())
 						{
-							xrefComments.put(lvi.getTargetAddress(),lvi.address);
+							//xrefComments.put(lvi.getTargetAddress(),lvi.address);
 						}
 						runOnUiThread(new Runnable(){
 								@Override

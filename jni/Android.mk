@@ -15,11 +15,44 @@
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
-LOCAL_CFLAGS+=-D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -L libcapstone -L capstone
+LOCAL_CFLAGS+=-D __STDC_LIMIT_MACROS -D __STDC_FORMAT_MACROS -L libcapstone -L capstone -DCAPSTONE_HAS_ARM\
+-DCAPSTONE_HAS_ARM64\
+-DCAPSTONE_HAS_X86
+#-DCAPSTONE_HAS_MIPS 
+#-DCAPSTONE_HAS_POWERPC 
+#-DCAPSTONE_HAS_SPARC\
+#-DCAPSTONE_HAS_SYSZ 
+# -DCAPSTONE_HAS_XCORE
 
 LOCAL_CPP_EXTENSION := .cpp .cc
 LOCAL_MODULE    := hello-jni
 LOCAL_SRC_FILES += hello-jni.cpp
+LOCAL_SRC_FILES +=plthook/plthook_elf.c\
+MCInst.c\
+MCInstrDesc.c\
+MCRegisterInfo.c\
+SStream.c\
+cs.c\
+utils.c\
+arch/AArch64/AArch64BaseInfo.c\
+arch/AArch64/AArch64Disassembler.c\
+arch/AArch64/AArch64InstPrinter.c\
+arch/AArch64/AArch64Mapping.c\
+arch/AArch64/AArch64Module.c\
+arch/ARM/ARMDisassembler.c\
+arch/ARM/ARMInstPrinter.c\
+arch/ARM/ARMMapping.c\
+arch/ARM/ARMModule.c\
+arch/X86/X86Disassembler.c\
+arch/X86/X86DisassemblerDecoder.c\
+arch/X86/X86IntelInstPrinter.c\
+arch/X86/X86ATTInstPrinter.c\
+arch/X86/X86Mapping.c\
+arch/X86/X86Module.c
+#plthook/plthook_osx.c\
+#plthook/plthook_win32.c
+ #$(wildcard *.c)
+
 
 ifeq ($(TARGET_ARCH_ABI),x86)
     LOCAL_CFLAGS += -ffast-math -mtune=atom -mssse3 -mfpmath=sse
@@ -41,12 +74,26 @@ endif
 LOCAL_LDLIBS           := -llog
 include $(BUILD_SHARED_LIBRARY)
 
-include $(CLEAR_VARS)
-LOCAL_MODULE    := capstone_static_arm
-LOCAL_SRC_FILES := /storage/emulated/0/AppProjects/ARMDisasm/libs/armeabi-v7a/libcapstone.a
-include $(PREBUILT_STATIC_LIBRARY)
+#include $(CLEAR_VARS)
+#LOCAL_MODULE    := capstone_static_arm
+#LOCAL_SRC_FILES :=  #/storage/emulated/0/AppProjects/ARMDisasm/libs/armeabi-v7a/libcapstone.a
+#$include $(PREBUILT_STATIC_LIBRARY)
 
-include $(CLEAR_VARS)
-LOCAL_MODULE    := capstone_static_x86
-LOCAL_SRC_FILES := /storage/emulated/0/AppProjects/ARMDisasm/libs/x86/libcapstone.a
-include $(PREBUILT_STATIC_LIBRARY)
+#include $(CLEAR_VARS)
+#LOCAL_MODULE    := capstone_static_x86
+#LOCAL_SRC_FILES := /storage/emulated/0/AppProjects/ARMDisasm/libs/x86/libcapstone.a
+#include $(PREBUILT_STATIC_LIBRARY)
+
+#include $(CLEAR_VARS)
+#LOCAL_LDLIBS    :=--whole-archive
+#LOCAL_MODULE    := capstone_shared_arm
+#LOCAL_C_EXTENSION:= .c
+#LOCAL_CPP_EXTENSION: = .cpp .cc
+#LOCAL_STATIC_LIBRARIES:= /storage/emulated/0/AppProjects/ARMDisasm/libs/armeabi-v7a/libcapstone.a
+#include $(PREBUILT_SHARED_LIBRARY)
+
+#include $(CLEAR_VARS)
+#LOCAL_MODULE    := capstone_shared_x86
+#LOCAL_SRC_FILES := /storage/emulated/0/AppProjects/ARMDisasm/libs/x86/libcapstone.a
+#LOCAL_STATIC_LIBRARIES:= /storage/emulated/0/AppProjects/ARMDisasm/libs/x86/libcapstone.a
+#include $(PREBBUILT_SHARED_LIBRARY)
