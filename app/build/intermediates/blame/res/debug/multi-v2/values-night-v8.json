@@ -1,0 +1,43 @@
+{
+    "logs": [
+        {
+            "outputFile": "C:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-night-v8\\values-night-v8.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\82102\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-25.4.0.aar\\c14890d40fcc44f9d6cbe5a757a932e1\\res\\values-night-v8\\values-night-v8.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "55,125,209,293,389,491,593",
+                        "endColumns": "69,83,83,95,101,101,93",
+                        "endOffsets": "120,204,288,384,486,588,682"
+                    },
+                    "to": {
+                        "startLines": "10,11,12,13,14,15,16",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "449,519,603,687,783,885,987",
+                        "endColumns": "69,83,83,95,101,101,93",
+                        "endOffsets": "514,598,682,778,880,982,1076"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\src\\main\\res\\values-night\\colors.xml",
+                    "from": {
+                        "startLines": "10,4,2,3,7,6,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "413,157,57,105,261,206,313,365",
+                        "endColumns": "46,45,46,50,50,53,50,46",
+                        "endOffsets": "455,198,99,151,307,255,359,407"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,102,148,195,246,297,351,402",
+                        "endColumns": "46,45,46,50,50,53,50,46",
+                        "endOffsets": "97,143,190,241,292,346,397,444"
+                    }
+                }
+            ]
+        }
+    ]
+}
