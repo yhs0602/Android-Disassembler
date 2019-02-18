@@ -13,8 +13,12 @@ public class PEFile extends AbstractFile
 	private String TAG="Disassembler PE";
 	public PEFile(File file, byte[] filec) throws IOException, NotThisFormatException
 	{
-		pe = PEParser.parse(file);
-
+		try {
+			pe = PEParser.parse(file);
+		}catch(NegativeArraySizeException e)
+		{
+			throw new NotThisFormatException(/*"PECOFFJ's Parser threw an exception."*/);
+		}
 		if (pe == null || pe.getSignature() == null || !pe.getSignature().isValid())
 		{
 			throw new NotThisFormatException();

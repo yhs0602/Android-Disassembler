@@ -1,2 +1,1 @@
-[1/2] Building C object CMakeFiles/hello-jni.dir/arch/X86/X86ATTInstPrinter.c.o
-[2/2] Linking CXX shared library C:\Users\82102\AndroidStudioProjects\Android-Disassembler\app\build\intermediates\cmake\debug\obj\x86_64\libhello-jni.so
+ninja: no work to do.

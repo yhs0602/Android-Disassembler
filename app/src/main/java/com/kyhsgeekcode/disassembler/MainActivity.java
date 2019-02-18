@@ -1526,6 +1526,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				public void run()
 				{
 					mProjNames = new String[]{"Exception","happened"};
+
 					colorHelper=new ColorHelper(MainActivity.this);
 					if(disasmManager==null)
 						disasmManager=new DisassemblyManager();
@@ -2536,6 +2537,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			autoSymAdapter.add(s.name);
 		}
 		adapter.Clear();
+		ShowDetail();
 		DisassembleFile(0/*parsedFile.getEntryPoint()*/);
 	}
 	private int[] getArchitecture(MachineType type)
