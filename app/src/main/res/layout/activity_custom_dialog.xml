@@ -90,13 +90,13 @@
 				android:id="@+id/btn_left"
 				android:layout_width="150dp"
 				android:layout_height="wrap_content"
-				android:text="@+string/ok"/>
+				android:text="@string/ok"/>
 
 			<Button
 				android:id="@+id/btn_right"
 				android:layout_width="150dp"
 				android:layout_height="wrap_content"
-				android:text="@+string/cancel"/>
+				android:text="@string/cancel"/>
 
 		</LinearLayout>
 

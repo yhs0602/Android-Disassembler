@@ -21,20 +21,20 @@
 	
 	<string name="copied">Copied!</string>
 	
-	
 	<string name="cancel">Cancel</string>
-	<string name="ok">Ok</string>
+	<string name="ok">OK</string>
 	
     <string name="choose_storage">Choose Storage</string>
 	<string name="choose_external_storage">Choose External Storage</string>
     <string name="external_storage">External storage</string>
-    <!-- Usb storage descripton -->
+    <!-- Usb storage descripton
     <string name="usb_storage">USB storage</string>
     <string name="text_freespace">%1$s free</string>
     <string name="toast_threshold_breached">%1$s is not sufficient for current operation. Please clear out some space.</string>
     <string name="toast_not_readable">The storage you have chosen is not accessible.</string>
-	
-	<string name="banner_ad_unit_id">ca-app-pub-1064966062299374~9116700670</string>
+	-->
+
+	<string name="banner_ad_unit_id" translatable="false">ca-app-pub-1064966062299374~9116700670</string>
     <string name="Location">Location:</string>
     <string name="FileSize">File size:</string>
     <string name="FoffsCS">File offset of CS:</string>
@@ -66,4 +66,26 @@
     <string name="save">save</string>
     <string name="donate_see_ad">See ad</string>
     <string name="settings_help">Settings / Help</string>
+    <string name="NoRoot_GoDefault">Unable to get root access. Going to default directory</string>
+    <string name="location">Location: </string>
+    <string name="cannot_be_read">The folder [%1$s] cannot be read!</string>
+    <string name="validaddress">Please enter a valid address.</string>
+    <string name="selfilefirst">Please Select a file first.</string>
+    <string name="newProject">Create new Project</string>
+    <string name="enterNewProjName">Enter new project name</string>
+    <string name="failSaveFile">Something went wrong saving file</string>
+    <string name="calculator">Calculator</string>
+    <string name="failCreateProject">Error creating a project!!</string>
+    <string name="saving">Saving...</string>
+    <string name="export_as">Export as...</string>
+    <string name="send_crash_via_email">Send crash report as an issue by email</string>
+    <string name="didUgrant">Did you grant required permissions to this app?</string>
+    <string name="overview">Overview</string>
+    <string name="details">Details</string>
+    <string name="disassembly">Disassembly</string>
+    <string name="symbols">Symbols</string>
+    <string name="hexview">Hex View</string>
+    <string name="permissions">Permissions</string>
+    <string name="permissionMsg">- Read/Write storage(obvious)</string>
+
 </resources>

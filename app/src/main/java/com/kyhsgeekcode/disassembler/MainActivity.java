@@ -571,14 +571,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			return l;
 		}catch(NumberFormatException e)
 		{
-			Toast.makeText(this, "Did you enter valid address?", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.validaddress, Toast.LENGTH_SHORT).show();
 		}
 		return parsedFile.getEntryPoint();
 	}
 
 	private void AlertSelFile()
 	{
-		Toast.makeText(this, "Please Select a file first.", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, R.string.selfilefirst, Toast.LENGTH_SHORT).show();
 		showFileChooser();
 	}
 
@@ -598,7 +598,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		if(currentProject==null)
 		{
 			final EditText etName=new EditText(this);
-			ShowEditDialog("Create new Project", "Enter new project name", etName, "OK", new DialogInterface.OnClickListener(){
+			ShowEditDialog(getString(R.string.newProject), getString(R.string.enterNewProjName), etName, getString(R.string.ok), new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface p1,int  p2)
 					{
@@ -606,7 +606,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						String projn=etName.getText().toString();
 						SaveDisasmNewProject(projn,runnable);
 					}
-				}, "Cancel", new DialogInterface.OnClickListener(){
+				}, getString(R.string.cancel), new DialogInterface.OnClickListener(){
 
 					@Override
 					public void onClick(DialogInterface p1, int p2) {
@@ -644,7 +644,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		catch (IOException e)
 		{
 			Log.e(TAG, "", e);
-			Toast.makeText(this, "Something went wrong saving file", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show();
 		}
 		//Editable et=etDetails.getText();
 		try
@@ -713,7 +713,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		catch (IOException e)
 		{
 			Log.e(TAG, "", e);
-			Toast.makeText(this, "Something went wrong saving file", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show();
 		}
 		try
 		{
@@ -724,7 +724,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (IOException e)
 		{
-			AlertError("Failed to save disasm as a Raw file",e);
+			AlertError(getString(R.string.failSaveFile),e);
 			return;
 		}
 		AlertSaveSuccess(file);
@@ -744,7 +744,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		if(currentProject==null)
 		{
 			final EditText etName=new EditText(this);
-			ShowEditDialog("Create new Project", "Enter new project name", etName, "OK", new DialogInterface.OnClickListener(){
+			ShowEditDialog(getString(R.string.newProject), getString(R.string.enterNewProjName), etName, getString(R.string.ok), new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface p1,int  p2)
 					{
@@ -754,7 +754,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						if(runnable!=null)
 							runnable.run();
 					}
-				}, "Cancel", new DialogInterface.OnClickListener(){
+				}, getString(R.string.cancel), new DialogInterface.OnClickListener(){
 
 					@Override
 					public void onClick(DialogInterface p1, int p2)
@@ -771,7 +771,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			}
 			catch (IOException e)
 			{
-				AlertError("Error saving details",e);
+				AlertError(getString(R.string.failSaveFile),e);
 			}
 		}
 
@@ -788,7 +788,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		catch (IOException e)
 		{
 			Log.e(TAG, "", e);
-			Toast.makeText(this, "Something went wrong saving file", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show();
 		}
 
 		try
@@ -822,7 +822,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (IOException e)
 		{
-			AlertError("Error creating a project!!",e);
+			AlertError(R.string.failCreateProject,e);
 		}
 	}
 
@@ -854,7 +854,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (IOException e)
 		{
-			AlertError("Error creating a project!!",e);
+			AlertError(getString(R.string.failCreateProject),e);
 		}
 	}
 
@@ -870,12 +870,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         ListItems.add("Simple(Addr: inst op; comment");
         ListItems.add("Json");
 		ListItems.add("Database(.db, reloadable)");
-		ShowSelDialog(this, ListItems, "Export as...", new DialogInterface.OnClickListener() {
+		ShowSelDialog(this, ListItems, getString(R.string.export_as), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int pos)
 				{
 					//String selectedText = items[pos].toString();
 					dialog.dismiss();
-					final ProgressDialog dialog2= showProgressDialog("Saving...");
+					final ProgressDialog dialog2= showProgressDialog(getString(R.string.saving));
 					ExportDisasmSub(pos);
 					if(runnable!=null)
 						runnable.run();
@@ -1225,7 +1225,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
 							 content.toString());
 
-		startActivity(Intent.createChooser(emailIntent, "Send crash report as an issue by email"));
+		startActivity(Intent.createChooser(emailIntent, getString(R.string.send_crash_via_email)));
 	}
 
 	public void AdjustShow(TextView tvAddr, TextView tvLabel, TextView tvBytes, TextView tvInst, TextView tvCondition, TextView tvOperands, TextView tvComments)
@@ -1318,7 +1318,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					Toast.makeText(MainActivity.this, Log.getStackTraceString(p2), Toast.LENGTH_SHORT).show();
 					if(p2 instanceof SecurityException)
 					{
-						Toast.makeText(MainActivity.this, "Did you grant required permissions to this app?", Toast.LENGTH_SHORT).show();
+						Toast.makeText(MainActivity.this, R.string.didUgrant, Toast.LENGTH_SHORT).show();
 						setting=getSharedPreferences(RATIONALSETTING,MODE_PRIVATE);
 						editor=setting.edit();
 						editor.putBoolean("show",true);
@@ -1428,11 +1428,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 		tabHost = (TabHost) findViewById(R.id.tabhost1);
         tabHost.setup();
-		TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator("Overview");
-        TabHost.TabSpec tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator("Details");
-        TabHost.TabSpec tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator("Disassembly");
-		TabHost.TabSpec tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator("Symbols");
-		TabHost.TabSpec tab4 = tabHost.newTabSpec("5").setContent(R.id.tab4).setIndicator("Hex View");
+		TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator(getString(R.string.overview));
+        TabHost.TabSpec tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator(getString(R.string.details));
+        TabHost.TabSpec tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator(getString(R.string.disassembly));
+		TabHost.TabSpec tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator(getString(R.string.symbols));
+		TabHost.TabSpec tab4 = tabHost.newTabSpec("5").setContent(R.id.tab4).setIndicator(getString(R.string.hexview));
 		
 		tabHost.addTab(tab0);
         tabHost.addTab(tab1);
@@ -1689,8 +1689,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	}
 	public static void showPermissionRationales(final Activity a,final Runnable run)
 	{
-		ShowAlertDialog(a,"Permissions",
-			"- Read/Write storage(obvious)\r\n\r\n For more information visit https://github.com/KYHSGeekCode/Android-Disassembler/",
+		ShowAlertDialog(a,a.getString(R.string.permissions),
+			a.getString(R.string.permissionMsg),
 			new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface p1,int  p2)
@@ -1709,7 +1709,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.setTitle(title);
 		builder.setCancelable(false);
 		builder.setMessage(Log.getStackTraceString(err));
-		builder.setPositiveButton("OK", null);
+		builder.setPositiveButton(R.string.ok, null);
 		builder.setNegativeButton("Send error report", new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface p1,int  p2)
@@ -1726,7 +1726,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.setTitle(title);
 		builder.setCancelable(false);
 		builder.setMessage(Log.getStackTraceString(err));
-		builder.setPositiveButton("OK", null);
+		builder.setPositiveButton(R.string.ok, null);
 		builder.setNegativeButton("Send error report", new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface p1,int  p2)
@@ -1743,7 +1743,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.setTitle(title);
 		builder.setCancelable(false);
 		builder.setMessage(content);
-		builder.setPositiveButton("OK", listener);
+		builder.setPositiveButton(R.string.ok, listener);
 		builder.show();
 	}
 	public static void ShowAlertDialog(Activity a,String title,String content)
@@ -1759,8 +1759,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.setTitle(title);
 		builder.setCancelable(false);
 		builder.setMessage(content);
-		builder.setPositiveButton("OK", ok).setNegativeButton("No",no);
-		builder.setNeutralButton("Cancel",can);
+		builder.setPositiveButton(R.string.cancel, ok).setNegativeButton("No",no);
+		builder.setNeutralButton(R.string.cancel,can);
 		builder.show();
 	}
 
@@ -2005,7 +2005,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								}
 							}
 						},
-							"Cancel"/*R.string.symbol*/, null);
+							getString(R.string.cancel)/*R.string.symbol*/, null);
 					ab.getWindow().setGravity(Gravity.TOP);
 					break;
 				}
@@ -2050,13 +2050,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			case R.id.calc:
 			{
 				final EditText et=new EditText(this);
-				ShowEditDialog("Calculator", "Enter an expression to measure", et, "OK", new DialogInterface. OnClickListener(){
+				ShowEditDialog(getString(R.string.calculator), "Enter an expression to measure", et, getString(R.string.ok	), new DialogInterface. OnClickListener(){
 						@Override
 						public void onClick(DialogInterface p1,int  p2)
 						{
 							Toast.makeText(MainActivity.this, Calculator.Calc(et.getText().toString()).toString(), Toast.LENGTH_SHORT).show();
 						}
-				}, "Cancel", null);
+				}, getString(R.string.cancel), null);
 			}
 			break;
 			case R.id.donate:
@@ -2105,7 +2105,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				//listview.smoothScrollToPosition(index); too slow
 			}
 		}else{
-			Toast.makeText(this, "please enter a valid address..", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.validaddress, Toast.LENGTH_SHORT).show();
 		}
 	}
 

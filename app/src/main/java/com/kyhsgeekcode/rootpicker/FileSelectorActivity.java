@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -125,6 +126,14 @@ public class FileSelectorActivity extends ListActivity
 		}
 		SharedPreferences sp=getSharedPreferences("com.kyhsgeekcode.rootpicker.last", MODE_PRIVATE);
 		String startpath=sp.getString("lastpath", root);
+		if(!RootTools.isRootAvailable())
+		{
+			if(!new File(startpath).canRead())
+			{
+				startpath= Environment.getExternalStorageDirectory().getPath();
+				Toast.makeText(this, R.string.NoRoot_GoDefault,Toast.LENGTH_SHORT).show();
+			}
+		}
 		if (new File(startpath).canRead())
 		{
 			getDir(startpath);
@@ -139,7 +148,7 @@ public class FileSelectorActivity extends ListActivity
 
 	private void getDir(String dirPath)
 	{
-		mPath.setText("Location: " + dirPath);
+		mPath.setText(getString(R.string.location) + dirPath);
 		/*item = new ArrayList<String>();
 		 path = new ArrayList<String>();*/
 		items = new ArrayList<>();
@@ -209,7 +218,7 @@ public class FileSelectorActivity extends ListActivity
 
 	private void getDirRoot(String dirPath)
 	{
-		mPath.setText("Location: " + dirPath);
+		mPath.setText(getString(R.string.location) + dirPath);
 		if (RootTools.isRootAvailable())
 		{
 			while (!RootTools.isAccessGiven())
@@ -245,7 +254,7 @@ public class FileSelectorActivity extends ListActivity
 		{
 			new AlertDialog.Builder(this)
 				.setIcon(R.drawable.ic_launcher)
-				.setTitle("[" + dirPath + "] folder can't be read!")
+				.setTitle(getString(R.string.cannot_be_read,dirPath))
 				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which)
 					{
@@ -484,7 +493,7 @@ public class FileSelectorActivity extends ListActivity
 	@Override
 	public void onBackPressed()
 	{
-		String path=mPath.getText().toString().replaceAll("Location: ", "");
+		String path=mPath.getText().toString().replaceAll(getString(R.string.location), "");
 		if (root.equals(path))
 		{
 			super.onBackPressed();

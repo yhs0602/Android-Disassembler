@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Disassembler</string>
+    <string name="app_name">리버싱 툴킷(디스어셈블러)</string>
 	<string name="app_info">어플 정보</string>
 	<string name="dev_info">개발자 정보</string>
 	<string name="dev_info_detail">개발자 정보를 확인합니다</string>
@@ -53,4 +53,25 @@
     <string name="save">저장</string>
     <string name="donate_see_ad">광고 보기</string>
     <string name="settings_help">설정 / 도움말</string>
+    <string name="location">"위치: "</string>
+    <string name="cannot_be_read">[%1$s] 폴더 읽기에 실패했습니다!</string>
+    <string name="NoRoot_GoDefault">루트 권한을 얻기에 실패했습니다. 기본 위치로 이동합니다.</string>
+    <string name="calculator">계산기</string>
+    <string name="failSaveFile">파일을 저장하는 데 문제가 발생했습니다.</string>
+    <string name="enterNewProjName">새 프로젝트의 이름을 입력하세요</string>
+    <string name="newProject">새 프로젝트 만들기</string>
+    <string name="selfilefirst">파일을 먼저 선택해 주세요</string>
+    <string name="validaddress">정확한 주소를 입력했는지 확인해 주세요.</string>
+    <string name="symbols">심볼</string>
+    <string name="hexview">Hex View</string>
+    <string name="permissions">앱 권한</string>
+    <string name="permissionMsg">-저장소 읽기/쓰기</string>
+    <string name="disassembly">디스어셈블리</string>
+    <string name="details">상세 정보</string>
+    <string name="overview">개괄</string>
+    <string name="didUgrant">필요한 권한을 부여해 주셨는지 확인 바랍니다.</string>
+    <string name="send_crash_via_email">E-Mail로 크래시 레포트 보내기</string>
+    <string name="export_as">내보내기...</string>
+    <string name="saving">저장 중..</string>
+    <string name="failCreateProject">프로젝트 생성 실패!</string>
 </resources>
