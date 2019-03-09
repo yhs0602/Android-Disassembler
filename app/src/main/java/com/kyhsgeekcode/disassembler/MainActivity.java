@@ -2200,33 +2200,37 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		switch(picker)
 		{
 			case 0:
-				StorageChooser chooser = new StorageChooser.Builder()
-					.withActivity(MainActivity.this)
-					.withFragmentManager(getFragmentManager())
-					.withMemoryBar(true)
-					.allowCustomPath(true)
-					.setType(StorageChooser.FILE_PICKER)
-					.actionSave(true)		
-					//.withPreference(settingPath)
-				//	.withPredefinedPath(prepath)
-					.shouldResumeSession(true)
-					.showHidden(true)
-					.build();
+				try {
+					StorageChooser chooser = new StorageChooser.Builder()
+						.withActivity(MainActivity.this)
+						.withFragmentManager(getFragmentManager())
+						.withMemoryBar(true)
+						.allowCustomPath(true)
+						.setType(StorageChooser.FILE_PICKER)
+						.actionSave(true)
+						//.withPreference(settingPath)
+					//	.withPredefinedPath(prepath)
+						.shouldResumeSession(true)
+						.showHidden(true)
+						.build();
 					// Show dialog whenever you want by
-				//chooser.getsConfig().setPrimaryPath(prepath);
-				chooser.show();
-				// get path that the user has chosen
-				chooser.setOnSelectListener(new StorageChooser.OnSelectListener() {
-						@Override
-						public void onSelect(String path) {
-							SharedPreferences.Editor edi=settingPath.edit();
-							edi.putString(DiskUtil.SC_PREFERENCE_KEY,path);
-							edi.apply();
-							disableEnableControls(false,llmainLinearLayoutSetupRaw);
-							OnChoosePath(path);
-							//Log.e("SELECTED_PATH", path);
-						}
-					});
+					//chooser.getsConfig().setPrimaryPath(prepath);
+					chooser.show();
+					// get path that the user has chosen
+					chooser.setOnSelectListener(new StorageChooser.OnSelectListener() {
+							@Override
+							public void onSelect(String path) {
+								SharedPreferences.Editor edi=settingPath.edit();
+								edi.putString(DiskUtil.SC_PREFERENCE_KEY,path);
+								edi.apply();
+								disableEnableControls(false,llmainLinearLayoutSetupRaw);
+								OnChoosePath(path);
+								//Log.e("SELECTED_PATH", path);
+							}
+						});
+				} catch (Exception e) {
+					Toast.makeText(this,"An error happened using the external file choosing library. Please choose another file chooser in settings.",Toast.LENGTH_SHORT).show();
+				}
 				break;
 			case 1:
 				Intent i=new Intent(this, com.kyhsgeekcode.rootpicker.FileSelectorActivity.class);
