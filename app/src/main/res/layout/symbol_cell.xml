@@ -20,7 +20,7 @@
 	<TextView
 		android:layout_height="wrap_content"
 		android:layout_width="100dp"
-		android:text="Address"
+        android:text="@string/address"
 		android:padding="10dp"/>
 
 </LinearLayout>

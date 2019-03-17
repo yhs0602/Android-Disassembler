@@ -1,10 +1,12 @@
+[![Play Store Info](https://img.shields.io/badge/Play_Store-v3.0.5-36B0C1.svg?style=flat-square)](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler)
+[<img src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge-border.png" width="200" alt="Get Android Disassembler on Google Play" />](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler "Get Android Disassembler on Google Play")
 # Android-Disassembler - Analyze your malicious app on your phone
 
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
 
-# Version 1.4.5 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.4.6.1 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
-## What's new : Go to last browsed folder(issue #, file chooser session), Fixed jump address issues, Fixed VirtualAddress calculation for disassembly(Sorry for inconvenience, and I highly recommend updating the app to this version)
+## What's new : Calculator, HexView, theme automation, app on google play + Fixed bugs + ads
 
 # Features
 - Shows details of elf files.
@@ -29,6 +31,8 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 - Supports analyzing system files(which are not accessible without root permission) for rooted phones.
 - Friendlier message for non-parsable files.
 - The storage chooser now retains the session, so that it remembers the last browsed folder.
+- Added Hex View and utility calculator.
+- Theme installation is automated.
 
 # [Themes Download](https://github.com/KYHSGeekCode/Android-Disassembler/tree/master/themes)
  Good themes usually help you recognize some important instructions easily.
@@ -87,7 +91,7 @@ Here are some common issues and some solutons for them.
    Is it a well known executable file? (ELF:`.so, .o, .lib, .a, etc..`, PE:`.exe, .dll, .sys, ...`) Then please report me with the file you tried to disassemble.
    If not, you need to press `OK` and **setup manually**.
 
-# Theme management
+# Theme management -> you need not!
 You can download the theme.zip here.
  1. Unzip it to `/storage/emulated/0/themes/` or `/sdcard/themes`.
  1. Done. You can now use this in settings menu(in app)
@@ -124,8 +128,7 @@ You can download the theme.zip here.
  - Support .NET assemblies
  - Add compatibility for OllyDbg's `.udd/.bak` files
  - Add compatibility for IDA's produce files.
- - About to add Hex view, calculator, and any other utilities.
- - About to post this app on the play store!
+ - About to add other utilities.
 
 # Help wanted!
  - Don't the symbols' names look odd?

@@ -1,7 +1,12 @@
 package com.kyhsgeekcode.disassembler;
-import android.view.*;
-import android.graphics.*;
-import java.util.*;
+
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.view.View;
+
+import java.util.ArrayList;
 
 public class ArrowView extends View
 {
@@ -21,7 +26,7 @@ public class ArrowView extends View
 	}
 	
     public ArrowView(android.content.Context context, android.util.AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-		super(context,attrs,defStyleAttr,defStyleRes);
+        super(context, attrs, defStyleAttr/*,defStyleRes*/);
 		Init();
 	}
 
@@ -33,6 +38,7 @@ public class ArrowView extends View
 	@Override
 	public void draw(Canvas canvas)
 	{
+        super.draw(canvas);
 		for(ArrowInfo ai:list)
 		{
 			int[] points=new int[]{
@@ -51,10 +57,10 @@ public class ArrowView extends View
 			//Log.v(TAG,"DAAfx"+fx+"fy"+fy+"tx"+tx+"ty"+ty);
 			//paint.setStyle(Paint.Style.FILL_AND_STROKE);
 			//if(daa.dmg==0)
-			paint.setColor(ai.type==ArrowInfo.ArrowType.CALL? Color.RED
-							: ai.type==ArrowInfo.ArrowType.JUMP? Color.BLUE
-							: ai.type==ArrowInfo.ArrowType.JCC? Color.YELLOW
-							: ai.type==ArrowInfo.ArrowType.CALLCC? Color.GREEN
+            paint.setColor(ai.type == ArrowType.CALL ? Color.RED
+                    : ai.type == ArrowType.JUMP ? Color.BLUE
+                    : ai.type == ArrowType.JCC ? Color.YELLOW
+                    : ai.type == ArrowType.CALLCC ? Color.GREEN
 							: Color.BLACK);
 			//else
 			//	paint.setColor(Color.BLUE);
@@ -98,13 +104,7 @@ public class ArrowView extends View
 	{
 		int startrow;
 		int endrow;
-		enum ArrowType
-		{
-			JUMP,
-			CALL,
-			JCC,
-			CALLCC
-		};
+
 		ArrowType type;
 		public ArrowInfo(int s,int e,ArrowType type)
 		{
@@ -113,4 +113,13 @@ public class ArrowView extends View
 			this.type=type;
 		}
 	}
+
+    static enum ArrowType {
+        JUMP,
+        CALL,
+        JCC,
+        CALLCC
+    }
+
+    ;
 }

@@ -1,9 +1,17 @@
 package com.kyhsgeekcode.disassembler;
-import android.content.*;
-import android.os.*;
-import android.util.*;
-import java.io.*;
-import java.util.*;
+
+import android.content.Context;
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class ColorHelper// implements Parcelable
 {
@@ -25,7 +33,6 @@ public class ColorHelper// implements Parcelable
 	}
 	public boolean isUpdatedColor()
 	{
-		// TODO: Implement this method
 		return bUpdatedColor;
 	}
 
@@ -105,8 +112,37 @@ public class ColorHelper// implements Parcelable
 		this.context = context;
 		File ext=Environment.getExternalStorageDirectory().getAbsoluteFile();
 		File themeDir=new File(ext, "themes/");
-		if (!themeDir.exists())
+		if (!themeDir.exists()){
 			themeDir.mkdirs();
+			try {
+				InputStream is=context.getAssets().open("themes.zip");
+				ZipInputStream zi=new ZipInputStream(is);
+				ZipEntry entry;
+				byte[ ] buffer=new byte[2048];
+				while((entry = zi.getNextEntry())!=null)
+				{
+					File outfile = new File(themeDir, entry.getName());
+					FileOutputStream output = null;
+					try
+					{
+						output = new FileOutputStream(outfile);
+						int len = 0;
+						while ((len = zi.read(buffer)) > 0)
+						{
+							output.write(buffer, 0, len);
+						}
+					}
+					finally
+					{
+						// we must always close the output file
+						if(output!=null) output.close();
+					}
+				}
+
+			} catch (IOException e) {
+				Log.e(TAG,"Failed to unzip themes",e);
+			}
+		}
 		File[] themes=themeDir.listFiles();
 		if (themes.length == 0)
 		{

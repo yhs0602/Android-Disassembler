@@ -1,15 +1,22 @@
 package com.kyhsgeekcode.disassembler;
 
 
-import android.app.*;
-import android.content.*;
-import android.net.*;
-import android.os.*;
-import android.view.*;
-import android.widget.*;
-import java.io.*;
-import java.util.*;
-import android.util.*;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileSelectorActivity extends ListActivity {
 	private List<String> item = (List<String>) null;
@@ -19,14 +26,14 @@ public class FileSelectorActivity extends ListActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);;
+        super.onCreate(savedInstanceState);
 		setContentView(R.layout.fileaselactivity);
 		mPath = (TextView) findViewById(R.id.path);
-		getDir("/sdcard/");
+        getDir(Environment.getExternalStorageDirectory().getPath());
 	}
 
 	private void getDir(String dirPath) {
-		mPath.setText("Location: " + dirPath);
+        mPath.setText(getString(R.string.Location) + dirPath);
 		item = new ArrayList<String>();
 		path = new ArrayList<String>();
 		File f = new File(dirPath);

@@ -1,13 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item
         android:id="@+id/jumpto"
-        android:title="goto"/>
+        android:title="Goto"/>
 	<item
         android:id="@+id/chooserow"
-        android:title="Choose columns"/>
+        android:title="@string/choose_columns" />
 	<item
         android:id="@+id/find"
-        android:title="find(Not yet)">
+        android:title="find(Not yet)"
+		android:enabled="false">
 		<menu>
 			<item
 				android:id="@+id/findcall"
@@ -33,17 +34,19 @@
         android:title="Find symbol"/-->
 	<item
         android:id="@+id/save"
-        android:title="save"/>
+        android:title="@string/save"
+		android:enabled="false"/>
 	<item
         android:id="@+id/export"
-        android:title="export project as zip"/>
+        android:title="export project as zip"
+		android:enabled="false"/>
     <item
         android:id="@+id/calc"
-        android:title="Open calculator"/>
+        android:title="@string/open_calculator" />
 	<item
         android:id="@+id/settings"
-        android:title="Settings / Help"/>
+        android:title="@string/settings_help" />
 	<item
         android:id="@+id/donate"
-        android:title="Donate(See ad)"/>
+        android:title="@string/donate_see_ad" />
 </menu>

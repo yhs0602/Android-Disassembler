@@ -1,34 +1,89 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.*;
-import android.app.*;
-import android.content.*;
-import android.content.pm.*;
-import android.content.res.*;
-import android.database.*;
-import android.graphics.*;
-import android.net.*;
-import android.os.*;
-import android.provider.*;
-import android.support.v4.widget.*;
-import android.view.*;
-import android.support.v7.app.*;
-import android.util.*;
-import android.view.View.*;
-import android.widget.*;
-import capstone.*;
-import com.codekidlabs.storagechooser.*;
-import com.codekidlabs.storagechooser.utils.*;
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.regex.*;
-import java.util.zip.*;
-import nl.lxtreme.binutils.elf.*;
-import com.stericson.RootTools.*;
-import android.widget.AdapterView.*;
-import android.widget.AbsListView.*;
-import com.kyhsgeekcode.disassembler.Calc.*;
+import android.Manifest;
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.ProgressDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.ComponentCallbacks2;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.util.LongSparseArray;
+import android.util.SparseArray;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TabHost;
+import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.codekidlabs.storagechooser.StorageChooser;
+import com.codekidlabs.storagechooser.utils.DiskUtil;
+import com.kyhsgeekcode.disassembler.Calc.Calculator;
+import com.stericson.RootTools.RootTools;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Queue;
+import java.util.Stack;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import capstone.Capstone;
+import nl.lxtreme.binutils.elf.MachineType;
 
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
@@ -88,20 +143,20 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	public void showToast(String s)
 	{
-		Toast.makeText(this,s,3).show();
+		Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
 	}
 	
 	public void showToast(int resid)
 	{
-		Toast.makeText(this,resid,3).show();
+		Toast.makeText(this, resid, Toast.LENGTH_SHORT).show();
 	}
 	
 	public void setClipBoard(String s)
 	{
 		ClipboardManager cb=(ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
-		cb.setText(s);
-		//Toast.makeText(this,"Copied to clipboard:"+s,3).show();
-		return ;
+		ClipData clip = ClipData.newPlainText("Android Disassembler", s);
+		cb.setPrimaryClip(clip);
+		//Toast.makeText(this,"Copied to clipboard:"+s,Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -115,7 +170,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				colorHelper.setUpdatedColor(false);
 			}	
 		}
-		return;
 	}
 	//https://medium.com/@gurpreetsk/memory-management-on-android-using-ontrimmemory-f500d364bc1a
     /**
@@ -219,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		setting=getSharedPreferences(SETTINGKEY,MODE_PRIVATE);
 		editor=setting.edit();
 		editor.putString(LASTPROJKEY,proj.name);
+		editor.apply();
 		String det=proj.getDetail();
 		if(!"".equals(det))
 		{
@@ -235,12 +290,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				ObjectInputStream ois = new ObjectInputStream(fis);
 				disasmResults = (LongSparseArray<ListViewItem>)ois.readObject();
 				ois.close();
-			}
-			catch (ClassNotFoundException e)
-			{
-				AlertError(R.string.fail_loadraw,e);
-			}
-			catch (IOException e)
+			} catch (ClassNotFoundException | IOException e)
 			{
 				AlertError(R.string.fail_loadraw,e);
 			}
@@ -256,7 +306,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			disasmResults=new LongSparseArray<>();
 		}
 		shouldSave=true;
-		return ;
 	}
 
 	private static final int REQUEST_SELECT_FILE = 123;
@@ -443,7 +492,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						AfterParse();
 					}catch(Exception e){
 						Log.e(TAG,"",e);
-						Toast.makeText(this,getString(R.string.err_invalid_value)+e.getMessage(),3).show();
+						Toast.makeText(this, getString(R.string.err_invalid_value) + e.getMessage(), Toast.LENGTH_SHORT).show();
 					}	
 				}
 				break;
@@ -483,7 +532,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 												   String positive,DialogInterface.OnClickListener pos,
 												   String negative,DialogInterface.OnClickListener neg)
 	{
-		android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder((Context)MainActivity.this);
+		android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(MainActivity.this);
 		builder.setTitle(title);
 		builder.setMessage(message);
 		builder.setView(edittext);
@@ -522,21 +571,20 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			return l;
 		}catch(NumberFormatException e)
 		{
-			Toast.makeText(this,"Did you enter valid address?",3).show();
+			Toast.makeText(this, R.string.validaddress, Toast.LENGTH_SHORT).show();
 		}
 		return parsedFile.getEntryPoint();
 	}
 
 	private void AlertSelFile()
 	{
-		Toast.makeText(this, "Please Select a file first.", 2).show();
+		Toast.makeText(this, R.string.selfilefirst, Toast.LENGTH_SHORT).show();
 		showFileChooser();
 	}
 
 	public void ExportDisasm()
 	{
-		ExportDisasm((Runnable)null);
-		return ;
+		ExportDisasm(null);
 	}
 
 	private void ExportDisasm(final Runnable runnable)
@@ -550,22 +598,19 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		if(currentProject==null)
 		{
 			final EditText etName=new EditText(this);
-			ShowEditDialog("Create new Project", "Enter new project name", etName, "OK", new DialogInterface.OnClickListener(){
+			ShowEditDialog(getString(R.string.newProject), getString(R.string.enterNewProjName), etName, getString(R.string.ok), new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface p1,int  p2)
 					{
 
 						String projn=etName.getText().toString();
 						SaveDisasmNewProject(projn,runnable);
-						return ;
 					}
-				}, "Cancel", new DialogInterface.OnClickListener(){
+				}, getString(R.string.cancel), new DialogInterface.OnClickListener(){
 
 					@Override
-					public void onClick(DialogInterface p1, int p2)
-					{		
-						return ;
-					}				
+					public void onClick(DialogInterface p1, int p2) {
+					}
 				});
 		}else{
 			ShowExportOptions(runnable);
@@ -599,7 +644,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		catch (IOException e)
 		{
 			Log.e(TAG, "", e);
-			Toast.makeText(this, "Something went wrong saving file", 3).show();
+			Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show();
 		}
 		//Editable et=etDetails.getText();
 		try
@@ -668,7 +713,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		catch (IOException e)
 		{
 			Log.e(TAG, "", e);
-			Toast.makeText(this, "Something went wrong saving file", 3).show();
+			Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show();
 		}
 		try
 		{
@@ -679,15 +724,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (IOException e)
 		{
-			AlertError("Failed to save disasm as a Raw file",e);
+			AlertError(getString(R.string.failSaveFile),e);
 			return;
 		}
 		AlertSaveSuccess(file);
-		return ;
 	}
 	private void SaveDetail()
 	{
-		SaveDetail((Runnable)null);
+		SaveDetail(null);
 	}
 	private void SaveDetail(final Runnable runnable)
 	{
@@ -700,7 +744,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		if(currentProject==null)
 		{
 			final EditText etName=new EditText(this);
-			ShowEditDialog("Create new Project", "Enter new project name", etName, "OK", new DialogInterface.OnClickListener(){
+			ShowEditDialog(getString(R.string.newProject), getString(R.string.enterNewProjName), etName, getString(R.string.ok), new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface p1,int  p2)
 					{
@@ -709,16 +753,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						SaveDetailNewProject(projn);
 						if(runnable!=null)
 							runnable.run();
-						return ;
 					}
-				}, "Cancel", new DialogInterface.OnClickListener(){
+				}, getString(R.string.cancel), new DialogInterface.OnClickListener(){
 
 					@Override
 					public void onClick(DialogInterface p1, int p2)
 					{
 
-						return ;
-					}				
+					}
 				});
 		}else{
 			try
@@ -729,7 +771,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			}
 			catch (IOException e)
 			{
-				AlertError("Error saving details",e);
+				AlertError(getString(R.string.failSaveFile),e);
 			}
 		}
 
@@ -746,7 +788,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		catch (IOException e)
 		{
 			Log.e(TAG, "", e);
-			Toast.makeText(this, "Something went wrong saving file", 3).show();
+			Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show();
 		}
 
 		try
@@ -780,9 +822,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (IOException e)
 		{
-			AlertError("Error creating a project!!",e);
+			AlertError(R.string.failCreateProject,e);
 		}
-		return ;
 	}
 
 	private void SaveDetailSub(ProjectManager.Project proj) throws IOException
@@ -797,7 +838,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	}
 	private void SaveDisasmNewProject(String projn)
 	{
-		SaveDisasmNewProject(projn,(Runnable)null);
+		SaveDisasmNewProject(projn, null);
 	}
 	private void SaveDisasmNewProject(String projn,Runnable runnable)
 	{	
@@ -813,14 +854,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (IOException e)
 		{
-			AlertError("Error creating a project!!",e);
+			AlertError(getString(R.string.failCreateProject),e);
 		}
-		return ;
 	}
 
 	private void ShowExportOptions()
 	{
-		ShowExportOptions((Runnable)null);
+		ShowExportOptions(null);
 	}
 	private void ShowExportOptions(final Runnable runnable)
 	{
@@ -830,12 +870,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         ListItems.add("Simple(Addr: inst op; comment");
         ListItems.add("Json");
 		ListItems.add("Database(.db, reloadable)");
-		ShowSelDialog((Activity)this, ListItems, "Export as...", new DialogInterface.OnClickListener() {
+		ShowSelDialog(this, ListItems, getString(R.string.export_as), new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int pos)
 				{
 					//String selectedText = items[pos].toString();
 					dialog.dismiss();
-					final ProgressDialog dialog2= showProgressDialog("Saving...");
+					final ProgressDialog dialog2= showProgressDialog(getString(R.string.saving));
 					ExportDisasmSub(pos);
 					if(runnable!=null)
 						runnable.run();
@@ -904,7 +944,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 
 		protected Void doInBackground(Void...list) {
-			Log.d(TAG + " DoINBackGround","On doInBackground...");
+			Log.d(TAG + " DoINBkGnd", "On doInBackground...");
 			SaveDisasmRaw();
 			return null;
 		}
@@ -928,13 +968,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	//Will be used like generate-on-need array(sth like Paging)
 	/*private void DisassembleInstant(long foffset)
 	{
-		//Toast.makeText(this,"Not supported by now. Please just use persist mode instead.",3).show();	
+		//Toast.makeText(this,"Not supported by now. Please just use persist mode instead.",Toast.LENGTH_SHORT).show();	
 //		if(limit>=filecontent.length)
 //		{
-//			Toast.makeText(this,"Odd address :(",3).show();
+//			Toast.makeText(this,"Odd address :(",Toast.LENGTH_SHORT).show();
 //			return;
 //		}
-		//Toast.makeText(this, "started", 2).show();
+		//Toast.makeText(this, "started", Toast.LENGTH_SHORT).show();
 		Log.v(TAG, "Strted disassm foffs"+foffset);
 		//	btDisasm.setEnabled(false);
 		//	btAbort.setEnabled(true);
@@ -1021,8 +1061,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	////TODO: DisassembleFile(long address, int amt);
 	private void DisassembleFile(final long offset)
 	{
-		Toast.makeText(this, "started", 2).show();
-		Log.v(TAG, "Strted disassm");
+		Toast.makeText(this, "started", Toast.LENGTH_SHORT).show();
+		Log.v(TAG, "Strted disasm");
 		//btDisasm.setEnabled(false);
 		//btAbort.setEnabled(true);
 		btSavDisasm.setEnabled(false);
@@ -1099,7 +1139,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 //								//btAbort.setTag("resume",(Object)true);
 //								//btAbort.setEnabled(false);
 //								btSavDisasm.setEnabled(true);
-//								Toast.makeText(MainActivity.this, "done", 2).show();			
+//								Toast.makeText(MainActivity.this, "done", Toast.LENGTH_SHORT).show();			
 //							}
 //						});
 //					Log.v(TAG, "disassembly done");		
@@ -1149,7 +1189,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								//btAbort.setTag("resume",(Object)true);
 								//btAbort.setEnabled(false);
 								btSavDisasm.setEnabled(true);
-								Toast.makeText(MainActivity.this, "done", 2).show();			
+								Toast.makeText(MainActivity.this, "done", Toast.LENGTH_SHORT).show();			
 							}
 						});
 					Log.v(TAG, "disassembly done");		
@@ -1185,7 +1225,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
 							 content.toString());
 
-		startActivity(Intent.createChooser(emailIntent, "Send crash report as an issue by email"));
+		startActivity(Intent.createChooser(emailIntent, getString(R.string.send_crash_via_email)));
 	}
 
 	public void AdjustShow(TextView tvAddr, TextView tvLabel, TextView tvBytes, TextView tvInst, TextView tvCondition, TextView tvOperands, TextView tvComments)
@@ -1205,7 +1245,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
 		{
 			a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
-										 (String[])null,
+					null,
 										 new int[]{PackageManager.PERMISSION_GRANTED});
 			return;
 		}
@@ -1213,7 +1253,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		{
 			Log.i(TAG, "Has permissions");
 			a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
-										 (String[])null,
+					null,
 										 new int[]{PackageManager.PERMISSION_GRANTED});
 			return;
 		}
@@ -1226,7 +1266,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 											 Manifest.permission.WRITE_EXTERNAL_STORAGE
 											 //,Manifest.permission.GET_ACCOUNTS
 										 }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
-					return ;
 				}
 			});
 //		a.requestPermissions(new String[] {
@@ -1276,14 +1315,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				public void uncaughtException(Thread p1, Throwable p2)
 				{
 
-					Toast.makeText(MainActivity.this,Log.getStackTraceString(p2),3).show();
+					Toast.makeText(MainActivity.this, Log.getStackTraceString(p2), Toast.LENGTH_SHORT).show();
 					if(p2 instanceof SecurityException)
 					{
-						Toast.makeText(MainActivity.this,"Did you grant required permissions to this app?",3).show();
+						Toast.makeText(MainActivity.this, R.string.didUgrant, Toast.LENGTH_SHORT).show();
 						setting=getSharedPreferences(RATIONALSETTING,MODE_PRIVATE);
 						editor=setting.edit();
 						editor.putBoolean("show",true);
-						editor.commit();
+						editor.apply();
 					}
 					requestAppPermissions(MainActivity.this);
 					//String [] accs=getAccounts();
@@ -1291,7 +1330,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					//	ori.uncaughtException(p1, p2);
 					Log.wtf(TAG,"UncaughtException",p2);
 					finish();
-					return ;
 				}
 
 			});
@@ -1306,7 +1344,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		catch (RuntimeException e)
 		{
-			Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), 10).show();
+			Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), Toast.LENGTH_LONG).show();
 			android.os.Process.killProcess(android.os.Process.getGidForName(null));
 		}
 //<<<<<<< HEAD
@@ -1369,13 +1407,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					Symbol symbol=(Symbol) parent.getItemAtPosition(position);
 					if(symbol.type!=Symbol.Type.STT_FUNC)
 					{
-						Toast.makeText(MainActivity.this,"This is not a function.",3).show();
+						Toast.makeText(MainActivity.this, "This is not a function.", Toast.LENGTH_SHORT).show();
 						return true;
 					}
 
 					long address=symbol.st_value;
 					//LongSparseArray arr;
-					Toast.makeText(MainActivity.this,"Jump to"+Long.toHexString(address),3).show();
+					Toast.makeText(MainActivity.this, "Jump to" + Long.toHexString(address), Toast.LENGTH_SHORT).show();
 					tabHost.setCurrentTab(TAB_DISASM);
 					jumpto(address);
 					return true;
@@ -1384,17 +1422,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		//symAdapter = new SymbolTableAdapter(this.getApplicationContext());
 		//tvSymbols = (TableView)findViewById(R.id.content_container);
 		//tvSymbols.setAdapter(symAdapter);
-		autoSymAdapter = new ArrayAdapter<String> (this,android.R.layout.select_dialog_item);
+		autoSymAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item);
 		//autocomplete.setThreshold(2);
 		//autocomplete.setAdapter(autoSymAdapter);
 
 		tabHost = (TabHost) findViewById(R.id.tabhost1);
         tabHost.setup();
-		TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator("Overview");
-        TabHost.TabSpec tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator("Details");
-        TabHost.TabSpec tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator("Disassembly");
-		TabHost.TabSpec tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator("Symbols");
-		TabHost.TabSpec tab4 = tabHost.newTabSpec("5").setContent(R.id.tab4).setIndicator("Hex View");
+		TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator(getString(R.string.overview));
+        TabHost.TabSpec tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator(getString(R.string.details));
+        TabHost.TabSpec tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator(getString(R.string.disassembly));
+		TabHost.TabSpec tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator(getString(R.string.symbols));
+		TabHost.TabSpec tab4 = tabHost.newTabSpec("5").setContent(R.id.tab4).setIndicator(getString(R.string.hexview));
 		
 		tabHost.addTab(tab0);
         tabHost.addTab(tab1);
@@ -1488,10 +1526,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				public void run()
 				{
 					mProjNames = new String[]{"Exception","happened"};
+
 					colorHelper=new ColorHelper(MainActivity.this);
 					if(disasmManager==null)
 						disasmManager=new DisassemblyManager();
-					adapter = new ListViewAdapter((AbstractFile)null,colorHelper,MainActivity.this);
+					adapter = new ListViewAdapter(null, colorHelper, MainActivity.this);
 					setupListView();
 					disasmManager.setData(adapter.itemList(),adapter.getAddress());
 					// find the retained fragment on activity restarts
@@ -1539,7 +1578,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						Log.d(TAG,"intent path="+filePath);
 						String[] toks=filePath.split(Pattern.quote("."));
 						int last=toks.length-1;
-						String ext="";
+						String ext;
 						if(last>=1){
 							ext=toks[last];
 							if("adp".equalsIgnoreCase(ext))
@@ -1567,7 +1606,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					// create the fragment and data the first time
 					// the data is available in dataFragment.getData()
 
-					return ;
 				}
 			});
 
@@ -1586,7 +1624,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
         /*if (cs == null)
 		 {
-		 Toast.makeText(this, "Failed to initialize the native engine", 3).show();
+		 Toast.makeText(this, "Failed to initialize the native engine", Toast.LENGTH_SHORT).show();
 		 android.os.Process.killProcess(android.os.Process.getGidForName(null));
 		 }*/
 		//tlDisasmTable = (TableLayout) findViewById(R.id.table_main);
@@ -1651,8 +1689,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	}
 	public static void showPermissionRationales(final Activity a,final Runnable run)
 	{
-		ShowAlertDialog(a,"Permissions",
-			"- Read/Write storage(obvious)\r\n\r\n For more information visit https://github.com/KYHSGeekCode/Android-Disassembler/",
+		ShowAlertDialog(a,a.getString(R.string.permissions),
+			a.getString(R.string.permissionMsg),
 			new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface p1,int  p2)
@@ -1660,7 +1698,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					if(run!=null)
 						run.run();
 					//requestAppPermissions(a);
-					return ;
 				}
 
 
@@ -1672,14 +1709,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.setTitle(title);
 		builder.setCancelable(false);
 		builder.setMessage(Log.getStackTraceString(err));
-		builder.setPositiveButton("OK", (DialogInterface.OnClickListener)null);
+		builder.setPositiveButton(R.string.ok, null);
 		builder.setNegativeButton("Send error report", new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface p1,int  p2)
 				{
 
 					SendErrorReport(err);
-					return ;
 				}
 			});
 		builder.show();
@@ -1690,14 +1726,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.setTitle(title);
 		builder.setCancelable(false);
 		builder.setMessage(Log.getStackTraceString(err));
-		builder.setPositiveButton("OK", (DialogInterface.OnClickListener)null);
+		builder.setPositiveButton(R.string.ok, null);
 		builder.setNegativeButton("Send error report", new DialogInterface.OnClickListener(){
 				@Override
 				public void onClick(DialogInterface p1,int  p2)
 				{
 
 					SendErrorReport(err);
-					return ;
 				}
 			});
 		builder.show();
@@ -1708,7 +1743,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.setTitle(title);
 		builder.setCancelable(false);
 		builder.setMessage(content);
-		builder.setPositiveButton("OK", listener);
+		builder.setPositiveButton(R.string.ok, listener);
 		builder.show();
 	}
 	public static void ShowAlertDialog(Activity a,String title,String content)
@@ -1724,8 +1759,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.setTitle(title);
 		builder.setCancelable(false);
 		builder.setMessage(content);
-		builder.setPositiveButton("OK", ok).setNegativeButton("No",no);
-		builder.setNeutralButton("Cancel",can);
+		builder.setPositiveButton(R.string.cancel, ok).setNegativeButton("No",no);
+		builder.setNeutralButton(R.string.cancel,can);
 		builder.show();
 	}
 
@@ -1748,7 +1783,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	{
 
 		new SaveDBAsync().execute(disasmF);
-		return ;
 	}
 
 	private void AlertError(int p0, Exception e)
@@ -1760,20 +1794,19 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		ShowErrorDialog(this,p0,e);
 		//ShowAlertDialog((Activity)this,p0,Log.getStackTraceString(e));
 		Log.e(TAG,p0,e);
-		return ;
 	}
 
 	private void SaveDetailOld()
 	{
 		Log.v(TAG, "Saving details");
-		File dir=new File("/sdcard/disasm/");
+		File dir = new File(Environment.getExternalStorageDirectory().getPath() + "disasm/");
 		File file=new File(dir, new File(fpath).getName() + "_" + new Date(System.currentTimeMillis()).toString() + ".details.txt");
 		SaveDetail(dir, file);
 	}
 
 	private void AlertSaveSuccess(File file)
 	{
-		Toast.makeText(this, "Successfully saved to file: " + file.getPath(), 5).show();
+		Toast.makeText(this, "Successfully saved to file: " + file.getPath(), Toast.LENGTH_LONG).show();
 	}
 
 	private void ShowDetail()
@@ -1810,7 +1843,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		}
 		if(shouldSave&& currentProject==null)
 		{
-			ShowYesNoCancelDialog((Activity)this,"Save project?","",
+			ShowYesNoCancelDialog(this, "Save project?", "",
 				new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface p1, int p2)
@@ -1821,11 +1854,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								{
 									SaveDetail();
 									MainActivity.super.onBackPressed();
-									return ;
 								}
 							});
 
-						return ;
 					}
 				},
 				new DialogInterface.OnClickListener(){
@@ -1833,20 +1864,16 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					public void onClick(DialogInterface p1, int p2)
 					{					
 						MainActivity.super.onBackPressed();
-						return ;
 					}
 				},
 				new DialogInterface.OnClickListener(){
 					@Override
-					public void onClick(DialogInterface p1, int p2)
-					{					
-						return ;
+					public void onClick(DialogInterface p1, int p2) {
 					}
 				});
 		}	
 		else
 			super.onBackPressed();
-		return;
 	}
 
 	@Override
@@ -1862,7 +1889,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		Finalize();
 		if (cs != null)
 			;//cs.close();
-		cs = (Capstone) null;
+		cs = null;
 		//Finalize();
 		/*if (mNotifyManager != null)
 		 {
@@ -1916,11 +1943,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				break;
 			case R.id.chooserow:
 				 {
-					 mCustomDialog = new ChooseColumnDialog((Activity)this, 
+					 mCustomDialog = new ChooseColumnDialog(this,
 						 "Select columns to view", // Title
 						 "Choose columns", // Content
 						 leftListener, // left
-						 (View.OnClickListener) null); // right
+							 null); // right
 						 mCustomDialog.show();
 				 break;
 				 }
@@ -1967,7 +1994,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 										{
 											if(sym.type!=Symbol.Type.STT_FUNC)
 											{
-												Toast.makeText(MainActivity.this,"This is not a function.",3).show();
+												Toast.makeText(MainActivity.this, "This is not a function.", Toast.LENGTH_SHORT).show();
 												return ;
 											}
 											jumpto(sym.st_value);
@@ -1976,10 +2003,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 									}
 									showToast("No such symbol available");
 								}
-								return ;
 							}
 						},
-						"Cancel"/*R.string.symbol*/,(DialogInterface.OnClickListener)null);
+							getString(R.string.cancel)/*R.string.symbol*/, null);
 					ab.getWindow().setGravity(Gravity.TOP);
 					break;
 				}
@@ -1998,8 +2024,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								public void run()
 								{
 									SaveDetail();
-									return ;
-								}		
+								}
 							});				
 					}
 					break;
@@ -2015,11 +2040,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 										public void run()
 										{
 											createZip();
-											return;
-										}						
+										}
 									});
-								return ;
-							}		
+							}
 						});				
 
 					break;
@@ -2027,14 +2050,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			case R.id.calc:
 			{
 				final EditText et=new EditText(this);
-				ShowEditDialog("Calculator", "Enter an expression to measure", et, "OK", new DialogInterface. OnClickListener(){
+				ShowEditDialog(getString(R.string.calculator), "Enter an expression to measure", et, getString(R.string.ok	), new DialogInterface. OnClickListener(){
 						@Override
 						public void onClick(DialogInterface p1,int  p2)
 						{
-							Toast.makeText(MainActivity.this,Calculator.Calc(et.getText().toString()).toString(),3).show();
-							return ;
+							Toast.makeText(MainActivity.this, Calculator.Calc(et.getText().toString()).toString(), Toast.LENGTH_SHORT).show();
 						}
-					}, "Cancel", (DialogInterface.OnClickListener)null);
+				}, getString(R.string.cancel), null);
 			}
 			break;
 			case R.id.donate:
@@ -2074,7 +2096,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			{
 				//not found
 				tabHost.setCurrentTab(TAB_DISASM);
-				jmpBackstack.push(new Long(adapter.getCurrentAddress()));
+				jmpBackstack.push(Long.valueOf(adapter.getCurrentAddress()));
 				adapter.OnJumpTo(address);
 				listview.setSelection(0);
 				//}else{
@@ -2083,9 +2105,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				//listview.smoothScrollToPosition(index); too slow
 			}
 		}else{
-			Toast.makeText(this,"please enter a valid address..",3).show();
+			Toast.makeText(this, R.string.validaddress, Toast.LENGTH_SHORT).show();
 		}
-		return ;
 	}
 
 	private boolean isValidAddress(long address)
@@ -2099,7 +2120,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 	private void createZip()
 	{
-		File targetFile = null;
+		File targetFile;
 		try
 		{
 			File projFolder=new File(projectManager.RootFile,currentProject.name+"/");
@@ -2107,7 +2128,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			ZipOutputStream zos=new ZipOutputStream(fos);
 			File[] targets=projFolder.listFiles();
 			byte[] buf=new byte[4096];
-			int readlen=0;
+			int readlen;
 			for(File file:targets)
 			{
 				Log.v(TAG,"writing "+file.getName());
@@ -2125,11 +2146,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		catch (Exception e)
 		{
 			AlertError(R.string.fail_exportzip,e);
-			targetFile=(File) null;
+			targetFile = null;
 		}
 		if(targetFile!=null)
 			AlertSaveSuccess(targetFile);
-		return ;
 	}
 //	private View.OnClickListener leftListener = new View.OnClickListener() {
 //		public void onClick(View v)
@@ -2180,33 +2200,37 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		switch(picker)
 		{
 			case 0:
-				StorageChooser chooser = new StorageChooser.Builder()
-					.withActivity(MainActivity.this)
-					.withFragmentManager(getFragmentManager())
-					.withMemoryBar(true)
-					.allowCustomPath(true)
-					.setType(StorageChooser.FILE_PICKER)
-					.actionSave(true)		
-					//.withPreference(settingPath)
-				//	.withPredefinedPath(prepath)
-					.shouldResumeSession(true)
-					.showHidden(true)
-					.build();
+				try {
+					StorageChooser chooser = new StorageChooser.Builder()
+						.withActivity(MainActivity.this)
+						.withFragmentManager(getFragmentManager())
+						.withMemoryBar(true)
+						.allowCustomPath(true)
+						.setType(StorageChooser.FILE_PICKER)
+						.actionSave(true)
+						//.withPreference(settingPath)
+					//	.withPredefinedPath(prepath)
+						.shouldResumeSession(true)
+						.showHidden(true)
+						.build();
 					// Show dialog whenever you want by
-				//chooser.getsConfig().setPrimaryPath(prepath);
-				chooser.show();
-				// get path that the user has chosen
-				chooser.setOnSelectListener(new StorageChooser.OnSelectListener() {
-						@Override
-						public void onSelect(String path) {
-							SharedPreferences.Editor edi=settingPath.edit();
-							edi.putString(DiskUtil.SC_PREFERENCE_KEY,path);
-							edi.commit();
-							disableEnableControls(false,llmainLinearLayoutSetupRaw);
-							OnChoosePath(path);
-							//Log.e("SELECTED_PATH", path);
-						}
-					});
+					//chooser.getsConfig().setPrimaryPath(prepath);
+					chooser.show();
+					// get path that the user has chosen
+					chooser.setOnSelectListener(new StorageChooser.OnSelectListener() {
+							@Override
+							public void onSelect(String path) {
+								SharedPreferences.Editor edi=settingPath.edit();
+								edi.putString(DiskUtil.SC_PREFERENCE_KEY,path);
+								edi.apply();
+								disableEnableControls(false,llmainLinearLayoutSetupRaw);
+								OnChoosePath(path);
+								//Log.e("SELECTED_PATH", path);
+							}
+						});
+				} catch (Exception e) {
+					Toast.makeText(this,"An error happened using the external file choosing library. Please choose another file chooser in settings.",Toast.LENGTH_SHORT).show();
+				}
 				break;
 			case 1:
 				Intent i=new Intent(this, com.kyhsgeekcode.rootpicker.FileSelectorActivity.class);
@@ -2224,7 +2248,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 String path=data.getStringExtra("path");
                 SharedPreferences.Editor edi=settingPath.edit();
 				edi.putString(DiskUtil.SC_PREFERENCE_KEY,path);
-				edi.commit();
+				edi.apply();
 				disableEnableControls(false,llmainLinearLayoutSetupRaw);
 				OnChoosePath(path);
             }
@@ -2252,16 +2276,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					}
 					else
 					{
-						Toast.makeText(this,R.string.permission_needed,5).show();
+						Toast.makeText(this, R.string.permission_needed, Toast.LENGTH_LONG).show();
 						setting=getSharedPreferences(RATIONALSETTING,MODE_PRIVATE);
 						editor=setting.edit();
 						editor.putBoolean("show",true);
-						editor.commit();
+						editor.apply();
 						// permission denied, boo! Disable the
 						// functionality that depends on this permission.
 					}
-					return;
-				}
+			}
 
 				// other 'case' lines to check for other
 				// permissions this app might request
@@ -2273,7 +2296,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		File tmpfile=new File(getFilesDir(),"tmp.so");	
 		try
 		{
-			InputStream is=(InputStream)getContentResolver().openInputStream(uri);
+			InputStream is = getContentResolver().openInputStream(uri);
 			//ByteArrayOutputStream bis=new ByteArrayOutputStream();
 			setFilecontent(Utils.getBytes(is));
 			
@@ -2292,7 +2315,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				{
 					while(!RootTools.isAccessGiven())
 					{
-						Toast.makeText(this,"This file requires root to read.",3).show();
+						Toast.makeText(this, "This file requires root to read.", Toast.LENGTH_SHORT).show();
 						RootTools.offerSuperUser(this);
 					}
 					try{
@@ -2310,11 +2333,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 				else
 				{
-					Toast.makeText(this,"This file requires root permission to read.",3).show();
+					Toast.makeText(this, "This file requires root permission to read.", Toast.LENGTH_SHORT).show();
 				}			
 			}else{
 				Log.e(TAG,"",e);
-				//Toast.makeText(this,"Not needed",3).show();
+				//Toast.makeText(this,"Not needed",Toast.LENGTH_SHORT).show();
 			}
 			AlertError(R.string.fail_readfile,e);
 		}
@@ -2375,7 +2398,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			}
 			in.close();		
 			AfterReadFully(file);
-			Toast.makeText(this, "success size=" + index /*+ type.name()*/, 3).show();
+			Toast.makeText(this, "success size=" + index /*+ type.name()*/, Toast.LENGTH_SHORT).show();
 
 			//OnOpenStream(fsize, path, index, file);
 		}catch (IOException e)
@@ -2387,7 +2410,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				{
 					while(!RootTools.isAccessGiven())
 					{
-						Toast.makeText(this,"This file requires root to read.",3).show();
+						Toast.makeText(this, "This file requires root to read.", Toast.LENGTH_SHORT).show();
 						RootTools.offerSuperUser(this);
 					}
 					try{
@@ -2405,11 +2428,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				}
 				else
 				{
-					Toast.makeText(this,"This file requires root permission to read.",3).show();
+					Toast.makeText(this, "This file requires root permission to read.", Toast.LENGTH_SHORT).show();
 				}			
 			}else{
 				Log.e(TAG,"",e);
-				//Toast.makeText(this,"Not needed",3).show();
+				//Toast.makeText(this,"Not needed",Toast.LENGTH_SHORT).show();
 			}
 			AlertError(R.string.fail_readfile,e);
 			//Log.e(TAG, "", e);
@@ -2459,7 +2482,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	private void AllowRawSetup()
 	{
 		disableEnableControls(true,llmainLinearLayoutSetupRaw);
-		return ;
 	}
 
 	private void AfterParse()
@@ -2472,19 +2494,19 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			mode = archs[1];
 		if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL)
 		{
-			Toast.makeText(this, "Maybe I don't support this machine:" + type.name(), 3).show();
+			Toast.makeText(this, "Maybe I don't support this machine:" + type.name(), Toast.LENGTH_SHORT).show();
 		}
 		else
 		{
-			int err=0;
+			int err;
 			if ((err = Open(arch,/*CS_MODE_LITTLE_ENDIAN =*/ mode)) != cs.CS_ERR_OK)/*new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))*/
 			{
 				Log.e(TAG, "setmode type=" + type.name() + " err=" + err + "arch" + arch + "mode=" + mode);
-				Toast.makeText(this, "failed to set architecture" + err + "arch=" + arch, 3).show();
+				Toast.makeText(this, "failed to set architecture" + err + "arch=" + arch, Toast.LENGTH_SHORT).show();
 			}
 			else
 			{
-				Toast.makeText(this, "MachineType=" + type.name() + " arch=" + arch, 3).show();
+				Toast.makeText(this, "MachineType=" + type.name() + " arch=" + arch, Toast.LENGTH_SHORT).show();
 			}			
 		}
 		if(!(parsedFile instanceof RawFile))
@@ -2519,6 +2541,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			autoSymAdapter.add(s.name);
 		}
 		adapter.Clear();
+		ShowDetail();
 		DisassembleFile(0/*parsedFile.getEntryPoint()*/);
 	}
 	private int[] getArchitecture(MachineType type)
@@ -2655,7 +2678,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public static final int 	CS_MODE_MIPS64 = CS_MODE_64;	// Mips64 ISA (Mips)
 	private String getRealPathFromURI(Uri uri)
 	{
-		String filePath = "";
+		String filePath;
 		filePath = uri.getPath();
 		//경로에 /storage가 들어가면 real file path로 판단
 		if (filePath.startsWith("/storage"))
@@ -2946,14 +2969,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	 if (ps == null || !ps.isValid())
 	 {
 	 //What is it?
-	 Toast.makeText(this, "The file seems that it is neither a valid Elf file or PE file!", 3).show();
+	 Toast.makeText(this, "The file seems that it is neither a valid Elf file or PE file!", Toast.LENGTH_SHORT).show();
 	 throw new IOException(e);
 	 }
 	 }
 	 else
 	 {
 	 //What is it?
-	 Toast.makeText(this, "The file seems that it is neither a valid Elf file or PE file!", 3).show();
+	 Toast.makeText(this, "The file seems that it is neither a valid Elf file or PE file!", Toast.LENGTH_SHORT).show();
 	 throw new IOException(e);
 	 }*/
 /*

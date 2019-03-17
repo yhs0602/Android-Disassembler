@@ -1,6 +1,6 @@
 package com.kyhsgeekcode.disassembler;
-import capstone.*;
-import java.io.*;
+
+import java.io.Serializable;
 
 public class ListViewItem implements Serializable
 {
@@ -58,7 +58,6 @@ public class ListViewItem implements Serializable
 
 	public String toSimpleString()
 	{
-		// TODO: Implement this method
 		StringBuilder builder=new StringBuilder(instruction);
 		builder.append(" ");
 		builder.append(operands);

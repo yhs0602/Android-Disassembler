@@ -1,16 +1,38 @@
 package com.kyhsgeekcode.rootpicker;
 
-import android.app.*;
-import android.content.*;
-import android.content.res.*;
-import android.os.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
-import com.stericson.RootTools.*;
-import java.io.*;
-import java.util.*;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.AssetManager;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.kyhsgeekcode.disassembler.R;
+import com.stericson.RootTools.RootTools;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class FileSelectorActivity extends ListActivity
 {
@@ -40,7 +62,7 @@ public class FileSelectorActivity extends ListActivity
 //			x86
 //			x86_64
 //			mips
-//			mips64	 
+//			mips64
 			if (abi.contains("armeabi") || abi.contains("arm64"))
 			{
 				binary = "ls-arm";
@@ -80,18 +102,16 @@ public class FileSelectorActivity extends ListActivity
 
 				// osErr = new DataInputStream(shProcess.getErrorStream());
 
-				if (null != os && null != osRes)
-				{								
+				if (null != os && null != osRes) {
 					writer.write("(( chmod 711 " + lspath + ") && echo --EOF--) || echo --EOF--\n");
 					writer.flush();
 					String tmp;
 					Log.d(TAG, "DOING");
 					tmp = reader.readLine();
-					while (tmp != null && ! tmp.trim().equals("--EOF--"))
-					{			
-						Log.d(TAG, "" + tmp);			
+					while (tmp != null && ! tmp.trim().equals("--EOF--")) {
+                        Log.d(TAG, "" + tmp);
 					}
-					Log.d(TAG, "Chmod done");	
+                    Log.d(TAG, "Chmod done");
 				}
 			}
 			catch (IOException e)
@@ -102,10 +122,18 @@ public class FileSelectorActivity extends ListActivity
 		}
 		catch (IOException e)
 		{
-			Toast.makeText(this, "Failed to copy ls", 3).show();
+            Toast.makeText(this, "Failed to copy ls", Toast.LENGTH_SHORT).show();
 		}
 		SharedPreferences sp=getSharedPreferences("com.kyhsgeekcode.rootpicker.last", MODE_PRIVATE);
 		String startpath=sp.getString("lastpath", root);
+		if(!RootTools.isRootAvailable())
+		{
+			if(!new File(startpath).canRead())
+			{
+				startpath= Environment.getExternalStorageDirectory().getPath();
+				Toast.makeText(this, R.string.NoRoot_GoDefault,Toast.LENGTH_SHORT).show();
+			}
+		}
 		if (new File(startpath).canRead())
 		{
 			getDir(startpath);
@@ -120,7 +148,7 @@ public class FileSelectorActivity extends ListActivity
 
 	private void getDir(String dirPath)
 	{
-		mPath.setText("Location: " + dirPath);
+		mPath.setText(getString(R.string.location) + dirPath);
 		/*item = new ArrayList<String>();
 		 path = new ArrayList<String>();*/
 		items = new ArrayList<>();
@@ -190,7 +218,7 @@ public class FileSelectorActivity extends ListActivity
 
 	private void getDirRoot(String dirPath)
 	{
-		mPath.setText("Location: " + dirPath);
+		mPath.setText(getString(R.string.location) + dirPath);
 		if (RootTools.isRootAvailable())
 		{
 			while (!RootTools.isAccessGiven())
@@ -226,7 +254,7 @@ public class FileSelectorActivity extends ListActivity
 		{
 			new AlertDialog.Builder(this)
 				.setIcon(R.drawable.ic_launcher)
-				.setTitle("[" + dirPath + "] folder can't be read!")
+				.setTitle(getString(R.string.cannot_be_read,dirPath))
 				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which)
 					{
@@ -308,7 +336,7 @@ public class FileSelectorActivity extends ListActivity
 		 if (p1.equals("/"))
 		 {
 		 return -1;
-		 }		
+		 }
 		 if (p1.equals("..") || p1.equals("../"))
 		 {
 		 return -1;
@@ -330,7 +358,7 @@ public class FileSelectorActivity extends ListActivity
 		 return 1;
 		 }
 		 return p1.compareTo(p2);
-		 }		
+		 }
 		 });
 		 Collections.sort(path, new Comparator<String>(){
 		 @Override
@@ -382,8 +410,7 @@ public class FileSelectorActivity extends ListActivity
 
 			// osErr = new DataInputStream(shProcess.getErrorStream());
 
-			if (null != os && null != osRes)
-			{								
+			if (null != os && null != osRes) {
 				writer.write("((" + lspath + " " + path + ") && echo --EOF--) || echo --EOF--\n");
 				writer.flush();
 				String answer="";
@@ -400,7 +427,7 @@ public class FileSelectorActivity extends ListActivity
 					Log.d(TAG, "" + tmp);
 					if (i % 2 == 0)
 					{
-						name = tmp;		
+                        name = tmp;
 					}
 					else
 					{
@@ -439,7 +466,7 @@ public class FileSelectorActivity extends ListActivity
 				 {
 				 Log.e(TAG,"",nfe);
 				 }
-				 }	*/	
+				 }	*/
 			}
 		}
 		catch (IOException e)
@@ -454,8 +481,7 @@ public class FileSelectorActivity extends ListActivity
 		String name;
 		int type;
 
-		public boolean isDirectory()
-		{		
+		public boolean isDirectory() {
 			return (type & 4) != 0;
 		}
 
@@ -467,7 +493,7 @@ public class FileSelectorActivity extends ListActivity
 	@Override
 	public void onBackPressed()
 	{
-		String path=mPath.getText().toString().replaceAll("Location: ", "");
+		String path=mPath.getText().toString().replaceAll(getString(R.string.location), "");
 		if (root.equals(path))
 		{
 			super.onBackPressed();

@@ -1,14 +1,24 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.app.*;
-import android.content.*;
-import android.os.*;
-import android.preference.*;
-import android.util.*;
-import android.view.*;
-import java.io.*;
-import java.util.*;
-import android.widget.*;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Set;
 
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener,Preference.OnPreferenceChangeListener
 {
@@ -126,7 +136,6 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 	@Override
 	public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState)
 	{
-		// TODO: Implement this method
 		super.onSaveInstanceState(outState, outPersistentState);
 	}
 

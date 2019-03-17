@@ -51,7 +51,7 @@
 
 							<TextView
 								android:layout_height="wrap_content"
-								android:text="Disassembler"
+                                android:text="@string/app_name"
 								android:textAppearance="?android:attr/textAppearanceLarge"
 								android:layout_width="wrap_content"
 								android:layout_span="5"
@@ -59,7 +59,7 @@
 
 							<TextView
 								android:layout_height="wrap_content"
-								android:text="Select any file to disassemble, or project from the drawer left."
+                                android:text="@string/select_any_file_to_disassemble_or_project_from_the_drawer_left"
 								android:textAppearance="?android:attr/textAppearanceMedium"
 								android:layout_width="wrap_content"
 								android:layout_span="5"/>
@@ -79,7 +79,7 @@
 
 								<Button
 									android:layout_height="wrap_content"
-									android:text="Select file"
+                                    android:text="@string/select_file"
 									android:layout_width="wrap_content"
 									android:id="@+id/selFile"
 									android:layout_span="1"
@@ -101,7 +101,7 @@
 									<TextView
 										android:layout_height="wrap_content"
 										android:layout_width="wrap_content"
-										android:text="foffs of CS"/>
+                                        android:text="@string/FoffsCS" />
 
 									<EditText
 										android:layout_height="wrap_content"
@@ -121,7 +121,7 @@
 									<TextView
 										android:layout_height="wrap_content"
 										android:layout_width="wrap_content"
-										android:text="foofs of CS end"/>
+                                        android:text="@string/FoffsCSEd" />
 
 									<EditText
 										android:layout_height="wrap_content"
@@ -141,7 +141,7 @@
 									<TextView
 										android:layout_height="wrap_content"
 										android:layout_width="wrap_content"
-										android:text="RVA of entry point"/>
+                                        android:text="@string/VAofEP" />
 
 									<EditText
 										android:layout_height="wrap_content"
@@ -161,7 +161,7 @@
 									<TextView
 										android:layout_height="wrap_content"
 										android:layout_width="wrap_content"
-										android:text="VirtualAddress"/>
+                                        android:text="@string/VAofCS" />
 
 									<EditText
 										android:layout_height="wrap_content"
@@ -177,7 +177,7 @@
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:textAppearance="?android:attr/textAppearanceMedium"
-									android:text="Architecture:"
+                                    android:text="@string/architecture"
 									android:id="@+id/mainTVarch"
 									android:layout_weight="1.0"/>
 
@@ -190,7 +190,7 @@
 								<Button
 									android:layout_height="wrap_content"
 									android:layout_width="wrap_content"
-									android:text="Finish Setup"
+                                    android:text="@string/finish_setup"
 									android:id="@+id/mainBTFinishSetup"/>
 
 							</LinearLayout>
@@ -198,7 +198,7 @@
 							<Button
 								android:layout_height="wrap_content"
 								android:layout_width="wrap_content"
-								android:text="Override autosetup"
+                                android:text="@string/override_autosetup"
 								android:id="@+id/mainBTOverrideAuto"/>
 
 						</LinearLayout>
@@ -218,13 +218,13 @@
 
 								<Button
 									android:layout_height="wrap_content"
-									android:text="Show details"
+                                    android:text="@string/show_details"
 									android:layout_width="wrap_content"
 									android:id="@+id/btnShowdetail"/>
 
 								<Button
 									android:layout_height="wrap_content"
-									android:text="Save Details to file"
+                                    android:text="@string/save_details_to_file"
 									android:layout_width="wrap_content"
 									android:id="@+id/btnSaveDetails"
 									android:layout_span="2"/>
@@ -282,7 +282,7 @@
 
 								<Button
 									android:layout_height="wrap_content"
-									android:text="Export"
+                                    android:text="@string/export"
 									android:layout_width="wrap_content"
 									android:id="@+id/btnSaveDisasm"/>
 
