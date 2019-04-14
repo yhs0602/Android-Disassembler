@@ -20,7 +20,7 @@ public abstract class AssemblyProvider {
             public void run()
             {
                 long addr=lvi.disasmResult.address;
-                List<Symbol> syms= activity.parsedFile.exportSymbols;
+                List<Symbol> syms = activity.parsedFile.symbols;
                 for(Symbol sym:syms)
                 {
                     if(sym.st_value==addr)

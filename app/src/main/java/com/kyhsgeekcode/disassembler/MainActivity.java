@@ -1550,7 +1550,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 						fpath=dataFragment.getPath();
 						if(parsedFile!=null){
 							symbolLvAdapter.itemList().clear();
-							symbolLvAdapter.addAll(parsedFile.getExportSymbols());
+							symbolLvAdapter.addAll(parsedFile.getSymbols());
 							for(Symbol s:symbolLvAdapter.itemList())
 							{
 								autoSymAdapter.add(s.name);
@@ -1987,7 +1987,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 								catch(NumberFormatException nfe)
 								{
 									//not a number, lookup symbol table
-									List<Symbol> syms=parsedFile.getExportSymbols();
+									List<Symbol> syms = parsedFile.getSymbols();
 									for(Symbol sym:syms)
 									{
 										if(sym.name!=null&&sym.name.equals(dest))
@@ -2529,7 +2529,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		colorHelper.setArchitecture(arch);
 		//}
 		shouldSave = true;
-		List<Symbol> list=parsedFile.getExportSymbols();
+		List<Symbol> list = parsedFile.getSymbols();
 //		for(int i=0;i<list.size();++i){
 //			symbolLvAdapter.addItem(list.get(i));
 //			symbolLvAdapter.notifyDataSetChanged();

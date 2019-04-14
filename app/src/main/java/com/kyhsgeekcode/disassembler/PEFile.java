@@ -1,12 +1,25 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.util.*;
-import java.io.*;
-import java.nio.*;
-import java.util.*;
-import nl.lxtreme.binutils.elf.*;
-import org.boris.pecoff4j.*;
-import org.boris.pecoff4j.io.*;
+import android.util.Log;
+
+import org.boris.pecoff4j.DOSHeader;
+import org.boris.pecoff4j.ExportDirectory;
+import org.boris.pecoff4j.ImageData;
+import org.boris.pecoff4j.ImportDirectory;
+import org.boris.pecoff4j.ImportDirectoryEntry;
+import org.boris.pecoff4j.OptionalHeader;
+import org.boris.pecoff4j.PE;
+import org.boris.pecoff4j.RVAConverter;
+import org.boris.pecoff4j.io.PEParser;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+
+import nl.lxtreme.binutils.elf.Elf;
+import nl.lxtreme.binutils.elf.MachineType;
 
 public class PEFile extends AbstractFile
 {
@@ -36,7 +49,7 @@ public class PEFile extends AbstractFile
 		entryPoint = oph.getAddressOfEntryPoint();
 		fileContents = filec;
 		//Setup symbol table
-		exportSymbols = new ArrayList<>();
+		symbols = new ArrayList<>();
 		importSymbols = new ArrayList<>();
 
 		//Parse IAT
@@ -119,7 +132,7 @@ public class PEFile extends AbstractFile
 				sym.type=Symbol.Type.STT_FUNC;
 				sym.bind=Symbol.Bind.STB_GLOBAL;
 				sym.demangled=sym.name;
-				exportSymbols.add(sym);
+				symbols.add(sym);
 			}
 		}
 		//parse TLS
@@ -205,7 +218,7 @@ public class PEFile extends AbstractFile
 		builder.append(ls).append(ls);
 		builder.append("======Export Table=====");
 		builder.append(ls);
-		for (Symbol sym:exportSymbols)
+		for (Symbol sym : symbols)
 		{
 			builder.append(sym.toString());
 			builder.append(ls);

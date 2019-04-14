@@ -1,10 +1,21 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.util.*;
-import java.io.*;
-import java.nio.*;
-import java.util.*;
-import nl.lxtreme.binutils.elf.*;
+import android.util.Log;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import nl.lxtreme.binutils.elf.Elf;
+import nl.lxtreme.binutils.elf.ElfClass;
+import nl.lxtreme.binutils.elf.Header;
+import nl.lxtreme.binutils.elf.ProgramHeader;
+import nl.lxtreme.binutils.elf.SectionHeader;
+import nl.lxtreme.binutils.elf.SectionType;
 public class ELFUtil extends AbstractFile
 {
 	private String TAG="Disassembler elfutil";
@@ -51,7 +62,14 @@ public class ELFUtil extends AbstractFile
 		fileContents = filec;
 		AfterConstructor();
 	}
-	
+
+
+    //MEMO - Elf file format
+    // REL
+    // RELA has (Offset from sh_info) Info (index to symtab at sh_link, type) value
+    // SYMTAB
+    // DYNSYM
+    // STRTAB
 	public void AfterConstructor() throws IOException
 	{
 		SectionHeader[] sections = elf.sectionHeaders;
@@ -71,7 +89,7 @@ public class ELFUtil extends AbstractFile
 		{
 			entryPoint = header.entryPoint;
 		}
-		
+
 		//Analyze ExportAddressTable(DynSym)
 		if (elf.dynamicTable != null)
 		{ 
@@ -155,80 +173,20 @@ public class ELFUtil extends AbstractFile
 				Log.e(TAG, "", e);
 			}*/
 			sb.append(System.lineSeparator()).append("syms;").append(System.lineSeparator());
-			try
-			{
-				symbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.SYMTAB));
-				ElfClass elfClass=elf.header.elfClass;
-				exportSymbols = new ArrayList<>();
-				if (elfClass.equals(ElfClass.CLASS_32))
-				{
-					while (symbuffer.hasRemaining())
-					{
-						int name=symbuffer.getInt();
-						int value=symbuffer.getInt();
-						int size=symbuffer.getInt();
-						short stinfo=symbuffer.get();
-						short stother=symbuffer.get();
-						short stshndx=symbuffer.getShort();
-						String sym_name=Elf.getZString(strtable, name);
-						Symbol symbol=new Symbol();
-						symbol.name = sym_name;
-						symbol.is64 = false;
-						symbol.st_info = stinfo;
-						symbol.st_name = name;
-						symbol.st_other = stother;
-						symbol.st_shndx = stshndx;
-						symbol.st_size = size;
-						symbol.st_value = value;
-						symbol.analyze();
-						exportSymbols.add(symbol);
-						/*sb.append(sym_name).append("=").append(Integer.toHexString(value))
-						 .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
-						 */
-						sb.append(symbol.toString()).append(System.lineSeparator());
-					}		
-				}
-				else
-				{// 64
-					while (symbuffer.hasRemaining())
-					{
-						int name=symbuffer.getInt();
-						short stinfo=symbuffer.get();
-						short stother=symbuffer.get();
-						short stshndx=symbuffer.getShort();
-						long value=symbuffer.getLong();
-						long size=symbuffer.getLong();	
-						String sym_name=Elf.getZString(strtable, name);
-						Symbol symbol=new Symbol();
-						symbol.name = sym_name;
-						symbol.is64 = true;
-						symbol.st_info = stinfo;
-						symbol.st_name = name;
-						symbol.st_other = stother;
-						symbol.st_shndx = stshndx;
-						symbol.st_size = size;
-						symbol.st_value = value;
-						symbol.analyze();
-						exportSymbols.add(symbol);
-						/*	sb.append(sym_name).append("=").append(Integer.toHexString(value))
-						 .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
-						 */
-						sb.append(symbol.toString()).append(System.lineSeparator());
-					}				
-				}
-			}
-			catch (IllegalArgumentException |IOException|StringIndexOutOfBoundsException e)
-			{
-				Log.e(TAG, "", e);
-			}
-			if (exportSymbols == null)
-				exportSymbols = new ArrayList<>();
-			//if (dynsyms != null)
-				//exportSymbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
 
-				
-			//sort it? this should be after plt parse
-			Collections.sort(exportSymbols, new Comparator<Symbol>(){
+            if (symbols == null)
+                symbols = new ArrayList<>();
+			//if (dynsyms != null)
+            //symbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
+
+            //First, Analyze Symbol table
+            ParseSymtab(sb, strtable);
+            // Second, Analyze Rela table
+            ArrayList<Rela> relas = new ArrayList<>();
+            ParseRela(relas);
+
+            //sort it? this should be after plt parse
+            Collections.sort(symbols, new Comparator<Symbol>() {
 					@Override
 					public int compare(Symbol p1, Symbol p2)
 					{
@@ -458,7 +416,95 @@ public class ELFUtil extends AbstractFile
 		}
 	}
 
-	String info="";
+    private void ParseRela(ArrayList<Rela> relas) throws IOException {
+        SectionHeader relaSec = elf.getSectionHeaderByType(SectionType.RELA);
+        if (relaSec != null) {
+            ByteBuffer relaBuf = elf.getSection(relaSec);
+            int targetSection = relaSec.info;
+            int sourceSymtab = relaSec.link;
+            while (relaBuf.hasRemaining()) {
+                long r_offset = relaBuf.getLong();      //unsigned, byte offset from targetSection
+                long r_info = relaBuf.getLong();        //unsigned, index to sourceSymtab
+                int index = (int) (long) (r_info >> 32 & 0xFFFFFFFF);
+                Symbol symbol = symbols.get(index);
+                long r_addend = relaBuf.getLong();     //signed, delta
+                Rela rela = new Rela();
+                rela.targetSection = targetSection;
+                rela.symsection = sourceSymtab;
+                rela.index = index;
+                rela.symbol = symbol;
+                rela.r_offset = r_offset;
+                rela.r_addend = r_addend;
+                rela.r_info = r_info;
+                rela.type = (int) (r_info & 0xFFFFFFFF);
+                relas.add(rela);
+            }
+        }
+    }
+
+    private void ParseSymtab(StringBuilder sb, byte[] strtable) {
+        ByteBuffer symbuffer;
+        try {
+            symbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.SYMTAB));
+            ElfClass elfClass = elf.header.elfClass;
+            symbols = new ArrayList<>();
+            if (elfClass.equals(ElfClass.CLASS_32)) {
+                while (symbuffer.hasRemaining()) {
+                    int name = symbuffer.getInt();
+                    int value = symbuffer.getInt();
+                    int size = symbuffer.getInt();
+                    short stinfo = symbuffer.get();
+                    short stother = symbuffer.get();
+                    short stshndx = symbuffer.getShort();
+                    String sym_name = Elf.getZString(strtable, name);
+                    Symbol symbol = new Symbol();
+                    symbol.name = sym_name;
+                    symbol.is64 = false;
+                    symbol.st_info = stinfo;
+                    symbol.st_name = name;
+                    symbol.st_other = stother;
+                    symbol.st_shndx = stshndx;
+                    symbol.st_size = size;
+                    symbol.st_value = value;
+                    symbol.analyze();
+                    symbols.add(symbol);
+                    /*sb.append(sym_name).append("=").append(Integer.toHexString(value))
+                     .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
+                     */
+                    sb.append(symbol.toString()).append(System.lineSeparator());
+                }
+            } else {// 64
+                while (symbuffer.hasRemaining()) {
+                    int name = symbuffer.getInt();
+                    short stinfo = symbuffer.get();
+                    short stother = symbuffer.get();
+                    short stshndx = symbuffer.getShort();
+                    long value = symbuffer.getLong();
+                    long size = symbuffer.getLong();
+                    String sym_name = Elf.getZString(strtable, name);
+                    Symbol symbol = new Symbol();
+                    symbol.name = sym_name;
+                    symbol.is64 = true;
+                    symbol.st_info = stinfo;
+                    symbol.st_name = name;
+                    symbol.st_other = stother;
+                    symbol.st_shndx = stshndx;
+                    symbol.st_size = size;
+                    symbol.st_value = value;
+                    symbol.analyze();
+                    symbols.add(symbol);
+                    /*	sb.append(sym_name).append("=").append(Integer.toHexString(value))
+                     .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
+                     */
+                    sb.append(symbol.toString()).append(System.lineSeparator());
+                }
+            }
+        } catch (IllegalArgumentException | IOException | StringIndexOutOfBoundsException e) {
+            Log.e(TAG, "", e);
+        }
+    }
+
+    String info = "";
 	/*
 	 public void ParseData() throws Exception
 	 {
