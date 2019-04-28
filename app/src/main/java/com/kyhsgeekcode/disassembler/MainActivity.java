@@ -595,6 +595,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			AlertSelFile();
 			return;
 		}
+		Toast.makeText(this, "Sorry, not stable yet", Toast.LENGTH_SHORT).show();
+		if (true)
+			return;
 		if(currentProject==null)
 		{
 			final EditText etName=new EditText(this);
@@ -1759,7 +1762,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 		builder.setTitle(title);
 		builder.setCancelable(false);
 		builder.setMessage(content);
-		builder.setPositiveButton(R.string.cancel, ok).setNegativeButton("No",no);
+		builder.setPositiveButton(R.string.ok, ok).setNegativeButton("No", no);
 		builder.setNeutralButton(R.string.cancel,can);
 		builder.show();
 	}
