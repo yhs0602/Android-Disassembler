@@ -89,7 +89,8 @@ import nl.lxtreme.binutils.elf.MachineType;
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener
 {
-	
+	static Context context;
+
 	View touchSource;
 	
 	View clickSource;
@@ -1313,6 +1314,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+		context = this;
 		//final Thread.UncaughtExceptionHandler ori=Thread.getDefaultUncaughtExceptionHandler();
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 				@Override
@@ -1320,6 +1322,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				{
 
 					Toast.makeText(MainActivity.this, Log.getStackTraceString(p2), Toast.LENGTH_SHORT).show();
+					context = null;
 					if(p2 instanceof SecurityException)
 					{
 						Toast.makeText(MainActivity.this, R.string.didUgrant, Toast.LENGTH_SHORT).show();

@@ -62,19 +62,19 @@ public abstract class AbstractFile implements Closeable
 	public String toString()
 	{	
 		StringBuilder builder=new StringBuilder("");
-        builder.append(R.string.FileSize).append(Integer.toHexString(fileContents.length))
+		builder.append(/*R.getString(R.string.FileSize)*/"File Size:").append(Integer.toHexString(fileContents.length))
 		.append(ls);
-        builder.append(R.string.FoffsCS).append(Long.toHexString(codeBase))
+		builder.append(MainActivity.context.getString(R.string.FoffsCS)).append(Long.toHexString(codeBase))
 		.append(ls);
-        builder.append(R.string.FoffsCSEd).append(Long.toHexString(codeLimit))
+		builder.append(MainActivity.context.getString(R.string.FoffsCSEd)).append(Long.toHexString(codeLimit))
 		.append(ls);
-        builder.append(R.string.FoffsEP).append(Long.toHexString(codeBase + entryPoint))
+		builder.append(MainActivity.context.getString(R.string.FoffsEP)).append(Long.toHexString(codeBase + entryPoint))
 		.append(ls);
-        builder.append(R.string.VAofCS).append(Long.toHexString(codeVirtualAddress))
+		builder.append(MainActivity.context.getString(R.string.VAofCS)).append(Long.toHexString(codeVirtualAddress))
 		.append(ls);
-        builder.append(R.string.VAofCSE).append(Long.toHexString(codeLimit + codeVirtualAddress))
+		builder.append(MainActivity.context.getString(R.string.VAofCSE)).append(Long.toHexString(codeLimit + codeVirtualAddress))
 		.append(ls);
-        builder.append(R.string.VAofEP).append(Long.toHexString(entryPoint + codeVirtualAddress));
+		builder.append(MainActivity.context.getString(R.string.VAofEP)).append(Long.toHexString(entryPoint + codeVirtualAddress));
 		return builder.toString();
 	}
 //	public AbstractFile(File file) throws IOException

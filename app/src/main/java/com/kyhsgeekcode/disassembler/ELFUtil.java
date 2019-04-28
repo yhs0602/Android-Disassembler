@@ -31,7 +31,7 @@ public class ELFUtil extends AbstractFile
 	@Override
 	public String toString()
 	{
-		StringBuilder sb=new StringBuilder();
+        StringBuilder sb = new StringBuilder(super.toString());
 		importSymbols = getImportSymbols();
 		for (PLT plt:importSymbols)
 		{
