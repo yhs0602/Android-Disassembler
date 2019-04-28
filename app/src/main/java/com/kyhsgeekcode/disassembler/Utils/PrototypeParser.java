@@ -32,7 +32,7 @@ public class PrototypeParser {
                         //this word is return type
                         if("(){}[]".contains(word))
                         {
-                            error();
+                            //error();
                         }
                         proto=new Prototype();
                         proto.returnType=word;
@@ -46,11 +46,11 @@ public class PrototypeParser {
                     case LPAR:
                         if(word.equals("(")) {
                             progress=Progress.PARTYPE;
-                            par=new Prototype.Parameter();
+                            //par=new Prototype.Parameter();
                         }
                         break;
                     case PARTYPE:
-                        proto.params.add(new Parameter)
+                        //proto.params.add(new Parameter)
                 }
 
             }
@@ -60,7 +60,7 @@ public class PrototypeParser {
     }
     public String getPrototype(String funcname)
     {
-
+        return "";
     }
     Map<String,Prototype> prototypes=new HashMap<>();
     enum Progress

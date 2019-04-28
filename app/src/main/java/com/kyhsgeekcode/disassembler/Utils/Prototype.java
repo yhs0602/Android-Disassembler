@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Prototype {
     public String name;
-    public class Parameter
-    {
+
+    public class Parameter extends com.kyhsgeekcode.disassembler.Utils.Parameter {
         String type;
         String name;
     }

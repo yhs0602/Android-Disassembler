@@ -1,10 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: com.github.codekidX:storage-chooser:2.0@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/storage-chooser-2.0.aar/3274df3d5f9ad5aaddd60d2fb94eaa97/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/storage-chooser-2.0.aar/3274df3d5f9ad5aaddd60d2fb94eaa97/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/5499eb4e5edce7ad708124e0ad7336e5/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/5499eb4e5edce7ad708124e0ad7336e5/res" />
     </CLASSES>
-    <JAVADOC />
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.codekidX/storage-chooser/2.0/f3dec2a708b1628b74c7a9c19cecad8e5c2bb303/storage-chooser-2.0-javadoc.jar!/" />
+    </JAVADOC>
     <SOURCES />
   </library>
 </component>

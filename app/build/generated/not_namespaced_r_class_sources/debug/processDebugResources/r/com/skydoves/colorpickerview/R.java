@@ -14,24 +14,24 @@ public final class R {
 
         public static final int alpha_flag = 0x7f04002d;
         public static final int alpha_selector = 0x7f04002e;
-        public static final int borderColor_AlphaSlideBar = 0x7f040044;
-        public static final int borderColor_BrightnessSlider = 0x7f040045;
-        public static final int borderSize_AlphaSlideBar = 0x7f040046;
-        public static final int borderSize_BrightnessSlider = 0x7f040047;
-        public static final int palette = 0x7f0400e2;
-        public static final int palette2 = 0x7f0400e3;
-        public static final int selector = 0x7f040103;
-        public static final int selector_AlphaSlideBar = 0x7f040104;
-        public static final int selector_BrightnessSlider = 0x7f040105;
-        public static final int tileEvenColor = 0x7f040147;
-        public static final int tileOddColor = 0x7f040148;
-        public static final int tileSize = 0x7f040149;
+        public static final int borderColor_AlphaSlideBar = 0x7f040045;
+        public static final int borderColor_BrightnessSlider = 0x7f040046;
+        public static final int borderSize_AlphaSlideBar = 0x7f040047;
+        public static final int borderSize_BrightnessSlider = 0x7f040048;
+        public static final int palette = 0x7f040147;
+        public static final int palette2 = 0x7f040148;
+        public static final int selector = 0x7f040169;
+        public static final int selector_AlphaSlideBar = 0x7f04016a;
+        public static final int selector_BrightnessSlider = 0x7f04016b;
+        public static final int tileEvenColor = 0x7f0401ce;
+        public static final int tileOddColor = 0x7f0401cf;
+        public static final int tileSize = 0x7f0401d0;
     }
     public static final class drawable {
         private drawable() {}
 
-        public static final int palette = 0x7f08008a;
-        public static final int wheel = 0x7f080094;
+        public static final int palette = 0x7f08009a;
+        public static final int wheel = 0x7f0800a4;
     }
     public static final class id {
         private id() {}
@@ -43,29 +43,29 @@ public final class R {
     public static final class layout {
         private layout() {}
 
-        public static final int layout_dialog_colorpicker = 0x7f0b0035;
+        public static final int layout_dialog_colorpicker = 0x7f0c0039;
     }
     public static final class styleable {
         private styleable() {}
 
-        public static final int[] AlphaSlideBar = { 0x7f040044, 0x7f040046, 0x7f040104 };
+        public static final int[] AlphaSlideBar = { 0x7f040045, 0x7f040047, 0x7f04016a };
         public static final int AlphaSlideBar_borderColor_AlphaSlideBar = 0;
         public static final int AlphaSlideBar_borderSize_AlphaSlideBar = 1;
         public static final int AlphaSlideBar_selector_AlphaSlideBar = 2;
-        public static final int[] AlphaTileView = { 0x7f040147, 0x7f040148, 0x7f040149 };
+        public static final int[] AlphaTileView = { 0x7f0401ce, 0x7f0401cf, 0x7f0401d0 };
         public static final int AlphaTileView_tileEvenColor = 0;
         public static final int AlphaTileView_tileOddColor = 1;
         public static final int AlphaTileView_tileSize = 2;
-        public static final int[] BrightnessSlideBar = { 0x7f040045, 0x7f040047, 0x7f040105 };
+        public static final int[] BrightnessSlideBar = { 0x7f040046, 0x7f040048, 0x7f04016b };
         public static final int BrightnessSlideBar_borderColor_BrightnessSlider = 0;
         public static final int BrightnessSlideBar_borderSize_BrightnessSlider = 1;
         public static final int BrightnessSlideBar_selector_BrightnessSlider = 2;
-        public static final int[] ColorPickerView = { 0x7f04002d, 0x7f04002e, 0x7f0400e2, 0x7f040103 };
+        public static final int[] ColorPickerView = { 0x7f04002d, 0x7f04002e, 0x7f040147, 0x7f040169 };
         public static final int ColorPickerView_alpha_flag = 0;
         public static final int ColorPickerView_alpha_selector = 1;
         public static final int ColorPickerView_palette = 2;
         public static final int ColorPickerView_selector = 3;
-        public static final int[] MultiColorPickerView = { 0x7f0400e3 };
+        public static final int[] MultiColorPickerView = { 0x7f040148 };
         public static final int MultiColorPickerView_palette2 = 0;
     }
 }

@@ -25,8 +25,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.SparseArray;
@@ -54,6 +52,9 @@ import android.widget.TabHost;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.codekidlabs.storagechooser.StorageChooser;
 import com.codekidlabs.storagechooser.utils.DiskUtil;
