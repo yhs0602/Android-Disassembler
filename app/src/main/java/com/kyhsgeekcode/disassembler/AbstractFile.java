@@ -63,7 +63,10 @@ public abstract class AbstractFile implements Closeable
         if (fileContents == null) {
             return "The file has not been configured. You should setup manually in the first page before you can see the details.";
         }
-		StringBuilder builder=new StringBuilder("");
+		StringBuilder builder = new StringBuilder(this instanceof RawFile ?
+				"The file has not been configured. You should setup manually in the first page before you can see the details."
+						+ System.lineSeparator()
+				: "");
 		builder.append(/*R.getString(R.string.FileSize)*/"File Size:").append(Integer.toHexString(fileContents.length))
 		.append(ls);
 		builder.append(MainActivity.context.getString(R.string.FoffsCS)).append(Long.toHexString(codeBase))

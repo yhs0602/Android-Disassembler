@@ -2177,12 +2177,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 AfterParse();
             } catch (NotThisFormatException f) {
                 ShowAlertDialog(this, "Failed to parse the file. please setup manually.", "");
-                setParsedFile(new RawFile(file));
+                setParsedFile(new RawFile(file, filecontent));
                 AllowRawSetup();
                 //failed to parse the file. please setup manually.
             } catch (Exception g) {
                 AlertError("Unexpected exception: failed to parse the file. please setup manually.", g);
-                setParsedFile(new RawFile(file));
+                setParsedFile(new RawFile(file, filecontent));
                 AllowRawSetup();
             }
         }

@@ -12,6 +12,7 @@ import org.boris.pecoff4j.PE;
 import org.boris.pecoff4j.RVAConverter;
 import org.boris.pecoff4j.io.PEParser;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -28,9 +29,10 @@ public class PEFile extends AbstractFile
 	{
 		try {
 			pe = PEParser.parse(file);
-		}catch(NegativeArraySizeException e)
-		{
+		}catch(NegativeArraySizeException e) {
 			throw new NotThisFormatException(/*"PECOFFJ's Parser threw an exception."*/);
+		} catch (EOFException e) {
+			throw new RuntimeException("The PE parser threw EOFException. The file may be corrupted.");
 		}
 		if (pe == null || pe.getSignature() == null || !pe.getSignature().isValid())
 		{
