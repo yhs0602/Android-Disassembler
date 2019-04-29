@@ -1,0 +1,25 @@
+# ninja log v5
+173	1002	0	CMakeFiles/hello-jni.dir/MCInstrDesc.c.o	7013a641424f182b
+178	1011	0	CMakeFiles/hello-jni.dir/MCRegisterInfo.c.o	4eba9eea09b9ff6e
+163	1696	0	CMakeFiles/hello-jni.dir/utils.c.o	ab62e3f81a789129
+55	1774	0	CMakeFiles/hello-jni.dir/MCInst.c.o	b38941054c09622c
+121	1805	0	CMakeFiles/hello-jni.dir/SStream.c.o	d07b70f8af27697b
+1003	1842	0	CMakeFiles/hello-jni.dir/arch/AArch64/AArch64Module.c.o	526a2384011bb81
+126	2361	0	CMakeFiles/hello-jni.dir/cs.c.o	8b388765083a3410
+1697	2408	0	CMakeFiles/hello-jni.dir/arch/ARM/ARMModule.c.o	2b47dea352419fc3
+168	2764	0	CMakeFiles/hello-jni.dir/plthook/plthook_elf.c.o	2e8439c88ae5eed1
+1805	2839	0	CMakeFiles/hello-jni.dir/arch/ARM/ARMMapping.c.o	8ea13d059fc795e
+2362	3247	0	CMakeFiles/hello-jni.dir/arch/AArch64/AArch64BaseInfo.c.o	3656f3b0c57bf18c
+1774	3412	0	CMakeFiles/hello-jni.dir/arch/X86/X86Disassembler.c.o	53cd074bf330d5
+2408	4137	0	CMakeFiles/hello-jni.dir/arch/X86/X86IntelInstPrinter.c.o	484a15770a27f65d
+3412	4560	0	CMakeFiles/hello-jni.dir/arch/AArch64/AArch64Mapping.c.o	1619714d1622c14c
+2840	4670	0	CMakeFiles/hello-jni.dir/arch/X86/X86ATTInstPrinter.c.o	ced83862531ad185
+4138	4976	0	CMakeFiles/hello-jni.dir/arch/X86/X86Module.c.o	3bcbe5ef62168b55
+4	5420	0	CMakeFiles/hello-jni.dir/hello-jni.cpp.o	cb85b02d70a3174d
+3247	5476	0	CMakeFiles/hello-jni.dir/arch/X86/X86Mapping.c.o	42517c09652d52a
+1842	5983	0	CMakeFiles/hello-jni.dir/arch/X86/X86DisassemblerDecoder.c.o	3026926da150301a
+2766	7168	0	CMakeFiles/hello-jni.dir/arch/ARM/ARMInstPrinter.c.o	b617ae84553f1d40
+199	9536	0	CMakeFiles/hello-jni.dir/arch/AArch64/AArch64Disassembler.c.o	b44f9eb04efdb6fe
+183	11135	0	CMakeFiles/hello-jni.dir/arch/AArch64/AArch64InstPrinter.c.o	80a997284a2bb94d
+1012	16219	0	CMakeFiles/hello-jni.dir/arch/ARM/ARMDisassembler.c.o	58fdf20a2abacb2b
+16219	16732	0	C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/build/intermediates/cmake/release/obj/x86_64/libhello-jni.so	3c1ae16965c05449
