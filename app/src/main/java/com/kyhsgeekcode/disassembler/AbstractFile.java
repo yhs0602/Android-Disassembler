@@ -59,8 +59,10 @@ public abstract class AbstractFile implements Closeable
 		return importSymbols;
 	}
 	@Override
-	public String toString()
-	{	
+    public String toString() {
+        if (fileContents == null) {
+            return "The file has not been configured. You should setup manually in the first page before you can see the details.";
+        }
 		StringBuilder builder=new StringBuilder("");
 		builder.append(/*R.getString(R.string.FileSize)*/"File Size:").append(Integer.toHexString(fileContents.length))
 		.append(ls);
