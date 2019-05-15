@@ -1206,12 +1206,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 new String[]{"1641832e@fire.fundersclub.com"});
 
         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-                "Crash report");
+                "Crash report - " + error.getMessage());
         StringBuilder content = new StringBuilder(Log.getStackTraceString(error));
 
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
                 content.toString());
-
+        if (error instanceof RuntimeException && parsedFile != null) {
+            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(parsedFile.getPath())));
+        }
         startActivity(Intent.createChooser(emailIntent, getString(R.string.send_crash_via_email)));
     }
 
@@ -1595,7 +1597,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         builder.setNegativeButton("Send error report", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface p1, int p2) {
-
                 SendErrorReport(err);
             }
         });
@@ -2176,10 +2177,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 setParsedFile(new PEFile(file, filecontent));
                 AfterParse();
             } catch (NotThisFormatException f) {
-                ShowAlertDialog(this, "Failed to parse the file. please setup manually.", "");
+                ShowAlertDialog(this, "Failed to parse the file(Unknown format). Please setup manually.", "");
                 setParsedFile(new RawFile(file, filecontent));
                 AllowRawSetup();
                 //failed to parse the file. please setup manually.
+            } catch (RuntimeException f) {
+                AlertError("Failed to parse the file. Please setup manually. Sending an error report, the file being analyzed can be attached.", f);
+                setParsedFile(new RawFile(file, filecontent));
+                AllowRawSetup();
             } catch (Exception g) {
                 AlertError("Unexpected exception: failed to parse the file. please setup manually.", g);
                 setParsedFile(new RawFile(file, filecontent));

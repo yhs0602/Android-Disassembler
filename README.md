@@ -4,10 +4,9 @@
 
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
 
-# Version 1.4.6.1 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.4.6.3 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
-## What's new : Calculator, HexView, theme automation, app on google play + Fixed bugs + ads
-
+## What's new : Bug fix & improved bug report
 # Features
 - Shows details of elf files.
 - Shows symbol table(functions or objects' ,... names) of elf files.
@@ -138,3 +137,7 @@ https://reverseengineering.stackexchange.com/a/20124/23870
 
 # XRefs
 https://reverseengineering.stackexchange.com/a/18203/23870
+
+# Privacy Policy
+I think I have to notice you that:
+- When the crash report with types such as `FileCorruptedException` is sent, the file you are analyzing may be attached to the bug report email, and be uploaded to the repository in `github.com`.
