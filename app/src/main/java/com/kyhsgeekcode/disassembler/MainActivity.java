@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -1204,9 +1205,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
         emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL,
                 new String[]{"1641832e@fire.fundersclub.com"});
-
+        String ver = "";
+        try {
+            PackageInfo pInfo = context.getPackageManager().getPackageInfo(getPackageName(), 0);
+            ver = pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
         emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-                "Crash report - " + error.getMessage());
+                "Crash report - " + error.getMessage()+"(ver"+ver+")");
         StringBuilder content = new StringBuilder(Log.getStackTraceString(error));
 
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
