@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -122,6 +121,11 @@ public class ColorHelper// implements Parcelable
 				while((entry = zi.getNextEntry())!=null)
 				{
 					File outfile = new File(themeDir, entry.getName());
+					String canonicalPath = outfile.getCanonicalPath();
+					if (!canonicalPath.startsWith(themeDir.getCanonicalPath())) {
+						throw new SecurityException("The theme zip file may have a Zip Path Traversal Vulnerability." +
+								"Is the theme.zip file trusted?");
+					}
 					FileOutputStream output = null;
 					try
 					{

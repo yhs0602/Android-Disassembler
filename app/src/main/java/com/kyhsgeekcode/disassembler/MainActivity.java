@@ -1450,8 +1450,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             @Override
             public void run() {
                 mProjNames = new String[]{"Exception", "happened"};
-
-                colorHelper = new ColorHelper(MainActivity.this);
+                try {
+                    colorHelper = new ColorHelper(MainActivity.this);
+                } catch (SecurityException e) {
+                    Log.e(TAG, "Theme failed", e);
+                    throw e;
+                }
                 if (disasmManager == null)
                     disasmManager = new DisassemblyManager();
                 adapter = new ListViewAdapter(null, colorHelper, MainActivity.this);
