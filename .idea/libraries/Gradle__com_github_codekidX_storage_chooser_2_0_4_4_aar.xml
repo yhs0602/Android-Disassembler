@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Gradle: com.github.codekidX:storage-chooser:2.0.4.4@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/14d1164de5b4754a550293d67d86618e/res" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/14d1164de5b4754a550293d67d86618e/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/1b291a1e41844fa7e9f3bb312c5dc27f/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/1b291a1e41844fa7e9f3bb312c5dc27f/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

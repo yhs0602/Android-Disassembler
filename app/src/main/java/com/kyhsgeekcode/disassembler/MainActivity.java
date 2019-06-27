@@ -82,6 +82,7 @@ import java.util.Stack;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import capstone.Capstone;
@@ -395,25 +396,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
             }
         });
-//		a.requestPermissions(new String[] {
-//								 Manifest.permission.READ_EXTERNAL_STORAGE,
-//								 Manifest.permission.WRITE_EXTERNAL_STORAGE
-//								 //,Manifest.permission.GET_ACCOUNTS
-//							 }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
     }
 
-    /*public static void requestAppPermissions(Activity a,Runnable run)
-     {
-
-     requestAppPermissions(a);
-     //run.run();
-     }*/
-//=======
-//
-//>>>>>>> parent of 2644076... Update readme with assembly materials links
-//=======
-//
-//>>>>>>> parent of 2644076... Update readme with assembly materials links
     private static boolean hasGetAccountPermissions(Context c) {
 
         return c.checkSelfPermission(Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED;
@@ -2074,7 +2058,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private void OnChoosePath(Uri uri) {
         File tmpfile = new File(getFilesDir(), "tmp.so");
         try {
+
             InputStream is = getContentResolver().openInputStream(uri);
+            if (HandleZipFIle(getRealPathFromURI(uri), is)) {
+                return;
+            }
+
             //ByteArrayOutputStream bis=new ByteArrayOutputStream();
             setFilecontent(Utils.getBytes(is));
 
@@ -2115,15 +2104,19 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private void OnChoosePath(String path)//Intent data)
     {
         try {
-            //String path=path;//data.getStringExtra("com.jourhyang.disasmarm.path");
             File file = new File(path);
+            DataInputStream in = new DataInputStream(new FileInputStream(file));
+            //Check if it is an apk file
+            String lowname = file.getName().toLowerCase();
+            if (lowname.endsWith(".apk") || lowname.endsWith(".zip")) {
+                HandleZipFIle(path, in);
+            }
             setFpath(path);
             etFilename.setText(file.getAbsolutePath());
             long fsize = file.length();
             int index = 0;
             setFilecontent(new byte[(int) fsize]);
 
-            DataInputStream in = new DataInputStream(new FileInputStream(file));
             int len, counter = 0;
             byte[] b = new byte[1024];
             while ((len = in.read(b)) > 0) {
@@ -2169,6 +2162,59 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             //AlertError("Failed to open and parse the file",e);
             //Toast.makeText(this, Log.getStackTraceString(e), 30).show();
         }
+    }
+
+    private boolean HandleZipFIle(String path, InputStream is) {
+        String lowname;
+        final File candfolder = new File(getFilesDir(), "candidates/");
+        final List<String> candidates = new ArrayList<>();
+        try {
+            ZipInputStream zi = new ZipInputStream(is);
+            ZipEntry entry;
+            byte[] buffer = new byte[2048];
+
+            while ((entry = zi.getNextEntry()) != null) {
+                String name = entry.getName();
+                lowname = name.toLowerCase();
+                if (!lowname.endsWith(".so") && !lowname.endsWith(".dll") && !lowname.endsWith(".exe")) {
+                    continue;
+                }
+                File outfile = new File(candfolder, name);
+                outfile.delete();
+                outfile.getParentFile().mkdirs();
+                String canonicalPath = outfile.getCanonicalPath();
+                if (!canonicalPath.startsWith(candfolder.getCanonicalPath())) {
+                    throw new SecurityException("The zip/apk file may have a Zip Path Traversal Vulnerability." +
+                            "Is the zip/apk file trusted?");
+                }
+                FileOutputStream output = null;
+                try {
+                    output = new FileOutputStream(outfile);
+                    int len = 0;
+                    while ((len = zi.read(buffer)) > 0) {
+                        output.write(buffer, 0, len);
+                    }
+                    candidates.add(name);
+                } finally {
+                    // we must always close the output file
+                    if (output != null) output.close();
+                }
+            }
+            // Ask which to analyze
+            ShowSelDialog(candidates, "Which file do you want to analyze?", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String targetname = candidates.get(which);
+                    String targetPath = new File(candfolder, targetname).getPath();
+                    Log.d(TAG, "USER choosed :" + targetPath);
+                    OnChoosePath(targetPath);
+                }
+            });
+            return true;
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to unzip the content of file:" + path, e);
+        }
+        return false;
     }
 
     private void AfterReadFully(File file) throws IOException {

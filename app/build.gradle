@@ -6,8 +6,8 @@ android {
         applicationId "com.kyhsgeekcode.disassembler"
         minSdkVersion 23
         targetSdkVersion 26
-        versionCode 4
-        versionName "1.4.6.3"
+        versionCode 6
+        versionName "1.4.7"
 
         //multiDexEnabled true
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
