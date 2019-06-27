@@ -2109,7 +2109,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             //Check if it is an apk file
             String lowname = file.getName().toLowerCase();
             if (lowname.endsWith(".apk") || lowname.endsWith(".zip")) {
-                HandleZipFIle(path, in);
+                if (HandleZipFIle(path, in))
+                    return;
             }
             setFpath(path);
             etFilename.setText(file.getAbsolutePath());
