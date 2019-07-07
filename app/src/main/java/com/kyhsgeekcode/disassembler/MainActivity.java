@@ -60,6 +60,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.codekidlabs.storagechooser.StorageChooser;
 import com.codekidlabs.storagechooser.utils.DiskUtil;
 import com.kyhsgeekcode.disassembler.Calc.Calculator;
+import com.kyhsgeekcode.disassembler.Utils.Olly.UddTag;
 import com.stericson.RootTools.RootTools;
 
 import java.io.ByteArrayInputStream;
@@ -77,6 +78,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -172,12 +174,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     //ViewPager vp;
     TabHost tabHost;
     FrameLayout frameLayout;
-
-    //private Button btDisasm;
     LinearLayout tab1, tab2;
     boolean instantMode;
-
-    //private Button btAbort;
     Thread workerThread;
     DatabaseHelper db;
     boolean shouldSave = false;
@@ -631,14 +629,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             case R.id.selFile:
                 showFileChooser();
                 break;
-            //case R.id.btnDisasm:
-            //if (filecontent == null)
-            //{
-            //	AlertSelFile();
-            //	return;
-            //}
-            //DisassembleFile(0/*parsedFile.getEntryPoint()*/);
-            //break;
             case R.id.btnShowdetail:
                 if (parsedFile == null) {
                     AlertSelFile();
@@ -652,16 +642,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             case R.id.btnSaveDetails:
                 SaveDetail();
                 break;
-            //case R.id.btAbort://abort or resume
-            //boolean
-				/*if(workerThread!=null)
-				 {
-				 if(workerThread.isAlive())
-				 {
-				 workerThread.interrupt();
-				 }
-				 }*/
-            //break;
             case R.id.mainBTFinishSetup: {
                 if (parsedFile == null) {
                     AlertSelFile();
@@ -1501,7 +1481,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                             OnChoosePath(intent.getData());
                         }
                     } else {
-                        //User opened pther files
+                        //User opened other files
                         OnChoosePath(intent.getData());
                     }
                 } else { // android.intent.action.MAIN
@@ -2063,7 +2043,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             if (HandleZipFIle(getRealPathFromURI(uri), is)) {
                 return;
             }
-
+            if (HandleUddFile(getRealPathFromURI(uri), is)) {
+                return;
+            }
             //ByteArrayOutputStream bis=new ByteArrayOutputStream();
             setFilecontent(Utils.getBytes(is));
 
@@ -2111,6 +2093,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             if (lowname.endsWith(".apk") || lowname.endsWith(".zip")) {
                 if (HandleZipFIle(path, in))
                     return;
+            }
+            if (lowname.endsWith(".udd")) {
+                if (HandleUddFile(path, in)) {
+                    return;
+                }
             }
             setFpath(path);
             etFilename.setText(file.getAbsolutePath());
@@ -2216,6 +2203,16 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             Log.e(TAG, "Failed to unzip the content of file:" + path, e);
         }
         return false;
+    }
+
+    private boolean HandleUddFile(String path, InputStream is) {
+        try {
+            Map<UddTag, byte[]> data = com.kyhsgeekcode.disassembler.Utils.ProjectManager.ReadUDD(new DataInputStream(is));
+
+        } catch (IOException e) {
+            Log.e(TAG, "path:" + path, e);
+            return false;
+        }
     }
 
     private void AfterReadFully(File file) throws IOException {
