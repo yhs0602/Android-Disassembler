@@ -10,9 +10,10 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 public class UDDWriter {
-    static final int GTAG_entryPoint = 0x55AA0001;
-    static final int GTAG_codeBase = 0x55AA0002;
-    static final int GTAG_codeLimit = 0x55AA0003;
+    public static final int GTAG_entryPoint = 0x55AA0001;
+    public static final int GTAG_codeBase = 0x55AA0002;
+    public static final int GTAG_codeLimit = 0x55AA0003;
+    public static final int GTAG_codeVirtualAddress = 0x55AA0004;
 
     private static void WriteTag(DataOutputStream dos, int tag, int size, byte[] data) throws IOException {
         dos.writeInt(tag);
@@ -35,7 +36,6 @@ public class UDDWriter {
         dos.writeInt(0);
     }
 
-    static final int GTAG_codeVirtualAddress = 0x55AA0004;
 
     public static void WriteUDD(OutputStream os, DisasmInfo info) throws IOException {
         DataOutputStream dos = new DataOutputStream(os);
@@ -47,9 +47,9 @@ public class UDDWriter {
         WriteTagLong(dos, 0x7473540A, info.timestamp);    //Timestamp
         WriteTag(dos, 0x7263430A, 0);            //CRC
         WriteTagGeneral(dos, GTAG_entryPoint, info.entryPoint);                  //entry point
-        WriteTagGeneral(dos, GTAG_codeBase, info.codeBase);                  //entry point
-        WriteTagGeneral(dos, GTAG_codeLimit, info.codeLimit);                  //entry point
-        WriteTagGeneral(dos, GTAG_codeVirtualAddress, info.codeVirtualAddress);                  //entry point
+        WriteTagGeneral(dos, GTAG_codeBase, info.codeBase);                  //code base
+        WriteTagGeneral(dos, GTAG_codeLimit, info.codeLimit);                  //code limit
+        WriteTagGeneral(dos, GTAG_codeVirtualAddress, info.codeVirtualAddress);                  //virtual address
         for (CommentInfo ci : info.comments) {
             WriteTagComment(dos, 1987269898, ci.offset, ci.comment);
         }

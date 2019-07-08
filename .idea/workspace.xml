@@ -29,8 +29,9 @@
   <component name="ChangeListManager">
     <list default="true" id="a02aed75-ddee-4801-b5dd-2f194ea9f9c8" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/CommentInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/CommentInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/DisasmInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/DisasmInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/IInfoReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/IInfoReader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDReader.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDWriter.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -73,8 +74,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/ProjectManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="28" column="43" lean-forward="true" selection-start-line="28" selection-start-column="43" selection-end-line="28" selection-end-column="43" />
+            <state relative-caret-position="560">
+              <caret line="69" column="8" lean-forward="true" selection-start-line="58" selection-start-column="8" selection-end-line="69" selection-end-column="8" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -85,8 +86,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDReader.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="253">
-              <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
+            <state relative-caret-position="414">
+              <caret line="22" selection-start-line="22" selection-end-line="22" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -103,11 +104,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDWriter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="299">
-              <caret line="24" column="110" selection-start-line="24" selection-start-column="110" selection-end-line="24" selection-end-column="110" />
+            <state relative-caret-position="230">
+              <caret line="10" selection-start-line="9" selection-end-line="10" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -124,29 +125,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/CommentInfo.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="92">
-              <caret line="4" column="11" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/DisasmClickListener.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="552">
-              <caret line="33" column="25" selection-start-line="33" selection-start-column="25" selection-end-line="33" selection-end-column="25" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
-              <caret line="9" column="10" selection-start-line="9" selection-start-column="10" selection-end-line="9" selection-end-column="10" />
+            <state>
+              <caret column="68" selection-start-column="68" selection-end-column="68" />
             </state>
           </provider>
         </entry>
@@ -202,7 +185,6 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/PEFile.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/xml/pref_settings.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/ColorHelper.java" />
-        <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UddTag.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/ProjectExtra.java" />
@@ -210,11 +192,12 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Project.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UddParser.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/IInfoReader.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDReader.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/ProjectManager.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/CommentInfo.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/DisasmInfo.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDWriter.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDReader.java" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -573,7 +556,14 @@
       <option name="project" value="LOCAL" />
       <updated>1562510304994</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="Write needed data to an UDD file">
+      <created>1562549057758</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1562549057758</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TodoView" selected-index="4">
@@ -590,7 +580,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info content_ui="combo" id="Project" order="1" sideWeight="0.49085367" visible="true" weight="0.16845638" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" sideWeight="0.49085367" visible="true" weight="0.16845638" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" sideWeight="0.50914633" side_tool="true" weight="0.16845638" />
@@ -679,7 +669,8 @@
     <MESSAGE value="Add udd class" />
     <MESSAGE value="Add udd constants" />
     <MESSAGE value="Adding UDD support" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding UDD support" />
+    <MESSAGE value="Write needed data to an UDD file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Write needed data to an UDD file" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -896,28 +887,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UddTag.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2898">
-          <caret line="127" column="12" selection-start-line="127" selection-start-column="12" selection-end-line="127" selection-end-column="12" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3364#3365#0" expanded="true" />
-            <element signature="e#3400#3401#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UddParser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="69">
-          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Project.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="138">
@@ -942,37 +911,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="9" column="10" selection-start-line="9" selection-start-column="10" selection-end-line="9" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/IInfoReader.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="138">
           <caret line="6" column="1" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/ProjectManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="28" column="43" lean-forward="true" selection-start-line="28" selection-start-column="43" selection-end-line="28" selection-end-column="43" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDReader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1003,11 +945,60 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDWriter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="24" column="110" selection-start-line="24" selection-start-column="110" selection-end-line="24" selection-end-column="110" />
+        <state relative-caret-position="230">
+          <caret line="10" selection-start-line="9" selection-end-line="10" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UddParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1924">
+          <caret line="19" column="24" selection-start-line="19" selection-start-column="24" selection-end-line="19" selection-end-column="24" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UddTag.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1219">
+          <caret line="114" column="21" lean-forward="true" selection-start-line="114" selection-start-column="21" selection-end-line="114" selection-end-column="21" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#3364#3365#0" expanded="true" />
+            <element signature="e#3400#3401#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/ProjectManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="560">
+          <caret line="69" column="8" lean-forward="true" selection-start-line="58" selection-start-column="8" selection-end-line="69" selection-end-column="8" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDReader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="22" selection-start-line="22" selection-end-line="22" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="68" selection-start-column="68" selection-end-column="68" />
         </state>
       </provider>
     </entry>
