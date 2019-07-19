@@ -2208,11 +2208,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private boolean HandleUddFile(String path, InputStream is) {
         try {
             Map<UddTag, byte[]> data = com.kyhsgeekcode.disassembler.Utils.ProjectManager.ReadUDD(new DataInputStream(is));
-
+            return false; //true;
         } catch (IOException e) {
             Log.e(TAG, "path:" + path, e);
             return false;
         }
+        //return false;
     }
 
     private void AfterReadFully(File file) throws IOException {
