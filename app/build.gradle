@@ -43,7 +43,7 @@ android {
 dependencies {
     implementation 'com.google.android.gms:play-services-ads:+'
     //compile 'com.android.support:customtabs:27.1.1'
-    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
     //compile 'com.google.android.gms:play-services-ads:+'
     implementation 'com.github.codekidX:storage-chooser:2.0.4.4'
     //compile 'com.github.skydoves:colorpickerpreference:1.0.5'
