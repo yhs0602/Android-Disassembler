@@ -22,7 +22,7 @@
 			[
 				
 				{
-					"flags" : "  --target=i686-none-linux-android23 --gcc-toolchain=C:/Users/82102/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=C:/Users/82102/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -DCAPSTONE_HAS_ARM -DCAPSTONE_HAS_ARM64 -DCAPSTONE_HAS_X86 -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -Dhello_jni_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security -stdlib=libc++  -O2 -DNDEBUG  -fPIC    -c ",
+					"flags" : "  --target=i686-none-linux-android23 --gcc-toolchain=C:/Users/82102/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64 --sysroot=C:/Users/82102/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot  -DCAPSTONE_HAS_ARM -DCAPSTONE_HAS_ARM64 -DCAPSTONE_HAS_X86 -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -Dhello_jni_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security   -O2 -DNDEBUG  -fPIC    -c ",
 					"src" : "C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/src/main/cpp/hello-jni.cpp",
 					"workingDirectory" : "C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/.externalNativeBuild/cmake/release/x86"
 				},
