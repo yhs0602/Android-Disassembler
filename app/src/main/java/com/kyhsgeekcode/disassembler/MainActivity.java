@@ -1563,34 +1563,38 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         showPermissionRationales(this, null);
     }
 
-    private void ShowErrorDialog(Activity a, int title, final Throwable err) {
+    private void ShowErrorDialog(Activity a, int title, final Throwable err, boolean sendError) {
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
         builder.setTitle(title);
         builder.setCancelable(false);
         builder.setMessage(Log.getStackTraceString(err));
         builder.setPositiveButton(R.string.ok, null);
-        builder.setNegativeButton("Send error report", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface p1, int p2) {
-                SendErrorReport(err);
-            }
-        });
+        if (sendError) {
+            builder.setNegativeButton("Send error report", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface p1, int p2) {
+                    SendErrorReport(err);
+                }
+            });
+        }
         builder.show();
     }
 
-    private void ShowErrorDialog(Activity a, String title, final Throwable err) {
+    private void ShowErrorDialog(Activity a, String title, final Throwable err, boolean sendError) {
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
         builder.setTitle(title);
         builder.setCancelable(false);
         builder.setMessage(Log.getStackTraceString(err));
         builder.setPositiveButton(R.string.ok, null);
-        builder.setNegativeButton("Send error report", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface p1, int p2) {
+        if (sendError) {
+            builder.setNegativeButton("Send error report", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface p1, int p2) {
 
-                SendErrorReport(err);
-            }
-        });
+                    SendErrorReport(err);
+                }
+            });
+        }
         builder.show();
     }
 
@@ -1609,14 +1613,23 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         new SaveDBAsync().execute(disasmF);
     }
 
+    private void AlertError(int p0, Exception e, boolean sendError) {
+        Log.e(TAG, "" + p0, e);
+        ShowErrorDialog(this, p0, e, sendError);
+    }
+
+    private void AlertError(String p0, Exception e, boolean sendError) {
+        Log.e(TAG, "" + p0, e);
+        ShowErrorDialog(this, p0, e, sendError);
+    }
+
     private void AlertError(int p0, Exception e) {
-        ShowErrorDialog(this, p0, e);
+        AlertError(p0, e, true);
     }
 
     private void AlertError(String p0, Exception e) {
-        ShowErrorDialog(this, p0, e);
+        AlertError(p0, e, true);
         //ShowAlertDialog((Activity)this,p0,Log.getStackTraceString(e));
-        Log.e(TAG, p0, e);
     }
 
     private void SaveDetailOld() {
@@ -2074,6 +2087,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     }
                 } else {
                     Toast.makeText(this, "This file requires root permission to read.", Toast.LENGTH_SHORT).show();
+                    AlertError(R.string.fail_readfile_root, e, false);
+                    return;
                 }
             } else {
                 Log.e(TAG, "", e);
@@ -2140,6 +2155,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     }
                 } else {
                     Toast.makeText(this, "This file requires root permission to read.", Toast.LENGTH_SHORT).show();
+                    AlertError(R.string.fail_readfile_root, e, false);
+                    return;
                 }
             } else {
                 Log.e(TAG, "", e);

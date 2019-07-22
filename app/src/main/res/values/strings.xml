@@ -87,5 +87,6 @@
     <string name="hexview">Hex View</string>
     <string name="permissions">Permissions</string>
     <string name="permissionMsg">- Read/Write storage(obvious)</string>
+    <string name="fail_readfile_root">The root permission required to read this file: Permission denied; Failed to read the file</string>
 
 </resources>

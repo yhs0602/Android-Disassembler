@@ -35,7 +35,7 @@ include rules.ninja
 build CMakeFiles/hello-jni.dir/hello-jni.cpp.o: CXX_COMPILER__hello-jni C$:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/src/main/cpp/hello-jni.cpp
   DEFINES = -DCAPSTONE_HAS_ARM -DCAPSTONE_HAS_ARM64 -DCAPSTONE_HAS_X86 -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS -Dhello_jni_EXPORTS
   DEP_FILE = CMakeFiles\hello-jni.dir\hello-jni.cpp.o.d
-  FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security -stdlib=libc++  -O0 -fno-limit-debug-info  -fPIC
+  FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security   -O0 -fno-limit-debug-info  -fPIC
   IN_ABS = C:\Users\82102\AndroidStudioProjects\Android-Disassembler\app\src\main\cpp\hello-jni.cpp
   OBJECT_DIR = CMakeFiles\hello-jni.dir
   OBJECT_FILE_DIR = CMakeFiles\hello-jni.dir
@@ -202,8 +202,8 @@ build CMakeFiles/hello-jni.dir/arch/X86/X86Module.c.o: C_COMPILER__hello-jni C$:
 # Link the shared library C:\Users\82102\AndroidStudioProjects\Android-Disassembler\app\build\intermediates\cmake\debug\obj\arm64-v8a\libhello-jni.so
 
 build C$:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/build/intermediates/cmake/debug/obj/arm64-v8a/libhello-jni.so: CXX_SHARED_LIBRARY_LINKER__hello-jni CMakeFiles/hello-jni.dir/hello-jni.cpp.o CMakeFiles/hello-jni.dir/plthook/plthook_elf.c.o CMakeFiles/hello-jni.dir/MCInst.c.o CMakeFiles/hello-jni.dir/MCInstrDesc.c.o CMakeFiles/hello-jni.dir/MCRegisterInfo.c.o CMakeFiles/hello-jni.dir/SStream.c.o CMakeFiles/hello-jni.dir/cs.c.o CMakeFiles/hello-jni.dir/utils.c.o CMakeFiles/hello-jni.dir/arch/AArch64/AArch64BaseInfo.c.o CMakeFiles/hello-jni.dir/arch/AArch64/AArch64Disassembler.c.o CMakeFiles/hello-jni.dir/arch/AArch64/AArch64InstPrinter.c.o CMakeFiles/hello-jni.dir/arch/AArch64/AArch64Mapping.c.o CMakeFiles/hello-jni.dir/arch/AArch64/AArch64Module.c.o CMakeFiles/hello-jni.dir/arch/ARM/ARMDisassembler.c.o CMakeFiles/hello-jni.dir/arch/ARM/ARMInstPrinter.c.o CMakeFiles/hello-jni.dir/arch/ARM/ARMMapping.c.o CMakeFiles/hello-jni.dir/arch/ARM/ARMModule.c.o CMakeFiles/hello-jni.dir/arch/X86/X86Disassembler.c.o CMakeFiles/hello-jni.dir/arch/X86/X86DisassemblerDecoder.c.o CMakeFiles/hello-jni.dir/arch/X86/X86IntelInstPrinter.c.o CMakeFiles/hello-jni.dir/arch/X86/X86ATTInstPrinter.c.o CMakeFiles/hello-jni.dir/arch/X86/X86Mapping.c.o CMakeFiles/hello-jni.dir/arch/X86/X86Module.c.o | C$:/Users/82102/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/lib/aarch64-linux-android/23/liblog.so
-  LANGUAGE_COMPILE_FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security -stdlib=libc++  -O0 -fno-limit-debug-info
-  LINK_FLAGS = -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libatomic.a -static-libstdc++ -Wl,--build-id -Wl,--warn-shared-textrel -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now
+  LANGUAGE_COMPILE_FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security   -O0 -fno-limit-debug-info
+  LINK_FLAGS = -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libatomic.a -static-libstdc++ -Wl,--build-id -Wl,--warn-shared-textrel -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments -Wl,-z,noexecstack
   LINK_LIBRARIES = -llog -latomic -lm
   OBJECT_DIR = CMakeFiles\hello-jni.dir
   POST_BUILD = cd .

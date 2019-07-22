@@ -1,11 +1,18 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.app.*;
-import android.content.*;
-import android.view.*;
-import android.widget.*;
-import com.skydoves.colorpickerview.*;
-import com.skydoves.colorpickerview.listeners.*;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.skydoves.colorpickerview.ColorEnvelope;
+import com.skydoves.colorpickerview.ColorPickerDialog;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 public class ColorPrefLvAdapter extends BaseAdapter
 {
@@ -103,7 +110,7 @@ public class ColorPrefLvAdapter extends BaseAdapter
 					}
 				});
 			//builder.attachAlphaSlideBar(); // attach AlphaSlideBar
-			builder.attachBrightnessSlideBar(); // attach BrightnessSlideBar
+			builder.attachBrightnessSlideBar(true); // attach BrightnessSlideBar
 			builder.show(); // show dialog
 		//	builder.setPreferenceName("MyColorPickerDialog");
 			return;

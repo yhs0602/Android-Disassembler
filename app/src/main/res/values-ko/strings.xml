@@ -74,4 +74,5 @@
     <string name="export_as">내보내기...</string>
     <string name="saving">저장 중..</string>
     <string name="failCreateProject">프로젝트 생성 실패!</string>
+    <string name="fail_readfile_root">파일을 읽기 위해서 루트 권한이 필요하기 때문에 파일 읽기에 실패하였습니다. (권한 거부)</string>
 </resources>
