@@ -52,7 +52,7 @@
     <string name="open_calculator">계산기 열기</string>
     <string name="save">저장</string>
     <string name="donate_see_ad">광고 보기</string>
-    <string name="settings_help">설정 / 도움말</string>
+    <string name="settings_help">설정 / 오프라인 도움말</string>
     <string name="location">"위치: "</string>
     <string name="cannot_be_read">[%1$s] 폴더 읽기에 실패했습니다!</string>
     <string name="NoRoot_GoDefault">루트 권한을 얻기에 실패했습니다. 기본 위치로 이동합니다.</string>
@@ -75,4 +75,5 @@
     <string name="saving">저장 중..</string>
     <string name="failCreateProject">프로젝트 생성 실패!</string>
     <string name="fail_readfile_root">파일을 읽기 위해서 루트 권한이 필요하기 때문에 파일 읽기에 실패하였습니다. (권한 거부)</string>
+    <string name="online_help">온라인 도움말</string>
 </resources>

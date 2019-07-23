@@ -1766,6 +1766,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 startActivity(SettingActivity);
             }
             break;
+            case R.id.online_help: {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/KYHSGeekCode/Android-Disassembler/blob/master/README.md"));
+                startActivity(browserIntent);
+            }
+            break;
             case R.id.chooserow: {
                 mCustomDialog = new ChooseColumnDialog(this,
                         "Select columns to view", // Title
