@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -627,7 +628,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         Button btn = (Button) p1;
         switch (btn.getId()) {
             case R.id.selFile:
-                showFileChooser();
+                showChooser();
+                //showFileChooser();
                 break;
             case R.id.btnShowdetail:
                 if (parsedFile == null) {
@@ -756,7 +758,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     private void AlertSelFile() {
         Toast.makeText(this, R.string.selfilefirst, Toast.LENGTH_SHORT).show();
-        showFileChooser();
+        showChooser();/*File*/
     }
 
     public void ExportDisasm() {
@@ -1877,27 +1879,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     public void jumpto(long address) {
         if (isValidAddress(address)) {
-            //ListViewItem lv=new ListViewItem(new DisasmResult());
-            //lv.disasmResult.address=address;
-            //ListViewItem lvi=adapter.itemList().get(address);
-			/*Collections.binarySearch(adapter.itemList(), lv, new Comparator<ListViewItem>(){
-			 @Override
-			 public int compare(ListViewItem p1, ListViewItem p2)
-			 {
-			 if(p1==null)
-			 return -1;
-			 if(p2==null)
-			 return 1;
-			 if(p1.disasmResult==null)
-			 return -1;
-			 if(p2.disasmResult==null)
-			 return 1;
-			 return (int)(p1.disasmResult.address-p2.disasmResult.address);
-			 }
-			 });*/
-            //adapter.getAddress()
-            //if(lvi==null)
-            {
+
                 //not found
                 tabHost.setCurrentTab(TAB_DISASM);
                 jmpBackstack.push(Long.valueOf(adapter.getCurrentAddress()));
@@ -1907,7 +1889,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 //	listview.setSelection();
                 //listview.setScrollX(index);
                 //listview.smoothScrollToPosition(index); too slow
-            }
+
         } else {
             Toast.makeText(this, R.string.validaddress, Toast.LENGTH_SHORT).show();
         }
@@ -1948,6 +1930,49 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
         if (targetFile != null)
             AlertSaveSuccess(targetFile);
+    }
+
+    private void showChooser() {
+        List<String> lst = new ArrayList<>();
+        lst.add("Choose file");
+        lst.add("Choose APK");
+        ShowSelDialog(lst, "Choose file/APK?", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        showFileChooser();
+                        break;
+                    case 1:
+                        showAPKChooser();
+                        break;
+                }
+            }
+        });
+    }
+
+    //https://stackoverflow.com/a/16149831/8614565
+    private void showAPKChooser() {
+        List<String> apklists = new ArrayList<>();
+        final List<String> pathlists = new ArrayList<>();
+        final PackageManager pm = getPackageManager();
+        //get a list of installed apps.
+        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+        for (ApplicationInfo packageInfo : packages) {
+            //Log.d(TAG, "Installed package :" + packageInfo.packageName);
+            //Log.d(TAG, "Apk file path:" + packageInfo.sourceDir);
+            String applabel = (String) pm.getApplicationLabel(packageInfo);
+            String label = applabel + "(" + packageInfo.packageName + ")";
+            apklists.add(label);
+            pathlists.add(packageInfo.sourceDir);
+        }
+        ShowSelDialog(apklists, "Choose APK from installed", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String path = pathlists.get(which);
+                OnChoosePath(path);
+            }
+        });
     }
 
     private void showFileChooser() {

@@ -4,9 +4,9 @@
 
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
 
-# Version 1.4.8 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.4.9 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
-## What's new : Improved permission alert system
+## What's new : Choose APK from installed!
 # Features
 - Shows details of elf files.
 - Shows symbol table(functions or objects' ,... names) of elf files.
@@ -32,6 +32,8 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 - The storage chooser now retains the session, so that it remembers the last browsed folder.
 - Added Hex View and utility calculator.
 - Theme installation is automated.
+- Choose which binary to analyze when the zip/apk has multiple binaries.
+- Choose APK from installed
 
 # [Themes Download](https://github.com/KYHSGeekCode/Android-Disassembler/tree/master/themes)
  Good themes usually help you recognize some important instructions easily.
