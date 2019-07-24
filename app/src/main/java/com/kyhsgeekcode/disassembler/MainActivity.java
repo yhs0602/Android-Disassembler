@@ -140,10 +140,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     static {
         System.loadLibrary("hello-jni");
     }
+    //////////////////////////////////////////////Views/////////////////////////////////////
 
     View touchSource;
     View clickSource;
-    Queue<Runnable> toDoAfterPermQueue = new LinkedBlockingQueue<>();
     LinearLayout llmainLinearLayoutSetupRaw;
     EditText etCodeBase;
     EditText etEntryPoint;
@@ -155,44 +155,36 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     TextView tvHex, tvAscii;
     //RadioGridGroup rgdArch;
     Spinner spinnerArch;
+    TabHost tabHost;
+    FrameLayout frameLayout;
+    LinearLayout tab1, tab2;
+
     HexManager hexManager = new HexManager();
+
+    Queue<Runnable> toDoAfterPermQueue = new LinkedBlockingQueue<>();
+
     String fpath;
     byte[] filecontent = null;
     AbstractFile parsedFile;//Parsed file info
+
     SharedPreferences setting;
     SharedPreferences.Editor editor;
     SharedPreferences settingPath;
+
     boolean showAddress = true;
     boolean showLabel = true;
     boolean showBytes = true;
     boolean showInstruction = true;
-
-    //private TableLayout tlDisasmTable;
     boolean showCondition = true;
     boolean showOperands = true;
     boolean showComment = true;
+
     /*ArrayList*/ LongSparseArray<ListViewItem> disasmResults = new LongSparseArray<>();
-    //ViewPager vp;
-    TabHost tabHost;
-    FrameLayout frameLayout;
-    LinearLayout tab1, tab2;
     boolean instantMode;
     Thread workerThread;
     DatabaseHelper db;
     boolean shouldSave = false;
 
-    //private NotificationManager mNotifyManager;
-
-    //private Notification.Builder mBuilder;
-//	final Runnable runnableAddItem=new Runnable(){
-//		@Override
-//		public void run()
-//		{
-//			adapter.addItem(lvi);
-//			adapter.notifyDataSetChanged();
-//			return ;
-//		}
-//	};
     ListViewItem lvi;
     View.OnClickListener rowClkListener = new OnClickListener() {
         public void onClick(View view) {
@@ -244,15 +236,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private ProjectManager.Project currentProject;
     private ListView lvSymbols;
     private SymbolListAdapter symbolLvAdapter;
-    //	private View.OnClickListener leftListener = new View.OnClickListener() {
-//		public void onClick(View v)
-//		{
-//			Toast.makeText(getApplicationContext(), "왼쪽버튼 클릭",
-//						   Toast.LENGTH_SHORT).show();
-//			mCustomDialog.dismiss();
-//		}
-//	};
-//
+
     private View.OnClickListener leftListener = new View.OnClickListener() {
         public void onClick(View v) {
             ColumnSetting cs = (ColumnSetting) v.getTag();
@@ -273,218 +257,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     };
 
-    //The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
-    public static void ShowEditDialog(Activity a, String title, String message, final EditText edittext,
-                                      String positive, DialogInterface.OnClickListener pos,
-                                      String negative, DialogInterface.OnClickListener neg) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
-        builder.setTitle(title);
-        builder.setMessage(message);
-        builder.setView(edittext);
-        builder.setPositiveButton(positive, pos);
-        builder.setNegativeButton(negative, neg);
-        builder.show();
-    }
-
-    //18.11.22 revival!
-    //19.01 Deprecated
-    //Will be used like generate-on-need array(sth like Paging)
-	/*private void DisassembleInstant(long foffset)
-	{
-		//Toast.makeText(this,"Not supported by now. Please just use persist mode instead.",Toast.LENGTH_SHORT).show();	
-//		if(limit>=filecontent.length)
-//		{
-//			Toast.makeText(this,"Odd address :(",Toast.LENGTH_SHORT).show();
-//			return;
-//		}
-		//Toast.makeText(this, "started", Toast.LENGTH_SHORT).show();
-		Log.v(TAG, "Strted disassm foffs"+foffset);
-		//	btDisasm.setEnabled(false);
-		//	btAbort.setEnabled(true);
-		btSavDisasm.setEnabled(false);
-		//.	btAbort.setText("Pause");
-		//final ProgressDialog dialog= showProgressDialog("Disassembling...");
-		//	if(offset==parsedFile.getEntryPoint())
-		//		disasmResults.clear();//otherwise resume, not clear	
-		long codesection=parsedFile.getCodeSectionBase();
-		long start=codesection+foffset;//elfUtil.getCodeSectionOffset();
-		//	long index=start;
-		long limit=parsedFile.getCodeSectionLimit();
-		long addr=parsedFile.getCodeVirtAddr()+foffset;
-		//	Log.v(TAG, "code section point :" + Long.toHexString(index));
-		long size=limit - start;//Size of CS
-		DisasmIterator dai=new DisasmIterator
-		(MainActivity.this,mNotifyManager,mBuilder
-		 ,adapter,size);
-		//listview.setOnScrollListener(new DisasmPager(adapter,dai));
-		//	dai.getSome(filecontent,start,size,addr,100/*, disasmResults*///);
-//		workerThread = new Thread(new Runnable(){
-//				@Over
-    //DisasmPager pager;
-    //btDisasm.setEnabled(false);
-    //disasmResults.clear();
-    //setupListView();
-		/*for (;;)
-		 {
-		 /*DisasmResult dar=new DisasmResult(filecontent, index, addr);
-		 if (dar.size == 0)
-		 {
-		 dar.size = 4;
-		 dar.mnemonic = "db";
-		 dar.bytes = new byte[]{filecontent[(int)index],filecontent[(int)index + 1],filecontent[(int)index + 2],filecontent[(int)index + 3]};
-		 dar.op_str = "";
-		 Log.e(TAG, "Dar.size==0, breaking?");
-		 //break;
-		 }
-		 final ListViewItem lvi=new ListViewItem(dar);
-		 //disasmResults.add(lvi);
-		 adapter.addItem(lvi);
-		 adapter.notifyDataSetChanged();
-		 Log.v(TAG, "i=" + index + "lvi=" + lvi.toString());
-		 if (index >= limit)
-		 {
-		 Log.i(TAG, "index is " + index + ", breaking");
-		 break;
-		 }
-		 Log.v(TAG, "dar.size is =" + dar.size);
-		 Log.i(TAG, "" + index + " out of " + (limit - startaddress));
-		 /*if((limit-start)%320==0){
-		 mBuilder.setProgress((int)(limit-startaddress), (int)(index-start), false);
-		 // Displays the progress bar for the first time.
-		 mNotifyManager.notify(0, mBuilder.build());
-		 }//
-		 index += dar.size;
-		 addr += dar.size;
-
-		 }*/
-    //Currently not suported
-
-    //btDisasm.setEnabled(true);
-    //}
-
-    //The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
-    public static void ShowSelDialog(Activity a, final List<String> ListItems, String title, DialogInterface.OnClickListener listener) {
-        final CharSequence[] items = ListItems.toArray(new String[ListItems.size()]);
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
-        builder.setTitle(title);
-        builder.setItems(items, listener);
-        builder.show();
-    }
-
-    public static void requestAppPermissions(final Activity a) {
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
-                    null,
-                    new int[]{PackageManager.PERMISSION_GRANTED});
-            return;
-        }
-        if (hasReadPermissions(a) && hasWritePermissions(a)/*&&hasGetAccountPermissions(a)*/) {
-            Log.i(TAG, "Has permissions");
-            a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
-                    null,
-                    new int[]{PackageManager.PERMISSION_GRANTED});
-            return;
-        }
-        showPermissionRationales(a, new Runnable() {
-            @Override
-            public void run() {
-                a.requestPermissions(new String[]{
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        //,Manifest.permission.GET_ACCOUNTS
-                }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
-            }
-        });
-    }
-
-    private static boolean hasGetAccountPermissions(Context c) {
-
-        return c.checkSelfPermission(Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public static boolean hasReadPermissions(Context c) {
-        return c.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public static boolean hasWritePermissions(Context c) {
-        return c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public static void showPermissionRationales(final Activity a, final Runnable run) {
-        ShowAlertDialog(a, a.getString(R.string.permissions),
-                a.getString(R.string.permissionMsg),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface p1, int p2) {
-                        if (run != null)
-                            run.run();
-                        //requestAppPermissions(a);
-                    }
-
-
-                });
-    }
-
-    public static void ShowAlertDialog(Activity a, String title, String content, DialogInterface.OnClickListener listener) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
-        builder.setTitle(title);
-        builder.setCancelable(false);
-        builder.setMessage(content);
-        builder.setPositiveButton(R.string.ok, listener);
-        builder.show();
-    }
-
-    public static void ShowAlertDialog(Activity a, String title, String content) {
-        ShowAlertDialog(a, title, content, null);
-    }
-//<<<<<<< HEAD
-//<<<<<<< HEAD
-
-    public static void ShowYesNoCancelDialog(Activity a, String title, String content,
-                                             DialogInterface.OnClickListener ok,
-                                             DialogInterface.OnClickListener no,
-                                             DialogInterface.OnClickListener can) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
-        builder.setTitle(title);
-        builder.setCancelable(false);
-        builder.setMessage(content);
-        builder.setPositiveButton(R.string.ok, ok).setNegativeButton("No", no);
-        builder.setNeutralButton(R.string.cancel, can);
-        builder.show();
-    }
-
-    public static int getScreenHeight() {
-        return Resources.getSystem().getDisplayMetrics().heightPixels;
-    }
-
-    public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for (int p = 0, j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[p++] = hexArray[v >>> 4];
-            hexChars[p++] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
-
-    public ColumnSetting getColumns() {
-        return columnSetting;
-    }
-
-    public void showToast(String s) {
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
-    }
-
-    public void showToast(int resid) {
-        Toast.makeText(this, resid, Toast.LENGTH_SHORT).show();
-    }
-
-    public void setClipBoard(String s) {
-        ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("Android Disassembler", s);
-        cb.setPrimaryClip(clip);
-        //Toast.makeText(this,"Copied to clipboard:"+s,Toast.LENGTH_SHORT).show();
-    }
+    /////////////////////////////////////////Activity Life Cycle///////////////////////////////////////////////////
 
     @Override
     protected void onResume() {
@@ -560,67 +333,310 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     }
 
-    public void setFpath(String fpath) {
-        this.fpath = fpath;
-        dataFragment.setPath(fpath);
-    }
-
-    public void setParsedFile(AbstractFile parsedFile) {
-        this.parsedFile = parsedFile;
-        dataFragment.setParsedFile(parsedFile);
-        adapter.setFile(parsedFile);
-
-    }
-
-    public byte[] getFilecontent() {
-        return filecontent;
-    }
-
-    public void setFilecontent(byte[] filecontent) {
-        this.filecontent = filecontent;
-        dataFragment.setFilecontent(filecontent);
-    }
-
-    public DatabaseHelper getDb() {
-        return db;
-    }
-
     @Override
-    public void onOpen(ProjectManager.Project proj) {
-        db = new DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db");
-        disableEnableControls(false, llmainLinearLayoutSetupRaw);
-        OnChoosePath(proj.oriFilePath);
-        currentProject = proj;
-        setting = getSharedPreferences(SETTINGKEY, MODE_PRIVATE);
-        editor = setting.edit();
-        editor.putString(LASTPROJKEY, proj.name);
-        editor.apply();
-        String det = proj.getDetail();
-        if (!"".equals(det)) {
-            etDetails.setText(det);
-        }
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        context = this;
+        //final Thread.UncaughtExceptionHandler ori=Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread p1, Throwable p2) {
 
-        File dir = new File(projectManager.RootFile, currentProject.name + "/");
-        Log.d(TAG, "dirpath=" + dir.getAbsolutePath());
-        File file = new File(dir, "Disassembly.raw");
-        if (file.exists()) {
-            try {
-                FileInputStream fis = new FileInputStream(file);
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                disasmResults = (LongSparseArray<ListViewItem>) ois.readObject();
-                ois.close();
-            } catch (ClassNotFoundException | IOException e) {
-                AlertError(R.string.fail_loadraw, e);
+                Toast.makeText(MainActivity.this, Log.getStackTraceString(p2), Toast.LENGTH_SHORT).show();
+                context = null;
+                if (p2 instanceof SecurityException) {
+                    Toast.makeText(MainActivity.this, R.string.didUgrant, Toast.LENGTH_SHORT).show();
+                    setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
+                    editor = setting.edit();
+                    editor.putBoolean("show", true);
+                    editor.apply();
+                }
+                requestAppPermissions(MainActivity.this);
+                //String [] accs=getAccounts();
+                SendErrorReport(p2);
+                //	ori.uncaughtException(p1, p2);
+                Log.wtf(TAG, "UncaughtException", p2);
+                finish();
             }
-        } else {
-            disasmResults = new LongSparseArray<>();//(LongSparseArray<ListViewItem>) db.getAll();
+
+        });
+        try {
+            if (Init() == -1) {
+                throw new RuntimeException();
+            }
+            //cs = new Capstone(Capstone.CS_ARCH_ARM, Capstone.CS_MODE_ARM);
+            //cs.setDetail(Capstone.CS_OPT_ON);
+        } catch (RuntimeException e) {
+            Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), Toast.LENGTH_LONG).show();
+            android.os.Process.killProcess(android.os.Process.getGidForName(null));
         }
-        if (disasmResults != null) {
-            adapter.addAll(disasmResults, new SparseArray<Long>());
-        } else {
-            disasmResults = new LongSparseArray<>();
+        setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
+        setContentView(R.layout.main);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        etDetails = (EditText) findViewById(R.id.detailText);
+        Button selectFile = (Button) findViewById(R.id.selFile);
+        selectFile.setOnClickListener(this);
+        btShowDetails = (Button) findViewById(R.id.btnShowdetail);
+        btShowDetails.setOnClickListener(this);
+        btSavDisasm = (Button) findViewById(R.id.btnSaveDisasm);
+        btSavDisasm.setOnClickListener(this);
+        btSavDit = (Button) findViewById(R.id.btnSaveDetails);
+        btSavDit.setOnClickListener(this);
+
+        etFilename = (EditText) findViewById(R.id.fileNameText);
+        etFilename.setFocusable(false);
+        etFilename.setEnabled(false);
+
+        llmainLinearLayoutSetupRaw = (LinearLayout) findViewById(R.id.mainLinearLayoutSetupRaw);
+        disableEnableControls(false, llmainLinearLayoutSetupRaw);
+
+        etCodeLimit = (EditText) findViewById(R.id.mainETcodeLimit);
+        etCodeBase = (EditText) findViewById(R.id.mainETcodeOffset);
+        etEntryPoint = (EditText) findViewById(R.id.mainETentry);
+        etVirtAddr = (EditText) findViewById(R.id.mainETvirtaddr);
+        tvArch = (TextView) findViewById(R.id.mainTVarch);
+        btFinishSetup = (Button) findViewById(R.id.mainBTFinishSetup);
+        btFinishSetup.setOnClickListener(this);
+        btOverrideSetup = (Button) findViewById(R.id.mainBTOverrideAuto);
+        btOverrideSetup.setOnClickListener(this);
+        spinnerArch = (Spinner) findViewById(R.id.mainSpinnerArch);
+        //https://stackoverflow.com/a/13783744/8614565
+        String[] items = Arrays.toString(MachineType.class.getEnumConstants()).replaceAll("^.|.$", "").split(", ");
+        ArrayAdapter<String> sadapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        spinnerArch.setAdapter(sadapter);
+
+        lvSymbols = (ListView) findViewById(R.id.symlistView);
+        //moved up
+        //symbolLvAdapter=new SymbolListAdapter();
+        symbolLvAdapter = new SymbolListAdapter();
+        lvSymbols.setAdapter(symbolLvAdapter);
+        lvSymbols.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Symbol symbol = (Symbol) parent.getItemAtPosition(position);
+                if (symbol.type != Symbol.Type.STT_FUNC) {
+                    Toast.makeText(MainActivity.this, "This is not a function.", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
+                long address = symbol.st_value;
+                //LongSparseArray arr;
+                Toast.makeText(MainActivity.this, "Jump to" + Long.toHexString(address), Toast.LENGTH_SHORT).show();
+                tabHost.setCurrentTab(TAB_DISASM);
+                jumpto(address);
+                return true;
+            }
+        });
+        //symAdapter = new SymbolTableAdapter(this.getApplicationContext());
+        //tvSymbols = (TableView)findViewById(R.id.content_container);
+        //tvSymbols.setAdapter(symAdapter);
+        autoSymAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item);
+        //autocomplete.setThreshold(2);
+        //autocomplete.setAdapter(autoSymAdapter);
+
+        tabHost = (TabHost) findViewById(R.id.tabhost1);
+        tabHost.setup();
+        TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator(getString(R.string.overview));
+        TabHost.TabSpec tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator(getString(R.string.details));
+        TabHost.TabSpec tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator(getString(R.string.disassembly));
+        TabHost.TabSpec tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator(getString(R.string.symbols));
+        TabHost.TabSpec tab4 = tabHost.newTabSpec("5").setContent(R.id.tab4).setIndicator(getString(R.string.hexview));
+
+        tabHost.addTab(tab0);
+        tabHost.addTab(tab1);
+        tabHost.addTab(tab4);
+        tabHost.addTab(tab3);
+        tabHost.addTab(tab2);
+
+        this.tab1 = (LinearLayout) findViewById(R.id.tab1);
+        this.tab2 = (LinearLayout) findViewById(R.id.tab2);
+
+        //tvHex=(TextView)findViewById(R.id.hexTextView);
+        //tvAscii=(TextView)findViewById(R.id.hexTextViewAscii);
+
+        gvHex = (GridView) findViewById(R.id.mainGridViewHex);
+        gvAscii = (GridView) findViewById(R.id.mainGridViewAscii);
+
+        gvHex.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (touchSource == null)
+                    touchSource = v;
+
+                if (v == touchSource) {
+                    gvAscii.dispatchTouchEvent(event);
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        clickSource = v;
+                        touchSource = null;
+                    }
+                }
+
+                return false;
+            }
+        });
+        gvHex.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (parent == clickSource) {
+                    // Do something with the ListView was clicked
+                }
+            }
+        });/*
+		gvHex.setOnScrollListener(new OnScrollListener() {
+				@Override
+				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+					if(view == clickSource)
+						gvAscii.setSelectionFromTop(firstVisibleItem, view.getChildAt(0).getTop()/* + offset);
+				}
+
+				@Override
+				public void onScrollStateChanged(AbsListView view, int scrollState) {}
+			});*/
+        gvAscii.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (touchSource == null)
+                    touchSource = v;
+
+                if (v == touchSource) {
+                    gvHex.dispatchTouchEvent(event);
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        clickSource = v;
+                        touchSource = null;
+                    }
+                }
+
+                return false;
+            }
+        });
+        gvAscii.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (parent == clickSource) {
+                    // Do something with the ListView was clicked
+                }
+            }
+        });
+			/*
+		gvAscii.setOnScrollListener(new OnScrollListener() {
+				@Override
+				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+					if(view == clickSource)
+						gvHex.setSelectionFromTop(firstVisibleItem, view.getChildAt(0).getTop()/* + offset);
+				}
+
+				@Override
+				public void onScrollStateChanged(AbsListView view, int scrollState) {}
+			});
+			*/
+        toDoAfterPermQueue.add(new Runnable() {
+            @Override
+            public void run() {
+                mProjNames = new String[]{"Exception", "happened"};
+                try {
+                    colorHelper = new ColorHelper(MainActivity.this);
+                } catch (SecurityException e) {
+                    Log.e(TAG, "Theme failed", e);
+                    throw e;
+                }
+                if (disasmManager == null)
+                    disasmManager = new DisassemblyManager();
+                adapter = new ListViewAdapter(null, colorHelper, MainActivity.this);
+                setupListView();
+                disasmManager.setData(adapter.itemList(), adapter.getAddress());
+                // find the retained fragment on activity restarts
+                FragmentManager fm = getFragmentManager();
+                dataFragment = (RetainedFragment) fm.findFragmentByTag("data");
+                if (dataFragment == null) {
+                    // add the fragment
+                    dataFragment = new RetainedFragment();
+                    fm.beginTransaction().add(dataFragment, "data").commit();
+                    // load the data from the web
+                    dataFragment.setDisasmManager(disasmManager);
+                } else {
+                    //It should be handled
+                    disasmManager = dataFragment.getDisasmManager();
+                    filecontent = dataFragment.getFilecontent();
+                    parsedFile = dataFragment.getParsedFile();
+                    fpath = dataFragment.getPath();
+                    if (parsedFile != null) {
+                        symbolLvAdapter.itemList().clear();
+                        symbolLvAdapter.addAll(parsedFile.getSymbols());
+                        for (Symbol s : symbolLvAdapter.itemList()) {
+                            autoSymAdapter.add(s.name);
+                        }
+                    }
+                }
+                try {
+                    projectManager = new ProjectManager(MainActivity.this);
+                    mProjNames = projectManager.strProjects();//new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
+                } catch (IOException e) {
+                    AlertError("Failed to load projects", e);
+                }
+                // Set the adapter for the list view
+                mDrawerList.setAdapter(new ArrayAdapter<String>(MainActivity.this,
+                        R.layout.row, mProjNames));
+
+                //https://www.androidpub.com/1351553
+                Intent intent = getIntent();
+                if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+                    // User opened this app from file browser
+                    String filePath = intent.getData().getPath();
+                    Log.d(TAG, "intent path=" + filePath);
+                    String[] toks = filePath.split(Pattern.quote("."));
+                    int last = toks.length - 1;
+                    String ext;
+                    if (last >= 1) {
+                        ext = toks[last];
+                        if ("adp".equalsIgnoreCase(ext)) {
+                            //User opened the project file
+                            //now get the project name
+                            File file = new File(filePath);
+                            String pname = file.getName();
+                            toks = pname.split(Pattern.quote("."));
+                            projectManager.Open(toks[toks.length - 2]);
+                        } else {
+                            //User opened pther files
+                            OnChoosePath(intent.getData());
+                        }
+                    } else {
+                        //User opened other files
+                        OnChoosePath(intent.getData());
+                    }
+                } else { // android.intent.action.MAIN
+                    String lastProj = setting.getString(LASTPROJKEY, "");
+                    if (projectManager != null)
+                        projectManager.Open(lastProj);
+                }
+
+                // create the fragment and data the first time
+                // the data is available in dataFragment.getData()
+
+            }
+        });
+
+        requestAppPermissions(this);
+        /*if (cs == null)
+		 {
+		 Toast.makeText(this, "Failed to initialize the native engine", Toast.LENGTH_SHORT).show();
+		 android.os.Process.killProcess(android.os.Process.getGidForName(null));
+		 }*/
+        //tlDisasmTable = (TableLayout) findViewById(R.id.table_main);
+        //	TableRow tbrow0 = new TableRow(MainActivity.this);
+        //	CreateDisasmTopRow(tbrow0);
+        //	tlDisasmTable.addView(tbrow0);
+        //setupListView();
+
+        boolean show = setting.getBoolean("show", true);
+        if (show) {
+            //showPermissionRationales();
+            editor = setting.edit();
+            editor.putBoolean("show", false);
+            editor.commit();
         }
-        shouldSave = true;
     }
 
     @Override
@@ -712,15 +728,246 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     }
 
-    //https://stackoverflow.com/a/8127716/8614565
-    private void disableEnableControls(boolean enable, ViewGroup vg) {
-        for (int i = 0; i < vg.getChildCount(); i++) {
-            View child = vg.getChildAt(i);
-            child.setEnabled(enable);
-            if (child instanceof ViewGroup) {
-                disableEnableControls(enable, (ViewGroup) child);
+    @Override
+    public void onBackPressed() {
+        if (tabHost.getCurrentTab() == TAB_DISASM) {
+            if (!jmpBackstack.empty()) {
+                jumpto(jmpBackstack.pop());
+                jmpBackstack.pop();
+                return;
+            } else {
+                tabHost.setCurrentTab(TAB_EXPORT);
+                return;
             }
         }
+        if (shouldSave && currentProject == null) {
+            ShowYesNoCancelDialog(this, "Save project?", "",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface p1, int p2) {
+                            ExportDisasm(new Runnable() {
+                                @Override
+                                public void run() {
+                                    SaveDetail();
+                                    MainActivity.super.onBackPressed();
+                                }
+                            });
+
+                        }
+                    },
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface p1, int p2) {
+                            MainActivity.super.onBackPressed();
+                        }
+                    },
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface p1, int p2) {
+                        }
+                    });
+        } else
+            super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+		/*try
+		 {
+		 elfUtil.close();
+		 }
+		 catch (Exception e)
+		 {}*/
+        Finalize();
+        if (cs != null)
+            ;//cs.close();
+        cs = null;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        // 메뉴버튼이 처음 눌러졌을 때 실행되는 콜백메서드
+        // 메뉴버튼을 눌렀을 때 보여줄 menu 에 대해서 정의
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.settings: {
+                Intent SettingActivity = new Intent(this, SettingsActivity.class);
+                //SettingActivity.putExtra("ColorHelper",colorHelper);
+                startActivity(SettingActivity);
+            }
+            break;
+            case R.id.online_help: {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/KYHSGeekCode/Android-Disassembler/blob/master/README.md"));
+                startActivity(browserIntent);
+            }
+            break;
+            case R.id.chooserow: {
+                mCustomDialog = new ChooseColumnDialog(this,
+                        "Select columns to view", // Title
+                        "Choose columns", // Content
+                        leftListener, // left
+                        null); // right
+                mCustomDialog.show();
+                break;
+            }
+            case R.id.jumpto: {
+                if (parsedFile == null) {
+                    AlertSelFile();
+                    break;
+                }
+                autocomplete = new AutoCompleteTextView(this) {
+                    @Override
+                    public boolean enoughToFilter() {
+                        return true;
+                    }
+
+                    @Override
+                    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
+                        super.onFocusChanged(focused, direction, previouslyFocusedRect);
+                        if (focused && getAdapter() != null) {
+                            performFiltering(getText(), 0);
+                        }
+                    }
+                };
+
+                autocomplete.setAdapter(autoSymAdapter);
+                android.app.AlertDialog ab = ShowEditDialog("Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
+                        "Go", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface p1, int p2) {
+                                String dest = autocomplete.getText().toString();
+                                try {
+                                    long address = Long.parseLong(dest, 16);
+                                    jumpto(address);
+                                } catch (NumberFormatException nfe) {
+                                    //not a number, lookup symbol table
+                                    List<Symbol> syms = parsedFile.getSymbols();
+                                    for (Symbol sym : syms) {
+                                        if (sym.name != null && sym.name.equals(dest)) {
+                                            if (sym.type != Symbol.Type.STT_FUNC) {
+                                                Toast.makeText(MainActivity.this, "This is not a function.", Toast.LENGTH_SHORT).show();
+                                                return;
+                                            }
+                                            jumpto(sym.st_value);
+                                            return;
+                                        }
+                                    }
+                                    showToast("No such symbol available");
+                                }
+                            }
+                        },
+                        getString(R.string.cancel)/*R.string.symbol*/, null);
+                ab.getWindow().setGravity(Gravity.TOP);
+                break;
+            }
+            case R.id.find: {
+                //TODO: SHOW SEARCH DIALOG
+                //e.g. find regs access, find string, find calls, find cmps, find xors, etc...
+                break;
+            }
+            case R.id.save: {
+                //if(currentProject==null)
+                {
+                    ExportDisasm(new Runnable() {
+                        @Override
+                        public void run() {
+                            SaveDetail();
+                        }
+                    });
+                }
+                break;
+            }
+            case R.id.export: {
+                ExportDisasm(new Runnable() {
+                    @Override
+                    public void run() {
+                        SaveDetail(new Runnable() {
+                            @Override
+                            public void run() {
+                                createZip();
+                            }
+                        });
+                    }
+                });
+
+                break;
+            }
+            case R.id.calc: {
+                final EditText et = new EditText(this);
+                ShowEditDialog(getString(R.string.calculator), "Enter an expression to measure", et, getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface p1, int p2) {
+                        Toast.makeText(MainActivity.this, Calculator.Calc(et.getText().toString()).toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }, getString(R.string.cancel), null);
+            }
+            break;
+            case R.id.donate: {
+                Intent intent = new Intent(this, DonateActivity.class);
+                startActivity(intent);
+            }
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    ///////////////////////////////////Show***Dialog/////////////////////////////////////
+
+    //The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
+    public static void ShowEditDialog(Activity a, String title, String message, final EditText edittext,
+                                      String positive, DialogInterface.OnClickListener pos,
+                                      String negative, DialogInterface.OnClickListener neg) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
+        builder.setTitle(title);
+        builder.setMessage(message);
+        builder.setView(edittext);
+        builder.setPositiveButton(positive, pos);
+        builder.setNegativeButton(negative, neg);
+        builder.show();
+    }
+
+    //The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
+    public static void ShowSelDialog(Activity a, final List<String> ListItems, String title, DialogInterface.OnClickListener listener) {
+        final CharSequence[] items = ListItems.toArray(new String[ListItems.size()]);
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
+        builder.setTitle(title);
+        builder.setItems(items, listener);
+        builder.show();
+    }
+
+    public static void ShowAlertDialog(Activity a, String title, String content, DialogInterface.OnClickListener listener) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
+        builder.setTitle(title);
+        builder.setCancelable(false);
+        builder.setMessage(content);
+        builder.setPositiveButton(R.string.ok, listener);
+        builder.show();
+    }
+
+    public static void ShowAlertDialog(Activity a, String title, String content) {
+        ShowAlertDialog(a, title, content, null);
+    }
+
+    public static void ShowYesNoCancelDialog(Activity a, String title, String content,
+                                             DialogInterface.OnClickListener ok,
+                                             DialogInterface.OnClickListener no,
+                                             DialogInterface.OnClickListener can) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
+        builder.setTitle(title);
+        builder.setCancelable(false);
+        builder.setMessage(content);
+        builder.setPositiveButton(R.string.ok, ok).setNegativeButton("No", no);
+        builder.setNeutralButton(R.string.cancel, can);
+        builder.show();
     }
 
     private android.app.AlertDialog ShowEditDialog(String title, String message, final EditText edittext,
@@ -737,6 +984,195 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     private void ShowSelDialog(final List<String> ListItems, String title, DialogInterface.OnClickListener listener) {
         MainActivity.ShowSelDialog(this, ListItems, title, listener);
+    }
+
+    /////////////////////////////////////End Show **** dialog///////////////////////////////////////////
+
+    ///////////////////////////////////////Permission///////////////////////////////////////////////////
+    public static void requestAppPermissions(final Activity a) {
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
+                    null,
+                    new int[]{PackageManager.PERMISSION_GRANTED});
+            return;
+        }
+        if (hasReadPermissions(a) && hasWritePermissions(a)/*&&hasGetAccountPermissions(a)*/) {
+            Log.i(TAG, "Has permissions");
+            a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
+                    null,
+                    new int[]{PackageManager.PERMISSION_GRANTED});
+            return;
+        }
+        showPermissionRationales(a, new Runnable() {
+            @Override
+            public void run() {
+                a.requestPermissions(new String[]{
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        //,Manifest.permission.GET_ACCOUNTS
+                }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
+            }
+        });
+    }
+
+    private static boolean hasGetAccountPermissions(Context c) {
+
+        return c.checkSelfPermission(Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static boolean hasReadPermissions(Context c) {
+        return c.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static boolean hasWritePermissions(Context c) {
+        return c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static void showPermissionRationales(final Activity a, final Runnable run) {
+        ShowAlertDialog(a, a.getString(R.string.permissions),
+                a.getString(R.string.permissionMsg),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface p1, int p2) {
+                        if (run != null)
+                            run.run();
+                        //requestAppPermissions(a);
+                    }
+
+
+                });
+    }
+
+    private void showPermissionRationales() {
+        showPermissionRationales(this, null);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_WRITE_STORAGE_REQUEST_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    while (!toDoAfterPermQueue.isEmpty()) {
+                        Runnable run = toDoAfterPermQueue.remove();
+                        if (run != null)
+                            run.run();
+                    }
+                } else {
+                    Toast.makeText(this, R.string.permission_needed, Toast.LENGTH_LONG).show();
+                    setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
+                    editor = setting.edit();
+                    editor.putBoolean("show", true);
+                    editor.apply();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+
+    ///////////////////////////////////////////////End Permission//////////////////////////////////////////////////////
+
+    public ColumnSetting getColumns() {
+        return columnSetting;
+    }
+
+    public void showToast(String s) {
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+    }
+
+    public void showToast(int resid) {
+        Toast.makeText(this, resid, Toast.LENGTH_SHORT).show();
+    }
+
+    public void setClipBoard(String s) {
+        ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Android Disassembler", s);
+        cb.setPrimaryClip(clip);
+        //Toast.makeText(this,"Copied to clipboard:"+s,Toast.LENGTH_SHORT).show();
+    }
+
+    public void setFpath(String fpath) {
+        this.fpath = fpath;
+        dataFragment.setPath(fpath);
+    }
+
+    public void setParsedFile(AbstractFile parsedFile) {
+        this.parsedFile = parsedFile;
+        dataFragment.setParsedFile(parsedFile);
+        adapter.setFile(parsedFile);
+
+    }
+
+    public byte[] getFilecontent() {
+        return filecontent;
+    }
+
+    public void setFilecontent(byte[] filecontent) {
+        this.filecontent = filecontent;
+        dataFragment.setFilecontent(filecontent);
+    }
+
+    public DatabaseHelper getDb() {
+        return db;
+    }
+
+    @Override
+    public void onOpen(ProjectManager.Project proj) {
+        db = new DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db");
+        disableEnableControls(false, llmainLinearLayoutSetupRaw);
+        OnChoosePath(proj.oriFilePath);
+        currentProject = proj;
+        setting = getSharedPreferences(SETTINGKEY, MODE_PRIVATE);
+        editor = setting.edit();
+        editor.putString(LASTPROJKEY, proj.name);
+        editor.apply();
+        String det = proj.getDetail();
+        if (!"".equals(det)) {
+            etDetails.setText(det);
+        }
+
+        File dir = new File(projectManager.RootFile, currentProject.name + "/");
+        Log.d(TAG, "dirpath=" + dir.getAbsolutePath());
+        File file = new File(dir, "Disassembly.raw");
+        if (file.exists()) {
+            try {
+                FileInputStream fis = new FileInputStream(file);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                disasmResults = (LongSparseArray<ListViewItem>) ois.readObject();
+                ois.close();
+            } catch (ClassNotFoundException | IOException e) {
+                AlertError(R.string.fail_loadraw, e);
+            }
+        } else {
+            disasmResults = new LongSparseArray<>();//(LongSparseArray<ListViewItem>) db.getAll();
+        }
+        if (disasmResults != null) {
+            adapter.addAll(disasmResults, new SparseArray<Long>());
+        } else {
+            disasmResults = new LongSparseArray<>();
+        }
+        shouldSave = true;
+    }
+
+
+    //https://stackoverflow.com/a/8127716/8614565
+    private void disableEnableControls(boolean enable, ViewGroup vg) {
+        for (int i = 0; i < vg.getChildCount(); i++) {
+            View child = vg.getChildAt(i);
+            child.setEnabled(enable);
+            if (child instanceof ViewGroup) {
+                disableEnableControls(enable, (ViewGroup) child);
+            }
+        }
     }
 
     private long parseAddress(String toString) {
@@ -761,6 +1197,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         showChooser();/*File*/
     }
 
+    /////////////////////////////////////////////Export - Output//////////////////////////////////
     public void ExportDisasm() {
         ExportDisasm(null);
     }
@@ -978,8 +1415,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         SaveDisasmNewProject(projn, null);
     }
 
-    //private static final int FILE_SELECT_CODE = 0;
-
     private void SaveDisasmNewProject(String projn, Runnable runnable) {
         try {
             ProjectManager.Project proj = projectManager.newProject(projn, fpath);
@@ -1018,6 +1453,36 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         });
     }
 
+    private void createZip() {
+        File targetFile;
+        try {
+            File projFolder = new File(projectManager.RootFile, currentProject.name + "/");
+            FileOutputStream fos = new FileOutputStream(targetFile = new File(projectManager.RootFile, currentProject.name + ".zip"));
+            ZipOutputStream zos = new ZipOutputStream(fos);
+            File[] targets = projFolder.listFiles();
+            byte[] buf = new byte[4096];
+            int readlen;
+            for (File file : targets) {
+                Log.v(TAG, "writing " + file.getName());
+                ZipEntry ze = new ZipEntry(file.getName());
+                zos.putNextEntry(ze);
+                FileInputStream fis = new FileInputStream(file);
+                while ((readlen = fis.read(buf, 0, 4096)) > 0)
+                    zos.write(buf, 0, readlen);
+                zos.closeEntry();
+                fis.close();
+            }
+            zos.close();
+            fos.close();
+        } catch (Exception e) {
+            AlertError(R.string.fail_exportzip, e);
+            targetFile = null;
+        }
+        if (targetFile != null)
+            AlertSaveSuccess(targetFile);
+    }
+
+    ////////////////////////////////////////////End Export - Output/////////////////////////////////////////
     ////TODO: DisassembleFile(long address, int amt);
     private void DisassembleFile(final long offset) {
         Toast.makeText(this, "started", Toast.LENGTH_SHORT).show();
@@ -1153,16 +1618,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
         });
         workerThread.start();
-//<<<<<<< HEAD
-//>>>>>>> parent of 2644076... Update readme with assembly materials links
-//=======
-//>>>>>>> parent of 2644076... Update readme with assembly materials links
     }
-    /*
-     * @(#)ASCIIUtility.java  1.10 05/08/29
-     *
-     * Copyright 1997-2005 Sun Microsystems, Inc. All Rights Reserved.
-     */
 
     private void SendErrorReport(Throwable error) {
         final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
@@ -1200,369 +1656,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         tvComments.setVisibility(isShowComment() ? View.VISIBLE : View.GONE);
     }
 
-    /**
-     * Called when the activity is first created.
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        context = this;
-        //final Thread.UncaughtExceptionHandler ori=Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-            @Override
-            public void uncaughtException(Thread p1, Throwable p2) {
-
-                Toast.makeText(MainActivity.this, Log.getStackTraceString(p2), Toast.LENGTH_SHORT).show();
-                context = null;
-                if (p2 instanceof SecurityException) {
-                    Toast.makeText(MainActivity.this, R.string.didUgrant, Toast.LENGTH_SHORT).show();
-                    setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
-                    editor = setting.edit();
-                    editor.putBoolean("show", true);
-                    editor.apply();
-                }
-                requestAppPermissions(MainActivity.this);
-                //String [] accs=getAccounts();
-                SendErrorReport(p2);
-                //	ori.uncaughtException(p1, p2);
-                Log.wtf(TAG, "UncaughtException", p2);
-                finish();
-            }
-
-        });
-        try {
-            if (Init() == -1) {
-                throw new RuntimeException();
-            }
-            //cs = new Capstone(Capstone.CS_ARCH_ARM, Capstone.CS_MODE_ARM);
-            //cs.setDetail(Capstone.CS_OPT_ON);
-        } catch (RuntimeException e) {
-            Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), Toast.LENGTH_LONG).show();
-            android.os.Process.killProcess(android.os.Process.getGidForName(null));
-        }
-//<<<<<<< HEAD
-//<<<<<<< HEAD
-        setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
-        setContentView(R.layout.main);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        etDetails = (EditText) findViewById(R.id.detailText);
-        Button selectFile = (Button) findViewById(R.id.selFile);
-        selectFile.setOnClickListener(this);
-        btShowDetails = (Button) findViewById(R.id.btnShowdetail);
-        btShowDetails.setOnClickListener(this);
-        //btDisasm = (Button) findViewById(R.id.btnDisasm);
-        //btDisasm.setOnClickListener(this);
-        btSavDisasm = (Button) findViewById(R.id.btnSaveDisasm);
-        btSavDisasm.setOnClickListener(this);
-        btSavDit = (Button) findViewById(R.id.btnSaveDetails);
-        btSavDit.setOnClickListener(this);
-        //btAbort = (Button) findViewById(R.id.btAbort);
-
-        //btAbort.setOnClickListener(this);
-        //btAbort.setEnabled(false);
-
-        etFilename = (EditText) findViewById(R.id.fileNameText);
-        etFilename.setFocusable(false);
-        etFilename.setEnabled(false);
-
-        llmainLinearLayoutSetupRaw = (LinearLayout) findViewById(R.id.mainLinearLayoutSetupRaw);
-        disableEnableControls(false, llmainLinearLayoutSetupRaw);
-
-        etCodeLimit = (EditText) findViewById(R.id.mainETcodeLimit);
-        etCodeBase = (EditText) findViewById(R.id.mainETcodeOffset);
-        etEntryPoint = (EditText) findViewById(R.id.mainETentry);
-        etVirtAddr = (EditText) findViewById(R.id.mainETvirtaddr);
-        tvArch = (TextView) findViewById(R.id.mainTVarch);
-        btFinishSetup = (Button) findViewById(R.id.mainBTFinishSetup);
-        btFinishSetup.setOnClickListener(this);
-        btOverrideSetup = (Button) findViewById(R.id.mainBTOverrideAuto);
-        btOverrideSetup.setOnClickListener(this);
-        //rgdArch= (RadioGridGroup) findViewById(R.id.mainRGDArch);
-        //rgdArch.check(R.id.rbAuto);
-        spinnerArch = (Spinner) findViewById(R.id.mainSpinnerArch);
-        //https://stackoverflow.com/a/13783744/8614565
-        String[] items = Arrays.toString(MachineType.class.getEnumConstants()).replaceAll("^.|.$", "").split(", ");
-        ArrayAdapter<String> sadapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
-        spinnerArch.setAdapter(sadapter);
-
-        lvSymbols = (ListView) findViewById(R.id.symlistView);
-        //moved up
-        //symbolLvAdapter=new SymbolListAdapter();
-        symbolLvAdapter = new SymbolListAdapter();
-        lvSymbols.setAdapter(symbolLvAdapter);
-        lvSymbols.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Symbol symbol = (Symbol) parent.getItemAtPosition(position);
-                if (symbol.type != Symbol.Type.STT_FUNC) {
-                    Toast.makeText(MainActivity.this, "This is not a function.", Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-
-                long address = symbol.st_value;
-                //LongSparseArray arr;
-                Toast.makeText(MainActivity.this, "Jump to" + Long.toHexString(address), Toast.LENGTH_SHORT).show();
-                tabHost.setCurrentTab(TAB_DISASM);
-                jumpto(address);
-                return true;
-            }
-        });
-        //symAdapter = new SymbolTableAdapter(this.getApplicationContext());
-        //tvSymbols = (TableView)findViewById(R.id.content_container);
-        //tvSymbols.setAdapter(symAdapter);
-        autoSymAdapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item);
-        //autocomplete.setThreshold(2);
-        //autocomplete.setAdapter(autoSymAdapter);
-
-        tabHost = (TabHost) findViewById(R.id.tabhost1);
-        tabHost.setup();
-        TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator(getString(R.string.overview));
-        TabHost.TabSpec tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator(getString(R.string.details));
-        TabHost.TabSpec tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator(getString(R.string.disassembly));
-        TabHost.TabSpec tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator(getString(R.string.symbols));
-        TabHost.TabSpec tab4 = tabHost.newTabSpec("5").setContent(R.id.tab4).setIndicator(getString(R.string.hexview));
-
-        tabHost.addTab(tab0);
-        tabHost.addTab(tab1);
-        tabHost.addTab(tab4);
-        tabHost.addTab(tab3);
-        tabHost.addTab(tab2);
-
-        this.tab1 = (LinearLayout) findViewById(R.id.tab1);
-        this.tab2 = (LinearLayout) findViewById(R.id.tab2);
-
-        //tvHex=(TextView)findViewById(R.id.hexTextView);
-        //tvAscii=(TextView)findViewById(R.id.hexTextViewAscii);
-
-        gvHex = (GridView) findViewById(R.id.mainGridViewHex);
-        gvAscii = (GridView) findViewById(R.id.mainGridViewAscii);
-
-        gvHex.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (touchSource == null)
-                    touchSource = v;
-
-                if (v == touchSource) {
-                    gvAscii.dispatchTouchEvent(event);
-                    if (event.getAction() == MotionEvent.ACTION_UP) {
-                        clickSource = v;
-                        touchSource = null;
-                    }
-                }
-
-                return false;
-            }
-        });
-        gvHex.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (parent == clickSource) {
-                    // Do something with the ListView was clicked
-                }
-            }
-        });/*
-		gvHex.setOnScrollListener(new OnScrollListener() {
-				@Override
-				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-					if(view == clickSource)
-						gvAscii.setSelectionFromTop(firstVisibleItem, view.getChildAt(0).getTop()/* + offset);
-				}
-
-				@Override
-				public void onScrollStateChanged(AbsListView view, int scrollState) {}
-			});*/
-        gvAscii.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (touchSource == null)
-                    touchSource = v;
-
-                if (v == touchSource) {
-                    gvHex.dispatchTouchEvent(event);
-                    if (event.getAction() == MotionEvent.ACTION_UP) {
-                        clickSource = v;
-                        touchSource = null;
-                    }
-                }
-
-                return false;
-            }
-        });
-        gvAscii.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (parent == clickSource) {
-                    // Do something with the ListView was clicked
-                }
-            }
-        });
-			/*
-		gvAscii.setOnScrollListener(new OnScrollListener() {
-				@Override
-				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-					if(view == clickSource)
-						gvHex.setSelectionFromTop(firstVisibleItem, view.getChildAt(0).getTop()/* + offset);
-				}
-
-				@Override
-				public void onScrollStateChanged(AbsListView view, int scrollState) {}
-			});
-			*/
-        toDoAfterPermQueue.add(new Runnable() {
-            @Override
-            public void run() {
-                mProjNames = new String[]{"Exception", "happened"};
-                try {
-                    colorHelper = new ColorHelper(MainActivity.this);
-                } catch (SecurityException e) {
-                    Log.e(TAG, "Theme failed", e);
-                    throw e;
-                }
-                if (disasmManager == null)
-                    disasmManager = new DisassemblyManager();
-                adapter = new ListViewAdapter(null, colorHelper, MainActivity.this);
-                setupListView();
-                disasmManager.setData(adapter.itemList(), adapter.getAddress());
-                // find the retained fragment on activity restarts
-                FragmentManager fm = getFragmentManager();
-                dataFragment = (RetainedFragment) fm.findFragmentByTag("data");
-                if (dataFragment == null) {
-                    // add the fragment
-                    dataFragment = new RetainedFragment();
-                    fm.beginTransaction().add(dataFragment, "data").commit();
-                    // load the data from the web
-                    dataFragment.setDisasmManager(disasmManager);
-                } else {
-                    //It should be handled
-                    disasmManager = dataFragment.getDisasmManager();
-                    filecontent = dataFragment.getFilecontent();
-                    parsedFile = dataFragment.getParsedFile();
-                    fpath = dataFragment.getPath();
-                    if (parsedFile != null) {
-                        symbolLvAdapter.itemList().clear();
-                        symbolLvAdapter.addAll(parsedFile.getSymbols());
-                        for (Symbol s : symbolLvAdapter.itemList()) {
-                            autoSymAdapter.add(s.name);
-                        }
-                    }
-                }
-                try {
-                    projectManager = new ProjectManager(MainActivity.this);
-                    mProjNames = projectManager.strProjects();//new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
-                } catch (IOException e) {
-                    AlertError("Failed to load projects", e);
-                }
-                // Set the adapter for the list view
-                mDrawerList.setAdapter(new ArrayAdapter<String>(MainActivity.this,
-                        R.layout.row, mProjNames));
-
-                //https://www.androidpub.com/1351553
-                Intent intent = getIntent();
-                if (intent.getAction().equals(Intent.ACTION_VIEW)) {
-                    // User opened this app from file browser
-                    String filePath = intent.getData().getPath();
-                    Log.d(TAG, "intent path=" + filePath);
-                    String[] toks = filePath.split(Pattern.quote("."));
-                    int last = toks.length - 1;
-                    String ext;
-                    if (last >= 1) {
-                        ext = toks[last];
-                        if ("adp".equalsIgnoreCase(ext)) {
-                            //User opened the project file
-                            //now get the project name
-                            File file = new File(filePath);
-                            String pname = file.getName();
-                            toks = pname.split(Pattern.quote("."));
-                            projectManager.Open(toks[toks.length - 2]);
-                        } else {
-                            //User opened pther files
-                            OnChoosePath(intent.getData());
-                        }
-                    } else {
-                        //User opened other files
-                        OnChoosePath(intent.getData());
-                    }
-                } else { // android.intent.action.MAIN
-                    String lastProj = setting.getString(LASTPROJKEY, "");
-                    if (projectManager != null)
-                        projectManager.Open(lastProj);
-                }
-
-                // create the fragment and data the first time
-                // the data is available in dataFragment.getData()
-
-            }
-        });
-
-//		requestAppPermissions(this);
-//=======
-        //requestAppPermissions(this);
-//		colorHelper=new ColorHelper(this);
-//>>>>>>> parent of 2644076... Update readme with assembly materials links
-//=======
-
-        requestAppPermissions(this);
-        //colorHelper=new ColorHelper(this);
-//>>>>>>> parent of 2644076... Update readme with assembly materials links
 
 
-
-        /*if (cs == null)
-		 {
-		 Toast.makeText(this, "Failed to initialize the native engine", Toast.LENGTH_SHORT).show();
-		 android.os.Process.killProcess(android.os.Process.getGidForName(null));
-		 }*/
-        //tlDisasmTable = (TableLayout) findViewById(R.id.table_main);
-        //	TableRow tbrow0 = new TableRow(MainActivity.this);
-        //	CreateDisasmTopRow(tbrow0);
-        //	tlDisasmTable.addView(tbrow0);
-        //setupListView();
-
-
-        boolean show = setting.getBoolean("show", true);
-        if (show) {
-            //showPermissionRationales();
-            editor = setting.edit();
-            editor.putBoolean("show", false);
-            editor.commit();
-        }
-    }
-
-    /**
-     * Swaps fragments in the main content view
-     */
-    private void selectItem(int position) {
-        //Project project=
-        // Create a new fragment and specify the planet to show based on position
-		/*Fragment fragment = new PlanetFragment();
-		 Bundle args = new Bundle();
-		 args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
-		 fragment.setArguments(args);
-
-		 // Insert the fragment by replacing any existing fragment
-		 FragmentManager fragmentManager = getFragmentManager();
-		 fragmentManager.beginTransaction()
-		 .replace(R.id.content_frame, fragment)
-		 .commit();
-
-		 // Highlight the selected item, update the title, and close the drawer
-		 mDrawerList.setItemChecked(position, true);
-		 setTitle(mPlanetTitles[position]);
-		 mDrawerLayout.closeDrawer(mDrawerList);*/
-    }
 
     @Override
     public void setTitle(CharSequence title) {
         //mTitle = title;
         //getActionBar().setTitle(mTitle);
-    }
-
-    private void showPermissionRationales() {
-        showPermissionRationales(this, null);
     }
 
     private void ShowErrorDialog(Activity a, int title, final Throwable err, boolean sendError) {
@@ -1649,239 +1749,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         etDetails.setText(parsedFile.toString());
     }
 
-    //	public void RefreshTable()
-//	{
-//		//tlDisasmTable.removeAllViews();
-//		//TableRow tbrow0 = new TableRow(MainActivity.this);
-//		//CreateDisasmTopRow(tbrow0);
-//		//tlDisasmTable.addView(tbrow0);
-//		//for(int i=0;i<disasmResults.size();++i)
-//		//{
-//		//AddOneRow(disasmResults.get(i));
-//		//}
-//		//tlDisasmTable.refreshDrawableState();
-//	}
-    @Override
-    public void onBackPressed() {
-        if (tabHost.getCurrentTab() == TAB_DISASM) {
-            if (!jmpBackstack.empty()) {
-                jumpto(jmpBackstack.pop());
-                jmpBackstack.pop();
-                return;
-            } else {
-                tabHost.setCurrentTab(TAB_EXPORT);
-                return;
-            }
-        }
-        if (shouldSave && currentProject == null) {
-            ShowYesNoCancelDialog(this, "Save project?", "",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface p1, int p2) {
-                            ExportDisasm(new Runnable() {
-                                @Override
-                                public void run() {
-                                    SaveDetail();
-                                    MainActivity.super.onBackPressed();
-                                }
-                            });
-
-                        }
-                    },
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface p1, int p2) {
-                            MainActivity.super.onBackPressed();
-                        }
-                    },
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface p1, int p2) {
-                        }
-                    });
-        } else
-            super.onBackPressed();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-		/*try
-		 {
-		 elfUtil.close();
-		 }
-		 catch (Exception e)
-		 {}*/
-        Finalize();
-        if (cs != null)
-            ;//cs.close();
-        cs = null;
-        //Finalize();
-		/*if (mNotifyManager != null)
-		 {
-		 mNotifyManager.cancel(0);
-		 mNotifyManager.cancelAll();
-		 }*/
-        //maybe service needed.
-		/*if(workerThread!=null)
-		 {
-		 workerThread.stop();
-		 }*/
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        // 메뉴버튼이 처음 눌러졌을 때 실행되는 콜백메서드
-        // 메뉴버튼을 눌렀을 때 보여줄 menu 에 대해서 정의
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    /*@Override
-     public boolean onPrepareOptionsMenu(Menu menu)
-     {
-     Log.d("test", "onPrepareOptionsMenu - 옵션메뉴가 " +
-     "화면에 보여질때 마다 호출됨");
-     /* // 로그인 한 상태: 로그인은 안보이게, 로그아웃은 보이게
-     menu.getItem(0).setEnabled(true);
-     }else{ // 로그 아웃 한 상태 : 로그인 보이게, 로그아웃은 안보이게
-     menu.getItem(0).setEnabled(false);
-     menu.getItem(1).setEnabled(true);
-
-     return super.onPrepareOptionsMenu(menu);
-     }*/
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // 메뉴의 항목을 선택(클릭)했을 때 호출되는 콜백메서드
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        //    Log.d("test", "onOptionsItemSelected - 메뉴항목을 클릭했을 때 호출됨");
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.settings: {
-                Intent SettingActivity = new Intent(this, SettingsActivity.class);
-                //SettingActivity.putExtra("ColorHelper",colorHelper);
-                startActivity(SettingActivity);
-            }
-            break;
-            case R.id.online_help: {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/KYHSGeekCode/Android-Disassembler/blob/master/README.md"));
-                startActivity(browserIntent);
-            }
-            break;
-            case R.id.chooserow: {
-                mCustomDialog = new ChooseColumnDialog(this,
-                        "Select columns to view", // Title
-                        "Choose columns", // Content
-                        leftListener, // left
-                        null); // right
-                mCustomDialog.show();
-                break;
-            }
-
-            case R.id.jumpto: {
-                if (parsedFile == null) {
-                    AlertSelFile();
-                    break;
-                }
-                autocomplete = new AutoCompleteTextView(this) {
-                    @Override
-                    public boolean enoughToFilter() {
-                        return true;
-                    }
-
-                    @Override
-                    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
-                        super.onFocusChanged(focused, direction, previouslyFocusedRect);
-                        if (focused && getAdapter() != null) {
-                            performFiltering(getText(), 0);
-                        }
-                    }
-                };
-
-                autocomplete.setAdapter(autoSymAdapter);
-                android.app.AlertDialog ab = ShowEditDialog("Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
-                        "Go", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface p1, int p2) {
-                                String dest = autocomplete.getText().toString();
-                                try {
-                                    long address = Long.parseLong(dest, 16);
-                                    jumpto(address);
-                                } catch (NumberFormatException nfe) {
-                                    //not a number, lookup symbol table
-                                    List<Symbol> syms = parsedFile.getSymbols();
-                                    for (Symbol sym : syms) {
-                                        if (sym.name != null && sym.name.equals(dest)) {
-                                            if (sym.type != Symbol.Type.STT_FUNC) {
-                                                Toast.makeText(MainActivity.this, "This is not a function.", Toast.LENGTH_SHORT).show();
-                                                return;
-                                            }
-                                            jumpto(sym.st_value);
-                                            return;
-                                        }
-                                    }
-                                    showToast("No such symbol available");
-                                }
-                            }
-                        },
-                        getString(R.string.cancel)/*R.string.symbol*/, null);
-                ab.getWindow().setGravity(Gravity.TOP);
-                break;
-            }
-            case R.id.find: {
-                //TODO: SHOW SEARCH DIALOG
-                //e.g. find regs access, find string, find calls, find cmps, find xors, etc...
-                break;
-            }
-            case R.id.save: {
-                //if(currentProject==null)
-                {
-                    ExportDisasm(new Runnable() {
-                        @Override
-                        public void run() {
-                            SaveDetail();
-                        }
-                    });
-                }
-                break;
-            }
-            case R.id.export: {
-                ExportDisasm(new Runnable() {
-                    @Override
-                    public void run() {
-                        SaveDetail(new Runnable() {
-                            @Override
-                            public void run() {
-                                createZip();
-                            }
-                        });
-                    }
-                });
-
-                break;
-            }
-            case R.id.calc: {
-                final EditText et = new EditText(this);
-                ShowEditDialog(getString(R.string.calculator), "Enter an expression to measure", et, getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface p1, int p2) {
-                        Toast.makeText(MainActivity.this, Calculator.Calc(et.getText().toString()).toString(), Toast.LENGTH_SHORT).show();
-                    }
-                }, getString(R.string.cancel), null);
-            }
-            break;
-            case R.id.donate: {
-                Intent intent = new Intent(this, DonateActivity.class);
-                startActivity(intent);
-            }
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     public void jumpto(long address) {
         if (isValidAddress(address)) {
 
@@ -1890,11 +1757,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 jmpBackstack.push(Long.valueOf(adapter.getCurrentAddress()));
                 adapter.OnJumpTo(address);
                 listview.setSelection(0);
-                //}else{
-                //	listview.setSelection();
-                //listview.setScrollX(index);
-                //listview.smoothScrollToPosition(index); too slow
-
         } else {
             Toast.makeText(this, R.string.validaddress, Toast.LENGTH_SHORT).show();
         }
@@ -1908,34 +1770,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         return true;
     }
 
-    private void createZip() {
-        File targetFile;
-        try {
-            File projFolder = new File(projectManager.RootFile, currentProject.name + "/");
-            FileOutputStream fos = new FileOutputStream(targetFile = new File(projectManager.RootFile, currentProject.name + ".zip"));
-            ZipOutputStream zos = new ZipOutputStream(fos);
-            File[] targets = projFolder.listFiles();
-            byte[] buf = new byte[4096];
-            int readlen;
-            for (File file : targets) {
-                Log.v(TAG, "writing " + file.getName());
-                ZipEntry ze = new ZipEntry(file.getName());
-                zos.putNextEntry(ze);
-                FileInputStream fis = new FileInputStream(file);
-                while ((readlen = fis.read(buf, 0, 4096)) > 0)
-                    zos.write(buf, 0, readlen);
-                zos.closeEntry();
-                fis.close();
-            }
-            zos.close();
-            fos.close();
-        } catch (Exception e) {
-            AlertError(R.string.fail_exportzip, e);
-            targetFile = null;
-        }
-        if (targetFile != null)
-            AlertSaveSuccess(targetFile);
-    }
 
     private void showChooser() {
         List<String> lst = new ArrayList<>();
@@ -2044,37 +1878,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 disableEnableControls(false, llmainLinearLayoutSetupRaw);
                 OnChoosePath(path);
             }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_WRITE_STORAGE_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    while (!toDoAfterPermQueue.isEmpty()) {
-                        Runnable run = toDoAfterPermQueue.remove();
-                        if (run != null)
-                            run.run();
-                    }
-                } else {
-                    Toast.makeText(this, R.string.permission_needed, Toast.LENGTH_LONG).show();
-                    setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
-                    editor = setting.edit();
-                    editor.putBoolean("show", true);
-                    editor.apply();
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-            }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
 
@@ -2480,15 +2283,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         return filePath;
     }
 
-    /*ublic String Disassemble(EditText result)
-     {
-     //String s=disassemble(filecontent, elfUtil.getEntryPoint());
-     String s;
-     byte [] b=Arrays.copyOfRange(filecontent, (int)elfUtil.getEntryPoint(), filecontent.length - 1);
-     s = new DisasmResult(b, 0).toString();
-     return s;
-     }
-     */
     private ProgressDialog showProgressDialog(String s) {
         ProgressDialog dialog = new ProgressDialog(this);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -2498,6 +2292,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         return dialog;
     }
 
+    /////////////////////////////////////////////////Choose Column////////////////////////////////////
     public boolean isShowAddress() {
         return showAddress;
     }
@@ -2553,6 +2348,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public void setShowComment(boolean showComment) {
         this.showComment = showComment;
     }
+
+    //////////////////////////////////////////////////////End Choose Column/////////////////////////////////////////
+
 
     /* A native method that is implemented by the
      * 'hello-jni' native library, which is packaged
@@ -2677,6 +2475,20 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 projectManager.Open(projname);
             }
         }
+    }
+
+    public static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
+
+    public static String bytesToHex(byte[] bytes) {
+        char[] hexChars = new char[bytes.length * 2];
+        for (int p = 0, j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[p++] = hexArray[v >>> 4];
+            hexChars[p++] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 }
 	/*	OnCreate()
@@ -2887,3 +2699,27 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				 }
 				 return accs.toArray(new String[accs.size()]);
 				 }*/
+/**
+ * Swaps fragments in the main content view
+ * <p>
+ * private void selectItem(int position) {
+ * //Project project=
+ * // Create a new fragment and specify the planet to show based on position
+ * /*Fragment fragment = new PlanetFragment();
+ * Bundle args = new Bundle();
+ * args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
+ * fragment.setArguments(args);
+ * <p>
+ * // Insert the fragment by replacing any existing fragment
+ * FragmentManager fragmentManager = getFragmentManager();
+ * fragmentManager.beginTransaction()
+ * .replace(R.id.content_frame, fragment)
+ * .commit();
+ * <p>
+ * // Highlight the selected item, update the title, and close the drawer
+ * mDrawerList.setItemChecked(position, true);
+ * setTitle(mPlanetTitles[position]);
+ * mDrawerLayout.closeDrawer(mDrawerList);
+ * }
+ */
+
