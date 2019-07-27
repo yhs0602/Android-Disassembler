@@ -21,7 +21,7 @@ ANDROID_ABI:UNINITIALIZED=x86_64
 ANDROID_NDK:UNINITIALIZED=C:\Users\82102\AppData\Local\Android\Sdk\ndk-bundle
 
 //No help, variable specified on the command line.
-ANDROID_PLATFORM:UNINITIALIZED=android-23
+ANDROID_PLATFORM:UNINITIALIZED=android-24
 
 //Archiver
 CMAKE_AR:FILEPATH=C:/Users/82102/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/x86_64-linux-android-ar.exe
@@ -177,8 +177,8 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 //Path to a program.
 CMAKE_STRIP:FILEPATH=C:/Users/82102/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/bin/x86_64-linux-android-strip.exe
 
-//No help, variable specified on the command line.
-CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=C:\Users\82102\AppData\Local\Android\Sdk\ndk-bundle\build\cmake\android.toolchain.cmake
+//The CMake toolchain file
+CMAKE_TOOLCHAIN_FILE:FILEPATH=C:/Users/82102/AppData/Local/Android/Sdk/ndk-bundle/build/cmake/android.toolchain.cmake
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -193,10 +193,10 @@ Project_BINARY_DIR:STATIC=C:/Users/82102/AndroidStudioProjects/Android-Disassemb
 Project_SOURCE_DIR:STATIC=C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/src/main/cpp
 
 //Dependencies for the target
-hello-jni_LIB_DEPENDS:STATIC=general;C:/Users/82102/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/lib/x86_64-linux-android/23/liblog.so;
+hello-jni_LIB_DEPENDS:STATIC=general;C:/Users/82102/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/lib/x86_64-linux-android/24/liblog.so;
 
 //Path to a library.
-log-lib:FILEPATH=C:/Users/82102/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/lib/x86_64-linux-android/23/liblog.so
+log-lib:FILEPATH=C:/Users/82102/AppData/Local/Android/Sdk/ndk-bundle/toolchains/llvm/prebuilt/windows-x86_64/sysroot/usr/lib/x86_64-linux-android/24/liblog.so
 
 
 ########################

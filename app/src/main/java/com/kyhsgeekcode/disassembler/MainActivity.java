@@ -44,7 +44,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -77,6 +76,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -152,21 +152,22 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     TextView tvArch;
     Button btFinishSetup;
     Button btOverrideSetup;
-    TextView tvHex, tvAscii;
-    //RadioGridGroup rgdArch;
     Spinner spinnerArch;
     TabHost tabHost;
-    FrameLayout frameLayout;
     LinearLayout tab1, tab2;
 
+    ///////////////////////////////////////////////////UI manager////////////////////////////////////////////
     HexManager hexManager = new HexManager();
+
 
     Queue<Runnable> toDoAfterPermQueue = new LinkedBlockingQueue<>();
 
+    /////////////////////////////////////////////////Current working data///////////////////////////////////////
     String fpath;
     byte[] filecontent = null;
     AbstractFile parsedFile;//Parsed file info
 
+    /////////////////////////////////////////////////Settings/////////////////////////////////////////////////////
     SharedPreferences setting;
     SharedPreferences.Editor editor;
     SharedPreferences settingPath;
@@ -178,14 +179,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     boolean showCondition = true;
     boolean showOperands = true;
     boolean showComment = true;
+    private ColumnSetting columnSetting = new ColumnSetting();
+
 
     /*ArrayList*/ LongSparseArray<ListViewItem> disasmResults = new LongSparseArray<>();
-    boolean instantMode;
     Thread workerThread;
     DatabaseHelper db;
     boolean shouldSave = false;
 
-    ListViewItem lvi;
     View.OnClickListener rowClkListener = new OnClickListener() {
         public void onClick(View view) {
             TableRow tablerow = (TableRow) view;
@@ -206,7 +207,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     //private TableView tvSymbols;
     private NotificationManager mNotifyManager;
     private Notification.Builder mBuilder;
-    private ColumnSetting columnSetting = new ColumnSetting();
     //DisasmIterator disasmIterator;
     private GridView gvHex;
     private GridView gvAscii;
@@ -1080,11 +1080,23 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 
     ///////////////////////////////////////////////End Permission//////////////////////////////////////////////////////
-
+    //////////////////////////////////////////////Column Picking/////////////////////////////////////////////////////
     public ColumnSetting getColumns() {
         return columnSetting;
     }
 
+    public void AdjustShow(TextView tvAddr, TextView tvLabel, TextView tvBytes, TextView tvInst, TextView tvCondition, TextView tvOperands, TextView tvComments) {
+        tvAddr.setVisibility(isShowAddress() ? View.VISIBLE : View.GONE);
+        tvLabel.setVisibility(isShowLabel() ? View.VISIBLE : View.GONE);
+        tvBytes.setVisibility(isShowBytes() ? View.VISIBLE : View.GONE);
+        tvInst.setVisibility(isShowInstruction() ? View.VISIBLE : View.GONE);
+        tvCondition.setVisibility(isShowCondition() ? View.VISIBLE : View.GONE);
+        tvOperands.setVisibility(isShowOperands() ? View.VISIBLE : View.GONE);
+        tvComments.setVisibility(isShowComment() ? View.VISIBLE : View.GONE);
+    }
+
+    //////////////////////////////////////////////End Column Picking///////////////////////////////////////////////////
+    //////////////////////////////////////////////////////UI Utility///////////////////////////////////////////////////
     public void showToast(String s) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
@@ -1100,6 +1112,20 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         //Toast.makeText(this,"Copied to clipboard:"+s,Toast.LENGTH_SHORT).show();
     }
 
+    //https://stackoverflow.com/a/8127716/8614565
+    private void disableEnableControls(boolean enable, ViewGroup vg) {
+        for (int i = 0; i < vg.getChildCount(); i++) {
+            View child = vg.getChildAt(i);
+            child.setEnabled(enable);
+            if (child instanceof ViewGroup) {
+                disableEnableControls(enable, (ViewGroup) child);
+            }
+        }
+    }
+
+    ///////////////////////////////////////////////////End UI Utility//////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////Target setter/getter////////////////////////////////////////////
     public void setFpath(String fpath) {
         this.fpath = fpath;
         dataFragment.setPath(fpath);
@@ -1109,6 +1135,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         this.parsedFile = parsedFile;
         dataFragment.setParsedFile(parsedFile);
         adapter.setFile(parsedFile);
+
 
     }
 
@@ -1125,55 +1152,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         return db;
     }
 
-    @Override
-    public void onOpen(ProjectManager.Project proj) {
-        db = new DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db");
-        disableEnableControls(false, llmainLinearLayoutSetupRaw);
-        OnChoosePath(proj.oriFilePath);
-        currentProject = proj;
-        setting = getSharedPreferences(SETTINGKEY, MODE_PRIVATE);
-        editor = setting.edit();
-        editor.putString(LASTPROJKEY, proj.name);
-        editor.apply();
-        String det = proj.getDetail();
-        if (!"".equals(det)) {
-            etDetails.setText(det);
-        }
+    ////////////////////////////////////////////////////////////End target setter/getter/////////////////////////////////////////
 
-        File dir = new File(projectManager.RootFile, currentProject.name + "/");
-        Log.d(TAG, "dirpath=" + dir.getAbsolutePath());
-        File file = new File(dir, "Disassembly.raw");
-        if (file.exists()) {
-            try {
-                FileInputStream fis = new FileInputStream(file);
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                disasmResults = (LongSparseArray<ListViewItem>) ois.readObject();
-                ois.close();
-            } catch (ClassNotFoundException | IOException e) {
-                AlertError(R.string.fail_loadraw, e);
-            }
-        } else {
-            disasmResults = new LongSparseArray<>();//(LongSparseArray<ListViewItem>) db.getAll();
-        }
-        if (disasmResults != null) {
-            adapter.addAll(disasmResults, new SparseArray<Long>());
-        } else {
-            disasmResults = new LongSparseArray<>();
-        }
-        shouldSave = true;
-    }
-
-
-    //https://stackoverflow.com/a/8127716/8614565
-    private void disableEnableControls(boolean enable, ViewGroup vg) {
-        for (int i = 0; i < vg.getChildCount(); i++) {
-            View child = vg.getChildAt(i);
-            child.setEnabled(enable);
-            if (child instanceof ViewGroup) {
-                disableEnableControls(enable, (ViewGroup) child);
-            }
-        }
-    }
 
     private long parseAddress(String toString) {
         if (toString == null) {
@@ -1482,96 +1462,65 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             AlertSaveSuccess(targetFile);
     }
 
+    private void SaveDisasm(DatabaseHelper disasmF) {
+        new SaveDBAsync().execute(disasmF);
+    }
+
+    private void SaveDetailOld() {
+        Log.v(TAG, "Saving details");
+        File dir = new File(Environment.getExternalStorageDirectory().getPath() + "disasm/");
+        File file = new File(dir, new File(fpath).getName() + "_" + new Date(System.currentTimeMillis()).toString() + ".details.txt");
+        SaveDetail(dir, file);
+    }
     ////////////////////////////////////////////End Export - Output/////////////////////////////////////////
+    //////////////////////////////////////////////Projects////////////////////////////////////////////////////////////////////////
+    @Override
+    public void onOpen(ProjectManager.Project proj) {
+        db = new DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db");
+        disableEnableControls(false, llmainLinearLayoutSetupRaw);
+        OnChoosePath(proj.oriFilePath);
+        currentProject = proj;
+        setting = getSharedPreferences(SETTINGKEY, MODE_PRIVATE);
+        editor = setting.edit();
+        editor.putString(LASTPROJKEY, proj.name);
+        editor.apply();
+        String det = proj.getDetail();
+        if (!"".equals(det)) {
+            etDetails.setText(det);
+        }
+
+        File dir = new File(projectManager.RootFile, currentProject.name + "/");
+        Log.d(TAG, "dirpath=" + dir.getAbsolutePath());
+        File file = new File(dir, "Disassembly.raw");
+        if (file.exists()) {
+            try {
+                FileInputStream fis = new FileInputStream(file);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                disasmResults = (LongSparseArray<ListViewItem>) ois.readObject();
+                ois.close();
+            } catch (ClassNotFoundException | IOException e) {
+                AlertError(R.string.fail_loadraw, e);
+            }
+        } else {
+            disasmResults = new LongSparseArray<>();//(LongSparseArray<ListViewItem>) db.getAll();
+        }
+        if (disasmResults != null) {
+            adapter.addAll(disasmResults, new SparseArray<Long>());
+        } else {
+            disasmResults = new LongSparseArray<>();
+        }
+        shouldSave = true;
+    }
+
+    ////////////////////////////////////////////////End Project//////////////////////////////////////////////
+
+
     ////TODO: DisassembleFile(long address, int amt);
     private void DisassembleFile(final long offset) {
         Toast.makeText(this, "started", Toast.LENGTH_SHORT).show();
         Log.v(TAG, "Strted disasm");
-        //btDisasm.setEnabled(false);
-        //btAbort.setEnabled(true);
         btSavDisasm.setEnabled(false);
-        //btAbort.setText("Pause");
-        //final ProgressDialog dialog= showProgressDialog("Disassembling...");
-
-        //NOW there's no notion of pause or resume!!!!!
-        //if(offset==parsedFile.getEntryPoint())
-        //	disasmResults.clear();//otherwise resume, not clear
-		/*mNotifyManager =(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-		mBuilder = new Notification.Builder(this);
-		mBuilder.setContentTitle("Disassembler")
-			.setContentText("Disassembling in progress")
-			.setSmallIcon(R.drawable.ic_launcher)
-			.setOngoing(true)
-			.setProgress(100, 0, false);*/
-		/*Intent snoozeIntent = new Intent(this, MyBroadcastReceiver.class);
-		 snoozeIntent.setAction(ACTION_SNOOZE);
-		 snoozeIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);
-		 PendingIntent snoozePendingIntent =
-		 PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
-		 mBuilder.addAction(R.drawable.ic_launcher,"",snoozeIntent);*/
-//<<<<<<< HEAD
-//<<<<<<< HEAD
-//		long codesection=parsedFile.getCodeSectionBase();
-//		long start=codesection+offset;//elfUtil.getCodeSectionOffset();
-//		long index=start;
-//		long limit=parsedFile.getCodeSectionLimit();
-//		long addr=parsedFile.getCodeVirtAddr()+offset;
-//		Log.v(TAG, "code section point :" + Long.toHexString(index));
-//		long size=limit - start;//Size of CS
-//		DisasmIterator dai=new DisasmIterator
-//							(MainActivity.this,mNotifyManager,mBuilder
-//							,adapter,size);
-//		listview.setOnScrollListener(new DisasmPager(adapter,dai));
-//		dai.getSome(filecontent,start,size,addr,100/*, disasmResults*/);
-//		workerThread = new Thread(new Runnable(){
-//				@Override
-//				public void run()
-//				{
-//					long codesection=parsedFile.getCodeSectionBase();
-//					long start=codesection+offset;//elfUtil.getCodeSectionOffset();
-//					long index=start;
-//					long limit=parsedFile.getCodeSectionLimit();
-//					long addr=parsedFile.getCodeVirtAddr()+offset;
-//					Log.v(TAG, "code section point :" + Long.toHexString(index));
-//					//ListViewItem lvi;
-//					//	getFunctionNames();
-//					long size=limit - start;
-//					long leftbytes=size;
-//					DisasmIterator dai=new DisasmIterator(MainActivity.this,mNotifyManager,mBuilder,adapter,size);
-//
-//					long toresume=dai.getAll(filecontent,start,size,addr/*, disasmResults*/);
-//					if(toresume<0)
-//					{
-//						AlertError("Failed to disassemble:"+toresume,new Exception());
-//					}else{
-//						disasmManager.setResumeOffsetFromCode(toresume);
-//					}
-//					disasmResults= adapter.itemList();
-//					mNotifyManager.cancel(0);
-//					final int len=disasmResults.size();
-//					//add xrefs
-//
-//					runOnUiThread(new Runnable(){
-//							@Override
-//							public void run()
-//							{
-//								listview.requestLayout();
-//								tab2.invalidate();
-//								//dialog.dismiss();
-//								btDisasm.setEnabled(true);
-//								btAbort.setText("Resume");
-//								//btAbort.setTag("resume",(Object)true);
-//								//btAbort.setEnabled(false);
-//								btSavDisasm.setEnabled(true);
-//								Toast.makeText(MainActivity.this, "done", Toast.LENGTH_SHORT).show();
-//							}
-//						});
-//					Log.v(TAG, "disassembly done");
-//				}});
-//		workerThread.start();
-//=======
-//=======
-//>>>>>>> parent of 2644076... Update readme with assembly materials links
+        //NOW there's no notion of pause or resume
         workerThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -1646,25 +1595,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         startActivity(Intent.createChooser(emailIntent, getString(R.string.send_crash_via_email)));
     }
 
-    public void AdjustShow(TextView tvAddr, TextView tvLabel, TextView tvBytes, TextView tvInst, TextView tvCondition, TextView tvOperands, TextView tvComments) {
-        tvAddr.setVisibility(isShowAddress() ? View.VISIBLE : View.GONE);
-        tvLabel.setVisibility(isShowLabel() ? View.VISIBLE : View.GONE);
-        tvBytes.setVisibility(isShowBytes() ? View.VISIBLE : View.GONE);
-        tvInst.setVisibility(isShowInstruction() ? View.VISIBLE : View.GONE);
-        tvCondition.setVisibility(isShowCondition() ? View.VISIBLE : View.GONE);
-        tvOperands.setVisibility(isShowOperands() ? View.VISIBLE : View.GONE);
-        tvComments.setVisibility(isShowComment() ? View.VISIBLE : View.GONE);
-    }
-
-
-
-
-    @Override
-    public void setTitle(CharSequence title) {
-        //mTitle = title;
-        //getActionBar().setTitle(mTitle);
-    }
-
     private void ShowErrorDialog(Activity a, int title, final Throwable err, boolean sendError) {
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
         builder.setTitle(title);
@@ -1710,10 +1640,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         listview.setOnScrollListener(adapter);
     }
 
-    private void SaveDisasm(DatabaseHelper disasmF) {
-
-        new SaveDBAsync().execute(disasmF);
-    }
 
     private void AlertError(int p0, Exception e, boolean sendError) {
         Log.e(TAG, "" + p0, e);
@@ -1732,13 +1658,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private void AlertError(String p0, Exception e) {
         AlertError(p0, e, true);
         //ShowAlertDialog((Activity)this,p0,Log.getStackTraceString(e));
-    }
-
-    private void SaveDetailOld() {
-        Log.v(TAG, "Saving details");
-        File dir = new File(Environment.getExternalStorageDirectory().getPath() + "disasm/");
-        File file = new File(dir, new File(fpath).getName() + "_" + new Date(System.currentTimeMillis()).toString() + ".details.txt");
-        SaveDetail(dir, file);
     }
 
     private void AlertSaveSuccess(File file) {
@@ -1770,7 +1689,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         return true;
     }
 
-
+    //////////////////////////////////////////////Input////////////////////////////////////////
     private void showChooser() {
         List<String> lst = new ArrayList<>();
         lst.add("Choose file");
@@ -1797,6 +1716,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         final PackageManager pm = getPackageManager();
         //get a list of installed apps.
         List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+        packages.sort(new Comparator<ApplicationInfo>() {
+            @Override
+            public int compare(ApplicationInfo o1, ApplicationInfo o2) {
+                String applabel1 = (String) pm.getApplicationLabel(o1);
+                String applabel2 = (String) pm.getApplicationLabel(o2);
+                return applabel1.compareTo(applabel2);
+            }
+        });
         for (ApplicationInfo packageInfo : packages) {
             //Log.d(TAG, "Installed package :" + packageInfo.packageName);
             //Log.d(TAG, "Apk file path:" + packageInfo.sourceDir);
@@ -2099,10 +2026,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     }
 
-    private void AllowRawSetup() {
-        disableEnableControls(true, llmainLinearLayoutSetupRaw);
-    }
-
     private void AfterParse() {
         MachineType type = parsedFile.getMachineType();//elf.header.machineType;
         int[] archs = getArchitecture(type);
@@ -2152,6 +2075,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         ShowDetail();
         DisassembleFile(0/*parsedFile.getEntryPoint()*/);
     }
+
+    private void AllowRawSetup() {
+        disableEnableControls(true, llmainLinearLayoutSetupRaw);
+    }
+
+    ////////////////////////////////////////////Data Conversion//////////////////////////////////
 
     private int[] getArchitecture(MachineType type) {
 

@@ -3,7 +3,7 @@ arguments :
 -HC:\Users\82102\AndroidStudioProjects\Android-Disassembler\app\src\main\cpp
 -BC:\Users\82102\AndroidStudioProjects\Android-Disassembler\app\.externalNativeBuild\cmake\release\x86
 -DANDROID_ABI=x86
--DANDROID_PLATFORM=android-23
+-DANDROID_PLATFORM=android-24
 -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=C:\Users\82102\AndroidStudioProjects\Android-Disassembler\app\build\intermediates\cmake\release\obj\x86
 -DCMAKE_BUILD_TYPE=Release
 -DANDROID_NDK=C:\Users\82102\AppData\Local\Android\Sdk\ndk-bundle
