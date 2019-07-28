@@ -1,4 +1,5 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 	<item
         android:id="@+id/jumpto"
         android:title="Goto"/>
@@ -12,7 +13,7 @@
 		<menu>
 			<item
 				android:id="@+id/findcall"
-				android:showAsAction="never"
+                app:showAsAction="never"
 				android:title="Calls"/>
 			<item
 				android:id="@+id/findjump"
@@ -22,7 +23,7 @@
 				android:title="Instructions affecting PC"/>
 			<item
 				android:id="@+id/findxor"
-				android:showAsAction="never"
+                app:showAsAction="never"
 				android:title="XOR/EORs (excluding zeroing)"/>
 			<item
 				android:id="@+id/findentries"
@@ -40,6 +41,9 @@
         android:id="@+id/export"
         android:title="export project as zip"
 		android:enabled="false"/>
+    <item
+        android:id="@+id/analyze"
+        android:title="Analyze" />
     <item
         android:id="@+id/calc"
         android:title="@string/open_calculator" />

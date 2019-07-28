@@ -76,4 +76,6 @@
     <string name="failCreateProject">프로젝트 생성 실패!</string>
     <string name="fail_readfile_root">파일을 읽기 위해서 루트 권한이 필요하기 때문에 파일 읽기에 실패하였습니다. (권한 거부)</string>
     <string name="online_help">온라인 도움말</string>
+    <string name="refresh">새로 고침</string>
+    <string name="viewlog">로그</string>
 </resources>

@@ -38,6 +38,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -228,6 +229,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private String[] mProjNames;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+
+    private Button btRefreshLog;
+    private ListView lvLog;
+    private LogAdapter logAdapter;
+
     private long instantEntry;
     private Capstone cs;
     private String EXTRA_NOTIFICATION_ID;
@@ -256,7 +262,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             listview.requestLayout();
         }
     };
-
     /////////////////////////////////////////Activity Life Cycle///////////////////////////////////////////////////
 
     @Override
@@ -437,6 +442,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         //autocomplete.setThreshold(2);
         //autocomplete.setAdapter(autoSymAdapter);
 
+        btRefreshLog = (Button) findViewById(R.id.refreshlog);
+        btRefreshLog.setOnClickListener(this);
+        lvLog = findViewById(R.id.loglistView);
+        lvLog.setAdapter(logAdapter = new LogAdapter());
+
         tabHost = (TabHost) findViewById(R.id.tabhost1);
         tabHost.setup();
         TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator(getString(R.string.overview));
@@ -444,12 +454,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         TabHost.TabSpec tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator(getString(R.string.disassembly));
         TabHost.TabSpec tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator(getString(R.string.symbols));
         TabHost.TabSpec tab4 = tabHost.newTabSpec("5").setContent(R.id.tab4).setIndicator(getString(R.string.hexview));
+        TabHost.TabSpec tab5 = tabHost.newTabSpec("6").setContent(R.id.tab5).setIndicator(getString(R.string.viewlog));
 
         tabHost.addTab(tab0);
         tabHost.addTab(tab1);
         tabHost.addTab(tab4);
         tabHost.addTab(tab3);
         tabHost.addTab(tab2);
+        tabHost.addTab(tab5);
+
 
         this.tab1 = (LinearLayout) findViewById(R.id.tab1);
         this.tab2 = (LinearLayout) findViewById(R.id.tab2);
@@ -723,6 +736,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 AllowRawSetup();
                 break;
             }
+            case R.id.refreshlog: {
+                logAdapter.Refresh();
+            }
+            break;
             default:
                 break;
         }
@@ -807,6 +824,54 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             case R.id.online_help: {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/KYHSGeekCode/Android-Disassembler/blob/master/README.md"));
                 startActivity(browserIntent);
+            }
+            break;
+            case R.id.analyze: {
+                AsyncTask<Void, Integer, Void> asyncTask = new AsyncTask<Void, Integer, Void>() {
+                    ProgressDialog dialog;
+                    ProgressBar progress;
+
+                    @Override
+                    protected void onPreExecute() {
+                        super.onPreExecute();
+                        Log.d(TAG, "Preexecute");
+                        // create dialog
+                        dialog = new ProgressDialog(context);
+                        dialog.setTitle("Analyzing ...");
+                        dialog.setMessage("Counting bytes ...");
+                        dialog.setProgressStyle(dialog.STYLE_HORIZONTAL);
+                        dialog.setProgress(0);
+                        dialog.setMax(7);
+                        dialog.setCancelable(false);
+                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialog.show();
+                    }
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        Log.d(TAG, "BG");
+                        Analyzer analyzer = new Analyzer(filecontent);
+                        analyzer.Analyze(dialog);
+                        return null;
+                    }
+
+                    @Override
+                    protected void onProgressUpdate(Integer... values) {
+                        super.onProgressUpdate(values);
+                        progress.setProgress(values[0]);
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void result) {
+                        super.onPostExecute(result);
+                        dialog.dismiss();
+                        Log.d(TAG, "BG done");
+                        //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
+                    }
+                };
+                Log.d(TAG, "Executing");
+                asyncTask.execute();
+                Log.d(TAG, "Executed");
             }
             break;
             case R.id.chooserow: {
@@ -1545,7 +1610,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 					 disasmManager.setResumeOffsetFromCode(toresume);
 					 }*/
                 disasmResults = adapter.itemList();
-                mNotifyManager.cancel(0);
+                //mNotifyManager.cancel(0);
                 //final int len=disasmResults.size();
                 //add xrefs
 

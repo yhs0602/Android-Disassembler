@@ -1,5 +1,6 @@
 package com.kyhsgeekcode.disassembler;
 
+import android.app.ProgressDialog;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -27,8 +28,7 @@ public class Analyzer
 
 	private int[] nums = new int[256];
 
-	private String TAG="Analyzer";
-
+	private static String TAG = "Analyzer";
 
 	//Analyzes code, strings, etc
 	public Analyzer(byte [] bytes)
@@ -65,15 +65,18 @@ public class Analyzer
 		return list;
 	}
 
-	public void Analyze() {
+	public void Analyze(ProgressDialog runnable) {
 		//Count shorts, calculate average, ...
-		Log.v(TAG, "Counting numbers");
+		Logger.v(TAG, "Counting numbers");
 		Arrays.fill(nums, 0);
 		for (int i = 0; i < shorts.length; i++) {
 			nums[shorts[i]]++;
 		}
+		Logger.v(TAG, "Count:" + Arrays.toString(nums));
 
-		Log.v(TAG, "Averaging");
+		runnable.setMessage("Measuring average...");
+		runnable.setProgress(1);
+		Logger.v(TAG, "Averaging");
 		double div;
 		//double[] divs = new double[256];
 		double avg = 0;
@@ -82,32 +85,56 @@ public class Analyzer
 			div *= i;
 			avg += div;
 		}
+		Logger.v(TAG, "Avg:" + avg);
+
+		runnable.setMessage("Measuring Entropy...");
+		runnable.setProgress(2);
 		//Calculate Entropy (bits/symbol)
 		//https://rosettacode.org/wiki/Entropy
-		Log.v(TAG, "Measuring entropy");
+		Logger.v(TAG, "Measuring entropy");
 		double entropy = 0.0;
 		for (int i = 0; i < 256; i++) {
 			double p = (double) nums[i] / (double) shorts.length;
 			entropy -= p * log2(p);
 		}
+		Logger.v(TAG, "Entropy:" + entropy);
 
+		runnable.setMessage("Performing G-test...");
+		runnable.setProgress(3);
+		double G = 0;
+		double expected = (double) shorts.length / 256.0;
+		for (int i = 0; i < 256; i++) {
+			double term = nums[i] * Math.log(nums[i] / expected);
+			G += term;
+		}
+		G *= 2;
+
+		runnable.setMessage("Performing Chi-Square test...");
+		runnable.setProgress(4);
 		//Do Chi-square test
 		//https://rosettacode.org/wiki/Verify_distribution_uniformity/Chi-squared_test
 		//https://rosettacode.org/wiki/Verify_distribution_uniformity/Chi-squared_test#C
-		Log.v(TAG, "Chi-square test");
+		Logger.v(TAG, "Chi-square test");
 		chiDof = shorts.length - 1;
+		Logger.v(TAG, "chiDof:" + chiDof);
 		chiDist = chi2UniformDistance(shorts, shorts.length);//x2Dist(shorts);
+		Logger.v(TAG, "chiDist:" + chiDist);
 		chiProb = chi2Probability(chiDof, chiDist);//xhi2Prob(dof, dist);
+		Logger.v(TAG, "chiProb:" + chiProb);
 		chiIsUniform = chiIsUniform(shorts, shorts.length, 0.05);
+		Logger.v(TAG, "chiIsUniform:" + chiIsUniform);
 
+
+		runnable.setMessage("Performing monte-carlo analysis...");
+		runnable.setProgress(5);
 		//Monte Carlo PI calc
-		Log.v(TAG, "Performing Monte Carlo");
+		Logger.v(TAG, "Performing Monte Carlo");
 		int inCircle = 0;
-		for (int i = 0; i < shorts.length; i++) {
+		for (int i = 0; i < shorts.length - 1; i++) {
 			//a square with a side of length 2 centered at 0 has
 			//x and y range of -1 to 1
-			double randX = (double) shorts[i] / 256.0;// (Math.random() * 2) - 1;//range -1 to 1
-			double randY = (Math.random() * 2) - 1;//range -1 to 1
+			double randX = ((double) shorts[i] / 256.0) * 2 - 1;// (Math.random() * 2) - 1;//range -1 to 1
+			double randY = ((double) shorts[i + 1] / 256.0) * 2 - 1;//range -1 to 1
 			//distance from (0,0) = sqrt((x-0)^2+(y-0)^2)
 			double distFromCenter = Math.sqrt(randX * randX + randY * randY);
 			//^ or in Java 1.5+: double dist= Math.hypot(randX, randY);
@@ -115,11 +142,14 @@ public class Analyzer
 				inCircle++;
 			}
 		}
-		monteCarloPI = 4.0 * inCircle / shorts.length;
+		monteCarloPI = 4.0 * inCircle / (shorts.length - 1);
+		Logger.v(TAG, "Monte Carlo PI:" + monteCarloPI);
 
+		runnable.setMessage("Measuring auto correlation...");
+		runnable.setProgress(6);
 		//Serial correlation coefficient
 		//compute sum of squared
-		Log.v(TAG, "Measuring correlation coeffs");
+		Logger.v(TAG, "Measuring correlation coeffs");
 		double sumsq = 0.0f;
 		for (int i = 0; i < shorts.length; i++) {
 			sumsq += shorts[i] * shorts[i];
@@ -129,9 +159,8 @@ public class Analyzer
 			corel += shorts[i] * shorts[i + 1];
 		}
 		corel /= sumsq;
-
-		//save results
-		Log.v(TAG, "Saving results");
+		runnable.setProgress(7);//save results
+		Logger.v(TAG, "Saving results");
 		mean = avg;
 		this.entropy = entropy;
 		autocorel = corel;
@@ -150,7 +179,8 @@ public class Analyzer
 	//	return x2Prob(data.length - 1.0, x2Dist(data)) > significance;
 	//}
 
-	static double Simpson3_8(Ifctn f, double a, double b, int N) {
+	static double Simpson3_8(Ifctn f, double a, double b, int N, double gamma) {
+		Log.v(TAG, "Simpson; a:" + a + "b:" + b + "N:" + N);
 		int j;
 		double l1;
 		double h = (b - a) / N;
@@ -158,10 +188,13 @@ public class Analyzer
 		double sum = f.f(a) + f.f(b);
 
 		for (j = 3 * N - 1; j > 0; j--) {
+			//Logger.v(TAG,"Simpson_ j:"+j+",sum:"+sum);
 			l1 = (j % 3) != 0 ? 3.0 : 2.0;
-			sum += l1 * f.f(a + h1 * j);
+			sum += (l1 * f.f(a + h1 * j)) / gamma;
 		}
-		return h * sum / 8.0;
+		double result = h * sum / 8.0;
+		Logger.v(TAG, "simpson:" + result);
+		return result;
 	}
 
 	static final int A = 12;
@@ -169,6 +202,7 @@ public class Analyzer
 	double[] coefs = null;
 
 	double Gamma_Spouge(double z) {
+		Log.d(TAG, "Gamma spouge:" + z);
 		int k;
 		double accum;
 		double a = A;
@@ -200,14 +234,18 @@ public class Analyzer
 				return pow(x, aa1) * exp(-x);
 			}
 		};
-		double y, h = 1.5e-2;  /* approximate integration step size */
+		Logger.v(TAG, "GammaIncompleteQ_a:" + a + "x:" + x);
+		double y, h = 1.5e+3/*e-2*/;  /* approximate integration step size */
 
 		/* this cuts off the tail of the integration to speed things up */
 		y = aa1 = a - 1;
+		Logger.v(TAG, "GammaIncompleteQ_y:" + y);
+		Log.d(TAG, "Before loop");
 		while ((f.f(y) * (x - y) > 2.0e-8) && (y < x)) y += .4;
 		if (y > x) y = x;
-
-		return 1.0 - Simpson3_8(f, 0, y, (int) (y / h)) / Gamma_Spouge(a);
+		Log.d(TAG, "Calling Simpson");
+		double gamma = Gamma_Spouge(a);
+		return 1.0 - Simpson3_8(f, 0, y, (int) (y / h), gamma);
 	}
 
 	double chi2UniformDistance(short[] ds, int dslen) {
