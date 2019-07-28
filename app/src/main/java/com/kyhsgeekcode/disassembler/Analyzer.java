@@ -3,9 +3,7 @@ package com.kyhsgeekcode.disassembler;
 import android.app.ProgressDialog;
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.exp;
@@ -40,29 +38,40 @@ public class Analyzer
 		}
 	}
 	//Search for strings
-	public List<String> searchStrings()
-	{
-		List<String> list=new ArrayList<>();
+	public void/*List<String>*/ searchStrings(FoundStringAdapter adapter, ProgressDialog dialog) {
+		//List<String> list=new ArrayList<>();
 		//char lastch=0;
 		int strstart=-1;
 		for (int i = 0; i < bytes.length; ++i)
 		{
 			char v=(char)(bytes[i]&0xFF);
 			//Log.v(TAG,""+v);
-			if(Character.isUnicodeIdentifierStart(v)||Character.isJavaLetterOrDigit(v))
+			if (Character.isISOControl(v) == false/*Character.isUnicodeIdentifierStart(v)||Character.isJavaLetterOrDigit(v)*/)
 			{
 				if(strstart==-1)
 					strstart=i;
-			}
-			if(v==0&&strstart!=-1)
+			} else if (strstart != -1)
 			{
-				String str=new String(bytes,strstart,i-strstart);
+				int length = i - strstart;
+				int offset = strstart;
+				if (length > 5 && length < 100) {
+					String str = new String(bytes, strstart, length);
+					FoundString fs = new FoundString();
+					fs.length = length;
+					fs.offset = offset;
+					fs.string = str;
+					//Log.v(TAG,str);
+					adapter.AddItem(fs);
+				} else {
+					//Logger.v(TAG,"Ignoring short string at:"+offset);
+				}
 				strstart=-1;
-				list.add(str);
-				Log.i(TAG,str);
+				//Log.i(TAG,str);
 			}
+			if (i % 100 == 0)
+				dialog.setProgress(i);
 		}
-		return list;
+		return;
 	}
 
 	public void Analyze(ProgressDialog runnable) {

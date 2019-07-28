@@ -91,5 +91,6 @@
     <string name="online_help">Online help</string>
     <string name="refresh">refresh</string>
     <string name="viewlog">Log</string>
+    <string name="foundstrings">Strings</string>
 
 </resources>

@@ -396,7 +396,22 @@
 								android:layout_height="match_parent" />
 						</LinearLayout>
 
-					</FrameLayout>
+                        <LinearLayout
+                            android:id="@+id/tab6"
+                            android:orientation="vertical"
+                            android:gravity="center_horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_horizontal">
+
+                            <ListView
+                                android:id="@+id/stringlistView"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent" />
+                        </LinearLayout>
+
+
+                    </FrameLayout>
 
 				</LinearLayout>
 

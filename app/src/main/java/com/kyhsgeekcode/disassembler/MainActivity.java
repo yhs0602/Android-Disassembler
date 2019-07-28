@@ -124,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public static final int CS_MODE_MIPS64 = CS_MODE_64;    // Mips64 ISA (Mips)
     private static final int TAB_EXPORT = 3;
     private static final int TAB_DISASM = 4;
+    private static final int TAB_STRINGS = 6;
+
     private static final int REQUEST_SELECT_FILE = 123;
     private static final int BULK_SIZE = 1024;
     //https://medium.com/@gurpreetsk/memory-management-on-android-using-ontrimmemory-f500d364bc1a
@@ -234,6 +236,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private ListView lvLog;
     private LogAdapter logAdapter;
 
+    private ListView lvStrings;
+    private FoundStringAdapter stringAdapter;
+
     private long instantEntry;
     private Capstone cs;
     private String EXTRA_NOTIFICATION_ID;
@@ -242,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private ProjectManager.Project currentProject;
     private ListView lvSymbols;
     private SymbolListAdapter symbolLvAdapter;
+
 
     private View.OnClickListener leftListener = new View.OnClickListener() {
         public void onClick(View v) {
@@ -447,6 +453,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         lvLog = findViewById(R.id.loglistView);
         lvLog.setAdapter(logAdapter = new LogAdapter());
 
+        lvStrings = findViewById(R.id.stringlistView);
+        stringAdapter = new FoundStringAdapter();
+        lvStrings.setAdapter(stringAdapter);
+
         tabHost = (TabHost) findViewById(R.id.tabhost1);
         tabHost.setup();
         TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator(getString(R.string.overview));
@@ -455,6 +465,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         TabHost.TabSpec tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator(getString(R.string.symbols));
         TabHost.TabSpec tab4 = tabHost.newTabSpec("5").setContent(R.id.tab4).setIndicator(getString(R.string.hexview));
         TabHost.TabSpec tab5 = tabHost.newTabSpec("6").setContent(R.id.tab5).setIndicator(getString(R.string.viewlog));
+        TabHost.TabSpec tab6 = tabHost.newTabSpec("7").setContent(R.id.tab6).setIndicator(getString(R.string.foundstrings));
 
         tabHost.addTab(tab0);
         tabHost.addTab(tab1);
@@ -462,7 +473,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         tabHost.addTab(tab3);
         tabHost.addTab(tab2);
         tabHost.addTab(tab5);
-
+        tabHost.addTab(tab6);
 
         this.tab1 = (LinearLayout) findViewById(R.id.tab1);
         this.tab2 = (LinearLayout) findViewById(R.id.tab2);
@@ -872,6 +883,54 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 Log.d(TAG, "Executing");
                 asyncTask.execute();
                 Log.d(TAG, "Executed");
+            }
+            break;
+            case R.id.findString: {
+                AsyncTask<Void, Integer, Void> asyncTask = new AsyncTask<Void, Integer, Void>() {
+                    ProgressDialog dialog;
+                    ProgressBar progress;
+
+                    @Override
+                    protected void onPreExecute() {
+                        super.onPreExecute();
+                        Log.d(TAG, "Pre-execute");
+                        // create dialog
+                        dialog = new ProgressDialog(context);
+                        dialog.setTitle("Searching ...");
+                        dialog.setMessage("Searching for string");
+                        dialog.setProgressStyle(dialog.STYLE_HORIZONTAL);
+                        dialog.setProgress(0);
+                        dialog.setMax(filecontent.length);
+                        dialog.setCancelable(false);
+                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialog.show();
+                    }
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        Log.d(TAG, "BG");
+                        Analyzer analyzer = new Analyzer(filecontent);
+                        analyzer.searchStrings(stringAdapter, dialog);
+                        return null;
+                    }
+
+                    @Override
+                    protected void onProgressUpdate(Integer... values) {
+                        super.onProgressUpdate(values);
+                        progress.setProgress(values[0]);
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void result) {
+                        super.onPostExecute(result);
+                        dialog.dismiss();
+                        adapter.notifyDataSetChanged();
+                        tabHost.setCurrentTab(TAB_STRINGS);
+                        Log.d(TAG, "BG done");
+                        //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
+                    }
+                };
+                asyncTask.execute();
             }
             break;
             case R.id.chooserow: {

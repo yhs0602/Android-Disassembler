@@ -7,27 +7,30 @@
         android:id="@+id/chooserow"
         android:title="@string/choose_columns" />
 	<item
-        android:id="@+id/find"
-        android:title="find(Not yet)"
-		android:enabled="false">
+		android:id="@+id/find"
+		android:enabled="true"
+		android:title="Find">
 		<menu>
 			<item
+				android:id="@+id/findString"
+				android:title="Strings" />
+			<item
 				android:id="@+id/findcall"
-                app:showAsAction="never"
-				android:title="Calls"/>
+				android:title="Calls(Not Yet)"
+				app:showAsAction="never" />
 			<item
 				android:id="@+id/findjump"
-				android:title="Jumps"/>
+				android:title="Jumps(Not Yet)" />
 			<item
 				android:id="@+id/findpc"
-				android:title="Instructions affecting PC"/>
+				android:title="Instructions affecting PC(Not yet)" />
 			<item
 				android:id="@+id/findxor"
-                app:showAsAction="never"
-				android:title="XOR/EORs (excluding zeroing)"/>
+				android:title="XOR/EORs (excluding zeroing)(Not Yet)"
+				app:showAsAction="never" />
 			<item
 				android:id="@+id/findentries"
-				android:title="Function entries (Heuristic)"/>
+				android:title="Function entries (Heuristic)(Not yet)" />
 		</menu>
 	</item>
 	<!--item

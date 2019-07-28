@@ -78,4 +78,5 @@
     <string name="online_help">온라인 도움말</string>
     <string name="refresh">새로 고침</string>
     <string name="viewlog">로그</string>
+    <string name="foundstrings">문자열</string>
 </resources>
