@@ -14,14 +14,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -83,7 +81,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -769,17 +766,16 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
             break;
             case R.id.imageViewCount: {
-                Dialog builder = new Dialog(this);
+                Dialog builder = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
                 builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                builder.getWindow().setBackgroundDrawable(
-                        new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                //builder.getWindow().setBackgroundDrawable(
+                //        new ColorDrawable(android.graphics.Color.TRANSPARENT));
                 builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialogInterface) {
                         //nothing;
                     }
                 });
-
                 ImageView imageView = new PhotoView(this);
                 imageView.setImageDrawable(ivAnalCount.getDrawable());
                 builder.addContentView(imageView, new RelativeLayout.LayoutParams(
@@ -1166,7 +1162,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         return builder.show();
     }
 
-    private void ShowSelDialog(final List<String> ListItems, String title, DialogInterface.OnClickListener listener) {
+    public void ShowSelDialog(final List<String> ListItems, String title, DialogInterface.OnClickListener listener) {
         MainActivity.ShowSelDialog(this, ListItems, title, listener);
     }
 
@@ -1895,7 +1891,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     //https://stackoverflow.com/a/16149831/8614565
     private void showAPKChooser() {
-        List<String> apklists = new ArrayList<>();
+        /*List<String> apklists = new ArrayList<>();
         final List<String> pathlists = new ArrayList<>();
         final PackageManager pm = getPackageManager();
         //get a list of installed apps.
@@ -1922,7 +1918,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 String path = pathlists.get(which);
                 OnChoosePath(path);
             }
-        });
+        });*/
+        new GetAPKAsyncTask(this).execute();
     }
 
     private void showFileChooser() {
@@ -2042,7 +2039,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     }
 
-    private void OnChoosePath(String path)//Intent data)
+    public void OnChoosePath(String path)//Intent data)
     {
         try {
             File file = new File(path);

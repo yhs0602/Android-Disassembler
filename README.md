@@ -4,9 +4,9 @@
 
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
 
-# Version 1.4.9 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.5.0 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
-## What's new : Choose APK from installed!
+## What's new : Data analysis for encryption detection, String search
 # Features
 - Shows details of elf files.
 - Shows symbol table(functions or objects' ,... names) of elf files.
@@ -33,7 +33,9 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 - Added Hex View and utility calculator.
 - Theme installation is automated.
 - Choose which binary to analyze when the zip/apk has multiple binaries.
-- Choose APK from installed
+- Choose **APK** from installed
+- Search for strings in the binary (*Unfortunately only for ascii characters*)
+- Bytewise analysis (mean, hashes, entropy, g-test, chi-test, autocorrelation) to help determine if the file is encrypted
 
 # [Themes Download](https://github.com/KYHSGeekCode/Android-Disassembler/tree/master/themes)
  Good themes usually help you recognize some important instructions easily.
@@ -113,7 +115,7 @@ You can download the theme.zip here.
  - [Java-binutils](https://github.com/jawi/java-binutils)
  - [PECOFF4J](https://github.com/kichik/pecoff4j).
  - [Root File Chooser](https://github.com/KYHSGeekCode/RootFilePicker)
-
+ - [PhotoView](https://github.com/chrisbanes/PhotoView)
 
 # TODO
  - Show prototypes of NDK/C standard APIs in the symbols tab.

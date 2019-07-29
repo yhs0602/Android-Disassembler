@@ -1,6 +1,7 @@
 package com.kyhsgeekcode.disassembler;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +45,32 @@ public class FoundStringAdapter extends BaseAdapter {
             FoundString listViewItem = listViewItemList.get(position);
             offsetTextView.setText(Long.toHexString(listViewItem.offset));
             lengthTextView.setText("" + listViewItem.length);
-            strTextView.setText(listViewItem.string);
+            String str = listViewItem.string;
+            if (str.startsWith(".")) {
+                //section name?
+                strTextView.setTextColor(Color.WHITE);
+                strTextView.setBackgroundColor(Color.BLACK);
+            }
+            if (str.contains("/")) {
+                //path/url
+                strTextView.setTextColor(Color.BLUE);
+                strTextView.setBackgroundColor(Color.WHITE);
+            }
+            if (str.contains("\\")) {
+                //path
+                strTextView.setTextColor(Color.CYAN);
+                strTextView.setBackgroundColor(Color.WHITE);
+            }
+            if (str.contains("@")) {
+                strTextView.setTextColor(Color.RED);
+                strTextView.setBackgroundColor(Color.WHITE);
+            }
+            if (str.startsWith("Java_")) {
+                strTextView.setTextColor(Color.BLUE);
+                strTextView.setBackgroundColor(Color.GREEN);
+            }
+            strTextView.setText(str);
+
         }
         return convertView;
     }

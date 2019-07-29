@@ -40,7 +40,8 @@ public class Palette
 					colors[i][0] = Color.GREEN;
 					colors[i][1] = Color.BLACK;
 				}
-				Save();
+
+                Save();
 			}
 			catch (IOException e)
 			{

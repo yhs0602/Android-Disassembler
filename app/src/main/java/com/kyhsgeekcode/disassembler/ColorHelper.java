@@ -161,7 +161,7 @@ public class ColorHelper// implements Parcelable
 				palettes.put(f.getName(), new Palette(f.getName(), f));
 			}
 		}
-		palette=palettes.get("Default");
+        palette = palettes.get("KYHSGeekCode");
 		assert(palette!=null);
 		//palette=new Palette();
 	}

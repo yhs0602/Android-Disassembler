@@ -10,6 +10,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import static java.lang.Math.PI;
@@ -31,10 +33,15 @@ public class Analyzer
 	private int chiDof;
 	private boolean chiIsUniform;
 	private double G;
+	private String SHA256Hash = "Unknown";
+	private String MD5Hash = "Unknown";
+	private String MD4Hash = "Unknown";
+	private String SHA1Hash = "Unknown";
 
 	private int[] nums = new int[256];
 
 	private static String TAG = "Analyzer";
+
 
 	//Analyzes code, strings, etc
 	public Analyzer(byte [] bytes)
@@ -136,6 +143,21 @@ public class Analyzer
 		final String ls = System.lineSeparator();
 		sb.append("Data length: ");
 		sb.append(shorts.length);
+		sb.append(ls);
+
+		sb.append("======Hashes======");
+		sb.append(ls);
+		sb.append("MD4:");
+		sb.append(MD4Hash);
+		sb.append(ls);
+		sb.append("MD5:");
+		sb.append(MD5Hash);
+		sb.append(ls);
+		sb.append("SHA-1:");
+		sb.append(SHA1Hash);
+		sb.append(ls);
+		sb.append("SHA-256:");
+		sb.append(SHA256Hash);
 		sb.append(ls);
 
 		sb.append("Data counts: ");
@@ -267,7 +289,15 @@ public class Analyzer
 			corel += shorts[i] * shorts[i + 1];
 		}
 		corel /= sumsq;
+
 		runnable.setProgress(7);//save results
+		runnable.setMessage("Hashing");
+
+		MD4Hash = Hash("MD4", bytes);
+		MD5Hash = Hash("MD5", bytes);
+		SHA1Hash = Hash("SHA-1", bytes);
+		SHA256Hash = Hash("SHA-256", bytes);
+
 		Logger.v(TAG, "Saving results");
 		mean = avg;
 		this.entropy = entropy;
@@ -387,6 +417,20 @@ public class Analyzer
 		return Math.log(a) / Math.log(2);
 	}
 
+	public static String Hash(String algorithm, byte[] bytes) {
+		String shash = "Unknown";
+		try {
+			MessageDigest digest = MessageDigest.getInstance(algorithm);
+			byte[] hash = digest.digest(bytes);
+			shash = "";
+			for (byte b : hash) {
+				shash += Integer.toHexString(b & 0xFF);
+			}
+		} catch (NoSuchAlgorithmException e) {
+			Logger.e(TAG, "Faied to get " + algorithm + " hash;", e);
+		}
+		return shash;
+	}
 	interface Ifctn {
 		double f(double x);
 	}
