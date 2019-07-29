@@ -42,7 +42,7 @@ public class FoundStringAdapter extends BaseAdapter {
         {
             // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
             FoundString listViewItem = listViewItemList.get(position);
-            offsetTextView.setText("" + listViewItem.offset);
+            offsetTextView.setText(Long.toHexString(listViewItem.offset));
             lengthTextView.setText("" + listViewItem.length);
             strTextView.setText(listViewItem.string);
         }
@@ -63,6 +63,10 @@ public class FoundStringAdapter extends BaseAdapter {
 
     public void AddItem(FoundString str) {
         listViewItemList.add(str);
+    }
+
+    public void Reset() {
+        listViewItemList.clear();
     }
 }
 

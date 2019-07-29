@@ -51,6 +51,7 @@ dependencies {
     //compile 'com.android.support:multidex:1.0.1'
     //compile 'com.android.support:support-v4:27.+'
     //compile 'com.evrencoskun.library:tableview:0.8.8'
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation  fileTree(dir: 'libs', include: ['*.jar'])
 }
 /*

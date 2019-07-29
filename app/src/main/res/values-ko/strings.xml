@@ -79,4 +79,5 @@
     <string name="refresh">새로 고침</string>
     <string name="viewlog">로그</string>
     <string name="foundstrings">문자열</string>
+    <string name="analysis">분석 결과</string>
 </resources>

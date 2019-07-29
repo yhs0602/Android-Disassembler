@@ -2,6 +2,7 @@ package com.kyhsgeekcode.disassembler;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -20,6 +21,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -46,9 +49,11 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TableRow;
@@ -60,6 +65,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.codekidlabs.storagechooser.StorageChooser;
 import com.codekidlabs.storagechooser.utils.DiskUtil;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.kyhsgeekcode.disassembler.Calc.Calculator;
 import com.kyhsgeekcode.disassembler.Utils.Olly.UddTag;
 import com.stericson.RootTools.RootTools;
@@ -124,7 +130,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public static final int CS_MODE_MIPS64 = CS_MODE_64;    // Mips64 ISA (Mips)
     private static final int TAB_EXPORT = 3;
     private static final int TAB_DISASM = 4;
+    private static final int TAB_LOG = 5;
     private static final int TAB_STRINGS = 6;
+    private static final int TAB_ANALYSIS = 7;
 
     private static final int REQUEST_SELECT_FILE = 123;
     private static final int BULK_SIZE = 1024;
@@ -238,6 +246,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     private ListView lvStrings;
     private FoundStringAdapter stringAdapter;
+
+    private TextView tvAnalRes;
+    private ImageView ivAnalCount;
 
     private long instantEntry;
     private Capstone cs;
@@ -457,6 +468,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         stringAdapter = new FoundStringAdapter();
         lvStrings.setAdapter(stringAdapter);
 
+        tvAnalRes = findViewById(R.id.tvAnalRes);
+        ivAnalCount = findViewById(R.id.imageViewCount);
+        ivAnalCount.setOnClickListener(this);
+
         tabHost = (TabHost) findViewById(R.id.tabhost1);
         tabHost.setup();
         TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator(getString(R.string.overview));
@@ -466,6 +481,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         TabHost.TabSpec tab4 = tabHost.newTabSpec("5").setContent(R.id.tab4).setIndicator(getString(R.string.hexview));
         TabHost.TabSpec tab5 = tabHost.newTabSpec("6").setContent(R.id.tab5).setIndicator(getString(R.string.viewlog));
         TabHost.TabSpec tab6 = tabHost.newTabSpec("7").setContent(R.id.tab6).setIndicator(getString(R.string.foundstrings));
+        TabHost.TabSpec tab7 = tabHost.newTabSpec("8").setContent(R.id.tab7).setIndicator(getString(R.string.analysis));
 
         tabHost.addTab(tab0);
         tabHost.addTab(tab1);
@@ -474,6 +490,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         tabHost.addTab(tab2);
         tabHost.addTab(tab5);
         tabHost.addTab(tab6);
+        tabHost.addTab(tab7);
 
         this.tab1 = (LinearLayout) findViewById(R.id.tab1);
         this.tab2 = (LinearLayout) findViewById(R.id.tab2);
@@ -665,8 +682,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     @Override
     public void onClick(View p1) {
-        Button btn = (Button) p1;
-        switch (btn.getId()) {
+        //Button btn = (Button) p1;
+        switch (p1.getId()) {
             case R.id.selFile:
                 showChooser();
                 //showFileChooser();
@@ -751,6 +768,25 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 logAdapter.Refresh();
             }
             break;
+            case R.id.imageViewCount: {
+                Dialog builder = new Dialog(this);
+                builder.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                builder.getWindow().setBackgroundDrawable(
+                        new ColorDrawable(android.graphics.Color.TRANSPARENT));
+                builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        //nothing;
+                    }
+                });
+
+                ImageView imageView = new PhotoView(this);
+                imageView.setImageDrawable(ivAnalCount.getDrawable());
+                builder.addContentView(imageView, new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT));
+                builder.show();
+            }
             default:
                 break;
         }
@@ -841,7 +877,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 AsyncTask<Void, Integer, Void> asyncTask = new AsyncTask<Void, Integer, Void>() {
                     ProgressDialog dialog;
                     ProgressBar progress;
-
+                    String result;
+                    Drawable drawable;
                     @Override
                     protected void onPreExecute() {
                         super.onPreExecute();
@@ -863,6 +900,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                         Log.d(TAG, "BG");
                         Analyzer analyzer = new Analyzer(filecontent);
                         analyzer.Analyze(dialog);
+                        result = analyzer.getResult();
+                        drawable = analyzer.getImage(MainActivity.this);
                         return null;
                     }
 
@@ -876,6 +915,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     protected void onPostExecute(Void result) {
                         super.onPostExecute(result);
                         dialog.dismiss();
+                        tvAnalRes.setText(this.result);
+                        ivAnalCount.setImageDrawable(drawable);
+                        tabHost.setCurrentTab(TAB_ANALYSIS);
                         Log.d(TAG, "BG done");
                         //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
                     }
@@ -886,7 +928,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
             break;
             case R.id.findString: {
-                AsyncTask<Void, Integer, Void> asyncTask = new AsyncTask<Void, Integer, Void>() {
+                final AsyncTask<Integer, Integer, Void> asyncTask = new AsyncTask<Integer, Integer, Void>() {
                     ProgressDialog dialog;
                     ProgressBar progress;
 
@@ -907,10 +949,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     }
 
                     @Override
-                    protected Void doInBackground(Void... voids) {
+                    protected Void doInBackground(Integer... ints) {
                         Log.d(TAG, "BG");
+                        int min = ints[0];
+                        int max = ints[1];
                         Analyzer analyzer = new Analyzer(filecontent);
-                        analyzer.searchStrings(stringAdapter, dialog);
+                        analyzer.searchStrings(stringAdapter, dialog, min, max);
                         return null;
                     }
 
@@ -930,7 +974,23 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                         //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
                     }
                 };
-                asyncTask.execute();
+                final EditText et = new EditText(this);
+                et.setText("5-100");
+                ShowEditDialog("Search String", "Set minimum and maximum length of result (min-max)", et, "OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String s = et.getText().toString();
+                        String[] splitt = s.split("-");
+                        int min = Integer.parseInt(splitt[0]);
+                        int max = Integer.parseInt(splitt[1]);
+                        if (min < 1)
+                            min = 1;
+                        if (max < min)
+                            max = min;
+                        asyncTask.execute(min, max);
+                    }
+                }, "Cancel", null);
+
             }
             break;
             case R.id.chooserow: {

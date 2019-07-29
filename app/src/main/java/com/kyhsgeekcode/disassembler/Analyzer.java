@@ -1,6 +1,13 @@
 package com.kyhsgeekcode.disassembler;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import java.util.Arrays;
@@ -23,6 +30,7 @@ public class Analyzer
 	private double chiProb;
 	private int chiDof;
 	private boolean chiIsUniform;
+	private double G;
 
 	private int[] nums = new int[256];
 
@@ -38,10 +46,11 @@ public class Analyzer
 		}
 	}
 	//Search for strings
-	public void/*List<String>*/ searchStrings(FoundStringAdapter adapter, ProgressDialog dialog) {
+	public void/*List<String>*/ searchStrings(FoundStringAdapter adapter, ProgressDialog dialog, int min, int max) {
 		//List<String> list=new ArrayList<>();
 		//char lastch=0;
 		int strstart=-1;
+		adapter.Reset();
 		for (int i = 0; i < bytes.length; ++i)
 		{
 			char v=(char)(bytes[i]&0xFF);
@@ -54,7 +63,7 @@ public class Analyzer
 			{
 				int length = i - strstart;
 				int offset = strstart;
-				if (length > 5 && length < 100) {
+				if (length >= min && length <= max) {
 					String str = new String(bytes, strstart, length);
 					FoundString fs = new FoundString();
 					fs.length = length;
@@ -74,6 +83,96 @@ public class Analyzer
 		return;
 	}
 
+	public Drawable getImage(Context context) {
+		final int sizeX = 1064;
+		final int sizeY = 576;
+		final int graphY = sizeY - 64;
+		final int baseY = sizeY - 40;
+
+		Bitmap bitmap = Bitmap.createBitmap(sizeX, sizeY, Bitmap.Config.RGB_565);
+		Canvas mCanvas = new Canvas(bitmap);
+
+		Paint paintWhite = new Paint();
+		paintWhite.setColor(Color.WHITE);
+		paintWhite.setStyle(Paint.Style.FILL);
+		mCanvas.drawPaint(paintWhite);
+
+		Paint paintLine = new Paint();
+		paintLine.setColor(Color.DKGRAY);
+
+		int max = nums[0];
+		for (int i = 0; i < 256; i++) {
+			if (nums[i] > max)
+				max = nums[i];
+		}
+		float yPerCount = (float) graphY / max;
+
+		//x-axis
+		mCanvas.drawLine(20, sizeY - 40, sizeX - 20, sizeY - 40, paintLine);
+		paintLine.setTextSize(20);
+		for (int i = 0; i < 16; i++) {
+			mCanvas.drawText("" + (i * 16), 20 + i * 64, sizeY, paintLine);
+		}
+		//y-axis
+		mCanvas.drawLine(20, sizeY - 40, 20, 0, paintLine);
+		for (int i = 0; i <= 5; i++) {
+			mCanvas.drawText("" + ((int) ((float) max * i / 5.0f)), 0, baseY - (graphY * i / 5.0f) - 10, paintLine);
+		}
+		Paint paintCount = new Paint();
+		paintCount.setColor(Color.MAGENTA);
+
+		float prevy = baseY - yPerCount * nums[0];
+		for (int i = 0; i < 255; i++) {
+			float y = baseY - yPerCount * nums[i + 1];
+			mCanvas.drawLine(4 * i + 20, prevy, 4 * (i + 1) + 20, y, paintCount);
+			prevy = y;
+		}
+		BitmapDrawable drawable = new BitmapDrawable(context.getResources(), bitmap);
+		return drawable;
+	}
+
+	public String getResult() {
+		StringBuilder sb = new StringBuilder();
+		final String ls = System.lineSeparator();
+		sb.append("Data length: ");
+		sb.append(shorts.length);
+		sb.append(ls);
+
+		sb.append("Data counts: ");
+		sb.append(Arrays.toString(nums));
+		sb.append(ls);
+
+		sb.append("Data mean: ");
+		sb.append(mean);
+		sb.append(ls);
+
+		sb.append("Data entropy: ");
+		sb.append(entropy);
+		sb.append(ls);
+
+		sb.append("PI found by Monte Carlo using the data: ");
+		sb.append(monteCarloPI);
+		sb.append(ls);
+
+		sb.append("Data G-test: ");
+		sb.append(G);
+		sb.append(ls);
+
+		sb.append("Data chi test: dof = ");
+		sb.append(chiDof);
+		sb.append(", dist = ");
+		sb.append(chiDist);
+		sb.append(", probability = ");
+		sb.append(chiProb);
+		sb.append(", is uniform = ");
+		sb.append(chiIsUniform);
+		sb.append(ls);
+
+		sb.append("Autocorrelation:");
+		sb.append(autocorel);
+
+		return sb.toString();
+	}
 	public void Analyze(ProgressDialog runnable) {
 		//Count shorts, calculate average, ...
 		Logger.v(TAG, "Counting numbers");
@@ -110,7 +209,7 @@ public class Analyzer
 
 		runnable.setMessage("Performing G-test...");
 		runnable.setProgress(3);
-		double G = 0;
+		G = 0;
 		double expected = (double) shorts.length / 256.0;
 		for (int i = 0; i < 256; i++) {
 			double term = nums[i] * Math.log(nums[i] / expected);
