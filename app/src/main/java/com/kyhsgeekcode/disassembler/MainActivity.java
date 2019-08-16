@@ -92,6 +92,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import at.pollaknet.api.facile.Facile;
+import at.pollaknet.api.facile.FacileReflector;
+import at.pollaknet.api.facile.exception.CoffPeDataNotFoundException;
+import at.pollaknet.api.facile.exception.SizeMismatchException;
+import at.pollaknet.api.facile.exception.UnexpectedHeaderDataException;
+import at.pollaknet.api.facile.symtab.symbols.scopes.Assembly;
 import capstone.Capstone;
 import nl.lxtreme.binutils.elf.MachineType;
 
@@ -1696,7 +1702,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
 
     ////TODO: DisassembleFile(long address, int amt);
-    private void DisassembleFile(final long offset) {
+    public void DisassembleFile(final long offset) {
         Toast.makeText(this, "started", Toast.LENGTH_SHORT).show();
         Log.v(TAG, "Strted disasm");
         btSavDisasm.setEnabled(false);
@@ -1734,11 +1740,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     public void run() {
                         listview.requestLayout();
                         tab2.invalidate();
-                        //dialog.dismiss();
-                        //btDisasm.setEnabled(true);
-                        //btAbort.setText("Resume");
-                        //btAbort.setTag("resume",(Object)true);
-                        //btAbort.setEnabled(false);
                         btSavDisasm.setEnabled(true);
                         Toast.makeText(MainActivity.this, "done", Toast.LENGTH_SHORT).show();
                     }
@@ -2182,27 +2183,62 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         gvHex.setAdapter(new HexGridAdapter(filecontent));
         gvAscii.setAdapter(new HexAsciiAdapter(filecontent));
         //new Analyzer(filecontent).searchStrings();
-        try {
-            setParsedFile(new ELFUtil(file, filecontent));
-            AfterParse();
-        } catch (Exception e) {
-            //not an elf file. try PE parser
+        if (file.getPath().endsWith("assets/bin/Data/Managed/Assembly-CSharp.dll")) {
+            //Unity C# dll file
+            Logger.v(TAG, "Found C# unity dll");
             try {
-                setParsedFile(new PEFile(file, filecontent));
+                FacileReflector facileReflector = Facile.load(file.getPath());
+                //load the assembly
+                Assembly assembly = facileReflector.loadAssembly();
+                if (assembly != null) {
+                    //output some useful information
+                    Logger.v(TAG, assembly.toExtendedString());
+                    //assembly.getAllTypes()[0].getMethods()[0].getMethodBody().
+                    //generate output
+                    //ILAsmRenderer renderer = new ILAsmRenderer(facileReflector);
+                    //renderer.renderSourceFilesToDirectory(
+                    //        assembly,
+                    //        System.getProperty("user.dir"));
+
+                    //print out the location of the files
+                    //System.out.println("Generated decompiled files in: " +
+                    //        System.getProperty("user.dir"));
+                    setParsedFile(new ILAssmebly(facileReflector));
+                } else {
+                    System.out.println("File maybe contains only resources...");
+                }
+
+            } catch (CoffPeDataNotFoundException e) {
+                Logger.e(TAG, "", e);
+            } catch (UnexpectedHeaderDataException e) {
+                e.printStackTrace();
+            } catch (SizeMismatchException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            try {
+                setParsedFile(new ELFUtil(file, filecontent));
                 AfterParse();
-            } catch (NotThisFormatException f) {
-                ShowAlertDialog(this, "Failed to parse the file(Unknown format). Please setup manually.", "");
-                setParsedFile(new RawFile(file, filecontent));
-                AllowRawSetup();
-                //failed to parse the file. please setup manually.
-            } catch (RuntimeException f) {
-                AlertError("Failed to parse the file. Please setup manually. Sending an error report, the file being analyzed can be attached.", f);
-                setParsedFile(new RawFile(file, filecontent));
-                AllowRawSetup();
-            } catch (Exception g) {
-                AlertError("Unexpected exception: failed to parse the file. please setup manually.", g);
-                setParsedFile(new RawFile(file, filecontent));
-                AllowRawSetup();
+            } catch (Exception e) {
+                //not an elf file. try PE parser
+                try {
+                    setParsedFile(new PEFile(file, filecontent));
+                    AfterParse();
+                } catch (NotThisFormatException f) {
+                    ShowAlertDialog(this, "Failed to parse the file(Unknown format). Please setup manually.", "");
+                    setParsedFile(new RawFile(file, filecontent));
+                    AllowRawSetup();
+                    //failed to parse the file. please setup manually.
+                } catch (RuntimeException f) {
+                    AlertError("Failed to parse the file. Please setup manually. Sending an error report, the file being analyzed can be attached.", f);
+                    setParsedFile(new RawFile(file, filecontent));
+                    AllowRawSetup();
+                } catch (Exception g) {
+                    AlertError("Unexpected exception: failed to parse the file. please setup manually.", g);
+                    setParsedFile(new RawFile(file, filecontent));
+                    AllowRawSetup();
+                }
             }
         }
     }
@@ -2215,7 +2251,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         if (archs.length == 2)
             mode = archs[1];
         if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL) {
-            Toast.makeText(this, "Maybe I don't support this machine:" + type.name(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Maybe this program don't support this machine:" + type.name(), Toast.LENGTH_SHORT).show();
         } else {
             int err;
             if ((err = Open(arch,/*CS_MODE_LITTLE_ENDIAN =*/ mode)) != cs.CS_ERR_OK)/*new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))*/ {
@@ -2254,7 +2290,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
         adapter.Clear();
         ShowDetail();
-        DisassembleFile(0/*parsedFile.getEntryPoint()*/);
+        parsedFile.Disassemble(this);
+        //DisassembleFile(0/*parsedFile.getEntryPoint()*/);
     }
 
     private void AllowRawSetup() {

@@ -13,18 +13,15 @@ public abstract class AssemblyProvider {
 
     public abstract long getSome(byte[] bytes, long offset, long size,long virtaddr,int count);
 
-    public void AddItem(final ListViewItem lvi)
-    {
+    //Used by JNI
+    public void AddItem(final ListViewItem lvi) {
         activity.runOnUiThread(new Runnable(){
             @Override
-            public void run()
-            {
+            public void run() {
                 long addr=lvi.disasmResult.address;
                 List<Symbol> syms = activity.parsedFile.symbols;
-                for(Symbol sym:syms)
-                {
-                    if(sym.st_value==addr)
-                    {
+                for(Symbol sym:syms) {
+                    if(sym.st_value==addr) {
                         lvi.comments=sym.demangled;
                         break;
                     }

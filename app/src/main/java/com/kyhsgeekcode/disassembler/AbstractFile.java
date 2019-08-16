@@ -100,4 +100,8 @@ public abstract class AbstractFile implements Closeable
 	long codeVirtualAddress=0;
 	MachineType machineType;
 	String path="";
+
+	public void Disassemble(MainActivity mainActivity) {
+		mainActivity.DisassembleFile(0);
+	}
 }
