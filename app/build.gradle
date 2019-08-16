@@ -52,6 +52,7 @@ dependencies {
     //compile 'com.android.support:support-v4:27.+'
     //compile 'com.evrencoskun.library:tableview:0.8.8'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+    implementation group: "pl.openrnd.android", name: "multi-level-listview", version: "1.0.1"
     //implementation 'dotnet.msil.decompiler:+'
     implementation  fileTree(dir: 'libs', include: ['*.jar'])
 }
