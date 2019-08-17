@@ -148,6 +148,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public static final int TAG_INSTALLED = 0;
     public static final int TAG_STORAGE = 1;
     public static final int TAG_PROJECTS = 2;
+    public static final int TAG_PROCESSES = 3;
+    public static final int TAG_RUNNING_APPS = 4;
     static Context context;
 
     /* this is used to load the 'hello-jni' library on application
@@ -632,6 +634,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 initialDrawers.add(new FileDrawerListItem("Installed", FileDrawerListItem.DrawerItemType.HEAD, TAG_INSTALLED, 0));
                 initialDrawers.add(new FileDrawerListItem("Internal Storage", FileDrawerListItem.DrawerItemType.HEAD, TAG_STORAGE, 0));
                 initialDrawers.add(new FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROJECTS, 0));
+                initialDrawers.add(new FileDrawerListItem("Processes-requires root", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROCESSES, 0));
+                //initialDrawers.add(new FileDrawerListItem("Running apps", FileDrawerListItem.DrawerItemType.HEAD, TAG_RUNNING_APPS, 0));
+
                 mDrawerAdapter.setDataItems(initialDrawers);
                 mDrawerAdapter.notifyDataSetChanged();
                 //https://www.androidpub.com/1351553

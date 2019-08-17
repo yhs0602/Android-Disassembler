@@ -1,5 +1,6 @@
 package com.kyhsgeekcode.disassembler;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -11,12 +12,16 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import pl.openrnd.multilevellistview.ItemInfo;
 import pl.openrnd.multilevellistview.MultiLevelListAdapter;
@@ -72,6 +77,7 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
 
                             FileDrawerListItem newitem = new FileDrawerListItem(caption, drawable, newLevel);
                             newitem.tag = ai.sourceDir;
+                            newitem.type = FileDrawerListItem.DrawerItemType.APK;
                             items.add(newitem);
                         }
                         break;
@@ -82,6 +88,19 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
                     case MainActivity.TAG_PROJECTS:
                         items.add(new FileDrawerListItem("Not implemented :O", context.getDrawable(android.R.drawable.ic_secure), newLevel));
                         break;
+                    case MainActivity.TAG_PROCESSES:
+                        items.add(new FileDrawerListItem("Not implemented :0", context.getDrawable(android.R.drawable.ic_secure), newLevel));
+                        break;
+                    case MainActivity.TAG_RUNNING_APPS:
+                        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+                        List<ActivityManager.RunningAppProcessInfo> runnings = am.getRunningAppProcesses();
+                        for (ActivityManager.RunningAppProcessInfo info : runnings) {
+                            String caption = info.processName + " (pid " + info.pid + ", uid " + info.uid + ")";
+                            //info.pkgList
+                            items.add(new FileDrawerListItem(caption, context.getDrawable(android.R.drawable.ic_secure), newLevel));
+                        }
+                        break;
+
                 }
             }
             break;
@@ -144,13 +163,19 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
                 }
             }
             break;
-            case ZIP: {
-                String path = (String) item.tag;
-
-            }
+            case ZIP:
             case APK: {
                 String path = (String) item.tag;
-
+                try {
+                    ZipFile zipFile = new ZipFile(path);
+                    Enumeration zipEntries = zipFile.entries();
+                    while (zipEntries.hasMoreElements()) {
+                        String fileName = ((ZipEntry) zipEntries.nextElement()).getName();
+                        items.add(new FileDrawerListItem(new File(fileName), newLevel));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 

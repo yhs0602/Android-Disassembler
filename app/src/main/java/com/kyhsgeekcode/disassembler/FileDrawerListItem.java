@@ -11,6 +11,7 @@ public class FileDrawerListItem {
     Object tag;         //number or path
     Drawable drawable;
     int level;
+    boolean isInZip = false;
     public enum DrawerItemType {
         FOLDER,
         ZIP,
