@@ -15,12 +15,19 @@ public class FileDrawerListItem {
         BINARY,
         PE,
         PE_IL,
-        DEX
+        DEX,
+        PROJECT,
+        DISASSEMBLY,
+        HEAD
     }
 
     ;
     DrawerItemType type;
 
+    public FileDrawerListItem(String caption, DrawerItemType type) {
+        this.caption = caption;
+        this.type = type;
+    }
     public FileDrawerListItem(File file) {
         caption = file.getName();
         if (file.isDirectory()) {
@@ -40,6 +47,10 @@ public class FileDrawerListItem {
                 type = DrawerItemType.BINARY;
             else if (lower.endsWith(".dex"))
                 type = DrawerItemType.DEX;
+            else if (lower.endsWith(".asm"))
+                type = DrawerItemType.DISASSEMBLY;
+            else if (lower.endsWith(".adp"))
+                type = DrawerItemType.PROJECT;
             else
                 type = DrawerItemType.NORMAL;
         }

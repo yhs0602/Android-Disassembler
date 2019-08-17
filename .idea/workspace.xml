@@ -28,8 +28,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a02aed75-ddee-4801-b5dd-2f194ea9f9c8" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/layout/filedraweritem.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/taskHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/main.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -62,9 +77,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="2189" column="64" lean-forward="true" selection-start-line="2189" selection-start-column="64" selection-end-line="2189" selection-end-column="64" />
+            <state relative-caret-position="8">
+              <caret line="621" column="27" selection-start-line="621" selection-start-column="27" selection-end-line="621" selection-end-column="27" />
               <folding>
+                <element signature="e#10210#11431#0" expanded="true" />
+                <element signature="e#11430#11431#0" expanded="true" />
                 <element signature="e#105086#105087#0" expanded="true" />
                 <element signature="e#105134#105135#0" expanded="true" />
               </folding>
@@ -73,52 +90,11 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/AssemblyProvider.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="69">
-              <caret line="3" selection-start-line="3" selection-end-line="3" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/PEFile.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="23">
-              <caret line="30" column="13" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/ILAssmebly.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="332">
-              <caret line="67" column="21" selection-start-line="67" selection-start-column="21" selection-end-line="67" selection-end-column="21" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/DotNetAssemblyProvider.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="333">
-              <caret line="15" column="14" selection-start-line="15" selection-start-column="14" selection-end-line="15" selection-end-column="14" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#787#788#0" expanded="true" />
-                <element signature="e#811#812#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/main.xml">
-          <provider editor-type-id="android-designer2" />
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
-              <caret line="9" column="20" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
+          <provider selected="true" editor-type-id="android-designer2" />
+          <provider editor-type-id="text-editor">
+            <state relative-caret-position="166">
+              <caret line="453" column="57" selection-start-line="453" selection-start-column="57" selection-end-line="453" selection-end-column="57" />
             </state>
           </provider>
         </entry>
@@ -126,43 +102,38 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="437">
-              <caret line="19" column="76" selection-start-line="19" selection-start-column="76" selection-end-line="19" selection-end-column="76" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/build.gradle">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="184">
-              <caret line="8" column="21" lean-forward="true" selection-start-line="8" selection-start-column="21" selection-end-line="8" selection-end-column="21" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
-              <caret line="14" column="13" lean-forward="true" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
-              <folding>
-                <element signature="e#301#302#0" expanded="true" />
-                <element signature="e#324#325#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="79">
+              <caret line="8" column="44" selection-start-line="8" selection-start-column="44" selection-end-line="8" selection-end-column="44" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="422">
+              <caret line="82" column="19" lean-forward="true" selection-start-line="82" selection-start-column="19" selection-end-line="82" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/filedraweritem.xml">
+          <provider selected="true" editor-type-id="android-designer2" />
+          <provider editor-type-id="text-editor">
+            <state relative-caret-position="69">
+              <caret line="4" column="20" lean-forward="true" selection-start-line="4" selection-start-column="20" selection-end-line="4" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1031">
-              <caret line="46" column="5" lean-forward="true" selection-start-line="46" selection-start-column="5" selection-end-line="46" selection-end-column="5" />
+            <state relative-caret-position="309">
+              <caret line="29" column="25" selection-start-line="29" selection-start-column="25" selection-end-line="29" selection-end-column="25" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1486#1487#0" expanded="true" />
-                <element signature="e#1520#1521#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -175,8 +146,8 @@
       <list>
         <option value="Enum" />
         <option value="Interface" />
-        <option value="layoutResourceFile_vertical" />
         <option value="Class" />
+        <option value="layoutResourceFile_vertical" />
       </list>
     </option>
   </component>
@@ -195,6 +166,10 @@
       <find>Column</find>
       <find>APKC</find>
       <find>Unity</find>
+      <find>Drawer</find>
+      <find>Adapter</find>
+      <find>adapter</find>
+      <find>drawer</find>
     </findStrings>
     <replaceStrings>
       <replace>, //:</replace>
@@ -244,7 +219,6 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FoundString.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/menu/menu_main.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/image_layout.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/main.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Analyzer.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Palette.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/ColorHelper.java" />
@@ -254,13 +228,15 @@
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/AbstractFile.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/ILAssmebly.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/AssemblyProvider.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/DotNetAssemblyProvider.java" />
         <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/main.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/filedraweritem.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java" />
       </list>
     </option>
   </component>
@@ -278,6 +254,18 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="AndroidView">
+        <subPane>
+          <expand>
+            <path>
+              <item name="Android-Disassembler" type="1abcf292:AndroidViewProjectNode" />
+              <item name="app" type="f160f0cf:NdkModuleNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -358,18 +346,6 @@
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="PackagesPane" />
-      <pane id="AndroidView">
-        <subPane>
-          <expand>
-            <path>
-              <item name="Android-Disassembler" type="1abcf292:AndroidViewProjectNode" />
-              <item name="app" type="f160f0cf:NdkModuleNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -745,7 +721,14 @@
       <option name="project" value="LOCAL" />
       <updated>1565966339164</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="Added File drawer item logics">
+      <created>1565970449733</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1565970449733</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TodoView" selected-index="4">
@@ -762,7 +745,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" sideWeight="0.49085367" visible="true" weight="0.27986577" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" sideWeight="0.49085367" visible="true" weight="0.16577181" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" sideWeight="0.50914633" side_tool="true" weight="0.16845638" />
@@ -773,13 +756,13 @@
       <window_info anchor="bottom" id="Run" order="0" weight="0.32907802" />
       <window_info anchor="bottom" id="Debug" order="1" />
       <window_info anchor="bottom" id="Version Control" order="2" sideWeight="0.49328858" weight="0.3243626" />
-      <window_info anchor="bottom" id="Logcat" order="3" sideWeight="0.914094" weight="0.54042554" />
+      <window_info anchor="bottom" id="Logcat" order="3" sideWeight="0.914094" weight="0.45248228" />
       <window_info anchor="bottom" id="TODO" order="4" sideWeight="0.49932885" weight="0.32907802" />
       <window_info anchor="bottom" id="Terminal" order="5" weight="0.32907802" />
       <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.42080536" side_tool="true" weight="0.38865247" />
-      <window_info anchor="bottom" id="Android Profiler" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Android Profiler" order="7" />
       <window_info anchor="bottom" id="Find" order="8" sideWeight="0.49934897" weight="0.32765958" />
-      <window_info anchor="bottom" id="Build" order="9" sideWeight="0.57986575" visible="true" weight="0.38865247" />
+      <window_info anchor="bottom" id="Build" order="9" sideWeight="0.57986575" weight="0.38865247" />
       <window_info anchor="bottom" id="Messages" order="10" weight="0.32907802" />
       <window_info anchor="right" id="Capture Analysis" order="0" />
       <window_info anchor="right" id="Gradle" order="1" weight="0.3295302" />
@@ -864,7 +847,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Fixed #50, improved #49" />
     <MESSAGE value="Fixed #52, fixed #53, fixed #54 by improving bug report and exception handler" />
     <MESSAGE value="Added version info in the crash report" />
     <MESSAGE value="Fixed potential security issues" />
@@ -889,42 +871,12 @@
     <MESSAGE value="Improved APK finding, update readme" />
     <MESSAGE value="Re-adding dotnet disassembler" />
     <MESSAGE value="Upgrading file drawer" />
-    <option name="LAST_COMMIT_MESSAGE" value="Upgrading file drawer" />
+    <MESSAGE value="Added File drawer item logics" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added File drawer item logics" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/Olly/UDDReader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="22" selection-start-line="22" selection-end-line="22" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.skydoves/colorpickerview/2.1.5/c9c58e0607d142f4ea34d16eac97400018e9bb44/colorpickerview-2.1.5-sources.jar!/com/skydoves/colorpickerview/ColorPickerDialog.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="127">
-          <caret line="124" column="19" selection-start-line="124" selection-start-column="19" selection-end-line="124" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Utils/headerparser/Parser.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="46">
-          <caret line="2" column="21" lean-forward="true" selection-start-line="2" selection-start-column="21" selection-end-line="2" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hello-jni.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="11" column="34" selection-start-line="11" selection-start-column="34" selection-end-line="11" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/ColorPrefLvAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2047">
@@ -1200,17 +1152,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="14" column="13" lean-forward="true" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
-          <folding>
-            <element signature="e#301#302#0" expanded="true" />
-            <element signature="e#324#325#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/PEFile.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="23">
@@ -1218,18 +1159,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$USER_HOME$/Documents/카카오톡 받은 파일/a/virus.apk">
+      <provider selected="true" editor-type-id="apk-viewer" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="19" column="76" selection-start-line="19" selection-start-column="76" selection-end-line="19" selection-end-column="76" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/main.xml">
-      <provider editor-type-id="android-designer2" />
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="9" column="20" selection-start-line="9" selection-start-column="20" selection-end-line="9" selection-end-column="20" />
+        <state relative-caret-position="79">
+          <caret line="8" column="44" selection-start-line="8" selection-start-column="44" selection-end-line="8" selection-end-column="44" />
         </state>
       </provider>
     </entry>
@@ -1259,26 +1195,59 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/pl.openrnd.android/multi-level-listview/1.0.1/c2521782b90586e75a02a91478175b21237a945c/multi-level-listview-1.0.1-sources.jar!/pl/openrnd/multilevellistview/MultiLevelListAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="333">
+          <caret line="215" column="41" selection-start-line="215" selection-start-column="41" selection-end-line="215" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="309">
+          <caret line="29" column="25" selection-start-line="29" selection-start-column="25" selection-end-line="29" selection-end-column="25" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="2189" column="64" lean-forward="true" selection-start-line="2189" selection-start-column="64" selection-end-line="2189" selection-end-column="64" />
+        <state relative-caret-position="8">
+          <caret line="621" column="27" selection-start-line="621" selection-start-column="27" selection-end-line="621" selection-end-column="27" />
           <folding>
+            <element signature="e#10210#11431#0" expanded="true" />
+            <element signature="e#11430#11431#0" expanded="true" />
             <element signature="e#105086#105087#0" expanded="true" />
             <element signature="e#105134#105135#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/filedraweritem.xml">
+      <provider selected="true" editor-type-id="android-designer2" />
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="69">
+          <caret line="4" column="20" lean-forward="true" selection-start-line="4" selection-start-column="20" selection-end-line="4" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/94312221fefb3eaf2b6b66fc8ae56474/res/drawable-nodpi-v4/apk.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/main.xml">
+      <provider selected="true" editor-type-id="android-designer2" />
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="166">
+          <caret line="453" column="57" selection-start-line="453" selection-start-column="57" selection-end-line="453" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1031">
-          <caret line="46" column="5" lean-forward="true" selection-start-line="46" selection-start-column="5" selection-end-line="46" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1486#1487#0" expanded="true" />
-            <element signature="e#1520#1521#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="422">
+          <caret line="82" column="19" lean-forward="true" selection-start-line="82" selection-start-column="19" selection-end-line="82" selection-end-column="19" />
         </state>
       </provider>
     </entry>

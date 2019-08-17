@@ -100,6 +100,7 @@ import at.pollaknet.api.facile.exception.UnexpectedHeaderDataException;
 import at.pollaknet.api.facile.symtab.symbols.scopes.Assembly;
 import capstone.Capstone;
 import nl.lxtreme.binutils.elf.MachineType;
+import pl.openrnd.multilevellistview.MultiLevelListView;
 
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener {
@@ -241,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private Button btSavDit;
     private String[] mProjNames;
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+    private MultiLevelListView mDrawerList;
 
     private Button btRefreshLog;
     private ListView lvLog;
@@ -282,6 +283,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             listview.requestLayout();
         }
     };
+    private FileDrawerListAdapter mDrawerAdapter;
     /////////////////////////////////////////Activity Life Cycle///////////////////////////////////////////////////
 
     @Override
@@ -398,9 +400,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
         setContentView(R.layout.main);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        mDrawerList = (MultiLevelListView) findViewById(R.id.left_drawer);
 
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         etDetails = (EditText) findViewById(R.id.detailText);
         Button selectFile = (Button) findViewById(R.id.selFile);
         selectFile.setOnClickListener(this);
@@ -621,9 +623,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     AlertError("Failed to load projects", e);
                 }
                 // Set the adapter for the list view
-                mDrawerList.setAdapter(new ArrayAdapter<String>(MainActivity.this,
-                        R.layout.row, mProjNames));
-
+                mDrawerList.setAdapter(mDrawerAdapter = new FileDrawerListAdapter(MainActivity.this));//new ArrayAdapter<String>(MainActivity.this,
+                //R.layout.row, mProjNames));
+                List<FileDrawerListItem> initialDrawers = new ArrayList<>();
+                initialDrawers.add(new FileDrawerListItem("Installed", FileDrawerListItem.DrawerItemType.HEAD));
+                initialDrawers.add(new FileDrawerListItem("Internal Storage", FileDrawerListItem.DrawerItemType.HEAD));
+                initialDrawers.add(new FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD));
+                mDrawerAdapter.setDataItems(initialDrawers);
+                mDrawerAdapter.notifyDataSetChanged();
                 //https://www.androidpub.com/1351553
                 Intent intent = getIntent();
                 if (intent.getAction().equals(Intent.ACTION_VIEW)) {
