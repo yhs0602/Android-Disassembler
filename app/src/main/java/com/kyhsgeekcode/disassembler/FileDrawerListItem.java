@@ -1,12 +1,16 @@
 package com.kyhsgeekcode.disassembler;
 
+import android.graphics.drawable.Drawable;
+
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
 public class FileDrawerListItem {
     String caption;
-
+    Object tag;         //number or path
+    Drawable drawable;
+    int level;
     public enum DrawerItemType {
         FOLDER,
         ZIP,
@@ -18,18 +22,32 @@ public class FileDrawerListItem {
         DEX,
         PROJECT,
         DISASSEMBLY,
-        HEAD
+        HEAD,
+        NONE
     }
 
-    ;
+
     DrawerItemType type;
 
-    public FileDrawerListItem(String caption, DrawerItemType type) {
+    public FileDrawerListItem(String caption, DrawerItemType type, int tag, int level) {
         this.caption = caption;
         this.type = type;
+        this.tag = tag;
+        this.level = level;
     }
-    public FileDrawerListItem(File file) {
+
+    public FileDrawerListItem(String caption, Drawable drawable, int level) {
+        this.caption = caption;
+        this.drawable = drawable;
+        this.type = DrawerItemType.NONE;
+        this.level = level;
+    }
+
+    public FileDrawerListItem(File file, int level) {
         caption = file.getName();
+        if (file.isDirectory() && !caption.endsWith("/"))
+            caption += "/";
+        tag = file.getPath();
         if (file.isDirectory()) {
             type = DrawerItemType.FOLDER;
         } else {
@@ -54,6 +72,7 @@ public class FileDrawerListItem {
             else
                 type = DrawerItemType.NORMAL;
         }
+        this.level = level;
     }
 
     public boolean IsExpandable() {
@@ -66,5 +85,6 @@ public class FileDrawerListItem {
         expandables.add(DrawerItemType.APK);
         expandables.add(DrawerItemType.ZIP);
         expandables.add(DrawerItemType.FOLDER);
+        expandables.add(DrawerItemType.HEAD);
     }
 }
