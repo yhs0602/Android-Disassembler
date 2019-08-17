@@ -12,16 +12,17 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 import pl.openrnd.multilevellistview.ItemInfo;
 import pl.openrnd.multilevellistview.MultiLevelListAdapter;
@@ -166,15 +167,36 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
             case ZIP:
             case APK: {
                 String path = (String) item.tag;
+                File targetDirectory = new File(new File(context.getFilesDir(), "/extracted/"), new File(path).getName() + "/");
+                targetDirectory.mkdirs();
                 try {
-                    ZipFile zipFile = new ZipFile(path);
-                    Enumeration zipEntries = zipFile.entries();
-                    while (zipEntries.hasMoreElements()) {
-                        String fileName = ((ZipEntry) zipEntries.nextElement()).getName();
-                        items.add(new FileDrawerListItem(new File(fileName), newLevel));
+                    ZipInputStream zi = new ZipInputStream(new FileInputStream(path));
+                    ZipEntry entry;
+                    byte[] buffer = new byte[2048];
+                    while ((entry = zi.getNextEntry()) != null) {
+                        File outfile = new File(targetDirectory, entry.getName());
+                        String canonicalPath = outfile.getCanonicalPath();
+                        if (!canonicalPath.startsWith(targetDirectory.getCanonicalPath())) {
+                            throw new SecurityException("The file may have a Zip Path Traversal Vulnerability." +
+                                    "Is the file trusted?");
+                        }
+                        outfile.getParentFile().mkdirs();
+                        FileOutputStream output = null;
+                        try {
+                            output = new FileOutputStream(outfile);
+                            int len = 0;
+                            while ((len = zi.read(buffer)) > 0) {
+                                output.write(buffer, 0, len);
+                            }
+                        } finally {
+                            // we must always close the output file
+                            if (output != null) output.close();
+                        }
                     }
+                    return getSubObjects(new FileDrawerListItem(targetDirectory, initialLevel));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Log.e("FileAdapter", "", e);
+                    items.add(new FileDrawerListItem("NO", context.getDrawable(android.R.drawable.ic_secure), newLevel));
                 }
             }
         }
@@ -221,7 +243,7 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
         }
         viewHolder.nameView.setCompoundDrawablesRelative(compounds[0], compounds[1], compounds[2], compounds[3]);
         //viewHolder.levelBeamView.setLevel(itemInfo.getLevel());
-        Log.d("FileAdapter", "Level:" + item.level);
+        //Log.d("FileAdapter", "Level:" + item.level);
         viewHolder.nameView.setPaddingRelative(item.level * 30, 0, 0, 0);
         return convertView;
     }
