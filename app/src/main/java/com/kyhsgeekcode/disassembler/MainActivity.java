@@ -100,6 +100,7 @@ import at.pollaknet.api.facile.exception.UnexpectedHeaderDataException;
 import at.pollaknet.api.facile.symtab.symbols.scopes.Assembly;
 import capstone.Capstone;
 import nl.lxtreme.binutils.elf.MachineType;
+import pl.openrnd.multilevellistview.ItemInfo;
 import pl.openrnd.multilevellistview.MultiLevelListView;
 
 
@@ -639,6 +640,18 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
                 mDrawerAdapter.setDataItems(initialDrawers);
                 mDrawerAdapter.notifyDataSetChanged();
+                mDrawerList.setOnItemClickListener(new pl.openrnd.multilevellistview.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
+                        FileDrawerListItem fitem = (FileDrawerListItem) item;
+                        OnChoosePath((String) fitem.tag);
+                    }
+
+                    @Override
+                    public void onGroupItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
+
+                    }
+                });
                 //https://www.androidpub.com/1351553
                 Intent intent = getIntent();
                 if (intent.getAction().equals(Intent.ACTION_VIEW)) {
