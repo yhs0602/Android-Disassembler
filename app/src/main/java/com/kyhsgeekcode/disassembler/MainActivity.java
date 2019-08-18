@@ -65,8 +65,13 @@ import com.codekidlabs.storagechooser.StorageChooser;
 import com.codekidlabs.storagechooser.utils.DiskUtil;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.kyhsgeekcode.disassembler.Calc.Calculator;
+import com.kyhsgeekcode.disassembler.FileTabFactory.FileTabContentFactory;
+import com.kyhsgeekcode.disassembler.FileTabFactory.ImageFileTabFactory;
+import com.kyhsgeekcode.disassembler.FileTabFactory.TextFileTabFactory;
 import com.kyhsgeekcode.disassembler.Utils.Olly.UddTag;
 import com.stericson.RootTools.RootTools;
+
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -82,9 +87,11 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Pattern;
@@ -176,6 +183,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     Spinner spinnerArch;
     TabHost tabHost;
     LinearLayout tab1, tab2;
+    //FileTabContentFactory factory = new FileTabContentFactory(this);
+    FileTabContentFactory textFactory = new TextFileTabFactory(this);
+    FileTabContentFactory imageFactory = new ImageFileTabFactory(this);
+
+    final List<FileTabContentFactory> factoryList = new ArrayList<>();
+
+    {
+        factoryList.add(textFactory);
+        factoryList.add(imageFactory);
+
+    }
 
     ///////////////////////////////////////////////////UI manager////////////////////////////////////////////
     HexManager hexManager = new HexManager();
@@ -2075,6 +2093,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             DataInputStream in = new DataInputStream(new FileInputStream(file));
             //Check if it is an apk file
             String lowname = file.getName().toLowerCase();
+            String ext = FilenameUtils.getExtension(lowname);
+            if (textFileExts.contains(ext)) {
+                OpenNewTab(file, TabType.TEXT);
+                return;
+            }
             if (lowname.endsWith(".apk") || lowname.endsWith(".zip")) {
                 if (HandleZipFIle(path, in))
                     return;
@@ -2137,6 +2160,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             //AlertError("Failed to open and parse the file",e);
             //Toast.makeText(this, Log.getStackTraceString(e), 30).show();
         }
+    }
+
+    //TabType Ignored
+    private void OpenNewTab(File file, TabType type) {
+        FileTabContentFactory factory = factoryList.get(type.ordinal());
+        factory.setType(file.getAbsolutePath(), type);
+        tabHost.addTab(tabHost.newTabSpec(file.getAbsolutePath()).setContent(factory).setIndicator(file.getName()));
+    }
+
+    private void CloseTab(int index) {
+        tabHost.getTabWidget().removeView(tabHost.getTabWidget().getChildTabViewAt(index));
     }
 
     private boolean HandleZipFIle(String path, InputStream is) {
@@ -2664,6 +2698,17 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             hexChars[p++] = hexArray[v & 0x0F];
         }
         return new String(hexChars);
+    }
+
+    static final Set<String> textFileExts = new HashSet<>();
+
+    static {
+        textFileExts.add("txt");
+        textFileExts.add("smali");
+        textFileExts.add("java");
+        textFileExts.add("json");
+        textFileExts.add("md");
+        textFileExts.add("il");
     }
 }
 	/*	OnCreate()

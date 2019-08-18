@@ -57,6 +57,9 @@ dependencies {
     //compile 'com.evrencoskun.library:tableview:0.8.8'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation group: "pl.openrnd.android", name: "multi-level-listview", version: "1.0.1"
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+
     //implementation 'dotnet.msil.decompiler:+'
     implementation  fileTree(dir: 'libs', include: ['*.jar'])
 }
