@@ -6,7 +6,7 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 
 # Version 1.5.0 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
-## What's new : Data analysis for encryption detection, String search
+## What's new : File navigation drawer in the left
 # Features
 - Shows details of elf files.
 - Shows symbol table(functions or objects' ,... names) of elf files.
@@ -134,6 +134,8 @@ You can download the theme.zip here.
  - Add compatibility for OllyDbg's `.udd/.bak` files
  - Add compatibility for IDA's produce files.
  - About to add other utilities.
+ - Add android resource analyzer
+ - Add dex file analyzer
 
 # Help wanted!
  - Don't the symbols' names look odd?

@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import org.jf.baksmali.Main;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -199,6 +201,15 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
                     items.add(new FileDrawerListItem("NO", context.getDrawable(android.R.drawable.ic_secure), newLevel));
                 }
             }
+            break;
+            case DEX:
+                String filename = (String) item.tag;
+                File targetDirectory = new File(new File(context.getFilesDir(), "/dex-decompiled/"), new File(filename).getName() + "/");
+                targetDirectory.mkdirs();
+                Main.main(new String[]{"d", "-o", targetDirectory.getAbsolutePath(), filename});
+                return getSubObjects(new FileDrawerListItem(targetDirectory, initialLevel));
+            case PE_IL:
+                break;
         }
 
         //if expandable yes.

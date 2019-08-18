@@ -87,5 +87,7 @@ public class FileDrawerListItem {
         expandables.add(DrawerItemType.ZIP);
         expandables.add(DrawerItemType.FOLDER);
         expandables.add(DrawerItemType.HEAD);
+        expandables.add(DrawerItemType.DEX);
+        expandables.add(DrawerItemType.PE_IL);
     }
 }
