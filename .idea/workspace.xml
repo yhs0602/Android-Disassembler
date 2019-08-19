@@ -36,8 +36,8 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -71,37 +71,91 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="355">
-              <caret line="664" column="42" selection-start-line="664" selection-start-column="42" selection-end-line="664" selection-end-column="42" />
+            <state relative-caret-position="1">
+              <caret line="2116" column="13" selection-start-line="2116" selection-start-column="13" selection-end-line="2116" selection-end-column="13" />
               <folding>
-                <element signature="e#56443#56444#0" expanded="true" />
-                <element signature="e#58176#58177#0" expanded="true" />
-                <element signature="e#59227#59228#0" expanded="true" />
-                <element signature="e#59337#59338#0" expanded="true" />
-                <element signature="e#60684#60685#0" expanded="true" />
-                <element signature="e#60896#60897#0" expanded="true" />
-                <element signature="e#61846#61847#0" expanded="true" />
-                <element signature="e#66630#66631#0" expanded="true" />
-                <element signature="e#69488#69489#0" expanded="true" />
-                <element signature="e#70081#70082#0" expanded="true" />
-                <element signature="e#72283#72284#0" expanded="true" />
-                <element signature="e#80088#80089#0" expanded="true" />
-                <element signature="e#80503#80504#0" expanded="true" />
-                <element signature="e#101073#101074#0" expanded="true" />
-                <element signature="e#108111#108112#0" expanded="true" />
-                <element signature="e#108212#108213#0" expanded="true" />
-                <element signature="e#108280#108281#0" expanded="true" />
-                <element signature="e#108373#108374#0" expanded="true" />
-                <element signature="e#108441#108442#0" expanded="true" />
-                <element signature="e#108534#108535#0" expanded="true" />
-                <element signature="e#108614#108615#0" expanded="true" />
-                <element signature="e#108807#108808#0" expanded="true" />
-                <element signature="e#108916#108917#0" expanded="true" />
-                <element signature="e#108990#108991#0" expanded="true" />
-                <element signature="e#109095#109096#0" expanded="true" />
-                <element signature="e#109167#109168#0" expanded="true" />
-                <element signature="e#109268#109269#0" expanded="true" />
+                <element signature="e#57010#57011#0" expanded="true" />
+                <element signature="e#58743#58744#0" expanded="true" />
+                <element signature="e#59794#59795#0" expanded="true" />
+                <element signature="e#59904#59905#0" expanded="true" />
+                <element signature="e#61251#61252#0" expanded="true" />
+                <element signature="e#61463#61464#0" expanded="true" />
+                <element signature="e#62413#62414#0" expanded="true" />
+                <element signature="e#67197#67198#0" expanded="true" />
+                <element signature="e#70055#70056#0" expanded="true" />
+                <element signature="e#70648#70649#0" expanded="true" />
+                <element signature="e#72850#72851#0" expanded="true" />
+                <element signature="e#80655#80656#0" expanded="true" />
+                <element signature="e#81070#81071#0" expanded="true" />
+                <element signature="e#101640#101641#0" expanded="true" />
+                <element signature="e#108678#108679#0" expanded="true" />
+                <element signature="e#108779#108780#0" expanded="true" />
+                <element signature="e#108847#108848#0" expanded="true" />
+                <element signature="e#108940#108941#0" expanded="true" />
+                <element signature="e#109008#109009#0" expanded="true" />
+                <element signature="e#109101#109102#0" expanded="true" />
+                <element signature="e#109181#109182#0" expanded="true" />
+                <element signature="e#109374#109375#0" expanded="true" />
+                <element signature="e#109483#109484#0" expanded="true" />
+                <element signature="e#109557#109558#0" expanded="true" />
+                <element signature="e#109662#109663#0" expanded="true" />
+                <element signature="e#109734#109735#0" expanded="true" />
+                <element signature="e#109835#109836#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/metamodel/entries/FieldEntry.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="33">
+              <caret line="172" lean-forward="true" selection-start-line="172" selection-end-line="172" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/code/instruction/object/Stsfld.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="31">
+              <caret line="21" column="36" selection-start-line="21" selection-start-column="36" selection-end-line="21" selection-end-column="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/code/instruction/ReferenceCilInstruction.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="299">
+              <caret line="16" column="42" selection-start-line="16" selection-start-column="42" selection-end-line="16" selection-end-column="42" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/metamodel/entries/MemberRefEntry.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="203">
+              <caret line="79" column="25" lean-forward="true" selection-start-line="79" selection-start-column="25" selection-end-line="79" selection-end-column="25" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/code/MethodBody.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="88">
+              <caret line="1218" column="74" lean-forward="true" selection-start-line="1218" selection-start-column="74" selection-end-line="1218" selection-end-column="74" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/TabType.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="92">
+              <caret line="4" column="9" selection-start-line="4" selection-start-column="9" selection-end-line="4" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -109,9 +163,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="253">
-              <caret line="11" column="33" selection-start-line="11" selection-start-column="33" selection-end-line="11" selection-end-column="33" />
+            <state relative-caret-position="157">
+              <caret line="86" column="38" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
               <folding>
+                <element signature="imports" expanded="true" />
                 <element signature="e#200#201#0" expanded="true" />
                 <element signature="e#230#231#0" expanded="true" />
               </folding>
@@ -119,11 +174,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="86">
-              <caret line="270" column="76" lean-forward="true" selection-start-line="270" selection-start-column="76" selection-end-line="270" selection-end-column="76" />
+            <state relative-caret-position="224">
+              <caret line="325" column="62" selection-start-line="325" selection-start-column="62" selection-end-line="325" selection-end-column="62" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -132,25 +187,14 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/main.xml">
-          <provider editor-type-id="android-designer2" />
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="276">
-              <caret line="46" column="37" selection-start-line="46" selection-start-column="37" selection-end-line="46" selection-end-column="37" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2553">
-              <caret line="111" column="35" selection-start-line="111" selection-start-column="35" selection-end-line="111" selection-end-column="35" />
+            <state relative-caret-position="562">
+              <caret line="45" column="20" selection-start-line="45" selection-start-column="20" selection-end-line="45" selection-end-column="20" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#3933#3934#0" expanded="true" />
-                <element signature="e#3973#3974#0" expanded="true" />
-                <element signature="e#4000#4001#0" expanded="true" />
+                <element signature="e#4821#4822#0" expanded="true" />
+                <element signature="e#4906#4907#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -195,6 +239,9 @@
       <find>FileDrawer</find>
       <find>LongClick</find>
       <find>Log.</find>
+      <find>TAG_</find>
+      <find>TAB_</find>
+      <find>TabType</find>
     </findStrings>
     <replaceStrings>
       <replace>, //:</replace>
@@ -258,12 +305,12 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabContentFactory.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/FileTabContentFactory.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/TabType.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/ImageFileTabFactory.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/filedraweritem.xml" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java" />
       </list>
     </option>
   </component>
@@ -823,7 +870,14 @@
       <option name="project" value="LOCAL" />
       <updated>1566221405536</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="Fixed .NET endianness, show constants">
+      <created>1566226584871</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1566226584871</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TodoView" selected-index="4">
@@ -840,7 +894,7 @@
     <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info content_ui="combo" id="Project" order="1" sideWeight="0.49085367" weight="0.31744966" />
+      <window_info content_ui="combo" id="Project" order="1" sideWeight="0.49085367" visible="true" weight="0.08456376" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" sideWeight="0.50914633" side_tool="true" weight="0.16845638" />
@@ -851,13 +905,13 @@
       <window_info anchor="bottom" id="Run" order="0" weight="0.32907802" />
       <window_info anchor="bottom" id="Debug" order="1" />
       <window_info anchor="bottom" id="Version Control" order="2" sideWeight="0.49328858" weight="0.3243626" />
-      <window_info anchor="bottom" id="Logcat" order="3" sideWeight="0.914094" weight="0.15602838" />
+      <window_info active="true" anchor="bottom" id="Logcat" order="3" sideWeight="0.914094" visible="true" weight="0.41276595" />
       <window_info anchor="bottom" id="TODO" order="4" sideWeight="0.49932885" weight="0.32907802" />
       <window_info anchor="bottom" id="Terminal" order="5" weight="0.32907802" />
-      <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.42080536" side_tool="true" weight="0.38865247" />
+      <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.4214765" side_tool="true" weight="0.38865247" />
       <window_info anchor="bottom" id="Android Profiler" order="7" />
       <window_info anchor="bottom" id="Find" order="8" sideWeight="0.49934897" weight="0.32765958" />
-      <window_info anchor="bottom" id="Build" order="9" sideWeight="0.57986575" weight="0.38865247" />
+      <window_info anchor="bottom" id="Build" order="9" sideWeight="0.5785235" weight="0.38865247" />
       <window_info anchor="bottom" id="Messages" order="10" weight="0.32907802" />
       <window_info anchor="right" id="Capture Analysis" order="0" />
       <window_info anchor="right" id="Gradle" order="1" weight="0.3295302" />
@@ -942,7 +996,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Merge, parser" />
     <MESSAGE value="Sync gradle" />
     <MESSAGE value="fetch/pull" />
     <MESSAGE value="Improved permission alert system" />
@@ -967,50 +1020,12 @@
     <MESSAGE value="Adding TextFactory" />
     <MESSAGE value="Improve .NET assembly check, added image tab factory" />
     <MESSAGE value="Nicely detect .NET assemblies" />
-    <option name="LAST_COMMIT_MESSAGE" value="Nicely detect .NET assemblies" />
+    <MESSAGE value="Fixed .NET endianness, show constants" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed .NET endianness, show constants" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/Analyzer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9315">
-          <caret line="426" column="53" selection-start-line="426" selection-start-column="53" selection-end-line="426" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/values/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1794">
-          <caret line="78" column="44" selection-start-line="78" selection-start-column="44" selection-end-line="78" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FoundStringAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1265">
-          <caret line="65" column="45" selection-start-line="65" selection-start-column="45" selection-end-line="65" selection-end-column="45" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/app/libs/dotnet-msil-decompiler.jar!/consulo/internal/dotnet/msil/decompiler/Main.class" />
-    <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/Facile.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="244" column="27" selection-start-line="244" selection-start-column="27" selection-end-line="244" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/FacileReflector.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="463" column="46" lean-forward="true" selection-start-line="463" selection-start-column="46" selection-end-line="463" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/renderer/ILAsmRenderer.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-515">
@@ -1242,13 +1257,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/TabType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="35" lean-forward="true" selection-start-column="35" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/main.xml">
       <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
@@ -1327,66 +1335,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="355">
-          <caret line="664" column="42" selection-start-line="664" selection-start-column="42" selection-end-line="664" selection-end-column="42" />
-          <folding>
-            <element signature="e#56443#56444#0" expanded="true" />
-            <element signature="e#58176#58177#0" expanded="true" />
-            <element signature="e#59227#59228#0" expanded="true" />
-            <element signature="e#59337#59338#0" expanded="true" />
-            <element signature="e#60684#60685#0" expanded="true" />
-            <element signature="e#60896#60897#0" expanded="true" />
-            <element signature="e#61846#61847#0" expanded="true" />
-            <element signature="e#66630#66631#0" expanded="true" />
-            <element signature="e#69488#69489#0" expanded="true" />
-            <element signature="e#70081#70082#0" expanded="true" />
-            <element signature="e#72283#72284#0" expanded="true" />
-            <element signature="e#80088#80089#0" expanded="true" />
-            <element signature="e#80503#80504#0" expanded="true" />
-            <element signature="e#101073#101074#0" expanded="true" />
-            <element signature="e#108111#108112#0" expanded="true" />
-            <element signature="e#108212#108213#0" expanded="true" />
-            <element signature="e#108280#108281#0" expanded="true" />
-            <element signature="e#108373#108374#0" expanded="true" />
-            <element signature="e#108441#108442#0" expanded="true" />
-            <element signature="e#108534#108535#0" expanded="true" />
-            <element signature="e#108614#108615#0" expanded="true" />
-            <element signature="e#108807#108808#0" expanded="true" />
-            <element signature="e#108916#108917#0" expanded="true" />
-            <element signature="e#108990#108991#0" expanded="true" />
-            <element signature="e#109095#109096#0" expanded="true" />
-            <element signature="e#109167#109168#0" expanded="true" />
-            <element signature="e#109268#109269#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="11" column="33" selection-start-line="11" selection-start-column="33" selection-end-line="11" selection-end-column="33" />
-          <folding>
-            <element signature="e#200#201#0" expanded="true" />
-            <element signature="e#230#231#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2553">
-          <caret line="111" column="35" selection-start-line="111" selection-start-column="35" selection-end-line="111" selection-end-column="35" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3933#3934#0" expanded="true" />
-            <element signature="e#3973#3974#0" expanded="true" />
-            <element signature="e#4000#4001#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/symtab/symbols/Constant.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="230">
@@ -1396,11 +1344,120 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="86">
-          <caret line="270" column="76" lean-forward="true" selection-start-line="270" selection-start-column="76" selection-end-line="270" selection-end-column="76" />
+        <state relative-caret-position="224">
+          <caret line="325" column="62" selection-start-line="325" selection-start-column="62" selection-end-line="325" selection-end-column="62" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/Sdk/sources/android-28/android/os/Environment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="483" column="18" lean-forward="true" selection-start-line="483" selection-start-column="18" selection-end-line="483" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="562">
+          <caret line="45" column="20" selection-start-line="45" selection-start-column="20" selection-end-line="45" selection-end-column="20" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#4821#4822#0" expanded="true" />
+            <element signature="e#4906#4907#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/TabType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="92">
+          <caret line="4" column="9" selection-start-line="4" selection-start-column="9" selection-end-line="4" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="157">
+          <caret line="86" column="38" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#200#201#0" expanded="true" />
+            <element signature="e#230#231#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1">
+          <caret line="2116" column="13" selection-start-line="2116" selection-start-column="13" selection-end-line="2116" selection-end-column="13" />
+          <folding>
+            <element signature="e#57010#57011#0" expanded="true" />
+            <element signature="e#58743#58744#0" expanded="true" />
+            <element signature="e#59794#59795#0" expanded="true" />
+            <element signature="e#59904#59905#0" expanded="true" />
+            <element signature="e#61251#61252#0" expanded="true" />
+            <element signature="e#61463#61464#0" expanded="true" />
+            <element signature="e#62413#62414#0" expanded="true" />
+            <element signature="e#67197#67198#0" expanded="true" />
+            <element signature="e#70055#70056#0" expanded="true" />
+            <element signature="e#70648#70649#0" expanded="true" />
+            <element signature="e#72850#72851#0" expanded="true" />
+            <element signature="e#80655#80656#0" expanded="true" />
+            <element signature="e#81070#81071#0" expanded="true" />
+            <element signature="e#101640#101641#0" expanded="true" />
+            <element signature="e#108678#108679#0" expanded="true" />
+            <element signature="e#108779#108780#0" expanded="true" />
+            <element signature="e#108847#108848#0" expanded="true" />
+            <element signature="e#108940#108941#0" expanded="true" />
+            <element signature="e#109008#109009#0" expanded="true" />
+            <element signature="e#109101#109102#0" expanded="true" />
+            <element signature="e#109181#109182#0" expanded="true" />
+            <element signature="e#109374#109375#0" expanded="true" />
+            <element signature="e#109483#109484#0" expanded="true" />
+            <element signature="e#109557#109558#0" expanded="true" />
+            <element signature="e#109662#109663#0" expanded="true" />
+            <element signature="e#109734#109735#0" expanded="true" />
+            <element signature="e#109835#109836#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/code/MethodBody.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="1218" column="74" lean-forward="true" selection-start-line="1218" selection-start-column="74" selection-end-line="1218" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/metamodel/entries/FieldEntry.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="33">
+          <caret line="172" lean-forward="true" selection-start-line="172" selection-end-line="172" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/code/instruction/object/Stsfld.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="31">
+          <caret line="21" column="36" selection-start-line="21" selection-start-column="36" selection-end-line="21" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/code/instruction/ReferenceCilInstruction.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="16" column="42" selection-start-line="16" selection-start-column="42" selection-end-line="16" selection-end-column="42" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/app/libs/at.pollaknet.api.facile.jar!/at/pollaknet/api/facile/metamodel/entries/MemberRefEntry.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="79" column="25" lean-forward="true" selection-start-line="79" selection-start-column="25" selection-end-line="79" selection-end-column="25" />
         </state>
       </provider>
     </entry>

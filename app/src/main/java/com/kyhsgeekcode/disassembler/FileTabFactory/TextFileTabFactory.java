@@ -84,5 +84,6 @@ public class TextFileTabFactory extends FileTabContentFactory {
         smaliterms.add(".field");
         smaliterms.add(".method");
         TermList.put("smali", smaliterms);
+        TermList.put("il", smaliterms);
     }
 }

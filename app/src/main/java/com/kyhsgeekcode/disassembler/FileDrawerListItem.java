@@ -8,9 +8,13 @@ import org.boris.pecoff4j.PE;
 import org.boris.pecoff4j.io.PEParser;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+
+import at.pollaknet.api.facile.code.MethodBody;
+import at.pollaknet.api.facile.symtab.symbols.Method;
 
 public class FileDrawerListItem {
     private static final String TAG = "FileItem";
@@ -19,6 +23,27 @@ public class FileDrawerListItem {
     Drawable drawable;
     int level;
     boolean isInZip = false;
+
+    public String CreateDataToPath(File root) {
+        if (tag instanceof Method) {
+            Method method = (Method) tag;
+            MethodBody mb = method.getMethodBody();
+            mb.toString();
+            File outDir = new File(root, "temp-cil/");
+            outDir.mkdirs();
+            File outFile = new File(outDir, ((Method) tag).getName().replaceAll("[^a-zA-Z0-9\\._]+", "_") + ".il");
+            try {
+                FileWriter fr = new FileWriter(outFile);
+                fr.write(mb.toString());
+                fr.close();
+            } catch (IOException e) {
+                Log.e(TAG, "", e);
+            }
+            return outFile.getAbsolutePath();
+        }
+        return null;
+    }
+
     public enum DrawerItemType {
         FOLDER,
         ZIP,

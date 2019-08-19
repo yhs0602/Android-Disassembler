@@ -668,7 +668,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                         ShowYesNoCancelDialog(MainActivity.this, "Open file", "Open " + fitem.caption + "?", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                OnChoosePath((String) fitem.tag);
+                                if (fitem.tag instanceof String)
+                                    OnChoosePath((String) fitem.tag);
+                                else {
+                                    String resultPath = fitem.CreateDataToPath(context.getFilesDir());
+                                    if (resultPath != null)
+                                        OnChoosePath(resultPath);
+                                    else
+                                        Toast.makeText(MainActivity.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }, null, null);
                     }
