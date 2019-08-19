@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,6 +31,8 @@ import java.util.zip.ZipInputStream;
 
 import at.pollaknet.api.facile.Facile;
 import at.pollaknet.api.facile.FacileReflector;
+import at.pollaknet.api.facile.symtab.TypeKind;
+import at.pollaknet.api.facile.symtab.symbols.Constant;
 import at.pollaknet.api.facile.symtab.symbols.Field;
 import at.pollaknet.api.facile.symtab.symbols.Method;
 import at.pollaknet.api.facile.symtab.symbols.Type;
@@ -238,10 +242,20 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
                 Field[] fields = type.getFields();
                 Method[] methods = type.getMethods();
                 for (Field field : fields) {
-                    items.add(new FileDrawerListItem(field.getName() + ":" + field.getTypeRef().getName(), FileDrawerListItem.DrawerItemType.FIELD, null, newLevel));
+                    Constant c = field.getConstant();
+                    String fieldDesc = field.getName() + ":" + field.getTypeRef().getName();
+                    if (c != null) {
+                        int kind = c.getElementTypeKind();
+                        byte[] bytes = c.getValue();
+                        Object value = getValueFromTypeKindAndBytes(bytes, kind);
+                        fieldDesc += "(=";
+                        fieldDesc += value;
+                        fieldDesc += ")";
+                    }
+                    items.add(new FileDrawerListItem(fieldDesc, FileDrawerListItem.DrawerItemType.FIELD, null, newLevel));
                 }
                 for (Method method : methods) {
-                    items.add(new FileDrawerListItem(method.getName() + ":" + method.getMethodSignature(), FileDrawerListItem.DrawerItemType.METHOD, method, newLevel));
+                    items.add(new FileDrawerListItem(method.getName() + method.getMethodSignature(), FileDrawerListItem.DrawerItemType.METHOD, method, newLevel));
                 }
                 break;
         }
@@ -250,6 +264,45 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
         //if folder show subfolders
         //if zip/apk unzip and show
         return items;
+    }
+
+    private Object getValueFromTypeKindAndBytes(byte[] bytes, int kind) {
+        ByteBuffer bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+        switch (kind) {
+            case TypeKind
+                    .ELEMENT_TYPE_BOOLEAN:
+                return (bytes[0] != 0);
+            case TypeKind.ELEMENT_TYPE_CHAR:
+                return (char) bytes[0];
+            case TypeKind.ELEMENT_TYPE_I:
+                return bb.getInt();
+            case TypeKind.ELEMENT_TYPE_I1:
+                return bb.get();
+            case TypeKind.ELEMENT_TYPE_I2:
+                return bb.getShort();
+            case TypeKind.ELEMENT_TYPE_I4:
+                return bb.getInt();
+            case TypeKind.ELEMENT_TYPE_I8:
+                return bb.getLong();
+            case TypeKind.ELEMENT_TYPE_U:
+                return bb.getLong();
+            case TypeKind.ELEMENT_TYPE_U1:
+                return bb.get() & 0xFF;
+            case TypeKind.ELEMENT_TYPE_U2:
+                return bb.getShort() & 0xFFFF;
+            case TypeKind.ELEMENT_TYPE_U4:
+                return bb.getInt();
+            case TypeKind.ELEMENT_TYPE_U8:
+                return bb.getLong();
+            case TypeKind.ELEMENT_TYPE_R4:
+                return bb.getFloat();
+            case TypeKind.ELEMENT_TYPE_R8:
+                return bb.getDouble();
+            case TypeKind.ELEMENT_TYPE_STRING:
+                return new String(bytes);
+            default:
+                return "Unknown!!!!";
+        }
     }
 
     private class ViewHolder {

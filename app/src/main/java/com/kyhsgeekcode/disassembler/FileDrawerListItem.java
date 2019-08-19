@@ -113,7 +113,12 @@ public class FileDrawerListItem {
         return expandables.contains(type);
     }
 
+    public boolean isOpenable() {
+        return !inopenables.contains(type);
+    }
+
     private static final Set<DrawerItemType> expandables = new HashSet<>();
+    private static final Set<DrawerItemType> inopenables = new HashSet<>();
 
     static {
         expandables.add(DrawerItemType.APK);
@@ -123,5 +128,10 @@ public class FileDrawerListItem {
         expandables.add(DrawerItemType.DEX);
         expandables.add(DrawerItemType.PE_IL);
         expandables.add(DrawerItemType.PE_IL_TYPE);
+    }
+
+    static {
+        inopenables.add(DrawerItemType.FIELD);
+
     }
 }

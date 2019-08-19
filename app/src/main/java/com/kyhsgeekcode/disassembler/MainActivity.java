@@ -663,6 +663,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     public void onItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
                         FileDrawerListItem fitem = (FileDrawerListItem) item;
                         Toast.makeText(MainActivity.this, fitem.caption, Toast.LENGTH_SHORT).show();
+                        if (!fitem.isOpenable())
+                            return;
                         ShowYesNoCancelDialog(MainActivity.this, "Open file", "Open " + fitem.caption + "?", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
