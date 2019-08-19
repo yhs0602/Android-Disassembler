@@ -13,28 +13,86 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import at.pollaknet.api.facile.FacileReflector;
+import at.pollaknet.api.facile.code.ExceptionClause;
 import at.pollaknet.api.facile.code.MethodBody;
+import at.pollaknet.api.facile.code.instruction.CilInstruction;
+import at.pollaknet.api.facile.renderer.ILAsmRenderer;
 import at.pollaknet.api.facile.symtab.symbols.Method;
+import at.pollaknet.api.facile.symtab.symbols.TypeRef;
 
 public class FileDrawerListItem {
     private static final String TAG = "FileItem";
     String caption;
-    Object tag;         //number or path
+    Object tag;         //number or path or object
     Drawable drawable;
     int level;
     boolean isInZip = false;
 
     public String CreateDataToPath(File root) {
-        if (tag instanceof Method) {
-            Method method = (Method) tag;
+        if ((tag instanceof Object[]) && (((Object[]) tag).length > 1) && (((Object[]) tag)[0] instanceof FacileReflector) && (((Object[]) tag)[1] instanceof Method)) {
+            Method method = (Method) ((Object[]) tag)[1];
+            FacileReflector reflector = (FacileReflector) ((Object[]) tag)[0];
             MethodBody mb = method.getMethodBody();
-            mb.toString();
+            //mb.toString();
             File outDir = new File(root, "temp-cil/");
             outDir.mkdirs();
-            File outFile = new File(outDir, ((Method) tag).getName().replaceAll("[^a-zA-Z0-9\\._]+", "_") + ".il");
+            File outFile = new File(outDir, method.getName().replaceAll("[^a-zA-Z0-9\\._]+", "_") + ".il");
             try {
                 FileWriter fr = new FileWriter(outFile);
-                fr.write(mb.toString());
+                StringBuffer buffer = new StringBuffer(256);
+                buffer.append("Method Body:");
+                buffer.append(String.format("\n\t Flags: 0x%04x", mb.getFlags()));
+                buffer.append("\tHeaderSize: ");
+                buffer.append(mb.getHeaderSize());
+                buffer.append(" bytes");
+                buffer.append("\n\tCodeSize: ");
+                buffer.append(mb.getCodeSize());
+                buffer.append(" bytes");
+                buffer.append("\tMaxStack: ");
+                buffer.append(mb.getMaxStack());
+                buffer.append(String.format("\tToken: 0x%08x", mb.getLocalVarSignatureToken()));
+                int index = 0;
+                int var5;
+                if (mb.getLocalVars() != null) {
+                    buffer.append("\n\n\t Locals:");
+                    TypeRef[] var6;
+                    var5 = (var6 = mb.getLocalVars()).length;
+
+                    for (int var4 = 0; var4 < var5; ++var4) {
+                        TypeRef typeRef = var6[var4];
+                        buffer.append("\n\t\t");
+                        buffer.append(typeRef.getFullQualifiedName());
+                        buffer.append(" $");
+                        buffer.append(index);
+                        buffer.append(";");
+                        ++index;
+                    }
+                }
+
+                buffer.append("\n\n\tCIL: ");
+                int programCounter = 0;
+                CilInstruction[] var7;
+                int var11 = (var7 = mb.getCilInstructions()).length;
+
+                for (var5 = 0; var5 < var11; ++var5) {
+                    CilInstruction i = var7[var5];
+                    buffer.append(String.format("\nIL_%04x: %s", programCounter, i.render(new ILAsmRenderer(reflector))));
+                    programCounter += i.getByteSize();
+                }
+
+                if (mb.getExceptionClauses() != null) {
+                    buffer.append("\n\n\tExceptions: ");
+                    ExceptionClause[] var12;
+                    var11 = (var12 = mb.getExceptionClauses()).length;
+
+                    for (var5 = 0; var5 < var11; ++var5) {
+                        ExceptionClause ex = var12[var5];
+                        buffer.append("\n\t\t");
+                        buffer.append(ex.toString());
+                    }
+                }
+                fr.write(buffer.toString());
                 fr.close();
             } catch (IOException e) {
                 Log.e(TAG, "", e);

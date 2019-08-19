@@ -231,14 +231,16 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
                     Assembly assembly = facileReflector.loadAssembly();
                     Type[] types = assembly.getAllTypes();
                     for (Type type : types) {
-                        items.add(new FileDrawerListItem(type.getNamespace() + "." + type.getName(), FileDrawerListItem.DrawerItemType.PE_IL_TYPE, type, newLevel));
+                        items.add(new FileDrawerListItem(type.getNamespace() + "." + type.getName(), FileDrawerListItem.DrawerItemType.PE_IL_TYPE, new Object[]{facileReflector, type}, newLevel));
                     }
                 } catch (Exception e) {
                     Logger.e("FileAdapter", "", e);
                 }
                 break;
             case PE_IL_TYPE:
-                Type type = (Type) item.tag;
+                Object[] cont = (Object[]) item.tag;
+                FacileReflector fr = (FacileReflector) cont[0];
+                Type type = (Type) cont[1];
                 Field[] fields = type.getFields();
                 Method[] methods = type.getMethods();
                 for (Field field : fields) {
@@ -255,7 +257,7 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
                     items.add(new FileDrawerListItem(fieldDesc, FileDrawerListItem.DrawerItemType.FIELD, null, newLevel));
                 }
                 for (Method method : methods) {
-                    items.add(new FileDrawerListItem(method.getName() + method.getMethodSignature(), FileDrawerListItem.DrawerItemType.METHOD, method, newLevel));
+                    items.add(new FileDrawerListItem(method.getName() + method.getMethodSignature(), FileDrawerListItem.DrawerItemType.METHOD, new Object[]{fr, method}, newLevel));
                 }
                 break;
         }
