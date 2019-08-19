@@ -6,7 +6,7 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_LOG_LEVEL" value="verbose" />
+    <option name="TOOL_WINDOW_LOG_LEVEL" value="debug" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="AvailableLibraryUpdateStorage">
@@ -34,17 +34,12 @@
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/gradle_models.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/app.iml" beforeDir="false" afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/FileTabContentFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/FileTabContentFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/ImageFileTabFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/ImageFileTabFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/filedraweritem.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/filedraweritem.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -77,50 +72,49 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="2255" column="34" selection-start-line="2255" selection-start-column="34" selection-end-line="2255" selection-end-column="34" />
+            <state relative-caret-position="307">
+              <caret line="671" column="21" selection-start-line="671" selection-start-column="21" selection-end-line="671" selection-end-column="21" />
               <folding>
-                <element signature="e#55787#55788#0" expanded="true" />
-                <element signature="e#57520#57521#0" expanded="true" />
-                <element signature="e#58571#58572#0" expanded="true" />
-                <element signature="e#58681#58682#0" expanded="true" />
-                <element signature="e#60028#60029#0" expanded="true" />
-                <element signature="e#60240#60241#0" expanded="true" />
-                <element signature="e#61190#61191#0" expanded="true" />
-                <element signature="e#65974#65975#0" expanded="true" />
-                <element signature="e#68832#68833#0" expanded="true" />
-                <element signature="e#69425#69426#0" expanded="true" />
-                <element signature="e#71627#71628#0" expanded="true" />
-                <element signature="e#79432#79433#0" expanded="true" />
-                <element signature="e#79847#79848#0" expanded="true" />
-                <element signature="e#100417#100418#0" expanded="true" />
-                <element signature="e#107455#107456#0" expanded="true" />
-                <element signature="e#107556#107557#0" expanded="true" />
-                <element signature="e#107624#107625#0" expanded="true" />
-                <element signature="e#107717#107718#0" expanded="true" />
-                <element signature="e#107785#107786#0" expanded="true" />
-                <element signature="e#107878#107879#0" expanded="true" />
-                <element signature="e#107958#107959#0" expanded="true" />
-                <element signature="e#108151#108152#0" expanded="true" />
-                <element signature="e#108260#108261#0" expanded="true" />
-                <element signature="e#108334#108335#0" expanded="true" />
-                <element signature="e#108439#108440#0" expanded="true" />
-                <element signature="e#108511#108512#0" expanded="true" />
-                <element signature="e#108612#108613#0" expanded="true" />
+                <element signature="e#56355#56356#0" expanded="true" />
+                <element signature="e#58088#58089#0" expanded="true" />
+                <element signature="e#59139#59140#0" expanded="true" />
+                <element signature="e#59249#59250#0" expanded="true" />
+                <element signature="e#60596#60597#0" expanded="true" />
+                <element signature="e#60808#60809#0" expanded="true" />
+                <element signature="e#61758#61759#0" expanded="true" />
+                <element signature="e#66542#66543#0" expanded="true" />
+                <element signature="e#69400#69401#0" expanded="true" />
+                <element signature="e#69993#69994#0" expanded="true" />
+                <element signature="e#72195#72196#0" expanded="true" />
+                <element signature="e#80000#80001#0" expanded="true" />
+                <element signature="e#80415#80416#0" expanded="true" />
+                <element signature="e#100985#100986#0" expanded="true" />
+                <element signature="e#108023#108024#0" expanded="true" />
+                <element signature="e#108124#108125#0" expanded="true" />
+                <element signature="e#108192#108193#0" expanded="true" />
+                <element signature="e#108285#108286#0" expanded="true" />
+                <element signature="e#108353#108354#0" expanded="true" />
+                <element signature="e#108446#108447#0" expanded="true" />
+                <element signature="e#108526#108527#0" expanded="true" />
+                <element signature="e#108719#108720#0" expanded="true" />
+                <element signature="e#108828#108829#0" expanded="true" />
+                <element signature="e#108902#108903#0" expanded="true" />
+                <element signature="e#109007#109008#0" expanded="true" />
+                <element signature="e#109079#109080#0" expanded="true" />
+                <element signature="e#109180#109181#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/ImageFileTabFactory.java">
+      <file pinned="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/pl.openrnd.android/multi-level-listview/1.0.1/c2521782b90586e75a02a91478175b21237a945c/multi-level-listview-1.0.1-sources.jar!/pl/openrnd/multilevellistview/MultiLevelListView.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="445">
-              <caret line="20" column="17" selection-start-line="20" selection-start-column="17" selection-end-line="20" selection-end-column="17" />
+            <state relative-caret-position="248">
+              <caret line="228" column="13" selection-start-line="228" selection-start-column="13" selection-end-line="228" selection-end-column="13" />
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#227#228#0" expanded="true" />
-                <element signature="e#257#258#0" expanded="true" />
+                <element signature="e#6732#6733#0" expanded="true" />
+                <element signature="e#6785#6786#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -129,9 +123,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="276">
-              <caret line="12" column="31" lean-forward="true" selection-start-line="12" selection-start-column="31" selection-end-line="12" selection-end-column="31" />
+            <state relative-caret-position="713">
+              <caret line="31" selection-start-line="31" selection-end-line="31" />
               <folding>
+                <element signature="imports" expanded="true" />
                 <element signature="e#200#201#0" expanded="true" />
                 <element signature="e#230#231#0" expanded="true" />
               </folding>
@@ -142,8 +137,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6072">
-              <caret line="299" column="38" lean-forward="true" selection-start-line="299" selection-start-column="38" selection-end-line="299" selection-end-column="38" />
+            <state relative-caret-position="454">
+              <caret line="315" column="83" selection-start-line="315" selection-start-column="83" selection-end-line="315" selection-end-column="83" />
             </state>
           </provider>
         </entry>
@@ -158,14 +153,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="87" column="13" lean-forward="true" selection-start-line="87" selection-start-column="13" selection-end-line="87" selection-end-column="13" />
+            <state relative-caret-position="205">
+              <caret line="88" column="32" lean-forward="true" selection-start-line="88" selection-start-column="32" selection-end-line="88" selection-end-column="32" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#3535#3536#0" expanded="true" />
+                <element signature="e#3929#3930#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -174,8 +169,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="jar://$PROJECT_DIR$/app/libs/pecoff4j.jar!/org/boris/pecoff4j/OptionalHeader.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="279">
-              <caret line="298" column="30" selection-start-line="298" selection-start-column="30" selection-end-line="298" selection-end-column="30" />
+            <state relative-caret-position="177">
+              <caret line="298" column="36" selection-start-line="298" selection-start-column="36" selection-end-line="298" selection-end-column="36" />
               <folding>
                 <element signature="e#7053#7054#0" expanded="true" />
                 <element signature="e#7102#7103#0" expanded="true" />
@@ -187,8 +182,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/PEFile.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="184">
-              <caret line="28" column="5" lean-forward="true" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
+            <state relative-caret-position="253">
+              <caret line="43" column="36" selection-start-line="43" selection-start-column="36" selection-end-line="43" selection-end-column="36" />
             </state>
           </provider>
         </entry>
@@ -229,6 +224,9 @@
       <find>ViewPager</find>
       <find>TabHost</find>
       <find>Facile</find>
+      <find>FileDrawer</find>
+      <find>LongClick</find>
+      <find>Log.</find>
     </findStrings>
     <replaceStrings>
       <replace>, //:</replace>
@@ -286,18 +284,18 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/AssemblyProvider.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/DotNetAssemblyProvider.java" />
         <option value="$PROJECT_DIR$/build.gradle" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/filedraweritem.xml" />
         <option value="$PROJECT_DIR$/README.md" />
         <option value="$PROJECT_DIR$/app/build.gradle" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/main.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabContentFactory.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/FileTabContentFactory.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/TabType.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/ImageFileTabFactory.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/filedraweritem.xml" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java" />
       </list>
     </option>
   </component>
@@ -399,6 +397,15 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="res" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="Android-Disassembler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Android-Disassembler" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="res" type="462c0819:PsiDirectoryNode" />
+              <item name="layout" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -411,7 +418,7 @@
     <property name="android.sdk.path" value="$USER_HOME$/AppData/Local/Android/Sdk" />
     <property name="device.picker.selection" value="Nexus_5X_API_28_x86" />
     <property name="extract.method.default.visibility" value="private" />
-    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/데레 디컴/デレステ.1.4.9.apk.apk" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Downloads/데레 디컴/Assembly-CSharp - 복사본.dll" />
     <property name="project.structure.last.edited" value="Build Variants" />
     <property name="project.structure.proportion" value="0.17" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -834,7 +841,14 @@
       <option name="project" value="LOCAL" />
       <updated>1566124345525</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="Improve .NET assembly check, added image tab factory">
+      <created>1566214881736</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1566214881736</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TodoView" selected-index="4">
@@ -862,7 +876,7 @@
       <window_info anchor="bottom" id="Run" order="0" weight="0.32907802" />
       <window_info anchor="bottom" id="Debug" order="1" />
       <window_info anchor="bottom" id="Version Control" order="2" sideWeight="0.49328858" weight="0.3243626" />
-      <window_info anchor="bottom" id="Logcat" order="3" sideWeight="0.914094" weight="0.6042553" />
+      <window_info active="true" anchor="bottom" id="Logcat" order="3" sideWeight="0.914094" visible="true" weight="0.15602838" />
       <window_info anchor="bottom" id="TODO" order="4" sideWeight="0.49932885" weight="0.32907802" />
       <window_info anchor="bottom" id="Terminal" order="5" weight="0.32907802" />
       <window_info anchor="bottom" id="Event Log" order="6" sideWeight="0.42080536" side_tool="true" weight="0.38865247" />
@@ -877,7 +891,7 @@
       <window_info anchor="right" id="Preview" order="4" />
       <window_info anchor="right" id="Assistant" order="5" weight="0.3295302" />
       <window_info anchor="right" id="StringPreview" order="6" />
-      <window_info anchor="right" id="Device File Explorer" order="7" side_tool="true" weight="0.21879195" />
+      <window_info anchor="right" id="Device File Explorer" order="7" side_tool="true" visible="true" weight="0.02818792" />
     </layout>
     <layout-to-restore>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
@@ -953,7 +967,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Adding UDD support" />
     <MESSAGE value="Write needed data to an UDD file" />
     <MESSAGE value="Merge, parser" />
     <MESSAGE value="Sync gradle" />
@@ -978,17 +991,12 @@
     <MESSAGE value="Finished improving drawer(OnCLick listener)" />
     <MESSAGE value="Support Dex files" />
     <MESSAGE value="Adding TextFactory" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding TextFactory" />
+    <MESSAGE value="Improve .NET assembly check, added image tab factory" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improve .NET assembly check, added image tab factory" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="android-dummy://C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/Translations Editor">
-      <provider selected="true" editor-type-id="string-resource-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/assets/themes.zip">
-      <provider selected="true" editor-type-id="apk-viewer" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/AsyncTaskDialog.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="115">
@@ -1114,17 +1122,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/94312221fefb3eaf2b6b66fc8ae56474/res/drawable-nodpi-v4/apk.png">
-      <provider selected="true" editor-type-id="images" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/filedraweritem.xml">
-      <provider selected="true" editor-type-id="android-designer2" />
-      <provider editor-type-id="text-editor">
-        <state relative-caret-position="69">
-          <caret line="4" column="20" selection-start-line="4" selection-start-column="20" selection-end-line="4" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/rootpicker/FileSelectorActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="185">
@@ -1156,17 +1153,6 @@
           <folding>
             <element signature="e#3000#3001#0" expanded="true" />
             <element signature="e#3041#3042#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/pl.openrnd.android/multi-level-listview/1.0.1/c2521782b90586e75a02a91478175b21237a945c/multi-level-listview-1.0.1-sources.jar!/pl/openrnd/multilevellistview/MultiLevelListView.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3519">
-          <caret line="180" column="22" selection-start-line="180" selection-start-column="22" selection-end-line="180" selection-end-column="22" />
-          <folding>
-            <element signature="e#6732#6733#0" expanded="true" />
-            <element signature="e#6785#6786#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1295,49 +1281,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/PEFile.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="28" column="5" lean-forward="true" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="2255" column="34" selection-start-line="2255" selection-start-column="34" selection-end-line="2255" selection-end-column="34" />
-          <folding>
-            <element signature="e#55787#55788#0" expanded="true" />
-            <element signature="e#57520#57521#0" expanded="true" />
-            <element signature="e#58571#58572#0" expanded="true" />
-            <element signature="e#58681#58682#0" expanded="true" />
-            <element signature="e#60028#60029#0" expanded="true" />
-            <element signature="e#60240#60241#0" expanded="true" />
-            <element signature="e#61190#61191#0" expanded="true" />
-            <element signature="e#65974#65975#0" expanded="true" />
-            <element signature="e#68832#68833#0" expanded="true" />
-            <element signature="e#69425#69426#0" expanded="true" />
-            <element signature="e#71627#71628#0" expanded="true" />
-            <element signature="e#79432#79433#0" expanded="true" />
-            <element signature="e#79847#79848#0" expanded="true" />
-            <element signature="e#100417#100418#0" expanded="true" />
-            <element signature="e#107455#107456#0" expanded="true" />
-            <element signature="e#107556#107557#0" expanded="true" />
-            <element signature="e#107624#107625#0" expanded="true" />
-            <element signature="e#107717#107718#0" expanded="true" />
-            <element signature="e#107785#107786#0" expanded="true" />
-            <element signature="e#107878#107879#0" expanded="true" />
-            <element signature="e#107958#107959#0" expanded="true" />
-            <element signature="e#108151#108152#0" expanded="true" />
-            <element signature="e#108260#108261#0" expanded="true" />
-            <element signature="e#108334#108335#0" expanded="true" />
-            <element signature="e#108439#108440#0" expanded="true" />
-            <element signature="e#108511#108512#0" expanded="true" />
-            <element signature="e#108612#108613#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/main.xml">
       <provider editor-type-id="android-designer2" />
       <provider selected="true" editor-type-id="text-editor">
@@ -1346,10 +1289,99 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/ImageFileTabFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#227#228#0" expanded="true" />
+            <element signature="e#257#258#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Local/Android/Sdk/sources/android-28/android/widget/AdapterView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="333" column="36" selection-start-line="333" selection-start-column="27" selection-end-line="333" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="307">
+          <caret line="671" column="21" selection-start-line="671" selection-start-column="21" selection-end-line="671" selection-end-column="21" />
+          <folding>
+            <element signature="e#56355#56356#0" expanded="true" />
+            <element signature="e#58088#58089#0" expanded="true" />
+            <element signature="e#59139#59140#0" expanded="true" />
+            <element signature="e#59249#59250#0" expanded="true" />
+            <element signature="e#60596#60597#0" expanded="true" />
+            <element signature="e#60808#60809#0" expanded="true" />
+            <element signature="e#61758#61759#0" expanded="true" />
+            <element signature="e#66542#66543#0" expanded="true" />
+            <element signature="e#69400#69401#0" expanded="true" />
+            <element signature="e#69993#69994#0" expanded="true" />
+            <element signature="e#72195#72196#0" expanded="true" />
+            <element signature="e#80000#80001#0" expanded="true" />
+            <element signature="e#80415#80416#0" expanded="true" />
+            <element signature="e#100985#100986#0" expanded="true" />
+            <element signature="e#108023#108024#0" expanded="true" />
+            <element signature="e#108124#108125#0" expanded="true" />
+            <element signature="e#108192#108193#0" expanded="true" />
+            <element signature="e#108285#108286#0" expanded="true" />
+            <element signature="e#108353#108354#0" expanded="true" />
+            <element signature="e#108446#108447#0" expanded="true" />
+            <element signature="e#108526#108527#0" expanded="true" />
+            <element signature="e#108719#108720#0" expanded="true" />
+            <element signature="e#108828#108829#0" expanded="true" />
+            <element signature="e#108902#108903#0" expanded="true" />
+            <element signature="e#109007#109008#0" expanded="true" />
+            <element signature="e#109079#109080#0" expanded="true" />
+            <element signature="e#109180#109181#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/pl.openrnd.android/multi-level-listview/1.0.1/c2521782b90586e75a02a91478175b21237a945c/multi-level-listview-1.0.1-sources.jar!/pl/openrnd/multilevellistview/MultiLevelListView.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="248">
+          <caret line="228" column="13" selection-start-line="228" selection-start-column="13" selection-end-line="228" selection-end-column="13" />
+          <folding>
+            <element signature="e#6732#6733#0" expanded="true" />
+            <element signature="e#6785#6786#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="713">
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#200#201#0" expanded="true" />
+            <element signature="e#230#231#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/94312221fefb3eaf2b6b66fc8ae56474/res/drawable-nodpi-v4/apk.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/filedraweritem.xml">
+      <provider selected="true" editor-type-id="android-designer2" />
+      <provider editor-type-id="text-editor">
+        <state relative-caret-position="92">
+          <caret line="4" column="20" selection-start-line="4" selection-start-column="20" selection-end-line="4" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
     <entry file="jar://$PROJECT_DIR$/app/libs/pecoff4j.jar!/org/boris/pecoff4j/OptionalHeader.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="279">
-          <caret line="298" column="30" selection-start-line="298" selection-start-column="30" selection-end-line="298" selection-end-column="30" />
+        <state relative-caret-position="177">
+          <caret line="298" column="36" selection-start-line="298" selection-start-column="36" selection-end-line="298" selection-end-column="36" />
           <folding>
             <element signature="e#7053#7054#0" expanded="true" />
             <element signature="e#7102#7103#0" expanded="true" />
@@ -1357,43 +1389,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="87" column="13" lean-forward="true" selection-start-line="87" selection-start-column="13" selection-end-line="87" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3535#3536#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6072">
-          <caret line="299" column="38" lean-forward="true" selection-start-line="299" selection-start-column="38" selection-end-line="299" selection-end-column="38" />
+        <state relative-caret-position="454">
+          <caret line="315" column="83" selection-start-line="315" selection-start-column="83" selection-end-line="315" selection-end-column="83" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/PEFile.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="276">
-          <caret line="12" column="31" lean-forward="true" selection-start-line="12" selection-start-column="31" selection-end-line="12" selection-end-column="31" />
+        <state relative-caret-position="253">
+          <caret line="43" column="36" selection-start-line="43" selection-start-column="36" selection-end-line="43" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$PROJECT_DIR$/app/libs/pecoff4j.jar!/org/boris/pecoff4j/PE.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="65" column="26" selection-start-line="65" selection-start-column="26" selection-end-line="65" selection-end-column="26" />
           <folding>
-            <element signature="e#200#201#0" expanded="true" />
-            <element signature="e#230#231#0" expanded="true" />
+            <element signature="e#770#771#0" expanded="true" />
+            <element signature="e#812#813#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/ImageFileTabFactory.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileDrawerListItem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="445">
-          <caret line="20" column="17" selection-start-line="20" selection-start-column="17" selection-end-line="20" selection-end-column="17" />
+        <state relative-caret-position="205">
+          <caret line="88" column="32" lean-forward="true" selection-start-line="88" selection-start-column="32" selection-end-line="88" selection-end-column="32" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#227#228#0" expanded="true" />
-            <element signature="e#257#258#0" expanded="true" />
+            <element signature="e#3929#3930#0" expanded="true" />
           </folding>
         </state>
       </provider>

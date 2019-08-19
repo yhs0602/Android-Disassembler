@@ -6,5 +6,5 @@
     android:layout_weight="1"
     android:drawableStart="@android:drawable/arrow_down_float"
     android:drawableEnd="@drawable/ic_folder_icon"
-    android:singleLine="true"
+    android:singleLine="false"
     android:text="TextView" />

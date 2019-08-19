@@ -1,6 +1,7 @@
 package com.kyhsgeekcode.disassembler;
 
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import org.boris.pecoff4j.ImageDataDirectory;
 import org.boris.pecoff4j.PE;
@@ -12,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class FileDrawerListItem {
+    private static final String TAG = "FileItem";
     String caption;
     Object tag;         //number or path
     Drawable drawable;
@@ -60,6 +62,7 @@ public class FileDrawerListItem {
     }
 
     public FileDrawerListItem(File file, int level) {
+        Log.d(TAG, "drawerlistitem" + file.getPath());
         caption = file.getName();
         if (file.isDirectory() && !caption.endsWith("/"))
             caption += "/";
@@ -79,11 +82,16 @@ public class FileDrawerListItem {
                 try {
                     PE pe = PEParser.parse(file.getPath());
                     //https://web.archive.org/web/20110930194955/http://www.grimes.demon.co.uk/dotnet/vistaAndDotnet.htm
-                    ImageDataDirectory idd = pe.getOptionalHeader().getDataDirectory(13);
+                    //Not fourteenth, but 15th
+                    //for(int i=0;i<20;i++) {
+                    ImageDataDirectory idd = pe.getOptionalHeader().getDataDirectory(14);
+                    //    Log.d(TAG, "i:"+i+", size:" + idd.getSize() + ", address:" + idd.getVirtualAddress());
                     if (idd.getSize() != 0 && idd.getVirtualAddress() != 0)
                         type = DrawerItemType.PE_IL;
+                    //}
                 } catch (IOException | ArrayIndexOutOfBoundsException | NullPointerException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "", e);
+                    //e.printStackTrace();
                 }
             }
             else if (lower.endsWith(".so") || lower.endsWith(".elf") || lower.endsWith(".o") || lower.endsWith(".bin")

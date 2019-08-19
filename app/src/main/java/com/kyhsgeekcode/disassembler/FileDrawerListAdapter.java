@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jf.baksmali.Main;
 
@@ -44,7 +45,6 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
 
     public FileDrawerListAdapter(Context context) {
         super();
-        Log.i("TEST", "COnstructor");
         this.context = context;
     }
 
@@ -58,6 +58,11 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
     protected List<?> getSubObjects(Object object) {
         List<FileDrawerListItem> items = new ArrayList<>();
         FileDrawerListItem item = (FileDrawerListItem) object;
+
+        //Moved From MainActivity.java
+        Toast.makeText(context, item.caption, Toast.LENGTH_SHORT).show();
+        //
+
         int initialLevel = item.level;
         int newLevel = initialLevel + 1;
         switch (item.type) {
@@ -233,10 +238,10 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
                 Field[] fields = type.getFields();
                 Method[] methods = type.getMethods();
                 for (Field field : fields) {
-                    items.add(new FileDrawerListItem(field.getName() + ":" + field.getMarshalSignature() + ":" + field.getTypeRef().getType().getName(), FileDrawerListItem.DrawerItemType.FIELD, null, newLevel));
+                    items.add(new FileDrawerListItem(field.getName() + ":" + field.getTypeRef().getName(), FileDrawerListItem.DrawerItemType.FIELD, null, newLevel));
                 }
                 for (Method method : methods) {
-                    items.add(new FileDrawerListItem(method.getName() + ":" + method.getMethodSignature(), FileDrawerListItem.DrawerItemType.METHOD, null, newLevel));
+                    items.add(new FileDrawerListItem(method.getName() + ":" + method.getMethodSignature(), FileDrawerListItem.DrawerItemType.METHOD, method, newLevel));
                 }
                 break;
         }
@@ -300,18 +305,18 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
 
     static {
         iconTable.put(FileDrawerListItem.DrawerItemType.APK, R.drawable.apk);
-        iconTable.put(FileDrawerListItem.DrawerItemType.BINARY, R.drawable.link);
-        iconTable.put(FileDrawerListItem.DrawerItemType.DEX, R.drawable.link);
+        iconTable.put(FileDrawerListItem.DrawerItemType.BINARY, R.drawable.ic_bin);
+        iconTable.put(FileDrawerListItem.DrawerItemType.DEX, R.drawable.ic_dex);
         iconTable.put(FileDrawerListItem.DrawerItemType.DISASSEMBLY, R.drawable.doc);
         iconTable.put(FileDrawerListItem.DrawerItemType.FOLDER, R.drawable.ic_folder_icon);
         iconTable.put(HEAD, R.drawable.ic_folder_icon);
-        iconTable.put(FileDrawerListItem.DrawerItemType.NORMAL, R.drawable.link);
-        iconTable.put(FileDrawerListItem.DrawerItemType.PE, R.drawable.link);
-        iconTable.put(FileDrawerListItem.DrawerItemType.PE_IL, R.drawable.link);
+        iconTable.put(FileDrawerListItem.DrawerItemType.NORMAL, R.drawable.ic_file);
+        iconTable.put(FileDrawerListItem.DrawerItemType.PE, R.drawable.ic_executable);
+        iconTable.put(FileDrawerListItem.DrawerItemType.PE_IL, R.drawable.ic_dotnet);
         iconTable.put(FileDrawerListItem.DrawerItemType.PROJECT, R.drawable.ic_launcher);
         iconTable.put(FileDrawerListItem.DrawerItemType.ZIP, R.drawable.zip);
-        iconTable.put(FileDrawerListItem.DrawerItemType.PE_IL_TYPE, android.R.drawable.ic_dialog_email);
-        iconTable.put(FileDrawerListItem.DrawerItemType.FIELD, android.R.drawable.ic_btn_speak_now);
-        iconTable.put(FileDrawerListItem.DrawerItemType.METHOD, android.R.drawable.ic_lock_idle_low_battery);
+        iconTable.put(FileDrawerListItem.DrawerItemType.PE_IL_TYPE, R.drawable.ic_type);
+        iconTable.put(FileDrawerListItem.DrawerItemType.FIELD, R.drawable.ic_field);
+        iconTable.put(FileDrawerListItem.DrawerItemType.METHOD, R.drawable.ic_method);
     }
 }

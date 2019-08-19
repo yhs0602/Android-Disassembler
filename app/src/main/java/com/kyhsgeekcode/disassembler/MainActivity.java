@@ -662,12 +662,18 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     @Override
                     public void onItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
                         FileDrawerListItem fitem = (FileDrawerListItem) item;
-                        OnChoosePath((String) fitem.tag);
+                        Toast.makeText(MainActivity.this, fitem.caption, Toast.LENGTH_SHORT).show();
+                        ShowYesNoCancelDialog(MainActivity.this, "Open file", "Open " + fitem.caption + "?", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                OnChoosePath((String) fitem.tag);
+                            }
+                        }, null, null);
                     }
 
                     @Override
                     public void onGroupItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
-
+                        //Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
                     }
                 });
                 //https://www.androidpub.com/1351553
