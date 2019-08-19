@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class FileTabContentFactory implements TabHost.TabContentFactory {
-    private final Context context;
+    protected final Context context;
 
     public FileTabContentFactory(Context context) {
         this.context = context;

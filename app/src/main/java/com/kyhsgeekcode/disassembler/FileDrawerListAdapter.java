@@ -26,12 +26,19 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import at.pollaknet.api.facile.Facile;
+import at.pollaknet.api.facile.FacileReflector;
+import at.pollaknet.api.facile.symtab.symbols.Field;
+import at.pollaknet.api.facile.symtab.symbols.Method;
+import at.pollaknet.api.facile.symtab.symbols.Type;
+import at.pollaknet.api.facile.symtab.symbols.scopes.Assembly;
 import pl.openrnd.multilevellistview.ItemInfo;
 import pl.openrnd.multilevellistview.MultiLevelListAdapter;
 
 import static com.kyhsgeekcode.disassembler.FileDrawerListItem.DrawerItemType.HEAD;
 
 public class FileDrawerListAdapter extends MultiLevelListAdapter {
+    private static final String TAG = "FileAdapter";
     private final Context context;
     boolean mAlwaysExpandend = false;
 
@@ -209,6 +216,28 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
                 Main.main(new String[]{"d", "-o", targetDirectory.getAbsolutePath(), filename});
                 return getSubObjects(new FileDrawerListItem(targetDirectory, initialLevel));
             case PE_IL:
+                try {
+                    FacileReflector facileReflector = Facile.load((String) item.tag);
+                    //load the assembly
+                    Assembly assembly = facileReflector.loadAssembly();
+                    Type[] types = assembly.getAllTypes();
+                    for (Type type : types) {
+                        items.add(new FileDrawerListItem(type.getNamespace() + "." + type.getName(), FileDrawerListItem.DrawerItemType.PE_IL_TYPE, type, newLevel));
+                    }
+                } catch (Exception e) {
+                    Logger.e("FileAdapter", "", e);
+                }
+                break;
+            case PE_IL_TYPE:
+                Type type = (Type) item.tag;
+                Field[] fields = type.getFields();
+                Method[] methods = type.getMethods();
+                for (Field field : fields) {
+                    items.add(new FileDrawerListItem(field.getName() + ":" + field.getMarshalSignature() + ":" + field.getTypeRef().getType().getName(), FileDrawerListItem.DrawerItemType.FIELD, null, newLevel));
+                }
+                for (Method method : methods) {
+                    items.add(new FileDrawerListItem(method.getName() + ":" + method.getMethodSignature(), FileDrawerListItem.DrawerItemType.METHOD, null, newLevel));
+                }
                 break;
         }
 
@@ -260,7 +289,11 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
     }
 
     private Drawable getDrawableFromType(FileDrawerListItem.DrawerItemType type) {
-        return context.getDrawable(iconTable.get(type));
+        Log.d(TAG, "type=" + type.name());
+        Integer i = iconTable.get(type);
+        if (i == null)
+            i = android.R.drawable.ic_delete;
+        return context.getDrawable(i);
     }
 
     private static final Map<FileDrawerListItem.DrawerItemType, Integer> iconTable = new HashMap<>();
@@ -277,5 +310,8 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
         iconTable.put(FileDrawerListItem.DrawerItemType.PE_IL, R.drawable.link);
         iconTable.put(FileDrawerListItem.DrawerItemType.PROJECT, R.drawable.ic_launcher);
         iconTable.put(FileDrawerListItem.DrawerItemType.ZIP, R.drawable.zip);
+        iconTable.put(FileDrawerListItem.DrawerItemType.PE_IL_TYPE, android.R.drawable.ic_dialog_email);
+        iconTable.put(FileDrawerListItem.DrawerItemType.FIELD, android.R.drawable.ic_btn_speak_now);
+        iconTable.put(FileDrawerListItem.DrawerItemType.METHOD, android.R.drawable.ic_lock_idle_low_battery);
     }
 }
