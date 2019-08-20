@@ -52,23 +52,23 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 
    ![](images/chooseinstalled.png)
 
-   ![](images/internal storage.png)
+   ![](images/internal_storage.png)
 
 1. You can just click to see the disassembled `.smali` files.
 
-   ![](images/dex opened.png)
+   ![](images/dex_opened.png)
 
 1. Just by opening a .NET file like a folder, you can browse the symbols and methods defined.
 
-   ![](images/dotnet il.png)
+   ![](images/dotnet_il.png)
    
 1. You can view the decompiled `.smali` or `.il` files by clicking the method name.
    
-   ![](images/open ask.png)
+   ![](images/open_ask.png)
    
-   ![](images/opened il.png)
+   ![](images/opened_il.png)
    
-   ![](images/opened smali.png) 
+   ![](images/opened_smali.png) 
    
    ![](images/system.math.png)
    
