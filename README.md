@@ -4,9 +4,9 @@
 
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
 
-# Version 1.5.0 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.6.0 [pre-release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
-## What's new : File navigation drawer in the left
+## What's new : File navigation drawer in the left, support dex, il assemblies, auto-detect .net dlls
 # Features
 - Shows details of elf files.
 - Shows symbol table(functions or objects' ,... names) of elf files.
@@ -36,11 +36,46 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
 - Choose **APK** from installed
 - Search for strings in the binary (*Unfortunately only for ascii characters*)
 - Bytewise analysis (mean, hashes, entropy, g-test, chi-test, autocorrelation) to help determine if the file is encrypted
+- Support .NET assemblies
+- Support dex files
 
 # [Themes Download](https://github.com/KYHSGeekCode/Android-Disassembler/tree/master/themes)
  Good themes usually help you recognize some important instructions easily.
 
-# Usuage
+# Usage(1)
+
+1. Browse to a file to analyze.
+
+   The app automatically digs into `.zip, .apk, .dex` and `.NET assembly` files!
+
+   ![](images/browseto.png)
+
+   ![](images/chooseinstalled.png)
+
+   ![](images/internal storage.png)
+
+1. You can just click to see the disassembled `.smali` files.
+
+   ![](images/dex opened.png)
+
+1. Just by opening a .NET file like a folder, you can browse the symbols and methods defined.
+
+   ![](images/dotnet il.png)
+   
+1. You can view the decompiled `.smali` or `.il` files by clicking the method name.
+   
+   ![](images/open ask.png)
+   
+   ![](images/opened il.png)
+   
+   ![](images/opened smali.png) 
+   
+   ![](images/system.math.png)
+   
+   
+
+# Usage(2)
+
 1. Choose a file to analyze.
 ![image](images/Screenshot_20181222-213649.png)
  - To change chooser, go to settings and change.
@@ -130,12 +165,10 @@ You can download the theme.zip here.
  - Add arrow beside the disassembly.
  - Row selection
  - Better support for thumb assemblies
- - Support .NET assemblies
  - Add compatibility for OllyDbg's `.udd/.bak` files
  - Add compatibility for IDA's produce files.
  - About to add other utilities.
  - Add android resource analyzer
- - Add dex file analyzer
 
 # Help wanted!
  - Don't the symbols' names look odd?
@@ -148,4 +181,5 @@ https://reverseengineering.stackexchange.com/a/18203/23870
 
 # Privacy Policy
 I think I have to notice you that:
+
 - When the crash report with types such as `FileCorruptedException` is sent, the file you are analyzing may be attached to the bug report email, and be uploaded to the repository in `github.com`.
