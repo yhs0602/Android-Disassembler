@@ -28,15 +28,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a02aed75-ddee-4801-b5dd-2f194ea9f9c8" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.1.1/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -143,8 +135,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="307">
-              <caret line="80" column="33" selection-start-line="80" selection-start-column="33" selection-end-line="80" selection-end-column="33" />
+            <state relative-caret-position="261">
+              <caret line="78" column="41" lean-forward="true" selection-start-line="78" selection-start-column="41" selection-end-line="78" selection-end-column="41" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -412,6 +404,11 @@
               <item name="res" type="462c0819:PsiDirectoryNode" />
               <item name="layout" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="Android-Disassembler" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Android-Disassembler" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="images" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -537,48 +534,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1550554530811</updated>
-    </task>
-    <task id="LOCAL-00003" summary="Woraround for the issue #47">
-      <created>1552099937669</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1552099937669</updated>
-    </task>
-    <task id="LOCAL-00004" summary="Parsing file in java is hard!">
-      <created>1552818808038</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1552818808038</updated>
-    </task>
-    <task id="LOCAL-00005" summary="Implementing TODOs is all hard.......">
-      <created>1552831687925</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1552831687925</updated>
-    </task>
-    <task id="LOCAL-00006" summary="Refactored, added RELA parsing routine">
-      <created>1555228593144</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1555228593144</updated>
-    </task>
-    <task id="LOCAL-00007" summary="Fully disabled exporting disasm">
-      <created>1556424144573</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1556424144573</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Upgraded file picker, migrated to AndroidX support library">
-      <created>1556428661740</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1556428661742</updated>
     </task>
     <task id="LOCAL-00009" summary="Maybe Fixed #48 and serious typo(R.id.xxx put in StringBuilder)">
       <created>1556459876741</created>
@@ -881,7 +836,49 @@
       <option name="project" value="LOCAL" />
       <updated>1566256992902</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="update readme">
+      <created>1566261853270</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1566261853270</updated>
+    </task>
+    <task id="LOCAL-00053" summary="Add images">
+      <created>1566261900880</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1566261900881</updated>
+    </task>
+    <task id="LOCAL-00054" summary="Add images">
+      <created>1566262092960</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1566262092960</updated>
+    </task>
+    <task id="LOCAL-00055" summary="Add images">
+      <created>1566262100635</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1566262100635</updated>
+    </task>
+    <task id="LOCAL-00056" summary="Add images">
+      <created>1566262293507</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1566262293507</updated>
+    </task>
+    <task id="LOCAL-00057" summary="Add images">
+      <created>1566262325645</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1566262325645</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="TodoView" selected-index="4">
@@ -895,10 +892,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" sideWeight="0.49085367" visible="true" weight="0.2865772" />
+      <window_info content_ui="combo" id="Project" order="1" sideWeight="0.49085367" visible="true" weight="0.2865772" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" sideWeight="0.50914633" side_tool="true" weight="0.16845638" />
@@ -908,7 +904,7 @@
       <window_info id="Resources Explorer" order="8" weight="0.3295302" />
       <window_info anchor="bottom" id="Run" order="0" weight="0.32907802" />
       <window_info anchor="bottom" id="Debug" order="1" />
-      <window_info anchor="bottom" id="Version Control" order="2" sideWeight="0.49328858" weight="0.3243626" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="2" sideWeight="0.49328858" visible="true" weight="0.32340425" />
       <window_info anchor="bottom" id="Logcat" order="3" sideWeight="0.914094" weight="0.4113475" />
       <window_info anchor="bottom" id="TODO" order="4" sideWeight="0.49932885" weight="0.32907802" />
       <window_info anchor="bottom" id="Terminal" order="5" weight="0.32907802" />
@@ -1000,8 +996,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Improved permission alert system" />
-    <MESSAGE value="Choose APK from installed" />
     <MESSAGE value="Added Online Help menu" />
     <MESSAGE value="Rearranged code, remove unnecessary comments" />
     <MESSAGE value="Sort APK list" />
@@ -1025,7 +1019,9 @@
     <MESSAGE value="Fixed .NET endianness, show constants" />
     <MESSAGE value="Added .NET assembly feature, but the lib has bugs??????" />
     <MESSAGE value="Temporary workaround for Method.toString bug at the library. (+library output is buggy?)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Temporary workaround for Method.toString bug at the library. (+library output is buggy?)" />
+    <MESSAGE value="update readme" />
+    <MESSAGE value="Add images" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add images" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
@@ -1422,8 +1418,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/kyhsgeekcode/disassembler/FileTabFactory/TextFileTabFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="307">
-          <caret line="80" column="33" selection-start-line="80" selection-start-column="33" selection-end-line="80" selection-end-column="33" />
+        <state relative-caret-position="261">
+          <caret line="78" column="41" lean-forward="true" selection-start-line="78" selection-start-column="41" selection-end-line="78" selection-end-column="41" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
