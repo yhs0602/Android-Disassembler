@@ -1,0 +1,46 @@
+[
+  {
+    "level": "INFO",
+    "message": "Start JSON generation. Platform version: 24 min SDK version: x86"
+  },
+  {
+    "level": "INFO",
+    "message": "rebuilding JSON C:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\.cxx\\cmake\\release\\x86\\android_gradle_build.json due to:"
+  },
+  {
+    "level": "INFO",
+    "message": "- a dependent build file changed"
+  },
+  {
+    "level": "INFO",
+    "message": "  - C:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\CMakeLists.txt"
+  },
+  {
+    "level": "INFO",
+    "message": "keeping json folder \u0027C:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\.cxx\\cmake\\release\\x86\u0027 but regenerating project"
+  },
+  {
+    "level": "INFO",
+    "message": "executing cmake Executable : C:\\Users\\82102\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe\narguments : \n-HC:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\n-BC:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\.cxx\\cmake\\release\\x86\n-DANDROID_ABI\u003dx86\n-DANDROID_PLATFORM\u003dandroid-24\n-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003dC:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\build\\intermediates\\cmake\\release\\obj\\x86\n-DCMAKE_BUILD_TYPE\u003dRelease\n-DANDROID_NDK\u003dC:\\Users\\82102\\AppData\\Local\\Android\\Sdk\\ndk-bundle\n-DCMAKE_CXX_FLAGS\u003d\n-DCMAKE_TOOLCHAIN_FILE\u003dC:\\Users\\82102\\AppData\\Local\\Android\\Sdk\\ndk-bundle\\build\\cmake\\android.toolchain.cmake\n-DCMAKE_MAKE_PROGRAM\u003dC:\\Users\\82102\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\ninja.exe\n-GAndroid Gradle - Ninja\njvmArgs : \n\n"
+  },
+  {
+    "level": "INFO",
+    "message": "Executable : C:\\Users\\82102\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\cmake.exe\narguments : \n-HC:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\n-BC:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\.cxx\\cmake\\release\\x86\n-DANDROID_ABI\u003dx86\n-DANDROID_PLATFORM\u003dandroid-24\n-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003dC:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\build\\intermediates\\cmake\\release\\obj\\x86\n-DCMAKE_BUILD_TYPE\u003dRelease\n-DANDROID_NDK\u003dC:\\Users\\82102\\AppData\\Local\\Android\\Sdk\\ndk-bundle\n-DCMAKE_CXX_FLAGS\u003d\n-DCMAKE_TOOLCHAIN_FILE\u003dC:\\Users\\82102\\AppData\\Local\\Android\\Sdk\\ndk-bundle\\build\\cmake\\android.toolchain.cmake\n-DCMAKE_MAKE_PROGRAM\u003dC:\\Users\\82102\\AppData\\Local\\Android\\Sdk\\cmake\\3.6.4111459\\bin\\ninja.exe\n-GAndroid Gradle - Ninja\njvmArgs : \n\n"
+  },
+  {
+    "level": "INFO",
+    "message": "done executing cmake"
+  },
+  {
+    "level": "INFO",
+    "message": "write build output C:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\.cxx\\cmake\\release\\x86\\build_output.txt"
+  },
+  {
+    "level": "INFO",
+    "message": "write command file C:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\.cxx\\cmake\\release\\x86\\build_command.txt"
+  },
+  {
+    "level": "INFO",
+    "message": "JSON generation completed without problems"
+  }
+]

@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
      * installation time by the package manager.
      */
     static {
-        System.loadLibrary("hello-jni");
+        System.loadLibrary("native-lib");
     }
     //////////////////////////////////////////////Views/////////////////////////////////////
 

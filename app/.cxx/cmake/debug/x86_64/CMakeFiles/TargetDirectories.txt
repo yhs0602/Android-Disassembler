@@ -1,0 +1,3 @@
+C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/.cxx/cmake/debug/x86_64/CMakeFiles/native-lib.dir
+C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/.cxx/cmake/debug/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/.cxx/cmake/debug/x86_64/CMakeFiles/rebuild_cache.dir
