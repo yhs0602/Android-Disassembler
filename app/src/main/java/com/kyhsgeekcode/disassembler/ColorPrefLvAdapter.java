@@ -1,6 +1,5 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
@@ -89,7 +88,7 @@ public class ColorPrefLvAdapter extends BaseAdapter
 		@Override
 		public void onClick(View p1)
 		{
-			ColorPickerDialog.Builder builder = new ColorPickerDialog.Builder(c, AlertDialog.THEME_DEVICE_DEFAULT_DARK);
+			ColorPickerDialog.Builder builder = new ColorPickerDialog.Builder(c, android.R.style.Theme_DeviceDefault_Light_DarkActionBar);
 			builder.setTitle(item.name());
 			//builder.setFlagView(new CustomFlag(this, R.layout.layout_flag));
 			builder.setPositiveButton(/*getString(R.string.confirm)*/"OK", new ColorEnvelopeListener() {

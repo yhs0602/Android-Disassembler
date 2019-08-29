@@ -14,10 +14,9 @@
 		android:padding="10dp"/>
 
 	<GridLayout
-		columnCount="1"
 		android:layout_height="match_parent"
 		android:layout_width="wrap_content"
-		rowCount="1"
+		android:rowCount="1"
 		android:columnCount="4">
 
 		<Button
@@ -84,14 +83,14 @@
 						android:layout_width="wrap_content"
 						android:text="Deg"
 						android:padding="8dp"
-						android:id="@+id/calculatorRBHex"/>
+						android:id="@+id/calculatorRBDeg" />
 
 					<RadioButton
 						android:layout_height="wrap_content"
 						android:layout_width="wrap_content"
 						android:text="Rad"
 						android:padding="8dp"
-						android:id="@+id/calculatorRBDec"/>
+						android:id="@+id/calculatorRBRad" />
 
 				</RadioGroup>
 
@@ -105,14 +104,14 @@
 						android:layout_width="wrap_content"
 						android:text="Signed"
 						android:padding="8dp"
-						android:id="@+id/calculatorRBHex"/>
+						android:id="@+id/calculatorRBSigned" />
 
 					<RadioButton
 						android:layout_height="wrap_content"
 						android:layout_width="wrap_content"
 						android:text="Unsigned"
 						android:padding="8dp"
-						android:id="@+id/calculatorRBDec"/>
+						android:id="@+id/calculatorRBUnsigned" />
 
 				</RadioGroup>
 

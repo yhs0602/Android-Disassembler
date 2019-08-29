@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class GetAPKAsyncTask extends AsyncTaskDialog<Void, Void> {
         dialog.setMax(numpkg * 2);
         dialog.setMessage("Sorting APKs...");
         publishProgress(1);
-        packages.sort(new Comparator<ApplicationInfo>() {
+        Collections.sort(packages, new Comparator<ApplicationInfo>() {
             @Override
             public int compare(ApplicationInfo o1, ApplicationInfo o2) {
                 String applabel1 = (String) pm.getApplicationLabel(o1);

@@ -1071,7 +1071,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     AlertSelFile();
                     break;
                 }
-                autocomplete = new AutoCompleteTextView(this) {
+                autocomplete = new /*android.support.v7.widget.AppCompat*/AutoCompleteTextView(this) {
                     @Override
                     public boolean enoughToFilter() {
                         return true;
@@ -2040,6 +2040,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_SELECT_FILE) {
             if (resultCode == Activity.RESULT_OK) {
                 String path = data.getStringExtra("path");

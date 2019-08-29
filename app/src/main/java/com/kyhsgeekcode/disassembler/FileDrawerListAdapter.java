@@ -75,7 +75,7 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
                     case MainActivity.TAG_INSTALLED:
                         final PackageManager pm = context.getPackageManager();
                         List<ApplicationInfo> ais = pm.getInstalledApplications(0);
-                        ais.sort(new Comparator<ApplicationInfo>() {
+                        Collections.sort(ais, new Comparator<ApplicationInfo>() {
                             @Override
                             public int compare(ApplicationInfo o1, ApplicationInfo o2) {
                                 String applabel1 = (String) pm.getApplicationLabel(o1);

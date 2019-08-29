@@ -1,6 +1,11 @@
 package com.kyhsgeekcode.disassembler.Calc;
-import android.util.*;
-import java.util.*;
+
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.EmptyStackException;
+import java.util.List;
+import java.util.Stack;
 
 public class Calculator
 {
@@ -99,8 +104,7 @@ public class Calculator
 										break;
 								}
 								operatorStack.push((Operator)tok);
-							}
-							else if (cmp < 0) //new token has higher priority
+							} else// if (cmp < 0) //new token has higher priority
 							{
 								operatorStack.push((Operator)tok);
 							}

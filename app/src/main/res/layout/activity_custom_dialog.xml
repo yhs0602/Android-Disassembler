@@ -31,8 +31,7 @@
 		<GridLayout
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
-			rowCount="1"
-			columnCount="1"
+			android:rowCount="1"
 			android:columnCount="3">
 
 			<CheckBox
