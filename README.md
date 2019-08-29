@@ -153,7 +153,7 @@ You can download the theme.zip here.
  - [PhotoView](https://github.com/chrisbanes/PhotoView)
  - [Multi-level-Listview](https://github.com/open-rnd/android-multi-level-listview)
  - [Facile-api](https://github.com/TomSmartBishop/facile-api)
-
+ - [plthook](https://github.com/kubo/plthook/)
 # TODO
  - Show prototypes of NDK/C standard APIs in the symbols tab.
  - More sophisticated colorizing
