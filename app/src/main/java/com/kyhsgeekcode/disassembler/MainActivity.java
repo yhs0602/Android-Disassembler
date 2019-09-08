@@ -415,8 +415,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             if (Init() == -1) {
                 throw new RuntimeException();
             }
-            //cs = new Capstone(Capstone.CS_ARCH_ARM, Capstone.CS_MODE_ARM);
-            //cs.setDetail(Capstone.CS_OPT_ON);
         } catch (RuntimeException e) {
             Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), Toast.LENGTH_LONG).show();
             android.os.Process.killProcess(android.os.Process.getGidForName(null));
@@ -602,126 +600,123 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				public void onScrollStateChanged(AbsListView view, int scrollState) {}
 			});
 			*/
-        toDoAfterPermQueue.add(new Runnable() {
-            @Override
-            public void run() {
-                mProjNames = new String[]{"Exception", "happened"};
-                try {
-                    colorHelper = new ColorHelper(MainActivity.this);
-                } catch (SecurityException e) {
-                    Log.e(TAG, "Theme failed", e);
-                    throw e;
-                }
-                if (disasmManager == null)
-                    disasmManager = new DisassemblyManager();
-                adapter = new ListViewAdapter(null, colorHelper, MainActivity.this);
-                setupListView();
-                disasmManager.setData(adapter.itemList(), adapter.getAddress());
-                // find the retained fragment on activity restarts
-                FragmentManager fm = getFragmentManager();
-                dataFragment = (RetainedFragment) fm.findFragmentByTag("data");
-                if (dataFragment == null) {
-                    // add the fragment
-                    dataFragment = new RetainedFragment();
-                    fm.beginTransaction().add(dataFragment, "data").commit();
-                    // load the data from the web
-                    dataFragment.setDisasmManager(disasmManager);
-                } else {
-                    //It should be handled
-                    disasmManager = dataFragment.getDisasmManager();
-                    filecontent = dataFragment.getFilecontent();
-                    parsedFile = dataFragment.getParsedFile();
-                    fpath = dataFragment.getPath();
-                    if (parsedFile != null) {
-                        symbolLvAdapter.itemList().clear();
-                        symbolLvAdapter.addAll(parsedFile.getSymbols());
-                        for (Symbol s : symbolLvAdapter.itemList()) {
-                            autoSymAdapter.add(s.name);
-                        }
+        toDoAfterPermQueue.add(() -> {
+            mProjNames = new String[]{"Exception", "happened"};
+            try {
+                colorHelper = new ColorHelper(MainActivity.this);
+            } catch (SecurityException e) {
+                Log.e(TAG, "Theme failed", e);
+                throw e;
+            }
+            if (disasmManager == null)
+                disasmManager = new DisassemblyManager();
+            adapter = new ListViewAdapter(null, colorHelper, MainActivity.this);
+            setupListView();
+            disasmManager.setData(adapter.itemList(), adapter.getAddress());
+            // find the retained fragment on activity restarts
+            FragmentManager fm = getFragmentManager();
+            dataFragment = (RetainedFragment) fm.findFragmentByTag("data");
+            if (dataFragment == null) {
+                // add the fragment
+                dataFragment = new RetainedFragment();
+                fm.beginTransaction().add(dataFragment, "data").commit();
+                // load the data from the web
+                dataFragment.setDisasmManager(disasmManager);
+            } else {
+                //It should be handled
+                disasmManager = dataFragment.getDisasmManager();
+                filecontent = dataFragment.getFilecontent();
+                parsedFile = dataFragment.getParsedFile();
+                fpath = dataFragment.getPath();
+                if (parsedFile != null) {
+                    symbolLvAdapter.itemList().clear();
+                    symbolLvAdapter.addAll(parsedFile.getSymbols());
+                    for (Symbol s : symbolLvAdapter.itemList()) {
+                        autoSymAdapter.add(s.name);
                     }
                 }
-                try {
-                    projectManager = new ProjectManager(MainActivity.this);
-                    mProjNames = projectManager.strProjects();//new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
-                } catch (IOException e) {
-                    AlertError("Failed to load projects", e);
-                }
-                // Set the adapter for the list view
-                mDrawerList.setAdapter(mDrawerAdapter = new FileDrawerListAdapter(MainActivity.this));//new ArrayAdapter<String>(MainActivity.this,
-                //R.layout.row, mProjNames));
-                List<FileDrawerListItem> initialDrawers = new ArrayList<>();
-                initialDrawers.add(new FileDrawerListItem("Installed", FileDrawerListItem.DrawerItemType.HEAD, TAG_INSTALLED, 0));
-                initialDrawers.add(new FileDrawerListItem("Internal Storage", FileDrawerListItem.DrawerItemType.HEAD, TAG_STORAGE, 0));
-                initialDrawers.add(new FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROJECTS, 0));
-                initialDrawers.add(new FileDrawerListItem("Processes-requires root", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROCESSES, 0));
-                //initialDrawers.add(new FileDrawerListItem("Running apps", FileDrawerListItem.DrawerItemType.HEAD, TAG_RUNNING_APPS, 0));
+            }
+            try {
+                projectManager = new ProjectManager(MainActivity.this);
+                mProjNames = projectManager.strProjects();//new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
+            } catch (IOException e) {
+                AlertError("Failed to load projects", e);
+            }
+            // Set the adapter for the list view
+            mDrawerList.setAdapter(mDrawerAdapter = new FileDrawerListAdapter(MainActivity.this));//new ArrayAdapter<String>(MainActivity.this,
+            //R.layout.row, mProjNames));
+            List<FileDrawerListItem> initialDrawers = new ArrayList<>();
+            initialDrawers.add(new FileDrawerListItem("Installed", FileDrawerListItem.DrawerItemType.HEAD, TAG_INSTALLED, 0));
+            initialDrawers.add(new FileDrawerListItem("Internal Storage", FileDrawerListItem.DrawerItemType.HEAD, TAG_STORAGE, 0));
+            initialDrawers.add(new FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROJECTS, 0));
+            initialDrawers.add(new FileDrawerListItem("Processes-requires root", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROCESSES, 0));
+            //initialDrawers.add(new FileDrawerListItem("Running apps", FileDrawerListItem.DrawerItemType.HEAD, TAG_RUNNING_APPS, 0));
 
-                mDrawerAdapter.setDataItems(initialDrawers);
-                mDrawerAdapter.notifyDataSetChanged();
-                mDrawerList.setOnItemClickListener(new pl.openrnd.multilevellistview.OnItemClickListener() {
-                    @Override
-                    public void onItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
-                        FileDrawerListItem fitem = (FileDrawerListItem) item;
-                        Toast.makeText(MainActivity.this, fitem.caption, Toast.LENGTH_SHORT).show();
-                        if (!fitem.isOpenable())
-                            return;
-                        ShowYesNoCancelDialog(MainActivity.this, "Open file", "Open " + fitem.caption + "?", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (fitem.tag instanceof String)
-                                    OnChoosePath((String) fitem.tag);
-                                else {
-                                    String resultPath = fitem.CreateDataToPath(context.getFilesDir());
-                                    if (resultPath != null)
-                                        OnChoosePath(resultPath);
-                                    else
-                                        Toast.makeText(MainActivity.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
-                                }
+            mDrawerAdapter.setDataItems(initialDrawers);
+            mDrawerAdapter.notifyDataSetChanged();
+            mDrawerList.setOnItemClickListener(new pl.openrnd.multilevellistview.OnItemClickListener() {
+                @Override
+                public void onItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
+                    FileDrawerListItem fitem = (FileDrawerListItem) item;
+                    Toast.makeText(MainActivity.this, fitem.caption, Toast.LENGTH_SHORT).show();
+                    if (!fitem.isOpenable())
+                        return;
+                    ShowYesNoCancelDialog(MainActivity.this, "Open file", "Open " + fitem.caption + "?", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (fitem.tag instanceof String)
+                                OnChoosePath((String) fitem.tag);
+                            else {
+                                String resultPath = fitem.CreateDataToPath(context.getFilesDir());
+                                if (resultPath != null)
+                                    OnChoosePath(resultPath);
+                                else
+                                    Toast.makeText(MainActivity.this, "Something went wrong.", Toast.LENGTH_SHORT).show();
                             }
-                        }, null, null);
-                    }
-
-                    @Override
-                    public void onGroupItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
-                        //Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
-                    }
-                });
-                //https://www.androidpub.com/1351553
-                Intent intent = getIntent();
-                if (intent.getAction().equals(Intent.ACTION_VIEW)) {
-                    // User opened this app from file browser
-                    String filePath = intent.getData().getPath();
-                    Log.d(TAG, "intent path=" + filePath);
-                    String[] toks = filePath.split(Pattern.quote("."));
-                    int last = toks.length - 1;
-                    String ext;
-                    if (last >= 1) {
-                        ext = toks[last];
-                        if ("adp".equalsIgnoreCase(ext)) {
-                            //User opened the project file
-                            //now get the project name
-                            File file = new File(filePath);
-                            String pname = file.getName();
-                            toks = pname.split(Pattern.quote("."));
-                            projectManager.Open(toks[toks.length - 2]);
-                        } else {
-                            //User opened pther files
-                            OnChoosePath(intent.getData());
                         }
+                    }, null, null);
+                }
+
+                @Override
+                public void onGroupItemClicked(MultiLevelListView parent, View view, Object item, ItemInfo itemInfo) {
+                    //Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
+                }
+            });
+            //https://www.androidpub.com/1351553
+            Intent intent = getIntent();
+            if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+                // User opened this app from file browser
+                String filePath = intent.getData().getPath();
+                Log.d(TAG, "intent path=" + filePath);
+                String[] toks = filePath.split(Pattern.quote("."));
+                int last = toks.length - 1;
+                String ext;
+                if (last >= 1) {
+                    ext = toks[last];
+                    if ("adp".equalsIgnoreCase(ext)) {
+                        //User opened the project file
+                        //now get the project name
+                        File file = new File(filePath);
+                        String pname = file.getName();
+                        toks = pname.split(Pattern.quote("."));
+                        projectManager.Open(toks[toks.length - 2]);
                     } else {
-                        //User opened other files
+                        //User opened pther files
                         OnChoosePath(intent.getData());
                     }
-                } else { // android.intent.action.MAIN
-                    String lastProj = setting.getString(LASTPROJKEY, "");
-                    if (projectManager != null)
-                        projectManager.Open(lastProj);
+                } else {
+                    //User opened other files
+                    OnChoosePath(intent.getData());
                 }
-
-                // create the fragment and data the first time
-                // the data is available in dataFragment.getData()
-
+            } else { // android.intent.action.MAIN
+                String lastProj = setting.getString(LASTPROJKEY, "");
+                if (projectManager != null)
+                    projectManager.Open(lastProj);
             }
+
+            // create the fragment and data the first time
+            // the data is available in dataFragment.getData()
+
         });
 
         requestAppPermissions(this);
@@ -1954,34 +1949,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     //https://stackoverflow.com/a/16149831/8614565
     private void showAPKChooser() {
-        /*List<String> apklists = new ArrayList<>();
-        final List<String> pathlists = new ArrayList<>();
-        final PackageManager pm = getPackageManager();
-        //get a list of installed apps.
-        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-        packages.sort(new Comparator<ApplicationInfo>() {
-            @Override
-            public int compare(ApplicationInfo o1, ApplicationInfo o2) {
-                String applabel1 = (String) pm.getApplicationLabel(o1);
-                String applabel2 = (String) pm.getApplicationLabel(o2);
-                return applabel1.compareTo(applabel2);
-            }
-        });
-        for (ApplicationInfo packageInfo : packages) {
-            //Log.d(TAG, "Installed package :" + packageInfo.packageName);
-            //Log.d(TAG, "Apk file path:" + packageInfo.sourceDir);
-            String applabel = (String) pm.getApplicationLabel(packageInfo);
-            String label = applabel + "(" + packageInfo.packageName + ")";
-            apklists.add(label);
-            pathlists.add(packageInfo.sourceDir);
-        }
-        ShowSelDialog(apklists, "Choose APK from installed", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String path = pathlists.get(which);
-                OnChoosePath(path);
-            }
-        });*/
         new GetAPKAsyncTask(this).execute();
     }
 

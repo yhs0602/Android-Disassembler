@@ -1,9 +1,4 @@
 # ninja log v5
-1	2448	0	CMakeFiles/native-lib.dir/src/main/cpp/native-lib.cpp.o	3f44538d596fecc0
-3	165	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libnative-lib.so	1aab28ce0215629e
-3	3179	0	CMakeFiles/native-lib.dir/src/main/cpp/native-lib.cpp.o	3f44538d596fecc0
-3179	3597	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libnative-lib.so	1aab28ce0215629e
-21	661	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libnative-lib.so	c600eb5c8fc3b071
-4	576	0	CMakeFiles/native-lib.dir/src/main/cpp/plthook/plthook_elf.c.o	d4d891510a748cd
-24	1007	0	CMakeFiles/native-lib.dir/src/main/cpp/native-lib.cpp.o	3f44538d596fecc0
-3	402	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libnative-lib.so	dc956856e74e8137
+3	5350	0	CMakeFiles/native-lib.dir/src/main/cpp/plthook/plthook_elf.c.o	f3ca50817533a22f
+330	8588	0	CMakeFiles/native-lib.dir/src/main/cpp/native-lib.cpp.o	3d7a20326397ccc8
+8593	9884	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libnative-lib.so	e3eced1f26533ae7

@@ -49,7 +49,7 @@
     "buildTargetSet": []
   },
   "abi": "X86",
-  "abiPlatformVersion": 24,
+  "abiPlatformVersion": 23,
   "cxxBuildFolder": "C:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\.cxx\\cmake\\release\\x86",
   "jsonFile": "C:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\.cxx\\cmake\\release\\x86\\android_gradle_build.json",
   "gradleBuildOutputFolder": "C:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\.cxx\\cxx\\release\\x86",
