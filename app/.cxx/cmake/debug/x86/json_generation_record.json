@@ -29,10 +29,6 @@
   },
   {
     "level": "INFO",
-    "message": "- command changed from previous, will remove stale json folder"
-  },
-  {
-    "level": "INFO",
     "message": "removing stale contents from \u0027C:\\Users\\82102\\AndroidStudioProjects\\Android-Disassembler\\app\\.cxx\\cmake\\debug\\x86\u0027"
   },
   {
