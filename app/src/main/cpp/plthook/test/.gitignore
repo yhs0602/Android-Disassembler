@@ -1,7 +1,0 @@
-*.obj
-libtest.dll
-libtest.exp
-libtest.lib
-libtest.so
-testprog
-testprog.exe
