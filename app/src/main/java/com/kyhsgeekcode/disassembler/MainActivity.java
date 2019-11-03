@@ -738,8 +738,21 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             editor.putBoolean("show", false);
             editor.commit();
         }
+        File filesDir = getFilesDir();
+        File[] files = filesDir.listFiles();
+        for (File file : files) {
+            deleteRecursive(file);
+        }
     }
 
+    //https://stackoverflow.com/a/6425744/8614565
+    void deleteRecursive(File fileOrDirectory) {
+        if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles())
+                deleteRecursive(child);
+
+        fileOrDirectory.delete();
+    }
     @Override
     public void onClick(View p1) {
         //Button btn = (Button) p1;
