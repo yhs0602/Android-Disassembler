@@ -1,4 +1,0 @@
-# ninja log v5
-11	657	0	CMakeFiles/native-lib.dir/src/main/cpp/plthook/plthook_elf.c.o	2c0db33984c94017
-2	2389	0	CMakeFiles/native-lib.dir/src/main/cpp/native-lib.cpp.o	231432f732392fd4
-2395	3318	0	../../../../build/intermediates/cmake/debug/obj/x86_64/libnative-lib.so	b8dcf5ad7c1ff416

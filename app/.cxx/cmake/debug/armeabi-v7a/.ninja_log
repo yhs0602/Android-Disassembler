@@ -1,4 +1,0 @@
-# ninja log v5
-3	5350	0	CMakeFiles/native-lib.dir/src/main/cpp/plthook/plthook_elf.c.o	f3ca50817533a22f
-330	8588	0	CMakeFiles/native-lib.dir/src/main/cpp/native-lib.cpp.o	3d7a20326397ccc8
-8593	9884	0	../../../../build/intermediates/cmake/debug/obj/armeabi-v7a/libnative-lib.so	e3eced1f26533ae7

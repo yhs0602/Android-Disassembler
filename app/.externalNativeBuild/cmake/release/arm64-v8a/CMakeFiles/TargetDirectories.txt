@@ -1,3 +1,0 @@
-C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/.externalNativeBuild/cmake/release/arm64-v8a/CMakeFiles/hello-jni.dir
-C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/.externalNativeBuild/cmake/release/arm64-v8a/CMakeFiles/edit_cache.dir
-C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/.externalNativeBuild/cmake/release/arm64-v8a/CMakeFiles/rebuild_cache.dir

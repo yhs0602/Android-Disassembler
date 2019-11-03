@@ -1,3 +1,0 @@
-C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/.cxx/cmake/release/arm64-v8a/CMakeFiles/native-lib.dir
-C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/.cxx/cmake/release/arm64-v8a/CMakeFiles/edit_cache.dir
-C:/Users/82102/AndroidStudioProjects/Android-Disassembler/app/.cxx/cmake/release/arm64-v8a/CMakeFiles/rebuild_cache.dir
