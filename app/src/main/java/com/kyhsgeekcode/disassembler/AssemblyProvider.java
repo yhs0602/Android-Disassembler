@@ -3,7 +3,7 @@ package com.kyhsgeekcode.disassembler;
 import java.util.List;
 
 public abstract class AssemblyProvider {
-    public AssemblyProvider(MainActivity activity, ListViewAdapter adapter, long total) {
+    public AssemblyProvider(MainActivity activity, DisasmListViewAdapter adapter, long total) {
         this.activity = activity;
         this.total = total;
         this.adapter = adapter;
@@ -35,5 +35,5 @@ public abstract class AssemblyProvider {
 
     MainActivity activity;
     long total;
-    ListViewAdapter adapter;
+    DisasmListViewAdapter adapter;
 }

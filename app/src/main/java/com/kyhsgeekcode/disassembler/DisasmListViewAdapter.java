@@ -14,7 +14,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollListener {
+public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScrollListener {
     public static final int INSERT_COUNT = 80;
 
     private String TAG = "Disassembler LV";
@@ -319,7 +319,7 @@ public class ListViewAdapter extends BaseAdapter implements ListView.OnScrollLis
     ColorHelper colorHelper;
     private int architecture;
 
-    public ListViewAdapter(AbstractFile file, ColorHelper ch, MainActivity ma) {
+    public DisasmListViewAdapter(AbstractFile file, ColorHelper ch, MainActivity ma) {
         this.file = file;
         colorHelper = ch;
         architecture = 0;//FIXME:clarification needed but OK now

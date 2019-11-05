@@ -8,7 +8,7 @@ import at.pollaknet.api.facile.symtab.symbols.scopes.Assembly;
 // size -> 1 or (실제 바이트 사이즈)
 //
 public class DotNetAssemblyProvider extends AssemblyProvider {
-    public DotNetAssemblyProvider(MainActivity activity, ListViewAdapter adapter, long total, Assembly assembly) {
+    public DotNetAssemblyProvider(MainActivity activity, DisasmListViewAdapter adapter, long total, Assembly assembly) {
         super(activity, adapter, total);
         this.assembly = assembly;
         Type[] types = assembly.getAllTypes();

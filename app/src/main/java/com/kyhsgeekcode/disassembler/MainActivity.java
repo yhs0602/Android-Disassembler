@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private GridView gvHex;
     private GridView gvAscii;
     private ChooseColumnDialog mCustomDialog;
-    private ListViewAdapter adapter;
+    private DisasmListViewAdapter adapter;
     private ListView listview;
     public final Runnable runnableRequestLayout = new Runnable() {
         @Override
@@ -610,7 +610,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
             if (disasmManager == null)
                 disasmManager = new DisassemblyManager();
-            adapter = new ListViewAdapter(null, colorHelper, MainActivity.this);
+            adapter = new DisasmListViewAdapter(null, colorHelper, MainActivity.this);
             setupListView();
             disasmManager.setData(adapter.itemList(), adapter.getAddress());
             // find the retained fragment on activity restarts
@@ -1886,7 +1886,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     private void setupListView() {
         //moved to onCreate for avoiding NPE
-        //adapter = new ListViewAdapter();
+        //adapter = new DisasmListViewAdapter();
         listview = (ListView) findViewById(R.id.listview);
         listview.setAdapter(adapter);
         listview.setOnItemClickListener(new DisasmClickListener(this));
@@ -2727,7 +2727,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 	 btn_third.setOnClickListener(movePageListener);
 	 btn_third.setTag(2);*/
 // Adapter 생성
-// adapter = new ListViewAdapter() ;
+// adapter = new DisasmListViewAdapter() ;
 	/*	ListViewItem item=new ListViewItem();
 	 item.setAddress("address");
 	 item.setBytes("bytes");

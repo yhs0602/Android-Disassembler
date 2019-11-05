@@ -7,7 +7,7 @@ public class DisassemblyManager {
     //Manages disassembled data.
 
     //Container
-    //ListViewAdapter adapter; This may not be able to conainer Adapter, view, etc to prevent the memory leak
+    //DisasmListViewAdapter adapter; This may not be able to conainer Adapter, view, etc to prevent the memory leak
     /*ArrayList*/ LongSparseArray<ListViewItem> items = new LongSparseArray<>();
 
     //The last address of disassembled(Used for abort/resume)
