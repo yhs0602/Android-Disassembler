@@ -1134,12 +1134,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             case R.id.save: {
                 //if(currentProject==null)
                 {
-                    ExportDisasm(new Runnable() {
-                        @Override
-                        public void run() {
-                            SaveDetail();
-                        }
-                    });
+                    ExportDisasm(this::SaveDetail);
                 }
                 break;
             }

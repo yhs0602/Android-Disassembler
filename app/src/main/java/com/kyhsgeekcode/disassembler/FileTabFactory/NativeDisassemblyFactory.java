@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
+import com.kyhsgeekcode.disassembler.AbstractFile;
 import com.kyhsgeekcode.disassembler.ColorHelper;
 import com.kyhsgeekcode.disassembler.DisasmClickListener;
 import com.kyhsgeekcode.disassembler.DisasmListViewAdapter;
@@ -22,7 +23,7 @@ public class NativeDisassemblyFactory extends FileTabContentFactory {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View root = inflater.inflate(R.layout.disasmtab, null);
         ListView listview = root.findViewById(R.id.disasmTabListview);
-        DisasmListViewAdapter adapter = new DisasmListViewAdapter(null, ColorHelper.getInstance(), (MainActivity) context);
+        DisasmListViewAdapter adapter = new DisasmListViewAdapter(AbstractFile.getInstance(tag), ColorHelper.getInstance(), (MainActivity) context);
         listview.setAdapter(adapter);
         listview.setOnItemClickListener(new DisasmClickListener((MainActivity) context));
         listview.setOnScrollListener(adapter);
