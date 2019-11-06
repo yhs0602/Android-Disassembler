@@ -67,6 +67,7 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.kyhsgeekcode.disassembler.Calc.Calculator;
 import com.kyhsgeekcode.disassembler.FileTabFactory.FileTabContentFactory;
 import com.kyhsgeekcode.disassembler.FileTabFactory.ImageFileTabFactory;
+import com.kyhsgeekcode.disassembler.FileTabFactory.NativeDisassemblyFactory;
 import com.kyhsgeekcode.disassembler.FileTabFactory.TextFileTabFactory;
 import com.kyhsgeekcode.disassembler.Utils.Olly.UddTag;
 import com.stericson.RootTools.RootTools;
@@ -186,13 +187,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     //FileTabContentFactory factory = new FileTabContentFactory(this);
     FileTabContentFactory textFactory = new TextFileTabFactory(this);
     FileTabContentFactory imageFactory = new ImageFileTabFactory(this);
-
+    FileTabContentFactory nativeDisasmFactory = new NativeDisassemblyFactory(this);
     final List<FileTabContentFactory> factoryList = new ArrayList<>();
 
     {
         factoryList.add(textFactory);
         factoryList.add(imageFactory);
-
+        factoryList.add(nativeDisasmFactory);
     }
 
     ///////////////////////////////////////////////////UI manager////////////////////////////////////////////
@@ -2107,19 +2108,18 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             etFilename.setText(file.getAbsolutePath());
             long fsize = file.length();
             int index = 0;
-            setFilecontent(new byte[(int) fsize]);
-
-            int len, counter = 0;
+            setFilecontent(Utils.getBytes(in)/*new byte[(int) fsize]*/);
+            /*
+            int len= 0;
             byte[] b = new byte[1024];
             while ((len = in.read(b)) > 0) {
-                for (int i = 0; i < len; i++) { // byte[] 버퍼 내용 출력
-                    //System.out.format("%02X ", b[i]);
+                for (int i = 0; i < len; i++) {
                     filecontent[index] = b[i];
                     index++;
-                    counter++;
                 }
             }
             in.close();
+            */
             AfterReadFully(file);
             Toast.makeText(this, "success size=" + index /*+ type.name()*/, Toast.LENGTH_SHORT).show();
 

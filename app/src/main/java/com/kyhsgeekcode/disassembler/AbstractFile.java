@@ -22,9 +22,8 @@ import nl.lxtreme.binutils.elf.MachineType;
 
 public abstract class AbstractFile implements Closeable {
     private static final String TAG = "AbstractFile";
-    public static AbstractFile getInstance(String tag) throws IOException {
+    public static AbstractFile createInstance(String tag) throws IOException {
         File file = new File(tag);
-        Log.e(TAG, "Unimplemented method");
         //file을 읽던가 mainactivity의 코드를 잘 가져와서 AbstractFile을 만든다.
         // FacileAPI거만 아니면 파일 객체와 내용만 주면 된다.
         //다시 읽는건 비효율적으로 보일 수 있지만 어쨌든 다시 읽어서 넘겨준다.
