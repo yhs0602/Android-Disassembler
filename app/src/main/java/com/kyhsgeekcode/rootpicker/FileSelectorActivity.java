@@ -48,7 +48,7 @@ public class FileSelectorActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fileaselactivity);
-        mPath = (TextView) findViewById(R.id.path);
+        mPath = findViewById(R.id.path);
         String[] abis = android.os.Build.SUPPORTED_ABIS;
         String binary = null;
         AssetManager asm = getAssets();
@@ -274,7 +274,6 @@ public class FileSelectorActivity extends ListActivity {
         for (Item i : items) {
             item.add(i.caption);
         }
-        ;
         ArrayAdapter<String> fileList = new ArrayAdapter<String>(this, R.layout.row, item);
 		/*fileList.sort(new Comparator<String>(){
 		 @Override

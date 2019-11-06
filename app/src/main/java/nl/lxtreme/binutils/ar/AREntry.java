@@ -147,17 +147,14 @@ public class AREntry {
      * <code>false</code> otherwise.
      */
     static boolean isARHeader(final byte[] aIdent) {
-        if ((aIdent.length < 7)
-                || (aIdent[0] != '!')
-                || (aIdent[1] != '<')
-                || (aIdent[2] != 'a')
-                || (aIdent[3] != 'r')
-                || (aIdent[4] != 'c')
-                || (aIdent[5] != 'h')
-                || (aIdent[6] != '>')) {
-            return false;
-        }
-        return true;
+        return (aIdent.length >= 7)
+                && (aIdent[0] == '!')
+                && (aIdent[1] == '<')
+                && (aIdent[2] == 'a')
+                && (aIdent[3] == 'r')
+                && (aIdent[4] == 'c')
+                && (aIdent[5] == 'h')
+                && (aIdent[6] == '>');
     }
 
     /**
@@ -195,10 +192,7 @@ public class AREntry {
         if (this.size != other.size) {
             return false;
         }
-        if (this.uid != other.uid) {
-            return false;
-        }
-        return true;
+        return this.uid == other.uid;
     }
 
     /**

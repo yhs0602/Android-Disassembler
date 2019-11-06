@@ -17,12 +17,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Set;
 
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
 
-    String prefnames[];
+    String[] prefnames;
     ColorHelper colorhelper;
 
     @Override
@@ -101,7 +102,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             Log.v(TAG, "key=" + key);
             InputStream notice = getAssets().open(key);
             BufferedReader in =
-                    new BufferedReader(new InputStreamReader(notice, "UTF-8"));
+                    new BufferedReader(new InputStreamReader(notice, StandardCharsets.UTF_8));
             String str;
             while ((str = in.readLine()) != null) {
                 buf.append(str);

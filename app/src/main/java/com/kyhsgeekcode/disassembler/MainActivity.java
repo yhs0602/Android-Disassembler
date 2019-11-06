@@ -422,43 +422,43 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
         setting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE);
         setContentView(R.layout.main);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (MultiLevelListView) findViewById(R.id.left_drawer);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mDrawerList = findViewById(R.id.left_drawer);
 
         //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        etDetails = (EditText) findViewById(R.id.detailText);
-        Button selectFile = (Button) findViewById(R.id.selFile);
+        etDetails = findViewById(R.id.detailText);
+        Button selectFile = findViewById(R.id.selFile);
         selectFile.setOnClickListener(this);
-        btShowDetails = (Button) findViewById(R.id.btnShowdetail);
+        btShowDetails = findViewById(R.id.btnShowdetail);
         btShowDetails.setOnClickListener(this);
-        btSavDisasm = (Button) findViewById(R.id.btnSaveDisasm);
+        btSavDisasm = findViewById(R.id.btnSaveDisasm);
         btSavDisasm.setOnClickListener(this);
-        btSavDit = (Button) findViewById(R.id.btnSaveDetails);
+        btSavDit = findViewById(R.id.btnSaveDetails);
         btSavDit.setOnClickListener(this);
 
-        etFilename = (EditText) findViewById(R.id.fileNameText);
+        etFilename = findViewById(R.id.fileNameText);
         etFilename.setFocusable(false);
         etFilename.setEnabled(false);
 
-        llmainLinearLayoutSetupRaw = (LinearLayout) findViewById(R.id.mainLinearLayoutSetupRaw);
+        llmainLinearLayoutSetupRaw = findViewById(R.id.mainLinearLayoutSetupRaw);
         disableEnableControls(false, llmainLinearLayoutSetupRaw);
 
-        etCodeLimit = (EditText) findViewById(R.id.mainETcodeLimit);
-        etCodeBase = (EditText) findViewById(R.id.mainETcodeOffset);
-        etEntryPoint = (EditText) findViewById(R.id.mainETentry);
-        etVirtAddr = (EditText) findViewById(R.id.mainETvirtaddr);
-        tvArch = (TextView) findViewById(R.id.mainTVarch);
-        btFinishSetup = (Button) findViewById(R.id.mainBTFinishSetup);
+        etCodeLimit = findViewById(R.id.mainETcodeLimit);
+        etCodeBase = findViewById(R.id.mainETcodeOffset);
+        etEntryPoint = findViewById(R.id.mainETentry);
+        etVirtAddr = findViewById(R.id.mainETvirtaddr);
+        tvArch = findViewById(R.id.mainTVarch);
+        btFinishSetup = findViewById(R.id.mainBTFinishSetup);
         btFinishSetup.setOnClickListener(this);
-        btOverrideSetup = (Button) findViewById(R.id.mainBTOverrideAuto);
+        btOverrideSetup = findViewById(R.id.mainBTOverrideAuto);
         btOverrideSetup.setOnClickListener(this);
-        spinnerArch = (Spinner) findViewById(R.id.mainSpinnerArch);
+        spinnerArch = findViewById(R.id.mainSpinnerArch);
         //https://stackoverflow.com/a/13783744/8614565
         String[] items = Arrays.toString(MachineType.class.getEnumConstants()).replaceAll("^.|.$", "").split(", ");
         ArrayAdapter<String> sadapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         spinnerArch.setAdapter(sadapter);
 
-        lvSymbols = (ListView) findViewById(R.id.symlistView);
+        lvSymbols = findViewById(R.id.symlistView);
         //moved up
         //symbolLvAdapter=new SymbolListAdapter();
         symbolLvAdapter = new SymbolListAdapter();
@@ -487,7 +487,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         //autocomplete.setThreshold(2);
         //autocomplete.setAdapter(autoSymAdapter);
 
-        btRefreshLog = (Button) findViewById(R.id.refreshlog);
+        btRefreshLog = findViewById(R.id.refreshlog);
         btRefreshLog.setOnClickListener(this);
         lvLog = findViewById(R.id.loglistView);
         lvLog.setAdapter(logAdapter = new LogAdapter());
@@ -500,7 +500,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         ivAnalCount = findViewById(R.id.imageViewCount);
         ivAnalCount.setOnClickListener(this);
 
-        tabHost = (TabHost) findViewById(R.id.tabhost1);
+        tabHost = findViewById(R.id.tabhost1);
         tabHost.setup();
         TabHost.TabSpec tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator(getString(R.string.overview));
         TabHost.TabSpec tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator(getString(R.string.details));
@@ -955,7 +955,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                         dialog = new ProgressDialog(context);
                         dialog.setTitle("Analyzing ...");
                         dialog.setMessage("Counting bytes ...");
-                        dialog.setProgressStyle(dialog.STYLE_HORIZONTAL);
+                        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                         dialog.setProgress(0);
                         dialog.setMax(7);
                         dialog.setCancelable(false);
@@ -1008,7 +1008,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                         dialog = new ProgressDialog(context);
                         dialog.setTitle("Searching ...");
                         dialog.setMessage("Searching for string");
-                        dialog.setProgressStyle(dialog.STYLE_HORIZONTAL);
+                        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                         dialog.setProgress(0);
                         dialog.setMax(filecontent.length);
                         dialog.setCancelable(false);
@@ -1296,7 +1296,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case REQUEST_WRITE_STORAGE_REQUEST_CODE: {
                 // If request is cancelled, the result arrays are empty.
@@ -1470,7 +1470,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             SaveDisasm(currentProject.getDisasmDb());
             return;
         }
-        File dir = new File(projectManager.RootFile, currentProject.name + "/");
+        File dir = new File(ProjectManager.RootFile, currentProject.name + "/");
         Log.d(TAG, "dirpath=" + dir.getAbsolutePath());
         File file = new File(dir, "Disassembly_" + new Date(System.currentTimeMillis()).toString() + (mode == 3 ? ".json" : ".txt"));
         Log.d(TAG, "filepath=" + file.getAbsolutePath());
@@ -1527,7 +1527,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     }
 
     private void SaveDisasmRaw() {
-        File dir = new File(projectManager.RootFile, currentProject.name + "/");
+        File dir = new File(ProjectManager.RootFile, currentProject.name + "/");
         Log.d(TAG, "dirpath=" + dir.getAbsolutePath());
         File file = new File(dir, "Disassembly.raw");
         Log.d(TAG, "filepath=" + file.getAbsolutePath());
@@ -1681,8 +1681,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private void createZip() {
         File targetFile;
         try {
-            File projFolder = new File(projectManager.RootFile, currentProject.name + "/");
-            FileOutputStream fos = new FileOutputStream(targetFile = new File(projectManager.RootFile, currentProject.name + ".zip"));
+            File projFolder = new File(ProjectManager.RootFile, currentProject.name + "/");
+            FileOutputStream fos = new FileOutputStream(targetFile = new File(ProjectManager.RootFile, currentProject.name + ".zip"));
             ZipOutputStream zos = new ZipOutputStream(fos);
             File[] targets = projFolder.listFiles();
             byte[] buf = new byte[4096];
@@ -1735,7 +1735,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             etDetails.setText(det);
         }
 
-        File dir = new File(projectManager.RootFile, currentProject.name + "/");
+        File dir = new File(ProjectManager.RootFile, currentProject.name + "/");
         Log.d(TAG, "dirpath=" + dir.getAbsolutePath());
         File file = new File(dir, "Disassembly.raw");
         if (file.exists()) {
@@ -1875,7 +1875,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private void setupListView() {
         //moved to onCreate for avoiding NPE
         //adapter = new DisasmListViewAdapter();
-        listview = (ListView) findViewById(R.id.listview);
+        listview = findViewById(R.id.listview);
         listview.setAdapter(adapter);
         listview.setOnItemClickListener(new DisasmClickListener(this));
         adapter.addAll(disasmManager.getItems(), disasmManager.getAddress());
@@ -1926,9 +1926,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private boolean isValidAddress(long address) {
         if (address > (parsedFile.fileContents.length + parsedFile.codeVirtualAddress))
             return false;
-        if (address < 0)
-            return false;
-        return true;
+        return address >= 0;
     }
 
     //////////////////////////////////////////////Input////////////////////////////////////////
@@ -2303,7 +2301,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             Toast.makeText(this, "Maybe this program don't support this machine:" + type.name(), Toast.LENGTH_SHORT).show();
         } else {
             int err;
-            if ((err = Open(arch,/*CS_MODE_LITTLE_ENDIAN =*/ mode)) != cs.CS_ERR_OK)/*new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))*/ {
+            if ((err = Open(arch,/*CS_MODE_LITTLE_ENDIAN =*/ mode)) != Capstone.CS_ERR_OK)/*new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))*/ {
                 Log.e(TAG, "setmode type=" + type.name() + " err=" + err + "arch" + arch + "mode=" + mode);
                 Toast.makeText(this, "failed to set architecture" + err + "arch=" + arch, Toast.LENGTH_SHORT).show();
             } else {

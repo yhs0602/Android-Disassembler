@@ -194,7 +194,7 @@ public class Coff implements Closeable {
             throw new IOException("ELF file is already closed!");
         }
 
-        ByteBuffer buf = ByteBuffer.allocate((int) shdr.size);
+        ByteBuffer buf = ByteBuffer.allocate(shdr.size);
         buf.order(fileHeader.getByteOrder());
 
         channel.position(shdr.dataOffset);

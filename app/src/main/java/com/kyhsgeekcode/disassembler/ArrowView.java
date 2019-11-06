@@ -67,12 +67,12 @@ public class ArrowView extends View {
             float deltaX = tx - fx;
             float deltaY = ty - fy;
             float frac = (float) 0.1;
-            float point_x_1 = fx + (float) ((1 - frac) * deltaX + frac * deltaY);
-            float point_y_1 = fy + (float) ((1 - frac) * deltaY - frac * deltaX);
+            float point_x_1 = fx + ((1 - frac) * deltaX + frac * deltaY);
+            float point_y_1 = fy + ((1 - frac) * deltaY - frac * deltaX);
             float point_x_2 = tx;
             float point_y_2 = ty;
-            float point_x_3 = fx + (float) ((1 - frac) * deltaX - frac * deltaY);
-            float point_y_3 = fy + (float) ((1 - frac) * deltaY + frac * deltaX);
+            float point_x_3 = fx + ((1 - frac) * deltaX - frac * deltaY);
+            float point_y_3 = fy + ((1 - frac) * deltaY + frac * deltaX);
 
             mPath.moveTo(point_x_1, point_y_1);
             mPath.lineTo(point_x_2, point_y_2);
@@ -111,12 +111,11 @@ public class ArrowView extends View {
         }
     }
 
-    static enum ArrowType {
+    enum ArrowType {
         JUMP,
         CALL,
         JCC,
         CALLCC
     }
 
-    ;
 }

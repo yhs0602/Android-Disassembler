@@ -45,12 +45,12 @@ public class ColorPrefLvAdapter extends BaseAdapter {
         }
 
         // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
-        TextView rowname = (TextView) convertView.findViewById(R.id.colorPrefRowName);
+        TextView rowname = convertView.findViewById(R.id.colorPrefRowName);
         Enum listViewItem = rows[position];
         rowname.setText(listViewItem.name());
-        Button btTxtColor = (Button) convertView.findViewById(R.id.colorprefitemrowButtonText);
+        Button btTxtColor = convertView.findViewById(R.id.colorprefitemrowButtonText);
         btTxtColor.setBackgroundColor(palette.getTxtColor(listViewItem));
-        Button btBkColor = (Button) convertView.findViewById(R.id.colorprefitemrowButtonBk);
+        Button btBkColor = convertView.findViewById(R.id.colorprefitemrowButtonBk);
         btBkColor.setBackgroundColor(palette.getBkColor(listViewItem));
         btTxtColor.setOnClickListener(new ColorBtnListener(listViewItem, btTxtColor, 0));
         btBkColor.setOnClickListener(new ColorBtnListener(listViewItem, btBkColor, 1));

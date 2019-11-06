@@ -96,7 +96,7 @@ public enum MachineType {
     private final int no;
     private final String desc;
 
-    private MachineType(int no, String desc) {
+    MachineType(int no, String desc) {
         this.no = no;
         this.desc = desc;
     }

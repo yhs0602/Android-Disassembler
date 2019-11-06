@@ -56,7 +56,6 @@ public class Token {
         OPERAND
     }
 
-    ;
     Type type;
     String name;
     Data data;

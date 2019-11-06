@@ -30,7 +30,7 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener {
             menus.add(JUMP);
         }
         if (!menus.isEmpty()) {
-            MainActivity.ShowSelDialog((Activity) activity, menus, lvi.toSimpleString() + " at " + lvi.address, new DialogInterface.OnClickListener() {
+            MainActivity.ShowSelDialog(activity, menus, lvi.toSimpleString() + " at " + lvi.address, new DialogInterface.OnClickListener() {
 
 
                 @Override
@@ -39,7 +39,7 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener {
                     if (EDIT_COMMENT.equals(item)) {
                         final EditText et = new EditText(activity);
                         et.setText(lvi.getComments());
-                        MainActivity.ShowEditDialog((Activity) activity, EDIT_COMMENT, EDIT_COMMENT, et
+                        MainActivity.ShowEditDialog(activity, EDIT_COMMENT, EDIT_COMMENT, et
                                 , "OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface p1, int p2) {
@@ -47,7 +47,7 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener {
                                         lvi.setComments(cmt);
                                         return;
                                     }
-                                }, "Cancel", (DialogInterface.OnClickListener) null);
+                                }, "Cancel", null);
                         //context,title msg et, y yc n nc
                     } else if (COPY.equals(item)) {
                         //List<String> its=new ArrayList<>();

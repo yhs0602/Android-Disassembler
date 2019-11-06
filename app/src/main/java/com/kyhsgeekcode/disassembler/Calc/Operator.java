@@ -283,7 +283,6 @@ public class Operator extends Token implements Comparable<Operator> {
         POLAR
     }
 
-    ;
     static final Map<Character, Operation> ch2op = new HashMap<>();
 
     static {

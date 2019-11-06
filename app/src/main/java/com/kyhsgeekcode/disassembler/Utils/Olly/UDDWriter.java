@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class UDDWriter {
     public static final int GTAG_entryPoint = 0x55AA0001;
@@ -23,7 +24,7 @@ public class UDDWriter {
 
     private static void WriteSignature(DataOutputStream dos) throws IOException {
         try {
-            byte[] bytes = "Module info file va1.7".getBytes("utf8");
+            byte[] bytes = "Module info file va1.7".getBytes(StandardCharsets.UTF_8);
             WriteTag(dos, 0x00646F4D, bytes.length, bytes);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -66,7 +67,7 @@ public class UDDWriter {
 
     private static void WriteTagComment(DataOutputStream dos, int tag, long offset, String comment) throws IOException {
         dos.writeInt(tag);
-        byte[] bytes = comment.getBytes("utf8");
+        byte[] bytes = comment.getBytes(StandardCharsets.UTF_8);
         dos.writeInt(bytes.length + 4);
         dos.writeInt((int) offset);
         dos.write(bytes);
@@ -83,7 +84,7 @@ public class UDDWriter {
 
     private static void WriteTag(DataOutputStream dos, int tag, String data) throws IOException {
         try {
-            byte[] bytes = data.getBytes("utf8");
+            byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
             WriteTag(dos, tag, bytes.length, bytes);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

@@ -69,7 +69,6 @@ public class PrototypeParser {
         LPAR
     }
 
-    ;
 }
 
 //parser theorm

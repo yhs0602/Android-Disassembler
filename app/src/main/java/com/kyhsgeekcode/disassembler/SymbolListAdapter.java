@@ -53,10 +53,10 @@ public class SymbolListAdapter extends BaseAdapter {
         }
 
         // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
-        TextView addrTextView = (TextView) convertView.findViewById(R.id.symbolrowTVaddress);
-        TextView mangledTextView = (TextView) convertView.findViewById(R.id.symbolrowTVmangled);
-        TextView demangledTextView = (TextView) convertView.findViewById(R.id.symbolrowTVdemangled);
-        TextView propTextView = (TextView) convertView.findViewById(R.id.symbolrowTVprop);
+        TextView addrTextView = convertView.findViewById(R.id.symbolrowTVaddress);
+        TextView mangledTextView = convertView.findViewById(R.id.symbolrowTVmangled);
+        TextView demangledTextView = convertView.findViewById(R.id.symbolrowTVdemangled);
+        TextView propTextView = convertView.findViewById(R.id.symbolrowTVprop);
 
         {
             // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득

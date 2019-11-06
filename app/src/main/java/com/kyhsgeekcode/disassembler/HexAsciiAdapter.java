@@ -68,7 +68,7 @@ public class HexAsciiAdapter extends BaseAdapter {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.hexcol, parent, false);
         }
 
-        final TextView text = (TextView) view.findViewById(R.id.hexcolTextView);
+        final TextView text = view.findViewById(R.id.hexcolTextView);
         int v;
         if (position < 16)
             v = HexManager.hexArray[position];

@@ -20,21 +20,15 @@ public class Capstone {
     protected static abstract class OpInfo {
     }
 
-    ;
-
     protected static abstract class UnionOpInfo// extends Structure
     {
     }
-
-    ;
 
     public static class UnionArch //extends Union
     {
         public static class ByValue extends UnionArch// implements Union.ByValue
         {
         }
-
-        ;
 
         public Arm.UnionOpInfo arm;
         public Arm64.UnionOpInfo arm64;
@@ -90,8 +84,6 @@ public class Capstone {
         public static class ByReference extends _cs_detail// implements Structure.ByReference
         {
         }
-
-        ;
 
         // list of all implicit registers being read.
         public byte[] regs_read = new byte[12];
@@ -313,7 +305,7 @@ public class Capstone {
         public int cs_close(NativeLongByReference handle);
         public int cs_option(NativeLong handle, int option, NativeLong optionValue);
 */
-        public int cs_setup_mem();
+        int cs_setup_mem();
 
         /*	public NativeLong cs_disasm2(NativeLong handle, byte[] code, NativeLong code_offset,NativeLong code_len,
                                         long addr, NativeLong count, PointerByReference insn);
@@ -331,7 +323,7 @@ public class Capstone {
             public int cs_errno(NativeLong csh);
             public int cs_version(IntByReference major, IntByReference minor);
             */
-        public boolean cs_support(int query);
+        boolean cs_support(int query);
     }
 
     // Capstone API version

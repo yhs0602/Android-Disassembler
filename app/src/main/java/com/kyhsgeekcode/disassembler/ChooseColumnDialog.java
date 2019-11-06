@@ -50,18 +50,18 @@ public class ChooseColumnDialog extends Dialog {
 
         setContentView(R.layout.activity_custom_dialog);
 
-        mTitleView = (TextView) findViewById(R.id.txt_title);
-        mContentView = (TextView) findViewById(R.id.txt_content);
-        mLeftButton = (Button) findViewById(R.id.btn_left);
-        mRightButton = (Button) findViewById(R.id.btn_right);
+        mTitleView = findViewById(R.id.txt_title);
+        mContentView = findViewById(R.id.txt_content);
+        mLeftButton = findViewById(R.id.btn_left);
+        mRightButton = findViewById(R.id.btn_right);
 
-        mCKCondition = (CheckBox) findViewById(R.id.activitycustomdialogCheckBoxCondition);
-        mCKInstruction = (CheckBox) findViewById(R.id.activitycustomdialogCheckBoxInstruction);
-        mCKOperands = (CheckBox) findViewById(R.id.activitycustomdialogCheckBoxOperands);
-        mCKComments = (CheckBox) findViewById(R.id.activitycustomdialogCheckBoxComment);
-        mCKBytes = (CheckBox) findViewById(R.id.activitycustomdialogCheckBoxBytes);
-        mCKLabel = (CheckBox) findViewById(R.id.activitycustomdialogCheckBoxLabel);
-        mCKAddress = (CheckBox) findViewById(R.id.activitycustomdialogCheckBoxAddress);
+        mCKCondition = findViewById(R.id.activitycustomdialogCheckBoxCondition);
+        mCKInstruction = findViewById(R.id.activitycustomdialogCheckBoxInstruction);
+        mCKOperands = findViewById(R.id.activitycustomdialogCheckBoxOperands);
+        mCKComments = findViewById(R.id.activitycustomdialogCheckBoxComment);
+        mCKBytes = findViewById(R.id.activitycustomdialogCheckBoxBytes);
+        mCKLabel = findViewById(R.id.activitycustomdialogCheckBoxLabel);
+        mCKAddress = findViewById(R.id.activitycustomdialogCheckBoxAddress);
 
         mCKCondition.setChecked(setting.getBoolean("condition", true));
         mCKInstruction.setChecked(setting.getBoolean("instruction", true));

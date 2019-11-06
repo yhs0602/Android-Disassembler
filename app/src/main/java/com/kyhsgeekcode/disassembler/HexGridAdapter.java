@@ -72,7 +72,7 @@ public class HexGridAdapter extends BaseAdapter {
             view = LayoutInflater.from(parent.getContext()).inflate(R.layout.hexcol, parent, false);
         }
 
-        final TextView text = (TextView) view.findViewById(R.id.hexcolTextView);
+        final TextView text = view.findViewById(R.id.hexcolTextView);
 
         if (position < 16) {
             text.setText("0" + HexManager.hexArray[position]);

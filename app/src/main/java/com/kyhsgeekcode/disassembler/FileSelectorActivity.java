@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileSelectorActivity extends ListActivity {
-    private List<String> item = (List<String>) null;
-    private List<String> path = (List<String>) null;
+    private List<String> item = null;
+    private List<String> path = null;
     private String root = "/";
     private TextView mPath;
 
@@ -28,7 +28,7 @@ public class FileSelectorActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fileaselactivity);
-        mPath = (TextView) findViewById(R.id.path);
+        mPath = findViewById(R.id.path);
         getDir(Environment.getExternalStorageDirectory().getPath());
     }
 

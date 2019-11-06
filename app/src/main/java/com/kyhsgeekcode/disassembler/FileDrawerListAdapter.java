@@ -318,7 +318,7 @@ public class FileDrawerListAdapter extends MultiLevelListAdapter {
         if (convertView == null) {
             viewHolder = new ViewHolder();
             convertView = LayoutInflater.from(context).inflate(R.layout.filedraweritem, null);
-            viewHolder.nameView = (TextView) convertView.findViewById(R.id.fileDrawerTextView);
+            viewHolder.nameView = convertView.findViewById(R.id.fileDrawerTextView);
             //viewHolder.levelBeamView = (LevelBeamView) convertView.findViewById(R.id.dataItemLevelBeam);
             convertView.setTag(viewHolder);
         } else {

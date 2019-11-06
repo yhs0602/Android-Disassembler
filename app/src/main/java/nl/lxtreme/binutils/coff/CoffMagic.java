@@ -43,7 +43,7 @@ public enum CoffMagic {
 
     private final int no;
 
-    private CoffMagic(int no) {
+    CoffMagic(int no) {
         this.no = no;
     }
 

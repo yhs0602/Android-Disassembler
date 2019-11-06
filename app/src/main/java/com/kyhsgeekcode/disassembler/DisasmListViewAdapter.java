@@ -160,13 +160,13 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
         }
         Palette palette = colorHelper.getPalette();
         // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
-        TextView addrTextView = (TextView) convertView.findViewById(R.id.tvAddr);
-        TextView bytesTextView = (TextView) convertView.findViewById(R.id.tvBytes);
-        TextView commentTextView = (TextView) convertView.findViewById(R.id.tvComment);
-        TextView condTextView = (TextView) convertView.findViewById(R.id.tvCond);
-        TextView instTextView = (TextView) convertView.findViewById(R.id.tvInst);
-        TextView labelTextView = (TextView) convertView.findViewById(R.id.tvLabel);
-        TextView operandTextView = (TextView) convertView.findViewById(R.id.tvOperand);
+        TextView addrTextView = convertView.findViewById(R.id.tvAddr);
+        TextView bytesTextView = convertView.findViewById(R.id.tvBytes);
+        TextView commentTextView = convertView.findViewById(R.id.tvComment);
+        TextView condTextView = convertView.findViewById(R.id.tvCond);
+        TextView instTextView = convertView.findViewById(R.id.tvInst);
+        TextView labelTextView = convertView.findViewById(R.id.tvLabel);
+        TextView operandTextView = convertView.findViewById(R.id.tvOperand);
         mainactivity.AdjustShow(addrTextView, labelTextView, bytesTextView, instTextView, condTextView, operandTextView, commentTextView);
         operandTextView.getLayoutParams().width = (architecture == 1) ? dp260 : dp180;
         operandTextView.requestLayout();

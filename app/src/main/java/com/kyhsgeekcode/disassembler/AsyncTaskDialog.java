@@ -26,7 +26,7 @@ public abstract class AsyncTaskDialog<Param, Result> extends AsyncTask<Param, In
         dialog = new ProgressDialog(context);
         dialog.setTitle(title);
         dialog.setMessage(message);
-        dialog.setProgressStyle(dialog.STYLE_HORIZONTAL);
+        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         dialog.setProgress(0);
         dialog.setMax(max);
         dialog.setCancelable(false);

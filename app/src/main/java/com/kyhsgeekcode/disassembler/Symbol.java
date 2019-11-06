@@ -17,8 +17,6 @@ public class Symbol {
         STB_WEAK
     }
 
-    ;
-
     enum Type {
         STT_NOTYPE,
         STT_OBJECT,
@@ -28,7 +26,6 @@ public class Symbol {
         STT_COMMON
     }
 
-    ;
     Bind bind;
     Type type;
 	/*           #define STB_LOCAL  0

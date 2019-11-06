@@ -18,7 +18,7 @@ import capstone.Capstone;
 import capstone.X86_const;
 
 public class Palette {
-    int colors[][];
+    int[][] colors;
     String name;
     File src;
     int arch = Capstone.CS_ARCH_ARM;
@@ -293,9 +293,7 @@ public class Palette {
         IRET
     }
 
-    ;
-
-//	public static int bkColors[][]={
+    //	public static int bkColors[][]={
 //		{Color.BLACK,Color.BLACK,Color.BLACK,Color.BLACK,Color.BLACK,Color.BLACK,Color.BLACK}
 //	};
 //	public static final int bkColors[]={

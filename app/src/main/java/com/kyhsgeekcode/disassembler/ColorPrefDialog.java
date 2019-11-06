@@ -45,15 +45,15 @@ public class ColorPrefDialog extends Dialog {
 
         setContentView(R.layout.colorpref_dialog);
 
-        mTitleView = (TextView) findViewById(R.id.colorpef_title);
-        mContentView = (TextView) findViewById(R.id.colorpref_subtitle);
-        mLeftButton = (Button) findViewById(R.id.colorprefdialogButtonCancel);
-        mRightButton = (Button) findViewById(R.id.colorprefdialogButtonOK);
+        mTitleView = findViewById(R.id.colorpef_title);
+        mContentView = findViewById(R.id.colorpref_subtitle);
+        mLeftButton = findViewById(R.id.colorprefdialogButtonCancel);
+        mRightButton = findViewById(R.id.colorprefdialogButtonOK);
 
-        lvRows = (ListView) findViewById(R.id.colorpref_list);
+        lvRows = findViewById(R.id.colorpref_list);
         lvRows.setAdapter(adapter);
 
-        preview = (TextView) findViewById(R.id.colorpref_preview);
+        preview = findViewById(R.id.colorpref_preview);
         // 제목과 내용을 생성자에서 셋팅한다.
         mTitleView.setText(mTitle);
         mContentView.setText(mContent);

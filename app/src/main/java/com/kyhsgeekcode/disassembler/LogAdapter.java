@@ -43,9 +43,9 @@ public class LogAdapter extends BaseAdapter {
         }
 
         // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
-        TextView levelTextView = (TextView) convertView.findViewById(R.id.textViewLogLevel);
-        TextView timeTextView = (TextView) convertView.findViewById(R.id.textViewLogTime);
-        TextView descTextView = (TextView) convertView.findViewById(R.id.textViewLogDesc);
+        TextView levelTextView = convertView.findViewById(R.id.textViewLogLevel);
+        TextView timeTextView = convertView.findViewById(R.id.textViewLogTime);
+        TextView descTextView = convertView.findViewById(R.id.textViewLogDesc);
         TextView tagTextView = convertView.findViewById(R.id.textViewLogTag);
         {
             // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득

@@ -220,6 +220,6 @@ public class ProjectManager {
     }
 
     public interface OnProjectOpenListener {
-        public void onOpen(Project proj);
+        void onOpen(Project proj);
     }
 }
