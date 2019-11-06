@@ -6,15 +6,23 @@ import android.util.Log;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import at.pollaknet.api.facile.Facile;
+import at.pollaknet.api.facile.FacileReflector;
+import at.pollaknet.api.facile.exception.CoffPeDataNotFoundException;
+import at.pollaknet.api.facile.exception.SizeMismatchException;
+import at.pollaknet.api.facile.exception.UnexpectedHeaderDataException;
+import at.pollaknet.api.facile.symtab.symbols.scopes.Assembly;
 import nl.lxtreme.binutils.elf.MachineType;
 
 public abstract class AbstractFile implements Closeable {
     private static final String TAG = "AbstractFile";
-    public static AbstractFile getInstance(String tag) {
+    public static AbstractFile getInstance(String tag) throws IOException {
         File file = new File(tag);
         Log.e(TAG, "Unimplemented method");
         //file을 읽던가 mainactivity의 코드를 잘 가져와서 AbstractFile을 만든다.
@@ -26,6 +34,49 @@ public abstract class AbstractFile implements Closeable {
         //그리고 AfterReadFully 함수는 없어질지도 모른다!
         //그러면 중복코드도 사라짐
         //행복회로
+        byte[] content = MainActivity.Utils.getBytes(new FileInputStream(file));
+        if (file.getPath().endsWith("assets/bin/Data/Managed/Assembly-CSharp.dll")) {
+            //Unity C# dll file
+            Logger.v(TAG, "Found C# unity dll");
+            try {
+                FacileReflector facileReflector = Facile.load(file.getPath());
+                //load the assembly
+                Assembly assembly = facileReflector.loadAssembly();
+                if (assembly != null) {
+                    Logger.v(TAG, assembly.toExtendedString());
+                    return new ILAssmebly(facileReflector);
+                } else {
+                    System.out.println("File maybe contains only resources...");
+                }
+            } catch (CoffPeDataNotFoundException e) {
+                Logger.e(TAG, "", e);
+            } catch (UnexpectedHeaderDataException e) {
+                e.printStackTrace();
+            } catch (SizeMismatchException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                return new ELFUtil(file, content);
+            } catch (Exception e) {
+                //not an elf file. try PE parser
+                try {
+                    return new PEFile(file, content);
+                } catch (NotThisFormatException f) {
+                    return new RawFile(file, content);
+                    //AllowRawSetup();
+                    //failed to parse the file. please setup manually.
+                } catch (RuntimeException f) {
+                    //AlertError("Failed to parse the file. Please setup manually. Sending an error report, the file being analyzed can be attached.", f);
+                    return new RawFile(file, content);
+                    //AllowRawSetup();
+                } catch (Exception g) {
+                    //AlertError("Unexpected exception: failed to parse the file. please setup manually.", g);
+                    return new RawFile(file, content);
+                    //AllowRawSetup();
+                }
+            }
+        }
         return null;
     }
 

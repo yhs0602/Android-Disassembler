@@ -25,7 +25,7 @@ public class DisasmIterator extends AssemblyProvider {
     public int showNoti(int progress) {
         //mBuilder.setProgress((int)total,progress, false);
         // Displays the progress bar for the first time.
-        //mNotifyManager.notify(0, mBuilder.build());
+        //mNotifyManager.notify(0, mBuilder.b uild());
         //activity.runOnUiThread(activity.runnableRequestLayout);
         if (Thread.interrupted()) {
             return -1;

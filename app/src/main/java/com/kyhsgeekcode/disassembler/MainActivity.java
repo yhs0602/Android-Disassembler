@@ -1789,7 +1789,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 long size = limit - start;
                 long leftbytes = size;
                 DisasmIterator dai = new DisasmIterator(MainActivity.this,/*mNotifyManager,mBuilder,*/adapter, size);
-                adapter.setDit(dai);
+                //IMPORTANT: un-outcomment here if it causes a bug
+                //adapter.setDit(dai);
                 adapter.LoadMore(0, addr);
                 //long toresume=dai.getSome(filecontent,start,size,addr,1000000/*, disasmResults*/);
 					/*if(toresume<0)

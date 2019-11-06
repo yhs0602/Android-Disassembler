@@ -41,6 +41,7 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
         itemsNew.clear();
     }
 
+    @Deprecated
     public void setDit(DisasmIterator dit) {
         this.dit = dit;
     }
@@ -227,7 +228,7 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
     private LongSparseArray<ListViewItem> itemsNew = new LongSparseArray<>();
     int writep = 0;
 
-    DisasmIterator dit;
+    private DisasmIterator dit;
 
     //@address eq virtualaddress
     public void LoadMore(int position, long address) {
@@ -325,6 +326,9 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
         architecture = 0;//FIXME:clarification needed but OK now
         //address=//new long[file.fileContents.length];//Use sparseArray if oom
         mainactivity = ma;
+
+        //IMPORTANT Note: total arg is unused
+        dit = new DisasmIterator(ma,this,0);
     }
 
     public void setArchitecture(int architecture) {
