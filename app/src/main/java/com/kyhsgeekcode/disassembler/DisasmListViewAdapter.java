@@ -278,24 +278,7 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
 		listViewItemList.addAll(data);
 		notifyDataSetChanged();
 	}
-	//You should not modify
-	public ArrayList<ListViewItem> itemList()
-	{
-		return listViewItemList;//new ArrayList<ListViewItem>().addAll(listViewItemList);
-	}
-	
-     // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
-	 @Override
-	 public int getCount()
-	 {
-	 return listViewItemList.size();// lvLength;//listViewItemList//size() ;
-	 }
-	 
-    @Override
-    public Object getItem(int position)
-	{
-        return listViewItemList.get(position) ;
-    }
+
 	
     public void addItem(ListViewItem item)
 	{

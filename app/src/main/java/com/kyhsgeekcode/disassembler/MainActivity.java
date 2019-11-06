@@ -520,38 +520,31 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         tabHost.addTab(tab6);
         tabHost.addTab(tab7);
 
-        this.tab1 = (LinearLayout) findViewById(R.id.tab1);
-        this.tab2 = (LinearLayout) findViewById(R.id.tab2);
+        this.tab1 = findViewById(R.id.tab1);
+        this.tab2 = findViewById(R.id.tab2);
 
         //tvHex=(TextView)findViewById(R.id.hexTextView);
         //tvAscii=(TextView)findViewById(R.id.hexTextViewAscii);
 
-        gvHex = (GridView) findViewById(R.id.mainGridViewHex);
-        gvAscii = (GridView) findViewById(R.id.mainGridViewAscii);
+        //TODO: Add a cusom HEX view
+        gvHex = findViewById(R.id.mainGridViewHex);
+        gvAscii = findViewById(R.id.mainGridViewAscii);
 
-        gvHex.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (touchSource == null)
-                    touchSource = v;
-
-                if (v == touchSource) {
-                    gvAscii.dispatchTouchEvent(event);
-                    if (event.getAction() == MotionEvent.ACTION_UP) {
-                        clickSource = v;
-                        touchSource = null;
-                    }
+        gvHex.setOnTouchListener((v, event) -> {
+            if (touchSource == null)
+                touchSource = v;
+            if (v == touchSource) {
+                gvAscii.dispatchTouchEvent(event);
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    clickSource = v;
+                    touchSource = null;
                 }
-
-                return false;
             }
+            return false;
         });
-        gvHex.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (parent == clickSource) {
-                    // Do something with the ListView was clicked
-                }
+        gvHex.setOnItemClickListener((parent, view, position, id) -> {
+            if (parent == clickSource) {
+                // Do something with the ListView was clicked
             }
         });/*
 		gvHex.setOnScrollListener(new OnScrollListener() {
@@ -1389,8 +1382,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         this.parsedFile = parsedFile;
         dataFragment.setParsedFile(parsedFile);
         adapter.setFile(parsedFile);
-
-
     }
 
     public byte[] getFilecontent() {
@@ -1789,7 +1780,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 //	getFunctionNames();
                 long size = limit - start;
                 long leftbytes = size;
-                DisasmIterator dai = new DisasmIterator(MainActivity.this,/*mNotifyManager,mBuilder,*/adapter, size);
+                //DisasmIterator dai = new DisasmIterator(MainActivity.this,/*mNotifyManager,mBuilder,*/adapter, size);
                 //IMPORTANT: un-outcomment here if it causes a bug
                 //adapter.setDit(dai);
                 adapter.LoadMore(0, addr);
@@ -2107,7 +2098,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             setFpath(path);
             etFilename.setText(file.getAbsolutePath());
             long fsize = file.length();
-            int index = 0;
+            //int index = 0;
             setFilecontent(Utils.getBytes(in)/*new byte[(int) fsize]*/);
             /*
             int len= 0;
@@ -2120,9 +2111,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
             in.close();
             */
-            AfterReadFully(file);
-            Toast.makeText(this, "success size=" + index /*+ type.name()*/, Toast.LENGTH_SHORT).show();
-
+            OpenNewTab(file,TabType.NATIVE_DISASM);
+            //AfterReadFully(file);
+            //Toast.makeText(this, "success size=" + index /*+ type.name()*/, Toast.LENGTH_SHORT).show();
             //OnOpenStream(fsize, path, index, file);
         } catch (IOException e) {
             if (e.getMessage().contains("Permission denied")) {
@@ -2358,7 +2349,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     ////////////////////////////////////////////Data Conversion//////////////////////////////////
 
-    private int[] getArchitecture(MachineType type) {
+    public static int[] getArchitecture(MachineType type) {
 
         switch (type) {
             case NONE://(0, "No machine"),
@@ -2566,7 +2557,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     public native void Finalize();
 
-    public native int Open(int arch, int mode);
+    public static native int Open(int arch, int mode);
 
     public static class Utils {
         public static byte[] getBytes(InputStream is) throws IOException {

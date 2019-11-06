@@ -91,7 +91,7 @@ Java_com_kyhsgeekcode_disassembler_MainActivity_Init(JNIEnv *env, jobject thiz) 
     return 0;
 }
 JNIEXPORT jint JNICALL
-Java_com_kyhsgeekcode_disassembler_MainActivity_Open(JNIEnv *env, jobject thiz, jint arch1,
+Java_com_kyhsgeekcode_disassembler_MainActivity_Open(JNIEnv *env, jclass thiz, jint arch1,
                                                      jint mode) {
     cs_err e;
     cs_close(&handle);
@@ -187,7 +187,7 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
     jbyte *byte_buf;
     byte_buf = env->GetByteArrayElements(bytes, NULL);
     //jclass longcls = env->FindClass("java/lang/Long");
-    //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "bytearrayelems");
+    //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "getsome_Start");
     //	jclass mapcls = env->FindClass("java/util/Map");
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "ArrayListcls");
     jclass darcls = env->FindClass("com/kyhsgeekcode/disassembler/DisasmResult");
@@ -206,17 +206,21 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
     //	jmethodID java_util_Map_put  = env->GetMethodID(mapcls, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "arraylistaddmethod");
     jmethodID notify = env->GetMethodID(thecls, "showNoti", "(I)I");
-    //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "shownotimethod");
+    __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "shownotimethod");
     jmethodID additem = env->GetMethodID(thecls, "AddItem",
                                          "(Lcom/kyhsgeekcode/disassembler/ListViewItem;)V");
     int done = 0;
     // allocate memory cache for 1 instruction, to be used by cs_disasm_iter later.
     cs_insn *insn = cs_malloc(handle);
+    __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "malloc");
+
     const uint8_t *code = (uint8_t *) (byte_buf + offset);
     size_t code_size = size - offset;    // size of @code buffer above
     uint64_t addr = virtaddr;    // address of first instruction to be disassembled
 
     jfieldID fidMnemonic = env->GetFieldID(darcls, "mnemonic", "Ljava/lang/String;");
+    __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "mnemonic");
+
     if (fidMnemonic == NULL) {
         return -1; /* failed to find the field */
     }
@@ -258,6 +262,8 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
     }
     //int counter=0;
     // disassemble one instruction a time & store the result into @insn variable above
+
+    __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "getsome_iter_Start");
     while (cs_disasm_iter(handle, &code, &code_size, &addr, insn) && done < count) {
         // analyze disassembled instruction in @insn variable ...
         // NOTE: @code, @code_size & @address variables are all updated
@@ -394,7 +400,7 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
             }
             env->SetLongField(dar, fidJumpOffset, jumpOffset);
         }
-        //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "afterdetail");
+        __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "afterdetail");
         jobject lvi = env->NewObject(lvicls, ctorLvi, dar);
         //jobject addrobj=env->NewObject(longcls,ctorLong,insn->address);
         //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "created lvi");
