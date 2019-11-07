@@ -43,7 +43,7 @@
                         android:layout_height="match_parent"
                         android:foregroundGravity="center_horizontal">
 
-                        <LinearLayout
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/tab0"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -55,53 +55,61 @@
                                 android:textAppearance="?android:attr/textAppearanceLarge"
                                 android:layout_width="wrap_content"
                                 android:layout_span="5"
-                                android:textSize="32sp" />
+                                android:textSize="32sp"
+                                android:id="@+id/apptitleTv"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent" />
 
                             <TextView
                                 android:layout_height="wrap_content"
                                 android:text="@string/select_any_file_to_disassemble_or_project_from_the_drawer_left"
                                 android:textAppearance="?android:attr/textAppearanceMedium"
                                 android:layout_width="wrap_content"
-                                android:layout_span="5" />
-
-                            <LinearLayout
-                                android:orientation="horizontal"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
+                                android:layout_span="5"
+                                android:id="@+id/tvDesc"
+                                app:layout_constraintTop_toBottomOf="@id/apptitleTv"
+                                app:layout_constraintStart_toStartOf="parent" />
 
                                 <EditText
-                                    android:layout_height="match_parent"
+                                    android:layout_height="wrap_content"
                                     android:ems="10"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:layout_span="2"
                                     android:id="@+id/fileNameText"
-                                    android:inputType="text" />
+                                    android:inputType="text"
+                                    app:layout_constraintTop_toBottomOf="@+id/tvDesc"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toStartOf="@id/selFile" />
 
                                 <Button
                                     android:layout_height="wrap_content"
                                     android:text="@string/select_file"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="0dp"
                                     android:id="@+id/selFile"
                                     android:layout_span="1"
-                                    android:layout_weight="1.0" />
+                                    android:layout_weight="1.0"
+                                    app:layout_constraintTop_toBottomOf="@+id/tvDesc"
+                                    app:layout_constraintStart_toEndOf="@id/fileNameText"
+                                    app:layout_constraintEnd_toEndOf="parent" />
 
-                            </LinearLayout>
 
-                            <LinearLayout
+                            <androidx.constraintlayout.widget.ConstraintLayout
                                 android:layout_height="wrap_content"
                                 android:layout_width="match_parent"
                                 android:orientation="vertical"
-                                android:id="@+id/mainLinearLayoutSetupRaw">
+                                android:id="@+id/mainLinearLayoutSetupRaw"
+                                app:layout_constraintTop_toBottomOf="@id/fileNameText"
+                                app:layout_constraintStart_toStartOf="parent">
 
-                                <LinearLayout
+                                <TextView
+                                    android:id="@+id/tvFoffCS"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_width="match_parent"
-                                    android:orientation="horizontal">
-
-                                    <TextView
-                                        android:layout_height="wrap_content"
-                                        android:layout_width="wrap_content"
-                                        android:text="@string/FoffsCS" />
+                                    android:text="@string/FoffsCS"
+                                    android:textSize="15sp"
+                                    app:layout_constraintEnd_toStartOf="@id/mainETcodeOffset"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
 
                                     <EditText
                                         android:layout_height="wrap_content"
@@ -110,19 +118,19 @@
                                         android:id="@+id/mainETcodeOffset"
                                         android:inputType="number"
                                         android:layout_weight="1.0"
-                                        android:autofillHints="" />
-
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="match_parent"
-                                    android:orientation="horizontal">
+                                        android:autofillHints=""
+                                        app:layout_constraintStart_toEndOf="tvFoffCS"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintTop_toTopOf="parent" />
 
                                     <TextView
                                         android:layout_height="wrap_content"
                                         android:layout_width="wrap_content"
-                                        android:text="@string/FoffsCSEd" />
+                                        android:text="@string/FoffsCSEd"
+                                        android:id="@+id/tvFoffCSe"
+                                        app:layout_constraintTop_toBottomOf="@id/mainETcodeOffset"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintEnd_toStartOf="@id/mainETcodeLimit" />
 
                                     <EditText
                                         android:layout_height="wrap_content"
@@ -130,19 +138,19 @@
                                         android:ems="10"
                                         android:id="@+id/mainETcodeLimit"
                                         android:inputType="number"
-                                        android:layout_weight="1.0" />
-
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="match_parent"
-                                    android:orientation="horizontal">
+                                        android:layout_weight="1.0"
+                                        app:layout_constraintTop_toBottomOf="@+id/mainETcodeOffset"
+                                        app:layout_constraintStart_toEndOf="@id/tvFoffCSe"
+                                        app:layout_constraintEnd_toEndOf="parent" />
 
                                     <TextView
                                         android:layout_height="wrap_content"
                                         android:layout_width="wrap_content"
-                                        android:text="@string/VAofEP" />
+                                        android:text="@string/VAofEP"
+                                        android:id="@+id/tvVaEP"
+                                        app:layout_constraintStart_toStartOf="parent"
+                                        app:layout_constraintEnd_toStartOf="@id/mainETentry"
+                                        app:layout_constraintTop_toBottomOf="@id/mainETcodeLimit" />
 
                                     <EditText
                                         android:layout_height="wrap_content"
@@ -151,19 +159,19 @@
                                         android:id="@+id/mainETentry"
                                         android:inputType="number"
                                         android:layout_weight="1.0"
-                                        android:autofillHints="" />
+                                        android:autofillHints=""
+                                        app:layout_constraintStart_toEndOf="@id/tvVaEP"
+                                        app:layout_constraintEnd_toEndOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@id/mainETcodeLimit" />
 
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="match_parent"
-                                    android:orientation="horizontal">
-
-                                    <TextView
+                                <TextView
                                         android:layout_height="wrap_content"
                                         android:layout_width="wrap_content"
-                                        android:text="@string/VAofCS" />
+                                    android:text="@string/VAofCS"
+                                    android:id="@+id/tvVACS"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toStartOf="@id/mainETvirtaddr"
+                                    app:layout_constraintTop_toBottomOf="@id/mainETentry" />
 
                                     <EditText
                                         android:layout_height="wrap_content"
@@ -171,9 +179,10 @@
                                         android:ems="10"
                                         android:id="@+id/mainETvirtaddr"
                                         android:inputType="number"
-                                        android:layout_weight="1.0" />
-
-                                </LinearLayout>
+                                        android:layout_weight="1.0"
+                                        app:layout_constraintTop_toBottomOf="@id/mainETentry"
+                                        app:layout_constraintStart_toEndOf="@id/tvVACS"
+                                        app:layout_constraintEnd_toEndOf="parent" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -181,29 +190,38 @@
                                     android:textAppearance="?android:attr/textAppearanceMedium"
                                     android:text="@string/architecture"
                                     android:id="@+id/mainTVarch"
-                                    android:layout_weight="1.0" />
+                                    android:layout_weight="1.0"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintEnd_toStartOf="@id/mainSpinnerArch"
+                                    app:layout_constraintTop_toBottomOf="@id/mainETvirtaddr" />
 
                                 <Spinner
                                     android:layout_height="wrap_content"
                                     android:layout_width="wrap_content"
                                     android:id="@+id/mainSpinnerArch"
-                                    android:spinnerMode="dropdown" />
+                                    android:spinnerMode="dropdown"
+                                    app:layout_constraintStart_toEndOf="@id/mainTVarch"
+                                    app:layout_constraintTop_toBottomOf="@id/mainETvirtaddr" />
 
                                 <Button
                                     android:layout_height="wrap_content"
                                     android:layout_width="wrap_content"
                                     android:text="@string/finish_setup"
-                                    android:id="@+id/mainBTFinishSetup" />
+                                    android:id="@+id/mainBTFinishSetup"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toBottomOf="@id/mainTVarch" />
 
-                            </LinearLayout>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
 
                             <Button
                                 android:layout_height="wrap_content"
                                 android:layout_width="wrap_content"
                                 android:text="@string/override_autosetup"
-                                android:id="@+id/mainBTOverrideAuto" />
+                                android:id="@+id/mainBTOverrideAuto"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/mainLinearLayoutSetupRaw" />
 
-                        </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <LinearLayout
                             android:id="@+id/tab1"

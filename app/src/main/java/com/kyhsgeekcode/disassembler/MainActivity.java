@@ -1256,7 +1256,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 a.requestPermissions(new String[]{
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        //,Manifest.permission.GET_ACCOUNTS
+                        //,Mani fest.permission.GET_ACCOUNTS
                 }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
             }
         });
