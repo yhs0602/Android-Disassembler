@@ -59,6 +59,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.codekidlabs.storagechooser.StorageChooser;
@@ -173,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     View touchSource;
     View clickSource;
-    LinearLayout llmainLinearLayoutSetupRaw;
+    ConstraintLayout llmainLinearLayoutSetupRaw;
     EditText etCodeBase;
     EditText etEntryPoint;
     EditText etCodeLimit;
