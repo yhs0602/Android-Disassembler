@@ -4,10 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
-import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 
 //import com.google.android.gms.ads.AdRequest;
@@ -16,18 +13,18 @@ import com.google.android.gms.ads.reward.RewardedVideoAdListener;
 
 public class DonateActivity extends Activity implements RewardedVideoAdListener {
     //private InterstitialAd mInterstitialAd;
-    private RewardedVideoAd mRewardedVideoAd;
+    //private RewardedVideoAd mRewardedVideoAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donate);
 
-        MobileAds.initialize(this,
-                "ca-app-pub-3940256099942544~3347511713");
+        //MobileAds.initialize(this,
+        //        "ca-app-pub-3940256099942544~3347511713");
         // Use an activity context to get the rewarded video instance.
-        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
-        mRewardedVideoAd.setRewardedVideoAdListener(this);
+        //mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
+        //mRewardedVideoAd.setRewardedVideoAdListener(this);
 
         // mInterstitialAd = new InterstitialAd(this);
         //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
@@ -38,9 +35,9 @@ public class DonateActivity extends Activity implements RewardedVideoAdListener 
         //} else {
         //    Log.d("TAG", "The interstitial wasn't loaded yet.");
         //}
-        mRewardedVideoAd.loadAd("ca-app-pub-1064966062299374/2904572548"/*"ca-app-pub-3940256099942544/5224354917"*/,
-                new AdRequest.Builder().build());
-        Toast.makeText(this, "Loading ad.. Seeing this add you can be a virtual supporter of this app.", Toast.LENGTH_SHORT).show();
+        //mRewardedVideoAd.loadAd("ca-app-pub-1064966062299374/2904572548"/*"ca-app-pub-3940256099942544/5224354917"*/,
+        //        new AdRequest.Builder().build());
+        //Toast.makeText(this, "Loading ad.. Seeing this add you can be a virtual supporter of this app.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -67,7 +64,7 @@ public class DonateActivity extends Activity implements RewardedVideoAdListener 
 
     @Override
     public void onRewardedVideoAdLoaded() {
-        mRewardedVideoAd.show();
+        //mRewardedVideoAd.show();
         //Toast.makeText(this, "onRewardedVideoAdLoaded", Toast.LENGTH_SHORT).show();
     }
 
@@ -88,19 +85,19 @@ public class DonateActivity extends Activity implements RewardedVideoAdListener 
 
     @Override
     public void onResume() {
-        mRewardedVideoAd.resume(this);
+        //mRewardedVideoAd.resume(this);
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        mRewardedVideoAd.pause(this);
+        //mRewardedVideoAd.pause(this);
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        mRewardedVideoAd.destroy(this);
+        //mRewardedVideoAd.destroy(this);
         super.onDestroy();
     }
 }
