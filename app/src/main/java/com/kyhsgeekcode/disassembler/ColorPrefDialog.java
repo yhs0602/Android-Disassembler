@@ -36,7 +36,7 @@ public class ColorPrefDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setting = getContext().getSharedPreferences("setting", 0);
-        editor = setting.edit();
+        //editor = setting.edit();
         // 다이얼로그 외부 화면 흐리게 표현
         WindowManager.LayoutParams lpWindow = new WindowManager.LayoutParams();
         lpWindow.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND;

@@ -128,6 +128,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         // close db connection
+        cursor.close();
         db.close();
 
         // return notes list

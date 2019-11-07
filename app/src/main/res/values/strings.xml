@@ -76,8 +76,8 @@
     <string name="failSaveFile">Something went wrong saving file</string>
     <string name="calculator">Calculator</string>
     <string name="failCreateProject">Error creating a project!!</string>
-    <string name="saving">Saving...</string>
-    <string name="export_as">Export as...</string>
+    <string name="saving">Saving…</string>
+    <string name="export_as">Export as…</string>
     <string name="send_crash_via_email">Send crash report as an issue by email</string>
     <string name="didUgrant">Did you grant required permissions to this app?</string>
     <string name="overview">Overview</string>

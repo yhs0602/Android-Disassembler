@@ -57,49 +57,49 @@ public class Palette {
     static Set<Integer> ArmCallIns = new HashSet<>();
 
     {
-        ArmCallIns.add(new Integer(Arm_const.ARM_INS_BL));
-        ArmCallIns.add(new Integer(Arm_const.ARM_INS_BLX));
-        Arm64CallIns.add(new Integer(Arm64_const.ARM64_INS_BL));
-        Arm64CallIns.add(new Integer(Arm64_const.ARM64_INS_BR));
+        ArmCallIns.add(Integer.valueOf(Arm_const.ARM_INS_BL));
+        ArmCallIns.add(Integer.valueOf(Arm_const.ARM_INS_BLX));
+        Arm64CallIns.add(Integer.valueOf(Arm64_const.ARM64_INS_BL));
+        Arm64CallIns.add(Integer.valueOf(Arm64_const.ARM64_INS_BR));
     }
 
     static Set<Integer> ArmPushIns = new HashSet<>();
 
     {
-        ArmPushIns.add(new Integer(Arm_const.ARM_INS_PUSH));
+        ArmPushIns.add(Integer.valueOf(Arm_const.ARM_INS_PUSH));
     }
 
     static Set<Integer> X86PushIns = new HashSet<>();
 
     {
-        X86PushIns.add(new Integer(X86_const.X86_INS_PUSH));
-        X86PushIns.add(new Integer(X86_const.X86_INS_PUSHAW));
-        X86PushIns.add(new Integer(X86_const.X86_INS_PUSHAL));
-        X86PushIns.add(new Integer(X86_const.X86_INS_PUSHF));
-        X86PushIns.add(new Integer(X86_const.X86_INS_PUSHFD));
-        X86PushIns.add(new Integer(X86_const.X86_INS_PUSHFQ));
+        X86PushIns.add(Integer.valueOf(X86_const.X86_INS_PUSH));
+        X86PushIns.add(Integer.valueOf(X86_const.X86_INS_PUSHAW));
+        X86PushIns.add(Integer.valueOf(X86_const.X86_INS_PUSHAL));
+        X86PushIns.add(Integer.valueOf(X86_const.X86_INS_PUSHF));
+        X86PushIns.add(Integer.valueOf(X86_const.X86_INS_PUSHFD));
+        X86PushIns.add(Integer.valueOf(X86_const.X86_INS_PUSHFQ));
     }
 
     static Set<Integer> ArmPopIns = new HashSet<>();
 
     {
-        ArmPopIns.add(new Integer(Arm_const.ARM_INS_POP));
+        ArmPopIns.add(Integer.valueOf(Arm_const.ARM_INS_POP));
     }
 
     static Set<Integer> X86PopIns = new HashSet<>();
 
     {
-        X86PopIns.add(new Integer(X86_const.X86_INS_POP));
-        X86PopIns.add(new Integer(X86_const.X86_INS_POPAL));
-        X86PopIns.add(new Integer(X86_const.X86_INS_POPF));
-        X86PopIns.add(new Integer(X86_const.X86_INS_POPFD));
-        X86PopIns.add(new Integer(X86_const.X86_INS_POPFQ));
-        X86PopIns.add(new Integer(X86_const.X86_INS_POPAW));
+        X86PopIns.add(Integer.valueOf(X86_const.X86_INS_POP));
+        X86PopIns.add(Integer.valueOf(X86_const.X86_INS_POPAL));
+        X86PopIns.add(Integer.valueOf(X86_const.X86_INS_POPF));
+        X86PopIns.add(Integer.valueOf(X86_const.X86_INS_POPFD));
+        X86PopIns.add(Integer.valueOf(X86_const.X86_INS_POPFQ));
+        X86PopIns.add(Integer.valueOf(X86_const.X86_INS_POPAW));
     }
 
     public int getTxtColorByGrps(byte[] groups, int cnt, int id) {
         int color = getDefaultTxtColor();
-        Integer ID = new Integer(id);
+        Integer ID = Integer.valueOf(id);
         switch (arch) {
             case Capstone.CS_ARCH_ARM: {
                 if (ArmCallIns.contains(ID)) {
@@ -142,7 +142,7 @@ public class Palette {
 
     public int getBkColorByGrps(byte[] groups, int cnt, int id) {
         int color = getDefaultBkColor();
-        Integer ID = new Integer(id);
+        Integer ID = Integer.valueOf(id);
         switch (arch) {
             case Capstone.CS_ARCH_ARM: {
                 if (ArmCallIns.contains(ID)) {

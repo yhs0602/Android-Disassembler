@@ -47,7 +47,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                                         colorhelper.addPalette(palette);
                                         SharedPreferences sp = getSharedPreferences(MainActivity.SETTINGKEY, MODE_PRIVATE);
                                         SharedPreferences.Editor ed = sp.edit();
-                                        ed.putString("PaletteName", palette.name).commit();
+                                        ed.putString("PaletteName", palette.name).apply();
                                         colorhelper.setPalette(palette.name);
                                         return;
                                     }
@@ -69,7 +69,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             String name = prefnames[val - 1];
             SharedPreferences sp = getSharedPreferences(MainActivity.SETTINGKEY, MODE_PRIVATE);
             SharedPreferences.Editor ed = sp.edit();
-            ed.putString("PaletteName", name).commit();
+            ed.putString("PaletteName", name).apply();
             colorhelper.setPalette(name);
         } else if ("filepicker".equals(key)) {
 
@@ -86,7 +86,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 					//root
 					break;
 			}*/
-            ed.putInt("Picker", val).commit();
+            ed.putInt("Picker", val).apply();
         }
         return false;
     }

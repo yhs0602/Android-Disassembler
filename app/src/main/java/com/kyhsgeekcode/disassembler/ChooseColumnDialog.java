@@ -85,7 +85,7 @@ public class ChooseColumnDialog extends Dialog {
                 editor.putBoolean("bytes", mCKBytes.isChecked());
                 editor.putBoolean("label", mCKLabel.isChecked());
                 editor.putBoolean("address", mCKAddress.isChecked());
-                editor.commit();
+                editor.apply();
                 //Context c=getContext();
                 //	Activity activity=	getOwnerActivity();
                 //if (activity instanceof MainActivity)

@@ -109,7 +109,8 @@
                                         android:ems="10"
                                         android:id="@+id/mainETcodeOffset"
                                         android:inputType="number"
-                                        android:layout_weight="1.0" />
+                                        android:layout_weight="1.0"
+                                        android:autofillHints="" />
 
                                 </LinearLayout>
 
@@ -149,7 +150,8 @@
                                         android:ems="10"
                                         android:id="@+id/mainETentry"
                                         android:inputType="number"
-                                        android:layout_weight="1.0" />
+                                        android:layout_weight="1.0"
+                                        android:autofillHints="" />
 
                                 </LinearLayout>
 

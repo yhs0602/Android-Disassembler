@@ -1,5 +1,6 @@
 package com.kyhsgeekcode.disassembler;
 
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ProjectManager {
-    public static final String Path = "/sdcard/Android Disassembler/";
+    public static final String Path = Environment.getExternalStorageDirectory().getPath() +"Android Disassembler/";
     public static final String TAG = "Disassembler Proj";
     public static final File RootFile = new File(Path);
 

@@ -179,7 +179,7 @@ public class FileSelectorActivity extends ListActivity {
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             SharedPreferences sp = getSharedPreferences("com.kyhsgeekcode.rootpicker.last", MODE_PRIVATE);
-                            sp.edit().putString("lastpath", file.getAbsoluteFile().getParent() + "/").commit();
+                            sp.edit().putString("lastpath", file.getAbsoluteFile().getParent() + "/").apply();
                             Intent result = new Intent("RootPicker.ACTION");
                             result.putExtra("path", file.getAbsolutePath());
                             setResult(Activity.RESULT_OK, result);

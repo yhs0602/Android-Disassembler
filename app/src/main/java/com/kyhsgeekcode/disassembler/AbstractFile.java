@@ -2,12 +2,9 @@ package com.kyhsgeekcode.disassembler;
 
 //represents a raw file and interface
 
-import android.util.Log;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

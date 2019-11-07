@@ -1,6 +1,5 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.util.Log;
 import android.view.View;

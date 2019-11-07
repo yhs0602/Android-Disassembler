@@ -71,7 +71,7 @@
     <string name="overview">개괄</string>
     <string name="didUgrant">필요한 권한을 부여해 주셨는지 확인 바랍니다.</string>
     <string name="send_crash_via_email">E-Mail로 크래시 레포트 보내기</string>
-    <string name="export_as">내보내기...</string>
+    <string name="export_as">내보내기…</string>
     <string name="saving">저장 중..</string>
     <string name="failCreateProject">프로젝트 생성 실패!</string>
     <string name="fail_readfile_root">파일을 읽기 위해서 루트 권한이 필요하기 때문에 파일 읽기에 실패하였습니다. (권한 거부)</string>

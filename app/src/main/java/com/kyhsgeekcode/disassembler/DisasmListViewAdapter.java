@@ -259,7 +259,7 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
 
     public void addItem(ListViewItem item) {
         itemsNew.put(item.disasmResult.address, item);
-        address.put(writep, new Long(item.disasmResult.address));
+        address.put(writep, Long.valueOf(item.disasmResult.address));
         writep++;//continuously add
         //notifyDataSetChanged();
     }

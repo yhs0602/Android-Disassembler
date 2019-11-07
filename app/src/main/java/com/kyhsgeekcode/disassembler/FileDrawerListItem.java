@@ -37,7 +37,7 @@ public class FileDrawerListItem {
             //mb.toString();
             File outDir = new File(root, "temp-cil/");
             outDir.mkdirs();
-            File outFile = new File(outDir, method.getName().replaceAll("[^a-zA-Z0-9\\._]+", "_") + ".il");
+            File outFile = new File(outDir, method.getName().replaceAll("[^a-zA-Z0-9._]+", "_") + ".il");
             try {
                 FileWriter fr = new FileWriter(outFile);
                 StringBuffer buffer = new StringBuffer(256);
