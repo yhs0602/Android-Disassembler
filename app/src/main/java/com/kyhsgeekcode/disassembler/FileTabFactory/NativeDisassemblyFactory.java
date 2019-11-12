@@ -16,6 +16,7 @@ import com.kyhsgeekcode.disassembler.R;
 import com.kyhsgeekcode.disassembler.RawFile;
 import com.kyhsgeekcode.disassembler.TabType;
 
+import java.io.File;
 import java.io.IOException;
 
 import capstone.Capstone;
@@ -64,7 +65,8 @@ public class NativeDisassemblyFactory extends FileTabContentFactory {
             adapter.LoadMore(0, file.getCodeVirtAddr());
         } catch (IOException e) {
             Log.e(TAG,"Error creating adapter",e);
-            Toast.makeText(context,"Failed to parse a file.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Failed to parse a file. Opening a tab as a text", Toast.LENGTH_SHORT).show();
+            ((MainActivity) context).OpenNewTab(new File(tag), TabType.IMAGE);
             return root;
         }
         listview.setAdapter(adapter);

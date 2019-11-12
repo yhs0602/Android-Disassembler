@@ -42,16 +42,18 @@ public class TextFileTabFactory extends FileTabContentFactory {
             while ((line = br.readLine()) != null) {
                 //https://stackoverflow.com/a/46390973/8614565
                 SpannableString ss = new SpannableString(line);
-                for (String term : terms) {
-                    Log.v("TextFactory", "Checking:" + term);
-                    int ofe = line.indexOf(term);
-                    Log.v("TextFactory", "ofe:" + ofe);
-                    for (int ofs = 0; ofs < line.length() && ofe != -1; ofs = ofe + 1) {
-                        ofe = line.indexOf(term, ofs);
-                        if (ofe == -1)
-                            break;
-                        else {
-                            ss.setSpan(CharacterStyle.wrap(spanBlue), ofe, ofe + term.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                if (terms != null) {
+                    for (String term : terms) {
+                        Log.v("TextFactory", "Checking:" + term);
+                        int ofe = line.indexOf(term);
+                        Log.v("TextFactory", "ofe:" + ofe);
+                        for (int ofs = 0; ofs < line.length() && ofe != -1; ofs = ofe + 1) {
+                            ofe = line.indexOf(term, ofs);
+                            if (ofe == -1)
+                                break;
+                            else {
+                                ss.setSpan(CharacterStyle.wrap(spanBlue), ofe, ofe + term.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            }
                         }
                     }
                 }

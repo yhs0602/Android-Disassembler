@@ -186,9 +186,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     TabHost tabHost;
     LinearLayout tab1, tab2;
     //FileTabContentFactory factory = new FileTabContentFactory(this);
-    FileTabContentFactory textFactory = new TextFileTabFactory(this);
-    FileTabContentFactory imageFactory = new ImageFileTabFactory(this);
-    FileTabContentFactory nativeDisasmFactory = new NativeDisassemblyFactory(this);
+    public final FileTabContentFactory textFactory = new TextFileTabFactory(this);
+    public final FileTabContentFactory imageFactory = new ImageFileTabFactory(this);
+    public final FileTabContentFactory nativeDisasmFactory = new NativeDisassemblyFactory(this);
     final List<FileTabContentFactory> factoryList = new ArrayList<>();
 
     {
@@ -2149,13 +2149,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     }
 
     //TabType Ignored
-    private void OpenNewTab(File file, TabType type) {
+    public void OpenNewTab(File file, TabType type) {
         FileTabContentFactory factory = factoryList.get(type.ordinal());
         factory.setType(file.getAbsolutePath(), type);
         tabHost.addTab(tabHost.newTabSpec(file.getAbsolutePath()).setContent(factory).setIndicator(file.getName()));
     }
 
-    private void CloseTab(int index) {
+    public void CloseTab(int index) {
         tabHost.getTabWidget().removeView(tabHost.getTabWidget().getChildTabViewAt(index));
     }
 
