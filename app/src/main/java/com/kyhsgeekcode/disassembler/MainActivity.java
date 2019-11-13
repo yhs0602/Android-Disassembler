@@ -958,7 +958,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
             break;
             case R.id.tabCloseOthers: {
-
+                int currentTab = tabHost.getCurrentTab();
+                CloseAllExceptOne(currentTab);
             }
             break;
             case R.id.analyze: {
@@ -2190,9 +2191,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     public void CloseAllExceptOne(int index) {
         tabHost.clearAllTabs();
-        tabHost.addTab(openTabsList.get(index));
+        TabHost.TabSpec current = openTabsList.get(index);
+        tabHost.addTab(current);
+        tabHost.addTab(tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator(getString(R.string.overview)));
         openTabsList.clear();
-        tabHost.setCurrentTab(0);
+        openTabsList.add(current);
+        tabHost.setCurrentTab(1);
         tabHost.requestLayout();
         tabHost.invalidate();
     }
