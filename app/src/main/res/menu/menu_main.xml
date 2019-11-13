@@ -1,6 +1,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/tabs"
+        android:title="Tabs">
+        <menu>
+            <item
+                android:id="@+id/tabClose"
+                android:title="Close tab" />
+            <item
+                android:id="@+id/tabCloseOthers"
+                android:title="Close other tabs" />
+        </menu>
+    </item>
+
+    <item
         android:id="@+id/jumpto"
         android:title="Goto" />
     <item

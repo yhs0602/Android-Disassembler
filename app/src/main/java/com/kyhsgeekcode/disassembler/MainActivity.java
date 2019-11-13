@@ -289,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private ListView lvSymbols;
     private SymbolListAdapter symbolLvAdapter;
 
+    private List<TabHost.TabSpec> openTabsList = new ArrayList<>();
 
     private View.OnClickListener leftListener = new View.OnClickListener() {
         public void onClick(View v) {
@@ -520,6 +521,15 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         tabHost.addTab(tab5);
         tabHost.addTab(tab6);
         tabHost.addTab(tab7);
+
+        openTabsList.add(tab0);
+        openTabsList.add(tab1);
+        openTabsList.add(tab4);
+        openTabsList.add(tab3);
+        openTabsList.add(tab2);
+        openTabsList.add(tab5);
+        openTabsList.add(tab6);
+        openTabsList.add(tab7);
 
         this.tab1 = findViewById(R.id.tab1);
         this.tab2 = findViewById(R.id.tab2);
@@ -939,6 +949,16 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             case R.id.online_help: {
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/KYHSGeekCode/Android-Disassembler/blob/master/README.md"));
                 startActivity(browserIntent);
+            }
+            break;
+            case R.id.tabClose: {
+                int currenttab = tabHost.getCurrentTab();
+                if (currenttab > 0)
+                    CloseTab(tabHost.getCurrentTab());
+            }
+            break;
+            case R.id.tabCloseOthers: {
+
             }
             break;
             case R.id.analyze: {
@@ -2152,11 +2172,29 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public void OpenNewTab(File file, TabType type) {
         FileTabContentFactory factory = factoryList.get(type.ordinal());
         factory.setType(file.getAbsolutePath(), type);
-        tabHost.addTab(tabHost.newTabSpec(file.getAbsolutePath()).setContent(factory).setIndicator(file.getName()));
+        TabHost.TabSpec tabSpec = tabHost.newTabSpec(file.getAbsolutePath()).setContent(factory).setIndicator(file.getName());
+        tabHost.addTab(tabSpec);
+        openTabsList.add(tabSpec);
     }
 
     public void CloseTab(int index) {
-        tabHost.getTabWidget().removeView(tabHost.getTabWidget().getChildTabViewAt(index));
+        //tabHost.getTabWidget().removeView(tabHost.getTabWidget().getChildTabViewAt(index));
+        openTabsList.remove(index); // remove it from memory
+        tabHost.clearAllTabs();  // clear all tabs from the tabhost
+        for (TabHost.TabSpec spec : openTabsList) // add all that you remember back
+            tabHost.addTab(spec);
+        tabHost.setCurrentTab(index - 1);
+        tabHost.requestLayout();
+        tabHost.invalidate();
+    }
+
+    public void CloseAllExceptOne(int index) {
+        tabHost.clearAllTabs();
+        tabHost.addTab(openTabsList.get(index));
+        openTabsList.clear();
+        tabHost.setCurrentTab(0);
+        tabHost.requestLayout();
+        tabHost.invalidate();
     }
 
     private boolean HandleZipFIle(String path, InputStream is) {
