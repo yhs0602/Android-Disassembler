@@ -92,6 +92,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
@@ -390,6 +391,16 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences sp = getSharedPreferences("AppIntroPref", Context.MODE_PRIVATE);
+        if (!sp.getBoolean("first", false)) {
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean("first", true);
+            editor.apply();
+            Intent intent = new Intent(this, AppIntroActivity.class); // Call the AppIntro java class
+            startActivity(intent);
+            finish();
+            return;
+        }
         context = this;
         //final Thread.UncaughtExceptionHandler ori=Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
@@ -689,7 +700,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             });
             //https://www.androidpub.com/1351553
             Intent intent = getIntent();
-            if (intent.getAction().equals(Intent.ACTION_VIEW)) {
+            if (Objects.equals(intent.getAction(), Intent.ACTION_VIEW)) {
                 // User opened this app from file browser
                 String filePath = intent.getData().getPath();
                 Log.d(TAG, "intent path=" + filePath);
