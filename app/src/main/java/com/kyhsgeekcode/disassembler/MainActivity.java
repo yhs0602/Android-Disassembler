@@ -736,16 +736,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         });
 
         requestAppPermissions(this);
-        /*if (cs == null)
-		 {
-		 Toast.makeText(this, "Failed to initialize the native engine", Toast.LENGTH_SHORT).show();
-		 android.os.Process.killProcess(android.os.Process.getGidForName(null));
-		 }*/
-        //tlDisasmTable = (TableLayout) findViewById(R.id.table_main);
-        //	TableRow tbrow0 = new TableRow(MainActivity.this);
-        //	CreateDisasmTopRow(tbrow0);
-        //	tlDisasmTable.addView(tbrow0);
-        //setupListView();
 
         boolean show = setting.getBoolean("show", true);
         if (show) {
