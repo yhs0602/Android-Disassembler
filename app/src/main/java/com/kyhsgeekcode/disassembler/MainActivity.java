@@ -1065,6 +1065,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                         //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
                     }
                 };
+
                 final EditText et = new EditText(this);
                 et.setText("5-100");
                 ShowEditDialog("Search String", "Set minimum and maximum length of result (min-max)", et, "OK", new DialogInterface.OnClickListener() {

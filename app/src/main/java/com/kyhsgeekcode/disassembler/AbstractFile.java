@@ -51,6 +51,7 @@ public abstract class AbstractFile implements Closeable {
             } catch (SizeMismatchException e) {
                 e.printStackTrace();
             }
+            return new RawFile(file, content);
         } else {
             try {
                 return new ELFUtil(file, content);
@@ -73,7 +74,6 @@ public abstract class AbstractFile implements Closeable {
                 }
             }
         }
-        return null;
     }
 
     public void setPath(String path) {

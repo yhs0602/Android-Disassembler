@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -52,7 +53,7 @@ public class Analyzer {
     }
 
     //Search for strings
-    public void/*List<String>*/ searchStrings(FoundStringAdapter adapter, ProgressDialog dialog, int min, int max) {
+    public void/*List<String>*/ searchStrings(FoundStringAdapter adapter, ProgressBar dialog, int min, int max) {
         //List<String> list=new ArrayList<>();
         //char lastch=0;
         int strstart = -1;
