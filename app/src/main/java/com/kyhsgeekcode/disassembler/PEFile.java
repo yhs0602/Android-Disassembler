@@ -26,7 +26,7 @@ public class PEFile extends AbstractFile {
     private String TAG = "Disassembler PE";
 
     public PEFile(File file, byte[] filec) throws IOException, NotThisFormatException {
-        setPath(file.getPath());
+        setPath(file.getAbsolutePath());
         try {
             pe = PEParser.parse(file);
         } catch (NegativeArraySizeException e) {

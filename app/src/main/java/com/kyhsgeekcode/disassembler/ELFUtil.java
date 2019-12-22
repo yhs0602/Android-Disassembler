@@ -42,7 +42,7 @@ public class ELFUtil extends AbstractFile {
 
     public ELFUtil(File file, byte[] filec) throws IOException {
         elf = new Elf(file);
-        setPath(file.getPath());
+        setPath(file.getAbsolutePath());
         fileContents = filec;
         AfterConstructor();
     }

@@ -67,9 +67,6 @@ import com.codekidlabs.storagechooser.utils.DiskUtil;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.kyhsgeekcode.disassembler.Calc.Calculator;
 import com.kyhsgeekcode.disassembler.FileTabFactory.FileTabContentFactory;
-import com.kyhsgeekcode.disassembler.FileTabFactory.ImageFileTabFactory;
-import com.kyhsgeekcode.disassembler.FileTabFactory.NativeDisassemblyFactory;
-import com.kyhsgeekcode.disassembler.FileTabFactory.TextFileTabFactory;
 import com.kyhsgeekcode.disassembler.Utils.Olly.UddTag;
 import com.stericson.RootTools.RootTools;
 
@@ -187,16 +184,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     TabHost tabHost;
     LinearLayout tab1, tab2;
     //FileTabContentFactory factory = new FileTabContentFactory(this);
-    public final FileTabContentFactory textFactory = new TextFileTabFactory(this);
-    public final FileTabContentFactory imageFactory = new ImageFileTabFactory(this);
-    public final FileTabContentFactory nativeDisasmFactory = new NativeDisassemblyFactory(this);
-    final List<FileTabContentFactory> factoryList = new ArrayList<>();
-
-    {
-        factoryList.add(textFactory);
-        factoryList.add(imageFactory);
-        factoryList.add(nativeDisasmFactory);
-    }
 
     ///////////////////////////////////////////////////UI manager////////////////////////////////////////////
     HexManager hexManager = new HexManager();
@@ -276,7 +263,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private LogAdapter logAdapter;
 
     private ListView lvStrings;
-    private FoundStringAdapter stringAdapter;
 
     private TextView tvAnalRes;
     private ImageView ivAnalCount;
@@ -504,10 +490,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         btRefreshLog.setOnClickListener(this);
         lvLog = findViewById(R.id.loglistView);
         lvLog.setAdapter(logAdapter = new LogAdapter());
-
-        lvStrings = findViewById(R.id.stringlistView);
-        stringAdapter = new FoundStringAdapter();
-        lvStrings.setAdapter(stringAdapter);
 
         tvAnalRes = findViewById(R.id.tvAnalRes);
         ivAnalCount = findViewById(R.id.imageViewCount);
@@ -1019,70 +1001,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
             break;
             case R.id.findString: {
-                final AsyncTask<Integer, Integer, Void> asyncTask = new AsyncTask<Integer, Integer, Void>() {
-                    ProgressDialog dialog;
-                    ProgressBar progress;
-
-                    @Override
-                    protected void onPreExecute() {
-                        super.onPreExecute();
-                        Log.d(TAG, "Pre-execute");
-                        // create dialog
-                        dialog = new ProgressDialog(context);
-                        dialog.setTitle("Searching ...");
-                        dialog.setMessage("Searching for string");
-                        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                        dialog.setProgress(0);
-                        dialog.setMax(filecontent.length);
-                        dialog.setCancelable(false);
-                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        dialog.show();
-                    }
-
-                    @Override
-                    protected Void doInBackground(Integer... ints) {
-                        Log.d(TAG, "BG");
-                        int min = ints[0];
-                        int max = ints[1];
-                        Analyzer analyzer = new Analyzer(filecontent);
-                        analyzer.searchStrings(stringAdapter, dialog, min, max);
-                        return null;
-                    }
-
-                    @Override
-                    protected void onProgressUpdate(Integer... values) {
-                        super.onProgressUpdate(values);
-                        progress.setProgress(values[0]);
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void result) {
-                        super.onPostExecute(result);
-                        dialog.dismiss();
-                        adapter.notifyDataSetChanged();
-                        tabHost.setCurrentTab(TAB_STRINGS);
-                        Log.d(TAG, "BG done");
-                        //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
-                    }
-                };
-
-                final EditText et = new EditText(this);
-                et.setText("5-100");
-                ShowEditDialog("Search String", "Set minimum and maximum length of result (min-max)", et, "OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String s = et.getText().toString();
-                        String[] splitt = s.split("-");
-                        int min = Integer.parseInt(splitt[0]);
-                        int max = Integer.parseInt(splitt[1]);
-                        if (min < 1)
-                            min = 1;
-                        if (max < min)
-                            max = min;
-                        asyncTask.execute(min, max);
-                    }
-                }, "Cancel", null);
-
+                //TODO
             }
             break;
             case R.id.chooserow: {
@@ -2098,6 +2017,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     public void OnChoosePath(String path)//Intent data)
     {
+        FileContext fc = fileContext = new FileContext(this, abstra)
         try {
             File file = new File(path);
             DataInputStream in = new DataInputStream(new FileInputStream(file));
@@ -2173,8 +2093,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     //TabType Ignored
     public void OpenNewTab(File file, TabType type) {
-        FileTabContentFactory factory = factoryList.get(type.ordinal());
-        factory.setType(file.getAbsolutePath(), type);
+        FileTabContentFactory factory = fileContext.OpenNewTab(type);
         TabHost.TabSpec tabSpec = tabHost.newTabSpec(file.getAbsolutePath()).setContent(factory).setIndicator(file.getName());
         tabHost.addTab(tabSpec);
         openTabsList.add(tabSpec);
