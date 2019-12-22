@@ -7,8 +7,6 @@ import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -64,6 +62,7 @@ import com.github.chrisbanes.photoview.PhotoView;
 import com.kyhsgeekcode.disassembler.Calc.Calculator;
 import com.kyhsgeekcode.disassembler.FileTabFactory.FileTabContentFactory;
 import com.kyhsgeekcode.disassembler.Utils.Olly.UddTag;
+import com.kyhsgeekcode.disassembler.Utils.UIUtil;
 import com.kyhsgeekcode.disassembler.Utils.Util;
 import com.stericson.RootTools.RootTools;
 
@@ -104,6 +103,8 @@ import pl.openrnd.multilevellistview.MultiLevelListView;
 import static com.kyhsgeekcode.disassembler.MachineData.CS_ARCH_ALL;
 import static com.kyhsgeekcode.disassembler.MachineData.CS_ARCH_MAX;
 import static com.kyhsgeekcode.disassembler.MachineData.getArchitecture;
+import static com.kyhsgeekcode.disassembler.Utils.UIUtil.ShowAlertDialog;
+import static com.kyhsgeekcode.disassembler.Utils.UIUtil.ShowYesNoCancelDialog;
 
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener {
@@ -399,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         etFilename.setEnabled(false);
 
         llmainLinearLayoutSetupRaw = findViewById(R.id.mainLinearLayoutSetupRaw);
-        disableEnableControls(false, llmainLinearLayoutSetupRaw);
+        UIUtil.disableEnableControls(false, llmainLinearLayoutSetupRaw);
 
         etCodeLimit = findViewById(R.id.mainETcodeLimit);
         etCodeBase = findViewById(R.id.mainETcodeOffset);
@@ -688,18 +689,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         File filesDir = getFilesDir();
         File[] files = filesDir.listFiles();
         for (File file : files) {
-            deleteRecursive(file);
+            Util.deleteRecursive(file);
         }
     }
 
-    //https://stackoverflow.com/a/6425744/8614565
-    void deleteRecursive(File fileOrDirectory) {
-        if (fileOrDirectory.isDirectory())
-            for (File child : fileOrDirectory.listFiles())
-                deleteRecursive(child);
 
-        fileOrDirectory.delete();
-    }
 
     @Override
     public void onClick(View p1) {
@@ -1011,7 +1005,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                                             return;
                                         }
                                     }
-                                    showToast("No such symbol available");
+                                    UIUtil.showToast(MainActivity.this, "No such symbol available");
                                 }
                             }
                         },
@@ -1069,52 +1063,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     ///////////////////////////////////Show***Dialog/////////////////////////////////////
 
     //The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
-    public static void ShowEditDialog(Activity a, String title, String message, final EditText edittext,
-                                      String positive, DialogInterface.OnClickListener pos,
-                                      String negative, DialogInterface.OnClickListener neg) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
-        builder.setTitle(title);
-        builder.setMessage(message);
-        builder.setView(edittext);
-        builder.setPositiveButton(positive, pos);
-        builder.setNegativeButton(negative, neg);
-        builder.show();
-    }
-
-    //The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
-    public static void ShowSelDialog(Activity a, final List<String> ListItems, String title, DialogInterface.OnClickListener listener) {
-        final CharSequence[] items = ListItems.toArray(new String[ListItems.size()]);
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
-        builder.setTitle(title);
-        builder.setItems(items, listener);
-        builder.show();
-    }
-
-    public static void ShowAlertDialog(Activity a, String title, String content, DialogInterface.OnClickListener listener) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
-        builder.setTitle(title);
-        builder.setCancelable(false);
-        builder.setMessage(content);
-        builder.setPositiveButton(R.string.ok, listener);
-        builder.show();
-    }
-
-    public static void ShowAlertDialog(Activity a, String title, String content) {
-        ShowAlertDialog(a, title, content, null);
-    }
-
-    public static void ShowYesNoCancelDialog(Activity a, String title, String content,
-                                             DialogInterface.OnClickListener ok,
-                                             DialogInterface.OnClickListener no,
-                                             DialogInterface.OnClickListener can) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
-        builder.setTitle(title);
-        builder.setCancelable(false);
-        builder.setMessage(content);
-        builder.setPositiveButton(R.string.ok, ok).setNegativeButton("No", no);
-        builder.setNeutralButton(R.string.cancel, can);
-        builder.show();
-    }
 
     private android.app.AlertDialog ShowEditDialog(String title, String message, final EditText edittext,
                                                    String positive, DialogInterface.OnClickListener pos,
@@ -1129,7 +1077,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     }
 
     public void ShowSelDialog(final List<String> ListItems, String title, DialogInterface.OnClickListener listener) {
-        MainActivity.ShowSelDialog(this, ListItems, title, listener);
+        UIUtil.ShowSelDialog(this, ListItems, title, listener);
     }
 
     /////////////////////////////////////End Show **** dialog///////////////////////////////////////////
@@ -1243,31 +1191,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     //////////////////////////////////////////////End Column Picking///////////////////////////////////////////////////
     //////////////////////////////////////////////////////UI Utility///////////////////////////////////////////////////
-    public void showToast(String s) {
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
-    }
-
-    public void showToast(int resid) {
-        Toast.makeText(this, resid, Toast.LENGTH_SHORT).show();
-    }
-
-    public void setClipBoard(String s) {
-        ClipboardManager cb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("Android Disassembler", s);
-        cb.setPrimaryClip(clip);
-        //Toast.makeText(this,"Copied to clipboard:"+s,Toast.LENGTH_SHORT).show();
-    }
-
-    //https://stackoverflow.com/a/8127716/8614565
-    private void disableEnableControls(boolean enable, ViewGroup vg) {
-        for (int i = 0; i < vg.getChildCount(); i++) {
-            View child = vg.getChildAt(i);
-            child.setEnabled(enable);
-            if (child instanceof ViewGroup) {
-                disableEnableControls(enable, (ViewGroup) child);
-            }
-        }
-    }
 
     ///////////////////////////////////////////////////End UI Utility//////////////////////////////////////////////////
 
@@ -1325,7 +1248,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     @Override
     public void onOpen(ProjectManager.Project proj) {
         db = new DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db");
-        disableEnableControls(false, llmainLinearLayoutSetupRaw);
+        UIUtil.disableEnableControls(false, llmainLinearLayoutSetupRaw);
         OnChoosePath(proj.oriFilePath);
         currentProject = proj;
         setting = getSharedPreferences(SETTINGKEY, MODE_PRIVATE);
@@ -1593,7 +1516,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                             SharedPreferences.Editor edi = settingPath.edit();
                             edi.putString(DiskUtil.SC_PREFERENCE_KEY, path);
                             edi.apply();
-                            disableEnableControls(false, llmainLinearLayoutSetupRaw);
+                            UIUtil.disableEnableControls(false, llmainLinearLayoutSetupRaw);
                             OnChoosePath(path);
                             //Log.e("SELECTED_PATH", path);
                         }
@@ -1618,7 +1541,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 SharedPreferences.Editor edi = settingPath.edit();
                 edi.putString(DiskUtil.SC_PREFERENCE_KEY, path);
                 edi.apply();
-                disableEnableControls(false, llmainLinearLayoutSetupRaw);
+                UIUtil.disableEnableControls(false, llmainLinearLayoutSetupRaw);
                 OnChoosePath(path);
             }
         }
@@ -1965,10 +1888,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     }
 
     private void AllowRawSetup() {
-        disableEnableControls(true, llmainLinearLayoutSetupRaw);
+        UIUtil.disableEnableControls(true, llmainLinearLayoutSetupRaw);
     }
 
-    ////////////////////////////////////////////Data Conversion//////////////////////////////////
     private ProgressDialog showProgressDialog(String s) {
         ProgressDialog dialog = new ProgressDialog(this);
         dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
