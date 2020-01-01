@@ -107,7 +107,7 @@ import static com.kyhsgeekcode.disassembler.Utils.UIUtil.ShowAlertDialog;
 import static com.kyhsgeekcode.disassembler.Utils.UIUtil.ShowYesNoCancelDialog;
 
 
-public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener {
+public class MainActivity extends AppCompatActivity implements Button.OnClickListener {
     public static final String SETTINGKEY = "setting";
     public static final int REQUEST_WRITE_STORAGE_REQUEST_CODE = 1;
     private static final int TAB_EXPORT = 3;
@@ -124,9 +124,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private static final String RATIONALSETTING = "showRationals";
     public static final int TAG_INSTALLED = 0;
     public static final int TAG_STORAGE = 1;
-    public static final int TAG_PROJECTS = 2;
-    public static final int TAG_PROCESSES = 3;
-    public static final int TAG_RUNNING_APPS = 4;
+//    public static final int TAG_PROJECTS = 2;
+    public static final int TAG_PROCESSES = 2;
+    public static final int TAG_RUNNING_APPS = 3;
     static Context context;
 
     /* this is used to load the 'hello-jni' library on application
@@ -209,19 +209,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private ChooseColumnDialog mCustomDialog;
     private DisasmListViewAdapter adapter;
     private ListView listview;
-    public final Runnable runnableRequestLayout = new Runnable() {
-        @Override
-        public void run() {
-            //adapter.notifyDataSetChanged();
-            listview.requestLayout();
-        }
-    };
+
     private EditText etDetails;
     private EditText etFilename;
     private Button btSavDisasm;
     private Button btShowDetails;
     private Button btSavDit;
-    private String[] mProjNames;
     private DrawerLayout mDrawerLayout;
     private MultiLevelListView mDrawerList;
 
@@ -234,8 +227,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private TextView tvAnalRes;
     private ImageView ivAnalCount;
 
-    private ProjectManager projectManager;
-    private ProjectManager.Project currentProject;
     private ListView lvSymbols;
     private SymbolListAdapter symbolLvAdapter;
 
@@ -270,68 +261,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     }
 
-    /**
-     * Release memory when the UI becomes hidden or when system resources become low.
-     *
-     * @param level the memory-related event that was raised.
-     */
-    public void onTrimMemory(int level) {
-        Log.v(TAG, "onTrimmemoory(" + level + ")called");
-        // Determine which lifecycle or system event was raised.
-        switch (level) {
-
-            case ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:
-
-                /*
-				 Release any UI objects that currently hold memory.
-
-				 "release your UI resources" is actually about things like caches.
-				 You usually don't have to worry about managing views or UI components because the OS
-				 already does that, and that's why there are all those callbacks for creating, starting,
-				 pausing, stopping and destroying an activity.
-				 The user interface has moved to the background.
-				 */
-
-                break;
-
-            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE:
-            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW:
-            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL:
-
-                /*
-				 Release any memory that your app doesn't need to run.
-
-				 The device is running low on memory while the app is running.
-				 The event raised indicates the severity of the memory-related event.
-				 If the event is TRIM_MEMORY_RUNNING_CRITICAL, then the system will
-				 begin killing background processes.
-				 */
-
-                break;
-
-            case ComponentCallbacks2.TRIM_MEMORY_BACKGROUND:
-            case ComponentCallbacks2.TRIM_MEMORY_MODERATE:
-            case ComponentCallbacks2.TRIM_MEMORY_COMPLETE:
-
-                /*
-				 Release as much memory as the process can.
-				 The app is on the LRU list and the system is running low on memory.
-				 The event raised indicates where the app sits within the LRU list.
-				 If the event is TRIM_MEMORY_COMPLETE, the process will be one of
-				 the first to be terminated.
-				 */
-
-                break;
-
-            default:
-                /*
-				 Release any non-critical data structures.
-				 The app received an unrecognized memory level value
-				 from the system. Treat this as a generic low-memory message.
-				 */
-                break;
-        }
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -593,19 +522,12 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     }
                 }
             }
-            try {
-                projectManager = new ProjectManager(MainActivity.this);
-                mProjNames = projectManager.strProjects();//new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
-            } catch (IOException e) {
-                AlertError("Failed to load projects", e);
-            }
             // Set the adapter for the list view
             mDrawerList.setAdapter(mDrawerAdapter = new FileDrawerListAdapter(MainActivity.this));//new ArrayAdapter<String>(MainActivity.this,
             //R.layout.row, mProjNames));
             List<FileDrawerListItem> initialDrawers = new ArrayList<>();
             initialDrawers.add(new FileDrawerListItem("Installed", FileDrawerListItem.DrawerItemType.HEAD, TAG_INSTALLED, 0));
             initialDrawers.add(new FileDrawerListItem("Internal Storage", FileDrawerListItem.DrawerItemType.HEAD, TAG_STORAGE, 0));
-            initialDrawers.add(new FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROJECTS, 0));
             initialDrawers.add(new FileDrawerListItem("Processes-requires root", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROCESSES, 0));
             //initialDrawers.add(new FileDrawerListItem("Running apps", FileDrawerListItem.DrawerItemType.HEAD, TAG_RUNNING_APPS, 0));
 
@@ -653,10 +575,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     if ("adp".equalsIgnoreCase(ext)) {
                         //User opened the project file
                         //now get the project name
-                        File file = new File(filePath);
-                        String pname = file.getName();
-                        toks = pname.split(Pattern.quote("."));
-                        projectManager.Open(toks[toks.length - 2]);
                     } else {
                         //User opened pther files
                         OnChoosePath(intent.getData());
@@ -666,11 +584,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     OnChoosePath(intent.getData());
                 }
             } else { // android.intent.action.MAIN
-                String lastProj = setting.getString(LASTPROJKEY, "");
-                if (projectManager != null)
-                    projectManager.Open(lastProj);
             }
-
             // create the fragment and data the first time
             // the data is available in dataFragment.getData()
 
@@ -691,7 +605,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             Util.deleteRecursive(file);
         }
     }
-
 
 
     @Override
@@ -816,47 +729,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 tabHost.setCurrentTab(TAB_EXPORT);
                 return;
             }
-        }/*
-        if (shouldSave && currentProject == null) {
-            ShowYesNoCancelDialog(this, "Save project?", "",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface p1, int p2) {
-                            ExportDisasm(new Runnable() {
-                                @Override
-                                public void run() {
-                                    SaveDetail();
-                                    MainActivity.super.onBackPressed();
-                                }
-                            });
-
-                        }
-                    },
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface p1, int p2) {
-                            MainActivity.super.onBackPressed();
-                        }
-                    },
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface p1, int p2) {
-                        }
-                    });
-        } else*/
-            super.onBackPressed();
+        }
+        super.onBackPressed();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-		/*try
-		 {
-		 elfUtil.close();
-		 }
-		 catch (Exception e)
-		 {}*/
-        Finalize();
+		Finalize();
     }
 
     @Override
@@ -1018,25 +898,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 break;
             }
             case R.id.save: {
-                //if(currentProject==null)
-                {
-                    //ExportDisasm(this::SaveDetail);
-                }
                 break;
             }
             case R.id.export: {
-                /*ExportDisasm(new Runnable() {
-                    @Override
-                    public void run() {
-                        SaveDetail(new Runnable() {
-                            @Override
-                            public void run() {
-                                createZip();
-                            }
-                        });
-                    }
-                });*/
-
                 break;
             }
             case R.id.calc: {
@@ -1239,48 +1103,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         Toast.makeText(this, R.string.selfilefirst, Toast.LENGTH_SHORT).show();
         showChooser();/*File*/
     }
-
-    //////////////////////////////////////////////Projects////////////////////////////////////////////////////////////////////////
-    @Override
-    public void onOpen(ProjectManager.Project proj) {
-        db = new DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db");
-        UIUtil.disableEnableControls(false, llmainLinearLayoutSetupRaw);
-        OnChoosePath(proj.oriFilePath);
-        currentProject = proj;
-        setting = getSharedPreferences(SETTINGKEY, MODE_PRIVATE);
-        editor = setting.edit();
-        editor.putString(LASTPROJKEY, proj.name);
-        editor.apply();
-        String det = proj.getDetail();
-        if (!"".equals(det)) {
-            etDetails.setText(det);
-        }
-
-        File dir = new File(ProjectManager.RootFile, currentProject.name + "/");
-        Log.d(TAG, "dirpath=" + dir.getAbsolutePath());
-        File file = new File(dir, "Disassembly.raw");
-        if (file.exists()) {
-            try {
-                FileInputStream fis = new FileInputStream(file);
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                disasmResults = (LongSparseArray<ListViewItem>) ois.readObject();
-                ois.close();
-            } catch (ClassNotFoundException | IOException e) {
-                AlertError(R.string.fail_loadraw, e);
-            }
-        } else {
-            disasmResults = new LongSparseArray<>();//(LongSparseArray<ListViewItem>) db.getAll();
-        }
-        if (disasmResults != null) {
-            adapter.addAll(disasmResults, new SparseArray<Long>());
-        } else {
-            disasmResults = new LongSparseArray<>();
-        }
-        shouldSave = true;
-    }
-
-    ////////////////////////////////////////////////End Project//////////////////////////////////////////////
-
 
     ////TODO: DisassembleFile(long address, int amt);
     public void DisassembleFile(final long offset) {
@@ -1620,7 +1442,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             long fsize = file.length();
             //int index = 0;
             setFilecontent(Util.getBytes(in)/*new byte[(int) fsize]*/);
-            OpenNewTab(file,TabType.NATIVE_DISASM);
+            OpenNewTab(file, TabType.NATIVE_DISASM);
             //AfterReadFully(file);
             //Toast.makeText(this, "success size=" + index /*+ type.name()*/, Toast.LENGTH_SHORT).show();
             //OnOpenStream(fsize, path, index, file);
@@ -1743,13 +1565,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     }
 
     private boolean HandleUddFile(String path, InputStream is) {
-        try {
-            Map<UddTag, byte[]> data = com.kyhsgeekcode.disassembler.Utils.ProjectManager.ReadUDD(new DataInputStream(is));
-            return false; //true;
-        } catch (IOException e) {
-            Log.e(TAG, "path:" + path, e);
-            return false;
-        }
+        // Map<UddTag, byte[]> data = com.kyhsgeekcode.disassembler.Utils.ProjectManager.ReadUDD(new DataInputStream(is));
+        return false; //true;
         //return false;
     }
 
@@ -1952,18 +1769,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     public static native int Open(int arch, int mode);
 
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            //selectItem(position);
-            if (view instanceof TextView) {
-                TextView tv = (TextView) view;
-                String projname = tv.getText().toString();
-                projectManager.Open(projname);
-            }
-        }
-    }
-
     static final Set<String> textFileExts = new HashSet<>();
 
     static {
@@ -1974,4 +1779,68 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         textFileExts.add("md");
         textFileExts.add("il");
     }
+
+    /**
+     * Release memory when the UI becomes hidden or when system resources become low.
+     *
+     * @param level the memory-related event that was raised.
+     */
+    public void onTrimMemory(int level) {
+        Log.v(TAG, "onTrimmemoory(" + level + ")called");
+        // Determine which lifecycle or system event was raised.
+        switch (level) {
+
+            case ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN:
+
+                /*
+				 Release any UI objects that currently hold memory.
+
+				 "release your UI resources" is actually about things like caches.
+				 You usually don't have to worry about managing views or UI components because the OS
+				 already does that, and that's why there are all those callbacks for creating, starting,
+				 pausing, stopping and destroying an activity.
+				 The user interface has moved to the background.
+				 */
+
+                break;
+
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW:
+            case ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL:
+
+                /*
+				 Release any memory that your app doesn't need to run.
+
+				 The device is running low on memory while the app is running.
+				 The event raised indicates the severity of the memory-related event.
+				 If the event is TRIM_MEMORY_RUNNING_CRITICAL, then the system will
+				 begin killing background processes.
+				 */
+
+                break;
+
+            case ComponentCallbacks2.TRIM_MEMORY_BACKGROUND:
+            case ComponentCallbacks2.TRIM_MEMORY_MODERATE:
+            case ComponentCallbacks2.TRIM_MEMORY_COMPLETE:
+
+                /*
+				 Release as much memory as the process can.
+				 The app is on the LRU list and the system is running low on memory.
+				 The event raised indicates where the app sits within the LRU list.
+				 If the event is TRIM_MEMORY_COMPLETE, the process will be one of
+				 the first to be terminated.
+				 */
+
+                break;
+
+            default:
+                /*
+				 Release any non-critical data structures.
+				 The app received an unrecognized memory level value
+				 from the system. Treat this as a generic low-memory message.
+				 */
+                break;
+        }
+    }
+
 }
