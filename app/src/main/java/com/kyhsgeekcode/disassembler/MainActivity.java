@@ -122,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private static final String LASTPROJKEY = "lastProject";
     private static final String TAG = "Disassembler";
     private static final String RATIONALSETTING = "showRationals";
-    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
     public static final int TAG_INSTALLED = 0;
     public static final int TAG_STORAGE = 1;
     public static final int TAG_PROJECTS = 2;
@@ -1965,16 +1964,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     }
 
-    public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for (int p = 0, j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[p++] = hexArray[v >>> 4];
-            hexChars[p++] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
-
     static final Set<String> textFileExts = new HashSet<>();
 
     static {
@@ -1986,4 +1975,3 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         textFileExts.add("il");
     }
 }
-
