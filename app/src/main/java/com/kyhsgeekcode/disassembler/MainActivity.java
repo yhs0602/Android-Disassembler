@@ -1190,9 +1190,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     }
 
     //////////////////////////////////////////////End Column Picking///////////////////////////////////////////////////
-    //////////////////////////////////////////////////////UI Utility///////////////////////////////////////////////////
-
-    ///////////////////////////////////////////////////End UI Utility//////////////////////////////////////////////////
 
     ///////////////////////////////////////////////////Target setter/getter////////////////////////////////////////////
     public void setFpath(String fpath) {
@@ -1624,17 +1621,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             long fsize = file.length();
             //int index = 0;
             setFilecontent(Util.getBytes(in)/*new byte[(int) fsize]*/);
-            /*
-            int len= 0;
-            byte[] b = new byte[1024];
-            while ((len = in.read(b)) > 0) {
-                for (int i = 0; i < len; i++) {
-                    filecontent[index] = b[i];
-                    index++;
-                }
-            }
-            in.close();
-            */
             OpenNewTab(file,TabType.NATIVE_DISASM);
             //AfterReadFully(file);
             //Toast.makeText(this, "success size=" + index /*+ type.name()*/, Toast.LENGTH_SHORT).show();
@@ -1960,10 +1946,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     //////////////////////////////////////////////////////End Choose Column/////////////////////////////////////////
 
 
-    /* A native method that is implemented by the
-     * 'hello-jni' native library, which is packaged
-     * with this application.
-     */
     //  public native String  disassemble(byte [] bytes, long entry);
     public native int Init();
 
@@ -1981,10 +1963,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 projectManager.Open(projname);
             }
         }
-    }
-
-    public static int getScreenHeight() {
-        return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
     public static String bytesToHex(byte[] bytes) {

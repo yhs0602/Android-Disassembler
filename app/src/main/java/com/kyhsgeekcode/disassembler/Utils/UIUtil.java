@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -88,5 +89,7 @@ public class UIUtil {
         Toast.makeText(context, resid, Toast.LENGTH_SHORT).show();
     }
 
-
+    public static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
 }
