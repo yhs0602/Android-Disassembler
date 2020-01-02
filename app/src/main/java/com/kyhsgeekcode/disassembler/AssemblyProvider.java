@@ -1,5 +1,8 @@
 package com.kyhsgeekcode.disassembler;
 
+import com.kyhsgeekcode.disassembler.data.ListViewItem;
+import com.kyhsgeekcode.disassembler.data.Symbol;
+
 import java.util.List;
 
 public abstract class AssemblyProvider {

@@ -3,6 +3,8 @@ package com.kyhsgeekcode.disassembler;
 import android.app.Fragment;
 import android.os.Bundle;
 
+import com.kyhsgeekcode.disassembler.data.AbstractFile;
+
 public class RetainedFragment extends Fragment {
 
     // data object we want to retain

@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 
+import com.kyhsgeekcode.disassembler.dialog.AsyncTaskDialog;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

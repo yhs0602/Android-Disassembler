@@ -11,8 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import com.kyhsgeekcode.disassembler.Analyzer;
-import com.kyhsgeekcode.disassembler.FoundStringAdapter;
+import com.kyhsgeekcode.disassembler.analysis.Analyzer;
+import com.kyhsgeekcode.disassembler.adapter.FoundStringAdapter;
 import com.kyhsgeekcode.disassembler.MainActivity;
 import com.kyhsgeekcode.disassembler.R;
 

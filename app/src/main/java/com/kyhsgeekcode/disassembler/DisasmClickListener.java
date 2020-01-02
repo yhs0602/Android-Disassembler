@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 
+import com.kyhsgeekcode.disassembler.data.DisasmResult;
+import com.kyhsgeekcode.disassembler.data.ListViewItem;
+
 import java.util.ArrayList;
 import java.util.List;
 

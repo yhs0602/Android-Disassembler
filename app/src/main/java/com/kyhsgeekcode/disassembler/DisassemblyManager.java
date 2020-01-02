@@ -3,6 +3,8 @@ package com.kyhsgeekcode.disassembler;
 import android.util.LongSparseArray;
 import android.util.SparseArray;
 
+import com.kyhsgeekcode.disassembler.data.ListViewItem;
+
 public class DisassemblyManager {
     //Manages disassembled data.
 

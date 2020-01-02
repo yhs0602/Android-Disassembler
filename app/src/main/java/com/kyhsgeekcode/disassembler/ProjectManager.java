@@ -3,6 +3,8 @@ package com.kyhsgeekcode.disassembler;
 import android.os.Environment;
 import android.util.Log;
 
+import com.kyhsgeekcode.disassembler.util.DatabaseHelper;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;

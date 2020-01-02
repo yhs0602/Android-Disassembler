@@ -1,6 +1,6 @@
 package com.kyhsgeekcode.disassembler.Interpreter;
 
-import com.kyhsgeekcode.disassembler.DisasmResult;
+import com.kyhsgeekcode.disassembler.data.DisasmResult;
 
 import capstone.Arm_const;
 

@@ -7,13 +7,13 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.kyhsgeekcode.disassembler.AbstractFile;
+import com.kyhsgeekcode.disassembler.data.AbstractFile;
 import com.kyhsgeekcode.disassembler.ColorHelper;
 import com.kyhsgeekcode.disassembler.DisasmClickListener;
 import com.kyhsgeekcode.disassembler.DisasmListViewAdapter;
 import com.kyhsgeekcode.disassembler.MainActivity;
 import com.kyhsgeekcode.disassembler.R;
-import com.kyhsgeekcode.disassembler.RawFile;
+import com.kyhsgeekcode.disassembler.data.RawFile;
 import com.kyhsgeekcode.disassembler.TabType;
 
 import java.io.File;

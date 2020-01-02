@@ -14,6 +14,10 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.kyhsgeekcode.disassembler.data.AbstractFile;
+import com.kyhsgeekcode.disassembler.data.DisasmResult;
+import com.kyhsgeekcode.disassembler.data.ListViewItem;
+
 public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScrollListener {
     public static final int INSERT_COUNT = 80;
 

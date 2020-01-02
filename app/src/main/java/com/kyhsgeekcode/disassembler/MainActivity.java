@@ -14,7 +14,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -24,7 +23,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.LongSparseArray;
-import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,11 +57,29 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.codekidlabs.storagechooser.StorageChooser;
 import com.codekidlabs.storagechooser.utils.DiskUtil;
 import com.github.chrisbanes.photoview.PhotoView;
-import com.kyhsgeekcode.disassembler.Calc.Calculator;
+import com.kyhsgeekcode.disassembler.adapter.FileDrawerListAdapter;
+import com.kyhsgeekcode.disassembler.adapter.HexAsciiAdapter;
+import com.kyhsgeekcode.disassembler.adapter.HexGridAdapter;
+import com.kyhsgeekcode.disassembler.adapter.SymbolListAdapter;
+import com.kyhsgeekcode.disassembler.data.AbstractFile;
+import com.kyhsgeekcode.disassembler.data.ColumnSetting;
+import com.kyhsgeekcode.disassembler.data.ELFFile;
+import com.kyhsgeekcode.disassembler.data.FileContext;
+import com.kyhsgeekcode.disassembler.data.FileDrawerListItem;
+import com.kyhsgeekcode.disassembler.data.ILAssmeblyFile;
+import com.kyhsgeekcode.disassembler.data.ListViewItem;
+import com.kyhsgeekcode.disassembler.data.PEFile;
+import com.kyhsgeekcode.disassembler.data.RawFile;
+import com.kyhsgeekcode.disassembler.util.DatabaseHelper;
+import com.kyhsgeekcode.disassembler.analysis.Analyzer;
+import com.kyhsgeekcode.disassembler.calc.Calculator;
 import com.kyhsgeekcode.disassembler.FileTabFactory.FileTabContentFactory;
-import com.kyhsgeekcode.disassembler.Utils.Olly.UddTag;
-import com.kyhsgeekcode.disassembler.Utils.UIUtil;
-import com.kyhsgeekcode.disassembler.Utils.Util;
+import com.kyhsgeekcode.disassembler.util.UIUtil;
+import com.kyhsgeekcode.disassembler.util.Util;
+import com.kyhsgeekcode.disassembler.data.Symbol;
+import com.kyhsgeekcode.disassembler.dialog.ChooseColumnDialog;
+import com.kyhsgeekcode.disassembler.log.LogAdapter;
+import com.kyhsgeekcode.disassembler.log.Logger;
 import com.stericson.RootTools.RootTools;
 
 import org.apache.commons.io.FilenameUtils;
@@ -74,12 +90,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
@@ -100,11 +114,11 @@ import nl.lxtreme.binutils.elf.MachineType;
 import pl.openrnd.multilevellistview.ItemInfo;
 import pl.openrnd.multilevellistview.MultiLevelListView;
 
-import static com.kyhsgeekcode.disassembler.MachineData.CS_ARCH_ALL;
-import static com.kyhsgeekcode.disassembler.MachineData.CS_ARCH_MAX;
-import static com.kyhsgeekcode.disassembler.MachineData.getArchitecture;
-import static com.kyhsgeekcode.disassembler.Utils.UIUtil.ShowAlertDialog;
-import static com.kyhsgeekcode.disassembler.Utils.UIUtil.ShowYesNoCancelDialog;
+import static com.kyhsgeekcode.disassembler.data.MachineData.CS_ARCH_ALL;
+import static com.kyhsgeekcode.disassembler.data.MachineData.CS_ARCH_MAX;
+import static com.kyhsgeekcode.disassembler.data.MachineData.getArchitecture;
+import static com.kyhsgeekcode.disassembler.util.UIUtil.ShowAlertDialog;
+import static com.kyhsgeekcode.disassembler.util.UIUtil.ShowYesNoCancelDialog;
 
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener {
@@ -127,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 //    public static final int TAG_PROJECTS = 2;
     public static final int TAG_PROCESSES = 2;
     public static final int TAG_RUNNING_APPS = 3;
-    static Context context;
+    public static Context context;
 
     /* this is used to load the 'hello-jni' library on application
      * startup. The library has already been unpacked into
@@ -487,7 +501,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 			});
 			*/
         toDoAfterPermQueue.add(() -> {
-            mProjNames = new String[]{"Exception", "happened"};
+            //mProjNames = new String[]{"Exception", "happened"};
             try {
                 colorHelper = new ColorHelper(MainActivity.this);
             } catch (SecurityException e) {
@@ -1382,7 +1396,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             tmpfile.createNewFile();
             FileOutputStream fos = new FileOutputStream(tmpfile);
             fos.write(filecontent);
-            //elfUtil=new ELFUtil(new FileChannel().transferFrom(Channels.newChannel(is),0,0),filecontent);
+            //elfUtil=new ELFFile(new FileChannel().transferFrom(Channels.newChannel(is),0,0),filecontent);
             setFpath(tmpfile.getAbsolutePath());//uri.getPath();
             AfterReadFully(tmpfile);
         } catch (IOException e) {
@@ -1417,7 +1431,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
     public void OnChoosePath(String path)//Intent data)
     {
-        FileContext fileContext = new FileContext(this, abstra)
+        FileContext fileContext = new FileContext(this, abstra);
         try {
             File file = new File(path);
             DataInputStream in = new DataInputStream(new FileInputStream(file));
@@ -1598,7 +1612,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     //print out the location of the files
                     //System.out.println("Generated decompiled files in: " +
                     //        System.getProperty("user.dir"));
-                    setParsedFile(new ILAssmebly(facileReflector));
+                    setParsedFile(new ILAssmeblyFile(facileReflector));
                 } else {
                     System.out.println("File maybe contains only resources...");
                 }
@@ -1613,7 +1627,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 
         } else {
             try {
-                setParsedFile(new ELFUtil(file, filecontent));
+                setParsedFile(new ELFFile(file, filecontent));
                 AfterParse();
             } catch (Exception e) {
                 //not an elf file. try PE parser
