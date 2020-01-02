@@ -9,6 +9,8 @@ public class HexView extends View {
     private byte[] bytes;
     boolean isScrolling = false;
 
+    int textSize = 20; //sp
+
     public HexView(Context context) {
         super(context);
     }
@@ -30,6 +32,9 @@ public class HexView extends View {
         super.draw(canvas);
         int w = getMeasuredWidth();
         int h = getMeasuredHeight();
+        //68 chars. 24 + | + 24 + ^^^ + 16
+        //00 00 00 00 00 00 00 00 | 00 00 00 00 00 00 00 00   ................
+
         //if min w->scrollable
         //if min h->scroll
         return;

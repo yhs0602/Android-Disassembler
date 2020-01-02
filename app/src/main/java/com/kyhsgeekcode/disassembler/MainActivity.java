@@ -1,6 +1,5 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.FragmentManager;
@@ -19,7 +18,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.LongSparseArray;
@@ -57,29 +55,31 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.codekidlabs.storagechooser.StorageChooser;
 import com.codekidlabs.storagechooser.utils.DiskUtil;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.kyhsgeekcode.disassembler.FileTabFactory.FileTabContentFactory;
 import com.kyhsgeekcode.disassembler.adapter.FileDrawerListAdapter;
 import com.kyhsgeekcode.disassembler.adapter.HexAsciiAdapter;
 import com.kyhsgeekcode.disassembler.adapter.HexGridAdapter;
 import com.kyhsgeekcode.disassembler.adapter.SymbolListAdapter;
+import com.kyhsgeekcode.disassembler.analysis.Analyzer;
+import com.kyhsgeekcode.disassembler.calc.Calculator;
 import com.kyhsgeekcode.disassembler.data.AbstractFile;
 import com.kyhsgeekcode.disassembler.data.ColumnSetting;
+import com.kyhsgeekcode.disassembler.data.DefaultProject;
 import com.kyhsgeekcode.disassembler.data.ELFFile;
 import com.kyhsgeekcode.disassembler.data.FileContext;
 import com.kyhsgeekcode.disassembler.data.FileDrawerListItem;
 import com.kyhsgeekcode.disassembler.data.ILAssmeblyFile;
 import com.kyhsgeekcode.disassembler.data.ListViewItem;
 import com.kyhsgeekcode.disassembler.data.PEFile;
+import com.kyhsgeekcode.disassembler.data.ProjectNew;
 import com.kyhsgeekcode.disassembler.data.RawFile;
-import com.kyhsgeekcode.disassembler.util.DatabaseHelper;
-import com.kyhsgeekcode.disassembler.analysis.Analyzer;
-import com.kyhsgeekcode.disassembler.calc.Calculator;
-import com.kyhsgeekcode.disassembler.FileTabFactory.FileTabContentFactory;
-import com.kyhsgeekcode.disassembler.util.UIUtil;
-import com.kyhsgeekcode.disassembler.util.Util;
 import com.kyhsgeekcode.disassembler.data.Symbol;
 import com.kyhsgeekcode.disassembler.dialog.ChooseColumnDialog;
 import com.kyhsgeekcode.disassembler.log.LogAdapter;
 import com.kyhsgeekcode.disassembler.log.Logger;
+import com.kyhsgeekcode.disassembler.util.DatabaseHelper;
+import com.kyhsgeekcode.disassembler.util.UIUtil;
+import com.kyhsgeekcode.disassembler.util.Util;
 import com.stericson.RootTools.RootTools;
 
 import org.apache.commons.io.FilenameUtils;
@@ -143,6 +143,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     public static final int TAG_PROCESSES = 2;
     public static final int TAG_RUNNING_APPS = 3;
     public static Context context;
+
+    private ProjectNew currentProject;
 
     /* this is used to load the 'hello-jni' library on application
      * startup. The library has already been unpacked into
@@ -280,6 +282,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        currentProject = new DefaultProject(this);
         SharedPreferences sp = getSharedPreferences("AppIntroPref", Context.MODE_PRIVATE);
         if (!sp.getBoolean("first", false)) {
             SharedPreferences.Editor editor = sp.edit();
@@ -290,7 +293,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             finish();
             return;
         }
-        context = this;
+        context = this.getApplicationContext();
         //final Thread.UncaughtExceptionHandler ori=Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
@@ -1117,7 +1120,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         workerThread.start();
     }
 
-    private void SendErrorReport(Throwable error) {
+    private static void SendErrorReport(Throwable error) {
         final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 
         emailIntent.setType("plain/text");
@@ -1126,7 +1129,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 new String[]{"1641832e@fire.fundersclub.com"});
         String ver = "";
         try {
-            PackageInfo pInfo = context.getPackageManager().getPackageInfo(getPackageName(), 0);
+            PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             ver = pInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -1140,10 +1143,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         if (error instanceof RuntimeException && parsedFile != null) {
             emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(parsedFile.getPath())));
         }
-        startActivity(Intent.createChooser(emailIntent, getString(R.string.send_crash_via_email)));
+        context.startActivity(Intent.createChooser(emailIntent, getString(R.string.send_crash_via_email)));
     }
 
-    private void ShowErrorDialog(Activity a, int title, final Throwable err, boolean sendError) {
+    private static void ShowErrorDialog(Activity a, int title, final Throwable err, boolean sendError) {
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
         builder.setTitle(title);
         builder.setCancelable(false);
@@ -1160,7 +1163,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         builder.show();
     }
 
-    private void ShowErrorDialog(Activity a, String title, final Throwable err, boolean sendError) {
+    private static void ShowErrorDialog(Activity a, String title, final Throwable err, boolean sendError) {
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
         builder.setTitle(title);
         builder.setCancelable(false);
@@ -1206,10 +1209,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private void AlertError(String p0, Exception e) {
         AlertError(p0, e, true);
         //ShowAlertDialog((Activity)this,p0,Log.getStackTraceString(e));
-    }
-
-    private void AlertSaveSuccess(File file) {
-        Toast.makeText(this, "Successfully saved to file: " + file.getPath(), Toast.LENGTH_LONG).show();
     }
 
     private void ShowDetail() {
