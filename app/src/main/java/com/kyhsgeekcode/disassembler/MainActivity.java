@@ -114,6 +114,7 @@ import nl.lxtreme.binutils.elf.MachineType;
 import pl.openrnd.multilevellistview.ItemInfo;
 import pl.openrnd.multilevellistview.MultiLevelListView;
 
+import static com.kyhsgeekcode.disassembler.PermissionHelperKt.requestAppPermissions;
 import static com.kyhsgeekcode.disassembler.data.MachineData.CS_ARCH_ALL;
 import static com.kyhsgeekcode.disassembler.data.MachineData.CS_ARCH_MAX;
 import static com.kyhsgeekcode.disassembler.data.MachineData.getArchitecture;
@@ -960,62 +961,10 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     /////////////////////////////////////End Show **** dialog///////////////////////////////////////////
 
     ///////////////////////////////////////Permission///////////////////////////////////////////////////
-    public static void requestAppPermissions(final Activity a) {
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
-                    null,
-                    new int[]{PackageManager.PERMISSION_GRANTED});
-            return;
-        }
-        if (hasReadPermissions(a) && hasWritePermissions(a)/*&&hasGetAccountPermissions(a)*/) {
-            Log.i(TAG, "Has permissions");
-            a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
-                    null,
-                    new int[]{PackageManager.PERMISSION_GRANTED});
-            return;
-        }
-        showPermissionRationales(a, new Runnable() {
-            @Override
-            public void run() {
-                a.requestPermissions(new String[]{
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        //,Mani fest.permission.GET_ACCOUNTS
-                }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
-            }
-        });
-    }
 
-    private static boolean hasGetAccountPermissions(Context c) {
-
-        return c.checkSelfPermission(Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public static boolean hasReadPermissions(Context c) {
-        return c.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public static boolean hasWritePermissions(Context c) {
-        return c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public static void showPermissionRationales(final Activity a, final Runnable run) {
-        ShowAlertDialog(a, a.getString(R.string.permissions),
-                a.getString(R.string.permissionMsg),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface p1, int p2) {
-                        if (run != null)
-                            run.run();
-                        //requestAppPermissions(a);
-                    }
-
-
-                });
-    }
 
     private void showPermissionRationales() {
-        showPermissionRationales(this, null);
+        PermissionHelperKt.showPermissionRationales(this,  null);
     }
 
     @Override
