@@ -19,7 +19,7 @@ allprojects {
         jcenter()
 		maven { url "https://jitpack.io"}
         maven { url "https://maven.consulo.io/"}
-        maven { url 'http://dev.open-rnd.net:30844/content/groups/public/' }
+        //maven { url 'http://dev.open-rnd.net:30844/content/groups/public/' }
         google()
     }
 }
