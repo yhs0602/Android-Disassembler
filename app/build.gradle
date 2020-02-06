@@ -69,6 +69,8 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
     implementation("com.louiscad.splitties:splitties-appctx:$splitties_version")
+    implementation 'org.apache.commons:commons-compress:1.19'
+//    implementation 'mnemonik:mnemonik:2.0.2'
 }
 repositories {
     mavenCentral()

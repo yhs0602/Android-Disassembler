@@ -71,6 +71,7 @@ import com.kyhsgeekcode.disassembler.FileTabFactory.ImageFileTabFactory;
 import com.kyhsgeekcode.disassembler.FileTabFactory.NativeDisassemblyFactory;
 import com.kyhsgeekcode.disassembler.FileTabFactory.TextFileTabFactory;
 import com.kyhsgeekcode.disassembler.Utils.Olly.UddTag;
+import com.kyhsgeekcode.filechooser.model.FileItem;
 import com.stericson.RootTools.RootTools;
 
 import org.apache.commons.io.FilenameUtils;
@@ -149,6 +150,8 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private static final int TAB_ANALYSIS = 7;
 
     private static final int REQUEST_SELECT_FILE = 123;
+    private static final int REQUEST_SELECT_FILE_NEW = 124;
+
     private static final int BULK_SIZE = 1024;
     //https://medium.com/@gurpreetsk/memory-management-on-android-using-ontrimmemory-f500d364bc1a
     private static final String LASTPROJKEY = "lastProject";
@@ -2005,6 +2008,9 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 Intent i = new Intent(this, com.kyhsgeekcode.rootpicker.FileSelectorActivity.class);
                 startActivityForResult(i, REQUEST_SELECT_FILE);
                 break;
+            case 2:
+                Intent j = new Intent(this, com.kyhsgeekcode.filechooser.NewFileChooserActivity.class);
+                startActivityForResult(j, REQUEST_SELECT_FILE_NEW);
         }    //
     }
 
@@ -2019,6 +2025,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 edi.apply();
                 disableEnableControls(false, llmainLinearLayoutSetupRaw);
                 OnChoosePath(path);
+            }
+        } else if (requestCode == REQUEST_SELECT_FILE_NEW) {
+            if(resultCode == Activity.RESULT_OK) {
+                FileItem fi = (FileItem) data.getSerializableExtra("fileItem");
+                boolean openAsProject = data.getBooleanExtra("openProject", false);
+                Log.v(TAG, "FileItem.text:"+fi.getText());
+                Log.v(TAG, "Open as project"+openAsProject);
+
             }
         }
     }
