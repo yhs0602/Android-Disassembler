@@ -11,6 +11,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.zip.ZipEntry
+import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
 
 
@@ -69,6 +70,7 @@ fun File.isDexFile(): Boolean = extension.toLowerCase() == "dex"
 fun File.isAccessible(): Boolean = exists() && canRead()
 
 fun extract(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ -> }) {
+    Log.v("extract","File:${from.path}")
     try {
         val archi = ArchiveStreamFactory().createArchiveInputStream(BufferedInputStream(from.inputStream()))
         var entry: ArchiveEntry?
@@ -97,6 +99,8 @@ fun extract(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ ->
             }
         }
     } catch (e: ArchiveException) {
+        Log.e("Extract archive", "error inflating", e)
+    } catch(e: ZipException) {
         Log.e("Extract archive", "error inflating", e)
     }
 }

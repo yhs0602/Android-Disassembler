@@ -6,7 +6,6 @@ import android.os.Environment
 import android.util.Log
 import at.pollaknet.api.facile.Facile
 import com.kyhsgeekcode.*
-import com.kyhsgeekcode.disassembler.FileDrawerListItem
 import splitties.init.appCtx
 import java.io.File
 import java.io.Serializable
@@ -47,9 +46,11 @@ open class FileItem : Serializable {
         return isExpandable && isAccessible()
     }
 
-    open fun isRawAvailable(): Boolean = file?.isDirectory ?: true
+    open fun isRawAvailable(): Boolean = file?.isDirectory == false
 
     open fun isAccessible(): Boolean = file?.isAccessible() ?: true
+
+    open fun isProjectAble(): Boolean = file?.isDirectory == true
 
     open fun listSubItems(publisher: (Int, Int) -> Unit = { _, _ -> }): List<FileItem> {
         if (!canExpand())
@@ -112,6 +113,8 @@ open class FileItem : Serializable {
             }
 
             override fun canExpand(): Boolean = true
+            override fun isRawAvailable(): Boolean = false
+            override fun isProjectAble(): Boolean = false
         }
 
         val fileRoot = FileItem(file = File("/"))
@@ -120,6 +123,8 @@ open class FileItem : Serializable {
 
         val apps = object : FileItem("Apps", appCtx.getDrawable(android.R.drawable.sym_def_app_icon)) {
             override fun canExpand(): Boolean = true
+            override fun isRawAvailable(): Boolean = false
+            override fun isProjectAble(): Boolean = false
             override fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
                 val result = ArrayList<FileItem>()
                 val pm: PackageManager = appCtx.packageManager

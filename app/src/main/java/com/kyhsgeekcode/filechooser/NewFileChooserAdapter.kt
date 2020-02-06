@@ -1,7 +1,6 @@
 package com.kyhsgeekcode.filechooser
 
 import android.content.DialogInterface
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,10 +35,18 @@ class NewFileChooserAdapter(
             }
             if (item.canExpand()) {
                 //물어본다.
+                if(!item.isProjectAble() && !item.isRawAvailable()) {
+                    navigateInto(item)
+                    return@OnClickListener
+                }
                 AlertDialog.Builder(parentActivity)
                         .setTitle("Choose Action")
-                        .setPositiveButton("Open as project") { _: DialogInterface, _: Int ->
-                            parentActivity.openAsProject(item)
+                        .also {
+                            if (item.isProjectAble()) {
+                                it.setPositiveButton("Open as project") { _: DialogInterface, _: Int ->
+                                    parentActivity.openAsProject(item)
+                                }
+                            }
                         }.also {
                             if (item.isRawAvailable()) {
                                 it.setNeutralButton("Open raw") { _, _ ->

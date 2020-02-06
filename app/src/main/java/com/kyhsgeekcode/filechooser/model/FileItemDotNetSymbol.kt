@@ -8,6 +8,7 @@ import java.nio.ByteOrder
 
 class FileItemDotNetSymbol(text: String, val reflector: FacileReflector, val type: Type) : FileItem(text) {
     override fun canExpand(): Boolean = true
+    override fun isRawAvailable(): Boolean = false
     @ExperimentalUnsignedTypes
     override fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
         val result = ArrayList<FileItem>()
@@ -24,7 +25,7 @@ class FileItemDotNetSymbol(text: String, val reflector: FacileReflector, val typ
                 fieldDesc += value
                 fieldDesc += ")"
             }
-            result.add(FileItem(fieldDesc ?: "?"))
+            result.add(FileItemFinal(fieldDesc ?: "?"))
         }
         for (method in methods) {
             result.add(FileItemMethod(method.name + method.methodSignature, reflector, method))
