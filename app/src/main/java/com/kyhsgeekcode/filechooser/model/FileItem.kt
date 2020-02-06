@@ -6,6 +6,7 @@ import android.os.Environment
 import android.util.Log
 import at.pollaknet.api.facile.Facile
 import com.kyhsgeekcode.*
+import com.kyhsgeekcode.disassembler.R
 import splitties.init.appCtx
 import java.io.File
 import java.io.Serializable
@@ -20,11 +21,26 @@ open class FileItem : Serializable {
     }
 
     constructor(text: String? = null, file: File, drawable: Drawable? = null) {
-        this.text = text ?: file.name
+        this.text = text ?: file.name + if (file.isDirectory) "/" else ""
         this.file = file
-        this.drawable = drawable
+        this.drawable = drawable ?: getAppropriateDrawable()
     }
 
+    private fun getAppropriateDrawable(): Drawable? {
+        if (file?.isDexFile() == true) {
+            return appCtx.getDrawable(R.drawable.ic_dex)
+        }
+        if (file?.isDirectory == true) {
+            return appCtx.getDrawable(R.drawable.ic_folder_icon)
+        }
+        if (file?.isArchive() == true) {
+            return appCtx.getDrawable(R.drawable.zip)
+        }
+        if (file?.isDotnetFile() == true) {
+            return appCtx.getDrawable(R.drawable.ic_dotnet)
+        }
+        return appCtx.getDrawable(R.drawable.ic_file)
+    }
 
     var text: String = ""
 

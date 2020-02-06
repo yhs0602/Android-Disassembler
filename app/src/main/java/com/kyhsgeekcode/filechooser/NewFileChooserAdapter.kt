@@ -35,7 +35,7 @@ class NewFileChooserAdapter(
             }
             if (item.canExpand()) {
                 //물어본다.
-                if(!item.isProjectAble() && !item.isRawAvailable()) {
+                if (!item.isProjectAble() && !item.isRawAvailable()) {
                     navigateInto(item)
                     return@OnClickListener
                 }
@@ -73,6 +73,7 @@ class NewFileChooserAdapter(
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvName = view.textViewNewItemName
+        val ivIcon = view.imageViewFileIcon
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -94,6 +95,7 @@ class NewFileChooserAdapter(
         with(holder.tvName) {
             text = item.text
         }
+        holder.ivIcon.setImageDrawable(item.drawable)
     }
 
     private fun navigateInto(item: FileItem) {
@@ -104,6 +106,7 @@ class NewFileChooserAdapter(
 
         values.clear()
         values.addAll(subItems)
+        values.sortWith(compareBy({ !it.text.endsWith("/") }, { it.text }))
         backStack.push(currentParentItem)
         currentParentItem = item
         notifyDataSetChanged()
