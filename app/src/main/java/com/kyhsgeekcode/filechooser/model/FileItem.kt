@@ -4,7 +4,9 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Environment
 import android.util.Log
+import at.pollaknet.api.facile.Facile
 import com.kyhsgeekcode.*
+import com.kyhsgeekcode.disassembler.FileDrawerListItem
 import splitties.init.appCtx
 import java.io.File
 import java.io.Serializable
@@ -61,12 +63,34 @@ open class FileItem : Serializable {
         } else if (file?.isArchive() == true) {
             val result = ArrayList<FileItem>()
             backFile = appCtx.getExternalFilesDir("extracted")?.resolve(file?.name!!)
-            if(backFile?.exists() == true) {
+            if (backFile?.exists() == true) {
                 backFile!!.delete()
             }
-            extract(file!!, backFile!!){tot,don->publisher(tot.toInt(),don.toInt())}
-            for(childFile in backFile!!.listFiles()) {
-                result.add(FileItem(file=childFile))
+            extract(file!!, backFile!!) { tot, don -> publisher(tot.toInt(), don.toInt()) }
+            for (childFile in backFile!!.listFiles()) {
+                result.add(FileItem(file = childFile))
+            }
+            return result
+        } else if (file?.isDexFile() == true) {
+            val result = ArrayList<FileItem>()
+            backFile = appCtx.getExternalFilesDir("dex-decompiled")?.resolve(file?.name!!)
+            if (backFile?.exists() == true) {
+                backFile!!.delete()
+            }
+            org.jf.baksmali.Main.main(arrayOf("d", "-o", backFile!!.absolutePath, file!!.path))
+            for (childFile in backFile!!.listFiles()) {
+                result.add(FileItem(file = childFile))
+            }
+            return result
+        } else if (file?.isDotnetFile() == true) {
+            val result = ArrayList<FileItem>()
+            val facileReflector = Facile.load(file!!.path)
+            //load the assembly
+            //load the assembly
+            val assembly = facileReflector.loadAssembly()
+            val types = assembly.allTypes
+            for (type in types) {
+                result.add(FileItemDotNetSymbol(type.namespace + "." + type.name, facileReflector, type))
             }
             return result
         }
