@@ -1,8 +1,7 @@
 package com.kyhsgeekcode.filechooser.model
 
 import android.graphics.drawable.Drawable
-import com.kyhsgeekcode.extract
-import com.kyhsgeekcode.extractZip
+import com.kyhsgeekcode.filechooser.extract
 import splitties.init.appCtx
 import java.io.File
 

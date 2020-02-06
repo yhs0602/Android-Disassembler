@@ -1,6 +1,5 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.FragmentManager;
@@ -16,14 +15,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
@@ -113,6 +110,8 @@ import nl.lxtreme.binutils.elf.MachineType;
 import pl.openrnd.multilevellistview.ItemInfo;
 import pl.openrnd.multilevellistview.MultiLevelListView;
 
+import static com.kyhsgeekcode.disassembler.PermissionUtilsKt.requestAppPermissions;
+
 
 public class MainActivity extends AppCompatActivity implements Button.OnClickListener, ProjectManager.OnProjectOpenListener {
     public static final String SETTINGKEY = "setting";
@@ -157,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     private static final String LASTPROJKEY = "lastProject";
     private static final String TAG = "Disassembler";
     private static final String RATIONALSETTING = "showRationals";
-    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
     public static final int TAG_INSTALLED = 0;
     public static final int TAG_STORAGE = 1;
     public static final int TAG_PROJECTS = 2;
@@ -659,7 +658,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     Toast.makeText(MainActivity.this, fitem.caption, Toast.LENGTH_SHORT).show();
                     if (!fitem.isOpenable())
                         return;
-                    ShowYesNoCancelDialog(MainActivity.this, "Open file", "Open " + fitem.caption + "?", new DialogInterface.OnClickListener() {
+                    UIUtilsKt.showYesNoCancelDialog(MainActivity.this, "Open file", "Open " + fitem.caption + "?", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (fitem.tag instanceof String)
@@ -876,30 +875,13 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
         }
         if (shouldSave && currentProject == null) {
-            ShowYesNoCancelDialog(this, "Save project?", "",
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface p1, int p2) {
-                            ExportDisasm(new Runnable() {
-                                @Override
-                                public void run() {
-                                    SaveDetail();
-                                    MainActivity.super.onBackPressed();
-                                }
-                            });
-
-                        }
-                    },
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface p1, int p2) {
-                            MainActivity.super.onBackPressed();
-                        }
-                    },
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface p1, int p2) {
-                        }
+            UIUtilsKt.showYesNoCancelDialog(this, "Save project?", "",
+                    (p1, p2) -> ExportDisasm(() -> {
+                        SaveDetail();
+                        MainActivity.super.onBackPressed();
+                    }),
+                    (p1, p2) -> MainActivity.super.onBackPressed(),
+                    (p1, p2) -> {
                     });
         } else
             super.onBackPressed();
@@ -1171,56 +1153,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     }
 
 
-    ///////////////////////////////////Show***Dialog/////////////////////////////////////
-
-    //The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
-    public static void ShowEditDialog(Activity a, String title, String message, final EditText edittext,
-                                      String positive, DialogInterface.OnClickListener pos,
-                                      String negative, DialogInterface.OnClickListener neg) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
-        builder.setTitle(title);
-        builder.setMessage(message);
-        builder.setView(edittext);
-        builder.setPositiveButton(positive, pos);
-        builder.setNegativeButton(negative, neg);
-        builder.show();
-    }
-
-    //The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
-    public static void ShowSelDialog(Activity a, final List<String> ListItems, String title, DialogInterface.OnClickListener listener) {
-        final CharSequence[] items = ListItems.toArray(new String[ListItems.size()]);
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
-        builder.setTitle(title);
-        builder.setItems(items, listener);
-        builder.show();
-    }
-
-    public static void ShowAlertDialog(Activity a, String title, String content, DialogInterface.OnClickListener listener) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
-        builder.setTitle(title);
-        builder.setCancelable(false);
-        builder.setMessage(content);
-        builder.setPositiveButton(R.string.ok, listener);
-        builder.show();
-    }
-
-    public static void ShowAlertDialog(Activity a, String title, String content) {
-        ShowAlertDialog(a, title, content, null);
-    }
-
-    public static void ShowYesNoCancelDialog(Activity a, String title, String content,
-                                             DialogInterface.OnClickListener ok,
-                                             DialogInterface.OnClickListener no,
-                                             DialogInterface.OnClickListener can) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(a);
-        builder.setTitle(title);
-        builder.setCancelable(false);
-        builder.setMessage(content);
-        builder.setPositiveButton(R.string.ok, ok).setNegativeButton("No", no);
-        builder.setNeutralButton(R.string.cancel, can);
-        builder.show();
-    }
-
     private android.app.AlertDialog ShowEditDialog(String title, String message, final EditText edittext,
                                                    String positive, DialogInterface.OnClickListener pos,
                                                    String negative, DialogInterface.OnClickListener neg) {
@@ -1234,68 +1166,14 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
     }
 
     public void ShowSelDialog(final List<String> ListItems, String title, DialogInterface.OnClickListener listener) {
-        MainActivity.ShowSelDialog(this, ListItems, title, listener);
+        UIUtilsKt.ShowSelDialog(this, ListItems, title, listener);
     }
 
     /////////////////////////////////////End Show **** dialog///////////////////////////////////////////
 
-    ///////////////////////////////////////Permission///////////////////////////////////////////////////
-    public static void requestAppPermissions(final Activity a) {
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
-                    null,
-                    new int[]{PackageManager.PERMISSION_GRANTED});
-            return;
-        }
-        if (hasReadPermissions(a) && hasWritePermissions(a)/*&&hasGetAccountPermissions(a)*/) {
-            Log.i(TAG, "Has permissions");
-            a.onRequestPermissionsResult(REQUEST_WRITE_STORAGE_REQUEST_CODE,
-                    null,
-                    new int[]{PackageManager.PERMISSION_GRANTED});
-            return;
-        }
-        showPermissionRationales(a, new Runnable() {
-            @Override
-            public void run() {
-                a.requestPermissions(new String[]{
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        //,Mani fest.permission.GET_ACCOUNTS
-                }, REQUEST_WRITE_STORAGE_REQUEST_CODE); // your request code
-            }
-        });
-    }
-
-    private static boolean hasGetAccountPermissions(Context c) {
-
-        return c.checkSelfPermission(Manifest.permission.GET_ACCOUNTS) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public static boolean hasReadPermissions(Context c) {
-        return c.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public static boolean hasWritePermissions(Context c) {
-        return c.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    public static void showPermissionRationales(final Activity a, final Runnable run) {
-        ShowAlertDialog(a, a.getString(R.string.permissions),
-                a.getString(R.string.permissionMsg),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface p1, int p2) {
-                        if (run != null)
-                            run.run();
-                        //requestAppPermissions(a);
-                    }
-
-
-                });
-    }
 
     private void showPermissionRationales() {
-        showPermissionRationales(this, null);
+        PermissionUtilsKt.showPermissionRationales(this, null);
     }
 
     @Override
@@ -1669,7 +1547,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         ListItems.add("Simple(Addr: inst op; comment");
         ListItems.add("Json");
         ListItems.add("Database(.db, reloadable)");
-        ShowSelDialog(this, ListItems, getString(R.string.export_as), new DialogInterface.OnClickListener() {
+        UIUtilsKt.ShowSelDialog(this, ListItems, getString(R.string.export_as), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int pos) {
                 //String selectedText = items[pos].toString();
                 dialog.dismiss();
@@ -2027,11 +1905,11 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                 OnChoosePath(path);
             }
         } else if (requestCode == REQUEST_SELECT_FILE_NEW) {
-            if(resultCode == Activity.RESULT_OK) {
+            if (resultCode == Activity.RESULT_OK) {
                 FileItem fi = (FileItem) data.getSerializableExtra("fileItem");
                 boolean openAsProject = data.getBooleanExtra("openProject", false);
-                Log.v(TAG, "FileItem.text:"+fi.getText());
-                Log.v(TAG, "Open as project"+openAsProject);
+                Log.v(TAG, "FileItem.text:" + fi.getText());
+                Log.v(TAG, "Open as project" + openAsProject);
 
             }
         }
@@ -2124,7 +2002,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
             }
             in.close();
             */
-            OpenNewTab(file,TabType.NATIVE_DISASM);
+            OpenNewTab(file, TabType.NATIVE_DISASM);
             //AfterReadFully(file);
             //Toast.makeText(this, "success size=" + index /*+ type.name()*/, Toast.LENGTH_SHORT).show();
             //OnOpenStream(fsize, path, index, file);
@@ -2288,7 +2166,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
                     setParsedFile(new PEFile(file, filecontent));
                     AfterParse();
                 } catch (NotThisFormatException f) {
-                    ShowAlertDialog(this, "Failed to parse the file(Unknown format). Please setup manually.", "");
+                    UIUtilsKt.showAlertDialog(this, "Failed to parse the file(Unknown format). Please setup manually.", "");
                     setParsedFile(new RawFile(file, filecontent));
                     AllowRawSetup();
                     //failed to parse the file. please setup manually.
@@ -2686,19 +2564,6 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
         }
     }
 
-    public static int getScreenHeight() {
-        return Resources.getSystem().getDisplayMetrics().heightPixels;
-    }
-
-    public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for (int p = 0, j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
-            hexChars[p++] = hexArray[v >>> 4];
-            hexChars[p++] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
 
     static final Set<String> textFileExts = new HashSet<>();
 
