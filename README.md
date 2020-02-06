@@ -169,6 +169,8 @@ You can download the theme.zip here.
  - Add compatibility for IDA's produce files.
  - About to add other utilities.
  - Add android resource analyzer
+ - Improve elf parser
+ - Improve file(data source) chooser
 
 # Help wanted!
  - Don't the symbols' names look odd?
