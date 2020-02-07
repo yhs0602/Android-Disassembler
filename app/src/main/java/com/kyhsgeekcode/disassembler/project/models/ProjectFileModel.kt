@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler.models
+package com.kyhsgeekcode.disassembler.project.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
