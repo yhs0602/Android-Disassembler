@@ -486,7 +486,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				@Override
 				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 					if(view == clickSource)
-						gvAscii.setSelectionFromTop(firstVisibleItem, view.getChildAt(0).getTop()/* + offset);
+						gvAscii.setSelectionFromTop(firstVisibleItem, view.getChildAt(0).getTop() + offset);
 				}
 
 				@Override
@@ -522,7 +522,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
 				@Override
 				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 					if(view == clickSource)
-						gvHex.setSelectionFromTop(firstVisibleItem, view.getChildAt(0).getTop()/* + offset);
+						gvHex.setSelectionFromTop(firstVisibleItem, view.getChildAt(0).getTop()/ * + offset);
 				}
 
 				@Override
@@ -2722,7 +2722,7 @@ public class MainActivity extends AppCompatActivity implements Button.OnClickLis
  * private void selectItem(int position) {
  * //Project project=
  * // Create a new fragment and specify the planet to show based on position
- * /*Fragment fragment = new PlanetFragment();
+ * /   *Fragment fragment = new PlanetFragment();
  * Bundle args = new Bundle();
  * args.putInt(PlanetFragment.ARG_PLANET_NUMBER, position);
  * fragment.setArguments(args);
