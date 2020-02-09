@@ -2,7 +2,6 @@ package com.kyhsgeekcode.disassembler
 
 import android.app.*
 import android.content.*
-import android.content.SharedPreferences.Editor
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Rect
@@ -18,9 +17,7 @@ import android.util.Log
 import android.util.LongSparseArray
 import android.util.SparseArray
 import android.view.*
-import android.view.View.OnTouchListener
 import android.widget.*
-import android.widget.AdapterView.OnItemLongClickListener
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.drawerlayout.widget.DrawerLayout
@@ -33,22 +30,22 @@ import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
 import com.github.chrisbanes.photoview.PhotoView
 import com.kyhsgeekcode.disassembler.Calc.Calculator
-import com.kyhsgeekcode.disassembler.FileDrawerListItem
 import com.kyhsgeekcode.disassembler.FileTabFactory.FileTabContentFactory
 import com.kyhsgeekcode.disassembler.FileTabFactory.ImageFileTabFactory
 import com.kyhsgeekcode.disassembler.FileTabFactory.NativeDisassemblyFactory
 import com.kyhsgeekcode.disassembler.FileTabFactory.TextFileTabFactory
-import com.kyhsgeekcode.disassembler.MainActivity
 import com.kyhsgeekcode.disassembler.ProjectManager.OnProjectOpenListener
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.rootpicker.FileSelectorActivity
 import com.stericson.RootTools.RootTools
+import kotlinx.android.synthetic.main.main.*
 import nl.lxtreme.binutils.elf.MachineType
 import org.apache.commons.io.FilenameUtils
 import pl.openrnd.multilevellistview.ItemInfo
 import pl.openrnd.multilevellistview.MultiLevelListView
 import pl.openrnd.multilevellistview.OnItemClickListener
+import splitties.init.appCtx
 import java.io.*
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
@@ -106,6 +103,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         const val TAG_RUNNING_APPS = 4
         @JvmField
         var context: Context? = null
+
         ////////////////////////////////////////////Data Conversion//////////////////////////////////
         @JvmStatic
         fun getArchitecture(type: MachineType): IntArray {
@@ -134,6 +132,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 
         @JvmStatic
         external fun Open(arch: Int, mode: Int): Int
+
         val textFileExts: MutableSet<String> = HashSet()
 
         /* this is used to load the 'hello-jni' library on application
@@ -167,7 +166,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     var btFinishSetup: Button? = null
     var btOverrideSetup: Button? = null
     var spinnerArch: Spinner? = null
-    var tabHost: TabHost? = null
     var tab1: LinearLayout? = null
     var tab2: LinearLayout? = null
     //FileTabContentFactory factory = new FileTabContentFactory(this);
@@ -180,13 +178,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     var toDoAfterPermQueue: Queue<Runnable> = LinkedBlockingQueue()
     /////////////////////////////////////////////////Current working data///////////////////////////////////////
     var fpath: String? = null
+        set(fpath) {
+            field = fpath
+            dataFragment!!.path = fpath
+        }
     var filecontent: ByteArray? = null
+        set(filecontent) {
+            field = filecontent
+            dataFragment!!.filecontent = filecontent
+        }
     @JvmField
     var parsedFile //Parsed file info
             : AbstractFile? = null
     /////////////////////////////////////////////////Settings/////////////////////////////////////////////////////
-    var setting: SharedPreferences? = null
-    var editor: Editor? = null
     var settingPath: SharedPreferences? = null
     /////////////////////////////////////////////////Choose Column////////////////////////////////////
     var isShowAddress = true
@@ -213,7 +217,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     }
     var jmpBackstack = Stack<Long>()
     private var autoSymAdapter: ArrayAdapter<String>? = null
-    private var autocomplete: AutoCompleteTextView? = null
     private var dataFragment: RetainedFragment? = null
     private var disasmManager: DisassemblyManager? = null
     private var colorHelper: ColorHelper? = null
@@ -226,26 +229,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     private var gvAscii: GridView? = null
     private var mCustomDialog: ChooseColumnDialog? = null
     private var adapter: DisasmListViewAdapter? = null
-    private var listview: ListView? = null
     val runnableRequestLayout = Runnable {
         //adapter.notifyDataSetChanged();
         listview!!.requestLayout()
     }
-    private var etDetails: EditText? = null
-    private var etFilename: EditText? = null
-    private var btSavDisasm: Button? = null
-    private var btShowDetails: Button? = null
-    private var btSavDit: Button? = null
     private var mProjNames: Array<String>
     private var mDrawerLayout: DrawerLayout? = null
-    private var mDrawerList: MultiLevelListView? = null
-    private var btRefreshLog: Button? = null
-    private var lvLog: ListView? = null
     private var logAdapter: LogAdapter? = null
-    private var lvStrings: ListView? = null
     private var stringAdapter: FoundStringAdapter? = null
-    private var tvAnalRes: TextView? = null
-    private var ivAnalCount: ImageView? = null
     private val instantEntry: Long = 0
     private var cs: Capstone? = null
     private val EXTRA_NOTIFICATION_ID: String? = null
@@ -293,10 +284,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             context = null
             if (p2 is SecurityException) {
                 Toast.makeText(this@MainActivity, R.string.didUgrant, Toast.LENGTH_SHORT).show()
-                setting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
-                editor = setting.edit()
-                editor.putBoolean("show", true)
-                editor.apply()
+                val permSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
+                val permEditor = permSetting.edit()
+                permEditor.putBoolean("show", true)
+                permEditor.apply()
             }
             requestAppPermissions(this@MainActivity)
             //String [] accs=getAccounts();
@@ -313,23 +304,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), Toast.LENGTH_LONG).show()
             Process.killProcess(Process.getGidForName(null))
         }
-        setting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
         setContentView(R.layout.main)
         mDrawerLayout = findViewById(R.id.drawer_layout)
-        mDrawerList = findViewById(R.id.left_drawer)
         //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        etDetails = findViewById(R.id.detailText)
         val selectFile = findViewById<Button>(R.id.selFile)
         selectFile.setOnClickListener(this)
-        btShowDetails = findViewById(R.id.btnShowdetail)
-        btShowDetails.setOnClickListener(this)
-        btSavDisasm = findViewById(R.id.btnSaveDisasm)
-        btSavDisasm.setOnClickListener(this)
-        btSavDit = findViewById(R.id.btnSaveDetails)
-        btSavDit.setOnClickListener(this)
-        etFilename = findViewById(R.id.fileNameText)
-        etFilename.setFocusable(false)
-        etFilename.setEnabled(false)
+        btnShowdetail.setOnClickListener(this)
+        btnSaveDisasm.setOnClickListener(this)
+        btnSaveDetails.setOnClickListener(this)
+        fileNameText.isFocusable = false
+        fileNameText.isEnabled = false
         llmainLinearLayoutSetupRaw = findViewById(R.id.mainLinearLayoutSetupRaw)
         disableEnableControls(false, llmainLinearLayoutSetupRaw)
         etCodeLimit = findViewById(R.id.mainETcodeLimit)
@@ -338,66 +322,60 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         etVirtAddr = findViewById(R.id.mainETvirtaddr)
         tvArch = findViewById(R.id.mainTVarch)
         btFinishSetup = findViewById(R.id.mainBTFinishSetup)
-        btFinishSetup.setOnClickListener(this)
+        mainBTFinishSetup.setOnClickListener(this)
         btOverrideSetup = findViewById(R.id.mainBTOverrideAuto)
-        btOverrideSetup.setOnClickListener(this)
+        mainBTOverrideAuto.setOnClickListener(this)
         spinnerArch = findViewById(R.id.mainSpinnerArch)
         //https://stackoverflow.com/a/13783744/8614565
         val items = Arrays.toString(MachineType::class.java.enumConstants).replace("^.|.$".toRegex(), "").split(", ").toTypedArray()
-        val sadapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
-        spinnerArch.setAdapter(sadapter)
+        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
+        mainSpinnerArch.adapter = spinnerAdapter
         lvSymbols = findViewById(R.id.symlistView)
         //moved up
 //symbolLvAdapter=new SymbolListAdapter();
         symbolLvAdapter = SymbolListAdapter()
-        lvSymbols.setAdapter(symbolLvAdapter)
-        lvSymbols.setOnItemLongClickListener(OnItemLongClickListener { parent, view, position, id ->
+        symlistView.adapter = symbolLvAdapter
+        symlistView.setOnItemLongClickListener { parent, view, position, id ->
             val symbol = parent.getItemAtPosition(position) as Symbol
             if (symbol.type != Symbol.Type.STT_FUNC) {
                 Toast.makeText(this@MainActivity, "This is not a function.", Toast.LENGTH_SHORT).show()
-                return@OnItemLongClickListener true
+                return@setOnItemLongClickListener true
             }
             val address = symbol.st_value
             //LongSparseArray arr;
             Toast.makeText(this@MainActivity, "Jump to" + java.lang.Long.toHexString(address), Toast.LENGTH_SHORT).show()
-            tabHost!!.currentTab = TAB_DISASM
+            tabhost1!!.currentTab = TAB_DISASM
             jumpto(address)
             true
-        })
+        }
         //symAdapter = new SymbolTableAdapter(this.getApplicationContext());
 //tvSymbols = (TableView)findViewById(R.id.content_container);
 //tvSymbols.setAdapter(symAdapter);
         autoSymAdapter = ArrayAdapter(this, android.R.layout.select_dialog_item)
         //autocomplete.setThreshold(2);
 //autocomplete.setAdapter(autoSymAdapter);
-        btRefreshLog = findViewById(R.id.refreshlog)
-        btRefreshLog.setOnClickListener(this)
-        lvLog = findViewById(R.id.loglistView)
-        lvLog.setAdapter(LogAdapter().also { logAdapter = it })
-        lvStrings = findViewById(R.id.stringlistView)
+        refreshlog.setOnClickListener(this)
+        loglistView.adapter = LogAdapter().also { logAdapter = it }
         stringAdapter = FoundStringAdapter()
-        lvStrings.setAdapter(stringAdapter)
-        tvAnalRes = findViewById(R.id.tvAnalRes)
-        ivAnalCount = findViewById(R.id.imageViewCount)
-        ivAnalCount.setOnClickListener(this)
-        tabHost = findViewById(R.id.tabhost1)
-        tabHost.setup()
-        val tab0 = tabHost.newTabSpec("1").setContent(R.id.tab0).setIndicator(getString(R.string.overview))
-        val tab1 = tabHost.newTabSpec("2").setContent(R.id.tab1).setIndicator(getString(R.string.details))
-        val tab2 = tabHost.newTabSpec("3").setContent(R.id.tab2).setIndicator(getString(R.string.disassembly))
-        val tab3 = tabHost.newTabSpec("4").setContent(R.id.tab3).setIndicator(getString(R.string.symbols))
-        val tab4 = tabHost.newTabSpec("5").setContent(R.id.tab4).setIndicator(getString(R.string.hexview))
-        val tab5 = tabHost.newTabSpec("6").setContent(R.id.tab5).setIndicator(getString(R.string.viewlog))
-        val tab6 = tabHost.newTabSpec("7").setContent(R.id.tab6).setIndicator(getString(R.string.foundstrings))
-        val tab7 = tabHost.newTabSpec("8").setContent(R.id.tab7).setIndicator(getString(R.string.analysis))
-        tabHost.addTab(tab0)
-        tabHost.addTab(tab1)
-        tabHost.addTab(tab4)
-        tabHost.addTab(tab3)
-        tabHost.addTab(tab2)
-        tabHost.addTab(tab5)
-        tabHost.addTab(tab6)
-        tabHost.addTab(tab7)
+        stringlistView.adapter = stringAdapter
+        imageViewCount.setOnClickListener(this)
+        tabhost1.setup()
+        val tab0 = tabhost1.newTabSpec("1").setContent(R.id.tab0).setIndicator(getString(R.string.overview))
+        val tab1 = tabhost1.newTabSpec("2").setContent(R.id.tab1).setIndicator(getString(R.string.details))
+        val tab2 = tabhost1.newTabSpec("3").setContent(R.id.tab2).setIndicator(getString(R.string.disassembly))
+        val tab3 = tabhost1.newTabSpec("4").setContent(R.id.tab3).setIndicator(getString(R.string.symbols))
+        val tab4 = tabhost1.newTabSpec("5").setContent(R.id.tab4).setIndicator(getString(R.string.hexview))
+        val tab5 = tabhost1.newTabSpec("6").setContent(R.id.tab5).setIndicator(getString(R.string.viewlog))
+        val tab6 = tabhost1.newTabSpec("7").setContent(R.id.tab6).setIndicator(getString(R.string.foundstrings))
+        val tab7 = tabhost1.newTabSpec("8").setContent(R.id.tab7).setIndicator(getString(R.string.analysis))
+        tabhost1.addTab(tab0)
+        tabhost1.addTab(tab1)
+        tabhost1.addTab(tab4)
+        tabhost1.addTab(tab3)
+        tabhost1.addTab(tab2)
+        tabhost1.addTab(tab5)
+        tabhost1.addTab(tab6)
+        tabhost1.addTab(tab7)
         this.tab1 = findViewById(R.id.tab1)
         this.tab2 = findViewById(R.id.tab2)
         //tvHex=(TextView)findViewById(R.id.hexTextView);
@@ -405,21 +383,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 //TODO: Add a cusom HEX view
         gvHex = findViewById(R.id.mainGridViewHex)
         gvAscii = findViewById(R.id.mainGridViewAscii)
-        gvHex.setOnTouchListener(OnTouchListener { v: View, event: MotionEvent ->
+        mainGridViewHex.setOnTouchListener { v: View, event: MotionEvent ->
             if (touchSource == null) touchSource = v
             if (v === touchSource) {
-                gvAscii.dispatchTouchEvent(event)
+                mainGridViewAscii.dispatchTouchEvent(event)
                 if (event.action == MotionEvent.ACTION_UP) {
                     clickSource = v
                     touchSource = null
                 }
             }
             false
-        })
-        gvHex.setOnItemClickListener(AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id: Long ->
+        }
+        mainGridViewHex.onItemClickListener = AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id: Long ->
             if (parent === clickSource) { // Do something with the ListView was clicked
             }
-        }) /*
+        } /*
 		gvHex.setOnScrollListener(new OnScrollListener() {
 				@Override
 				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
@@ -430,21 +408,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 				@Override
 				public void onScrollStateChanged(AbsListView view, int scrollState) {}
 			});*/
-        gvAscii.setOnTouchListener(OnTouchListener { v, event ->
+        mainGridViewAscii.setOnTouchListener { v, event ->
             if (touchSource == null) touchSource = v
             if (v === touchSource) {
-                gvHex.dispatchTouchEvent(event)
+                mainGridViewHex.dispatchTouchEvent(event)
                 if (event.action == MotionEvent.ACTION_UP) {
                     clickSource = v
                     touchSource = null
                 }
             }
             false
-        })
-        gvAscii.setOnItemClickListener(AdapterView.OnItemClickListener { parent, view, position, id ->
+        }
+        mainGridViewAscii.setOnItemClickListener { parent, view, position, id ->
             if (parent === clickSource) { // Do something with the ListView was clicked
             }
-        })
+        }
         /*
 		gvAscii.setOnScrollListener(new OnScrollListener() {
 				@Override
@@ -493,10 +471,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 projectManager = ProjectManager(this@MainActivity)
                 mProjNames = projectManager!!.strProjects() //new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
             } catch (e: IOException) {
-                AlertError("Failed to load projects", e)
+                alertError("Failed to load projects", e)
             }
             // Set the adapter for the list view
-            mDrawerList.setAdapter(FileDrawerListAdapter(this@MainActivity).also { mDrawerAdapter = it }) //new ArrayAdapter<String>(MainActivity.this,
+            left_drawer.setAdapter(FileDrawerListAdapter(this@MainActivity).also { mDrawerAdapter = it }) //new ArrayAdapter<String>(MainActivity.this,
             //R.layout.row, mProjNames));
             val initialDrawers: MutableList<FileDrawerListItem?> = ArrayList()
             initialDrawers.add(FileDrawerListItem("Installed", FileDrawerListItem.DrawerItemType.HEAD, TAG_INSTALLED, 0))
@@ -506,14 +484,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             //initialDrawers.add(new FileDrawerListItem("Running apps", FileDrawerListItem.DrawerItemType.HEAD, TAG_RUNNING_APPS, 0));
             mDrawerAdapter!!.setDataItems(initialDrawers)
             mDrawerAdapter!!.notifyDataSetChanged()
-            mDrawerList.setOnItemClickListener(object : OnItemClickListener {
+            left_drawer.setOnItemClickListener(object : OnItemClickListener {
                 override fun onItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) {
                     val fitem = item as FileDrawerListItem
                     Toast.makeText(this@MainActivity, fitem.caption, Toast.LENGTH_SHORT).show()
-                    if (!fitem.isOpenable) return@add
+                    if (!fitem.isOpenable) return
                     showYesNoCancelDialog(this@MainActivity, "Open file", "Open " + fitem.caption + "?", DialogInterface.OnClickListener { dialog, which ->
                         if (fitem.tag is String) OnChoosePath(fitem.tag as String) else {
-                            val resultPath = fitem.CreateDataToPath(context.getFilesDir())
+                            val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
                             if (resultPath != null) OnChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
                         }
                     }, null, null)
@@ -545,7 +523,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     OnChoosePath(intent.data)
                 }
             } else { // android.intent.action.MAIN
-                val lastProj = setting.getString(LASTPROJKEY, "")
+                val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
+                val lastProj = projectsetting.getString(LASTPROJKEY, "")
                 if (projectManager != null) projectManager!!.Open(lastProj)
             }
         })
@@ -560,11 +539,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 //	CreateDisasmTopRow(tbrow0);
 //	tlDisasmTable.addView(tbrow0);
 //setupListView();
-        val show = setting.getBoolean("show", true)
+        val showRationalSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
+        val showRationalEditor = showRationalSetting.edit()
+        val show = showRationalSetting.getBoolean("show", true)
         if (show) { //showPermissionRationales();
-            editor = setting.edit()
-            editor.putBoolean("show", false)
-            editor.commit()
+            val editorShowPermission = showRationalSetting.edit()
+            editorShowPermission.putBoolean("show", false)
+            editorShowPermission.apply()
         }
         val filesDir = filesDir
         val files = filesDir.listFiles()
@@ -574,7 +555,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     }
 
     //https://stackoverflow.com/a/6425744/8614565
-    fun deleteRecursive(fileOrDirectory: File) {
+    private fun deleteRecursive(fileOrDirectory: File) {
         if (fileOrDirectory.isDirectory) for (child in fileOrDirectory.listFiles()) deleteRecursive(child)
         fileOrDirectory.delete()
     }
@@ -660,7 +641,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     //nothing;
                 }
                 val imageView: ImageView = PhotoView(this)
-                imageView.setImageDrawable(ivAnalCount!!.drawable)
+                imageView.setImageDrawable(imageViewCount!!.drawable)
                 builder.addContentView(imageView, RelativeLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT))
@@ -672,13 +653,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     }
 
     override fun onBackPressed() {
-        if (tabHost!!.currentTab == TAB_DISASM) {
+        if (tabhost1!!.currentTab == TAB_DISASM) {
             if (!jmpBackstack.empty()) {
                 jumpto(jmpBackstack.pop())
                 jmpBackstack.pop()
                 return
             } else {
-                tabHost!!.currentTab = TAB_EXPORT
+                tabhost1!!.currentTab = TAB_EXPORT
                 return
             }
         }
@@ -765,8 +746,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         super.onPostExecute(result)
                         dialog!!.dismiss()
                         tvAnalRes!!.text = this.result
-                        ivAnalCount!!.setImageDrawable(drawable)
-                        tabHost!!.currentTab = TAB_ANALYSIS
+                        imageViewCount!!.setImageDrawable(drawable)
+                        tabhost1!!.currentTab = TAB_ANALYSIS
                         Log.d(TAG, "BG done")
                         //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
                     }
@@ -812,7 +793,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         super.onPostExecute(result)
                         dialog!!.dismiss()
                         adapter!!.notifyDataSetChanged()
-                        tabHost!!.currentTab = TAB_STRINGS
+                        tabhost1!!.currentTab = TAB_STRINGS
                         Log.d(TAG, "BG done")
                         //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
                     }
@@ -837,12 +818,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         null) // right
                 mCustomDialog!!.show()
             }
-            R.id.jumpto -> {
+            R.id.jumpto -> run {
                 if (parsedFile == null) {
                     AlertSelFile()
-                    break
+                    return@run
                 }
-                autocomplete = object : AutoCompleteTextView(this) {
+                val autocomplete = object : AutoCompleteTextView(this) {
                     override fun enoughToFilter(): Boolean {
                         return true
                     }
@@ -857,7 +838,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 autocomplete.setAdapter<ArrayAdapter<String>>(autoSymAdapter)
                 val ab = ShowEditDialog("Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
                         "Go", DialogInterface.OnClickListener { p1, p2 ->
-                    val dest = autocomplete.getText().toString()
+                    val dest = autocomplete.text.toString()
                     try {
                         val address = dest.toLong(16)
                         jumpto(address)
@@ -935,12 +916,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     }
                 } else {
                     Toast.makeText(this, R.string.permission_needed, Toast.LENGTH_LONG).show()
-                    setting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
-                    editor = setting.edit()
-                    editor.putBoolean("show", true)
-                    editor.apply()
+                    val showRationalSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
+                    val showRationalEditor = showRationalSetting.edit()
+                    showRationalEditor.putBoolean("show", true)
+                    showRationalEditor.apply()
                     // permission denied, boo! Disable the
-// functionality that depends on this permission.
+                    // functionality that depends on this permission.
                 }
             }
         }
@@ -986,10 +967,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 
     ///////////////////////////////////////////////////End UI Utility//////////////////////////////////////////////////
 ///////////////////////////////////////////////////Target setter/getter////////////////////////////////////////////
-    fun setFpath(fpath: String?) {
-        this.fpath = fpath
-        dataFragment!!.path = fpath
-    }
 
     fun setParsedFile(parsedFile: AbstractFile?) {
         this.parsedFile = parsedFile
@@ -997,14 +974,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         adapter!!.setFile(parsedFile)
     }
 
-    fun getFilecontent(): ByteArray? {
-        return filecontent
-    }
-
-    fun setFilecontent(filecontent: ByteArray?) {
-        this.filecontent = filecontent
-        dataFragment!!.filecontent = filecontent
-    }
 
     ////////////////////////////////////////////////////////////End target setter/getter/////////////////////////////////////////
     private fun parseAddress(toString: String?): Long {
@@ -1110,11 +1079,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 }
                 fos.write(sb.toString().toByteArray())
             } catch (e: IOException) {
-                AlertError("", e)
+                alertError("", e)
                 return
             }
         } catch (e: FileNotFoundException) {
-            AlertError("", e)
+            alertError("", e)
         }
         AlertSaveSuccess(file)
     }
@@ -1137,7 +1106,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             oos.writeObject(disasmResults)
             oos.close()
         } catch (e: IOException) {
-            AlertError(getString(R.string.failSaveFile), e)
+            alertError(getString(R.string.failSaveFile), e)
             return
         }
         AlertSaveSuccess(file)
@@ -1161,7 +1130,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 SaveDetailSub(currentProject!!)
                 runnable?.run()
             } catch (e: IOException) {
-                AlertError(getString(R.string.failSaveFile), e)
+                alertError(getString(R.string.failSaveFile), e)
             }
         }
         //SaveDetailOld();
@@ -1195,7 +1164,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
             SaveDetailSub(proj)
         } catch (e: IOException) {
-            AlertError(R.string.failCreateProject, e)
+            alertError(R.string.failCreateProject, e)
         }
     }
 
@@ -1217,7 +1186,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             ShowExportOptions(runnable)
             proj.Save()
         } catch (e: IOException) {
-            AlertError(getString(R.string.failCreateProject), e)
+            alertError(getString(R.string.failCreateProject), e)
         }
     }
 
@@ -1259,14 +1228,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             zos.close()
             fos.close()
         } catch (e: Exception) {
-            AlertError(R.string.fail_exportzip, e)
+            alertError(R.string.fail_exportzip, e)
             targetFile = null
         }
         if (targetFile != null) AlertSaveSuccess(targetFile!!)
     }
 
     private fun SaveDisasm(disasmF: DatabaseHelper) {
-        SaveDBAsync().execute(disasmF)
+//        SaveDBAsync().execute(disasmF)
     }
 
     private fun SaveDetailOld() {
@@ -1283,13 +1252,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         disableEnableControls(false, llmainLinearLayoutSetupRaw)
         OnChoosePath(proj.oriFilePath)
         currentProject = proj
-        setting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
-        editor = setting.edit()
-        editor.putString(LASTPROJKEY, proj.name)
-        editor.apply()
+        val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
+        val projecteditor = projectsetting.edit()
+        projecteditor.putString(LASTPROJKEY, proj.name)
+        projecteditor.apply()
         val det = proj.detail
         if ("" != det) {
-            etDetails!!.setText(det)
+            detailText.setText(det)
         }
         val dir = File(ProjectManager.RootFile, currentProject!!.name + "/")
         Log.d(TAG, "dirpath=" + dir.absolutePath)
@@ -1301,9 +1270,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 disasmResults = ois.readObject() as LongSparseArray<ListViewItem>
                 ois.close()
             } catch (e: ClassNotFoundException) {
-                AlertError(R.string.fail_loadraw, e)
+                alertError(R.string.fail_loadraw, e)
             } catch (e: IOException) {
-                AlertError(R.string.fail_loadraw, e)
+                alertError(R.string.fail_loadraw, e)
             }
         } else {
             disasmResults = LongSparseArray() //(LongSparseArray<ListViewItem>) db.getAll();
@@ -1321,7 +1290,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     fun DisassembleFile(offset: Long) {
         Toast.makeText(this, "started", Toast.LENGTH_SHORT).show()
         Log.v(TAG, "Strted disasm")
-        btSavDisasm!!.isEnabled = false
+        btnSaveDisasm.isEnabled = false
         //NOW there's no notion of pause or resume
         workerThread = Thread(Runnable {
             val codesection = parsedFile!!.codeSectionBase
@@ -1350,7 +1319,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             runOnUiThread {
                 listview!!.requestLayout()
                 tab2!!.invalidate()
-                btSavDisasm!!.isEnabled = true
+                btnSaveDisasm!!.isEnabled = true
                 Toast.makeText(this@MainActivity, "done", Toast.LENGTH_SHORT).show()
             }
             Log.v(TAG, "disassembly done")
@@ -1406,19 +1375,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 
     private fun setupListView() { //moved to onCreate for avoiding NPE
 //adapter = new DisasmListViewAdapter();
-        listview = findViewById(R.id.listview)
-        listview.setAdapter(adapter)
-        listview.setOnItemClickListener(DisasmClickListener(this))
+        listview.adapter = adapter
+        listview.onItemClickListener = DisasmClickListener(this)
         adapter!!.addAll(disasmManager!!.getItems(), disasmManager!!.address)
         listview.setOnScrollListener(adapter)
     }
 
-    private fun AlertError(p0: Int, e: Exception, sendError: Boolean = true) {
+    private fun alertError(p0: Int, e: Exception, sendError: Boolean = true) {
         Log.e(TAG, "" + p0, e)
         ShowErrorDialog(this, p0, e, sendError)
     }
 
-    private fun AlertError(p0: String, e: Exception, sendError: Boolean = true) {
+    private fun alertError(p0: String, e: Exception, sendError: Boolean = true) {
         Log.e(TAG, "" + p0, e)
         ShowErrorDialog(this, p0, e, sendError)
     }
@@ -1428,12 +1396,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     }
 
     private fun ShowDetail() {
-        etDetails!!.setText(parsedFile.toString())
+        detailText.setText(parsedFile.toString())
     }
 
     fun jumpto(address: Long) {
         if (isValidAddress(address)) { //not found
-            tabHost!!.currentTab = TAB_DISASM
+            tabhost1!!.currentTab = TAB_DISASM
             jmpBackstack.push(java.lang.Long.valueOf(adapter!!.getCurrentAddress()))
             adapter!!.OnJumpTo(address)
             listview!!.setSelection(0)
@@ -1467,8 +1435,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     private fun showFileChooser() {
         requestAppPermissions(this)
         //SharedPreferences sharedPreferences = null;
-        settingPath = getSharedPreferences("path", Context.MODE_PRIVATE)
-        var prepath = settingPath.getString(DiskUtil.SC_PREFERENCE_KEY, "/storage/emulated/0/")
+        val settingPath1 = getSharedPreferences("path", Context.MODE_PRIVATE)
+        var prepath = settingPath1.getString(DiskUtil.SC_PREFERENCE_KEY, "/storage/emulated/0/")
         var tmp = File(prepath)
         if (tmp.isFile) {
             tmp = tmp.parentFile
@@ -1494,7 +1462,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 chooser.show()
                 // get path that the user has chosen
                 chooser.setOnSelectListener { path ->
-                    val edi = settingPath.edit()
+                    val edi = settingPath1.edit()
                     edi.putString(DiskUtil.SC_PREFERENCE_KEY, path)
                     edi.apply()
                     disableEnableControls(false, llmainLinearLayoutSetupRaw)
@@ -1547,12 +1515,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 return
             }
             //ByteArrayOutputStream bis=new ByteArrayOutputStream();
-            setFilecontent(Utils.getBytes(`is`))
+            filecontent = Utils.getBytes(`is`)
             tmpfile.createNewFile()
             val fos = FileOutputStream(tmpfile)
             fos.write(filecontent)
             //elfUtil=new ELFUtil(new FileChannel().transferFrom(Channels.newChannel(is),0,0),filecontent);
-            setFpath(tmpfile.absolutePath) //uri.getPath();
+            fpath = tmpfile.absolutePath //uri.getPath();
             AfterReadFully(tmpfile)
         } catch (e: IOException) {
             if (e.message!!.contains("Permission denied")) {
@@ -1563,8 +1531,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     }
                     try {
                         RootTools.copyFile(uri.path, tmpfile.path, false, false)
-                        setFilecontent(Utils.getBytes(FileInputStream(tmpfile)))
-                        setFpath(tmpfile.absolutePath) //uri.getPath();
+                        filecontent = Utils.getBytes(FileInputStream(tmpfile))
+                        fpath = tmpfile.absolutePath //uri.getPath();
                         AfterReadFully(tmpfile)
                         return
                     } catch (f: IOException) {
@@ -1573,14 +1541,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     }
                 } else {
                     Toast.makeText(this, "This file requires root permission to read.", Toast.LENGTH_SHORT).show()
-                    AlertError(R.string.fail_readfile_root, e, false)
+                    alertError(R.string.fail_readfile_root, e, false)
                     return
                 }
             } else {
                 Log.e(TAG, "", e)
                 //Toast.makeText(this,"Not needed",Toast.LENGTH_SHORT).show();
             }
-            AlertError(R.string.fail_readfile, e)
+            alertError(R.string.fail_readfile, e)
         }
     }
 
@@ -1588,7 +1556,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     {
         try {
             val file = File(path)
-            val `in` = DataInputStream(FileInputStream(file))
+            val dataInputStream = DataInputStream(FileInputStream(file))
             //Check if it is an apk file
             val lowname = file.name.toLowerCase()
             val ext = FilenameUtils.getExtension(lowname)
@@ -1597,18 +1565,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 return
             }
             if (lowname.endsWith(".apk") || lowname.endsWith(".zip")) {
-                if (HandleZipFIle(path, `in`)) return
+                if (HandleZipFIle(path, dataInputStream)) return
             }
             if (lowname.endsWith(".udd")) {
-                if (HandleUddFile(path, `in`)) {
+                if (HandleUddFile(path, dataInputStream)) {
                     return
                 }
             }
-            setFpath(path)
-            etFilename!!.setText(file.absolutePath)
+            fpath = path
+            fileNameText.setText(file.absolutePath)
             val fsize = file.length()
             //int index = 0;
-            setFilecontent(Utils.getBytes(`in`) /*new byte[(int) fsize]*/)
+            filecontent = Utils.getBytes(dataInputStream /*new byte[(int) fsize]*/)
             /*
             int len= 0;
             byte[] b = new byte[1024];
@@ -1633,8 +1601,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     }
                     try {
                         RootTools.copyFile(path, tmpfile.path, false, false)
-                        setFilecontent(Utils.getBytes(FileInputStream(tmpfile)))
-                        setFpath(tmpfile.absolutePath) //uri.getPath();
+                        filecontent = Utils.getBytes(FileInputStream(tmpfile))
+                        fpath = tmpfile.absolutePath //uri.getPath();
                         AfterReadFully(tmpfile)
                         return
                     } catch (f: IOException) {
@@ -1643,14 +1611,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     }
                 } else {
                     Toast.makeText(this, "This file requires root permission to read.", Toast.LENGTH_SHORT).show()
-                    AlertError(R.string.fail_readfile_root, e, false)
+                    alertError(R.string.fail_readfile_root, e, false)
                     return
                 }
             } else {
                 Log.e(TAG, "", e)
                 //Toast.makeText(this,"Not needed",Toast.LENGTH_SHORT).show();
             }
-            AlertError(R.string.fail_readfile, e)
+            alertError(R.string.fail_readfile, e)
             //Log.e(TAG, "", e);
 //AlertError("Failed to open and parse the file",e);
 //Toast.makeText(this, Log.getStackTraceString(e), 30).show();
@@ -1661,11 +1629,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     fun OpenNewTab(file: File, type: TabType) {
         val factory = factoryList[type.ordinal]
         factory.setType(file.absolutePath, type)
-        tabHost!!.addTab(tabHost!!.newTabSpec(file.absolutePath).setContent(factory).setIndicator(file.name))
+        tabhost1.addTab(tabhost1.newTabSpec(file.absolutePath).setContent(factory).setIndicator(file.name))
     }
 
     fun CloseTab(index: Int) {
-        tabHost!!.tabWidget.removeView(tabHost!!.tabWidget.getChildTabViewAt(index))
+        tabhost1.tabWidget.removeView(tabhost1.tabWidget.getChildTabViewAt(index))
     }
 
     private fun HandleZipFIle(path: String, `is`: InputStream): Boolean {
@@ -1777,11 +1745,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     AllowRawSetup()
                     //failed to parse the file. please setup manually.
                 } catch (f: RuntimeException) {
-                    AlertError("Failed to parse the file. Please setup manually. Sending an error report, the file being analyzed can be attached.", f)
+                    alertError("Failed to parse the file. Please setup manually. Sending an error report, the file being analyzed can be attached.", f)
                     setParsedFile(RawFile(file, filecontent))
                     AllowRawSetup()
                 } catch (g: Exception) {
-                    AlertError("Unexpected exception: failed to parse the file. please setup manually.", g)
+                    alertError("Unexpected exception: failed to parse the file. please setup manually.", g)
                     setParsedFile(RawFile(file, filecontent))
                     AllowRawSetup()
                 }
@@ -1909,75 +1877,75 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         }
     }
 
-    internal inner class SaveDBAsync : AsyncTask<DatabaseHelper?, Int?, Void?>() {
-        var TAG = javaClass.simpleName
-        var builder: AlertDialog.Builder? = null
-        var progress: ProgressBar? = null
-        override fun onPreExecute() {
-            super.onPreExecute()
-            Log.d("$TAG PreExceute", "On pre Exceute......")
-            progress = ProgressBar(this@MainActivity)
-            progress!!.isIndeterminate = false
-            builder = AlertDialog.Builder(this@MainActivity)
-            builder!!.setTitle("Saving..").setView(progress)
-            builder!!.show()
-        }
-
-        protected override fun doInBackground(vararg disasmF: DatabaseHelper): Void? {
-            Log.d("$TAG DoINBackGround", "On doInBackground...")
-            val cnt = disasmF[0].count
-            if (cnt == 0) {
-                val datasize = disasmResults!!.size()
-                for (i in 0 until datasize) { //disasmF[0].insert(disasmResults.get(i));
-                    publishProgress(i)
-                }
-            }
-            return null
-        }
-
-        protected override fun onProgressUpdate(vararg a: Int) {
-            super.onProgressUpdate(*a)
-            progress!!.progress = a[0]
-            //Log.d(TAG + " onProgressUpdate", "You are in progress update ... " + a[0]);
-        } /*
-		 protected void onPostExecute(Void result) {
-		 super.onPostExecute(result);
-		 //Log.d(TAG + " onPostExecute", "" + result);
-		 }
-		 */
-    }
-
-    internal inner class SaveDisasmAsync : AsyncTask<Void?, Int?, Void?>() {
-        //String TAG = getClass().getSimpleName();
-        var builder: AlertDialog.Builder? = null
-        var progress: ProgressBar? = null
-        override fun onPreExecute() {
-            super.onPreExecute()
-            Log.d("$TAG PreExceute", "On pre Exceute......")
-            progress = ProgressBar(this@MainActivity)
-            progress!!.isIndeterminate = false
-            builder = AlertDialog.Builder(this@MainActivity)
-            builder!!.setTitle("Saving..").setView(progress)
-            builder!!.show()
-        }
-
-        protected override fun doInBackground(vararg list: Void): Void? {
-            Log.d("$TAG DoINBkGnd", "On doInBackground...")
-            SaveDisasmRaw()
-            return null
-        }
-
-        protected override fun onProgressUpdate(vararg a: Int) {
-            super.onProgressUpdate(*a)
-            progress!!.progress = a[0]
-            //Log.d(TAG + " onProgressUpdate", "You are in progress update ... " + a[0]);
-        } /*
-		 protected void onPostExecute(Void result) {
-		 super.onPostExecute(result);
-		 //Log.d(TAG + " onPostExecute", "" + result);
-		 }
-		 */
-    }
+//    internal inner class SaveDBAsync : AsyncTask<DatabaseHelper?, Int?, Void?>() {
+//        var TAG = javaClass.simpleName
+//        var builder: AlertDialog.Builder? = null
+//        var progress: ProgressBar? = null
+//        override fun onPreExecute() {
+//            super.onPreExecute()
+//            Log.d("$TAG PreExceute", "On pre Exceute......")
+//            progress = ProgressBar(this@MainActivity)
+//            progress!!.isIndeterminate = false
+//            builder = AlertDialog.Builder(this@MainActivity)
+//            builder!!.setTitle("Saving..").setView(progress)
+//            builder!!.show()
+//        }
+//
+//        protected override fun doInBackground(vararg disasmF: DatabaseHelper): Void? {
+//            Log.d("$TAG DoINBackGround", "On doInBackground...")
+//            val cnt = disasmF[0].count
+//            if (cnt == 0) {
+//                val datasize = disasmResults!!.size()
+//                for (i in 0 until datasize) { //disasmF[0].insert(disasmResults.get(i));
+//                    publishProgress(i)
+//                }
+//            }
+//            return null
+//        }
+//
+//        protected override fun onProgressUpdate(vararg a: Int) {
+//            super.onProgressUpdate(*a)
+//            progress!!.progress = a[0]
+//            //Log.d(TAG + " onProgressUpdate", "You are in progress update ... " + a[0]);
+//        } /*
+//		 protected void onPostExecute(Void result) {
+//		 super.onPostExecute(result);
+//		 //Log.d(TAG + " onPostExecute", "" + result);
+//		 }
+//		 */
+//    }
+//
+//    internal inner class SaveDisasmAsync : AsyncTask<Void?, Int?, Void?>() {
+//        //String TAG = getClass().getSimpleName();
+//        var builder: AlertDialog.Builder? = null
+//        var progress: ProgressBar? = null
+//        override fun onPreExecute() {
+//            super.onPreExecute()
+//            Log.d("$TAG PreExceute", "On pre Exceute......")
+//            progress = ProgressBar(this@MainActivity)
+//            progress!!.isIndeterminate = false
+//            builder = AlertDialog.Builder(this@MainActivity)
+//            builder!!.setTitle("Saving..").setView(progress)
+//            builder!!.show()
+//        }
+//
+//        protected override fun doInBackground(vararg list: Void): Void? {
+//            Log.d("$TAG DoINBkGnd", "On doInBackground...")
+//            SaveDisasmRaw()
+//            return null
+//        }
+//
+//        protected override fun onProgressUpdate(vararg a: Int) {
+//            super.onProgressUpdate(*a)
+//            progress!!.progress = a[0]
+//            //Log.d(TAG + " onProgressUpdate", "You are in progress update ... " + a[0]);
+//        } /*
+//		 protected void onPostExecute(Void result) {
+//		 super.onPostExecute(result);
+//		 //Log.d(TAG + " onPostExecute", "" + result);
+//		 }
+//		 */
+//    }
 
     private inner class DrawerItemClickListener : AdapterView.OnItemClickListener {
         override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) { //selectItem(position);
