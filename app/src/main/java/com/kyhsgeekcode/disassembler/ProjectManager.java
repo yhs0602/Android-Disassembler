@@ -138,7 +138,7 @@ public class ProjectManager {
         public DatabaseHelper getDisasmDb() {
             if (disasmDB == null) {
                 Log.e(TAG, "db null!!!");
-                return listener.getDb();
+//                return listener.db;
             }
             return disasmDB;
         }
@@ -162,7 +162,7 @@ public class ProjectManager {
             if (!projdir.exists())
                 projdir.mkdirs();
             detailFile = new File(projdir, "details.txt");
-            disasmDB = listener.getDb();
+//            disasmDB = listener.db;
             //	disasmDB=new File(projdir,"disasm.json");
             IOException err = new IOException();
             if (!detailFile.exists()) {
