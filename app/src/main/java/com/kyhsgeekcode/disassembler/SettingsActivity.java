@@ -21,6 +21,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Set;
 
+import static com.kyhsgeekcode.disassembler.PermissionUtilsKt.requestAppPermissions;
+import static com.kyhsgeekcode.disassembler.UIUtilsKt.ShowEditDialog;
+
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
 
     String[] prefnames;
@@ -34,7 +37,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             if (val == prefnames.length) {
                 //Add new
                 final EditText et = new EditText(this);
-                MainActivity.ShowEditDialog(this, "New theme", "Set name for the theme..", et,
+                ShowEditDialog(this, "New theme", "Set name for the theme..", et,
                         "Create", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface p1, int p2) {
@@ -169,7 +172,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         }
         //setOnPreferenceChange(findPreference("userNameOpen"));
         //	setOnPreferenceChange(findPreference("autoUpdate_ringtone"));
-        MainActivity.requestAppPermissions(this);
+        requestAppPermissions(this);
     }
 
     //https://stackoverflow.com/a/13828912/8614565

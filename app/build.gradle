@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlinx-serialization'
 
 android {
     compileSdkVersion 28
@@ -70,6 +71,9 @@ dependencies {
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
     implementation("com.louiscad.splitties:splitties-appctx:$splitties_version")
     implementation 'org.apache.commons:commons-compress:1.19'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version" // or "kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0" // JVM dependency
+
 //    implementation 'mnemonik:mnemonik:2.0.2'
 }
 repositories {

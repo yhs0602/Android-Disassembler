@@ -1,15 +1,14 @@
-package com.kyhsgeekcode.filechooser
+package com.kyhsgeekcode
 
 import android.util.Log
 import at.pollaknet.api.facile.Facile
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveException
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.utils.IOUtils
-import java.io.BufferedInputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import org.apache.commons.io.FileUtils
+import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
@@ -34,7 +33,7 @@ fun extractZip(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _
         var output: FileOutputStream? = null
         try {
             output = FileOutputStream(outfile)
-            var len = 0
+            var len: Int
             while (zi.read(buffer).also { len = it } > 0) {
                 output.write(buffer, 0, len)
             }
@@ -70,7 +69,7 @@ fun File.isDexFile(): Boolean = extension.toLowerCase() == "dex"
 fun File.isAccessible(): Boolean = exists() && canRead()
 
 fun extract(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ -> }) {
-    Log.v("extract","File:${from.path}")
+    Log.v("extract", "File:${from.path}")
     try {
         val archi = ArchiveStreamFactory().createArchiveInputStream(BufferedInputStream(from.inputStream()))
         var entry: ArchiveEntry?
@@ -100,7 +99,62 @@ fun extract(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ ->
         }
     } catch (e: ArchiveException) {
         Log.e("Extract archive", "error inflating", e)
-    } catch(e: ZipException) {
+    } catch (e: ZipException) {
         Log.e("Extract archive", "error inflating", e)
     }
 }
+
+fun String.toValidFileName(): String {
+    return this.replace("[\\\\/:*?\"<>|]", "")
+}
+
+//MAYBE BUG : relName to entry name
+fun saveAsZip(dest: File, vararg sources: Pair<String, String>) {
+    val archiveStream: OutputStream = FileOutputStream(dest)
+    val archive = ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, archiveStream)
+    for (source in sources) {
+        val from = source.first
+        val to = source.second
+        val fromFile = File(from)
+        val toFile = File(to)
+        if (fromFile.isDirectory) {
+            val fileList = FileUtils.listFiles(fromFile, null, true)
+            for (file in fileList) {
+                val relName: String = getEntryName(fromFile, file)
+                val splitName = relName.split(File.separatorChar)
+                val entryName = toFile.resolve(splitName.subList(1, splitName.size - 1).joinToString(File.separator)).absolutePath
+                val entry = ZipArchiveEntry(entryName)
+                archive.putArchiveEntry(entry)
+                val input = BufferedInputStream(FileInputStream(file))
+                IOUtils.copy(input, archive)
+                input.close()
+                archive.closeArchiveEntry()
+            }
+        } else {
+            val entryName = to
+            val entry = ZipArchiveEntry(entryName)
+            archive.putArchiveEntry(entry)
+            val input = BufferedInputStream(FileInputStream(fromFile))
+            IOUtils.copy(input, archive)
+            input.close()
+            archive.closeArchiveEntry()
+        }
+    }
+}
+
+/**
+ * Remove the leading part of each entry that contains the source directory name
+ *
+ * @param source the directory where the file entry is found
+ * @param file   the file that is about to be added
+ * @return the name of an archive entry
+ * @throws IOException if the io fails
+ * @author http://www.thinkcode.se/blog/2015/08/21/packaging-a-zip-file-from-java-using-apache-commons-compress
+ */
+@Throws(IOException::class)
+fun getEntryName(source: File, file: File): String {
+    val index: Int = source.absolutePath.length + 1
+    val path = file.canonicalPath
+    return path.substring(index)
+}
+

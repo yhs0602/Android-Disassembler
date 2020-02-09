@@ -2,6 +2,8 @@ package com.kyhsgeekcode.disassembler;
 
 import java.io.Serializable;
 
+import static com.kyhsgeekcode.disassembler.UtilsKt.bytesToHex;
+
 public class ListViewItem implements Serializable {
     String address, bytes, label, instruction, operands, comments, condition;
     DisasmResult disasmResult;
@@ -26,7 +28,7 @@ public class ListViewItem implements Serializable {
         for (int i = 0; i < disasmResult.size; ++i) {
             bytestmp[i] = disasmResult.bytes[i];
         }
-        this.bytes = MainActivity.bytesToHex(bytestmp);
+        this.bytes = bytesToHex(bytestmp);
         this.comments = "";
         this.condition = "";
         this.instruction = disasmResult.mnemonic;

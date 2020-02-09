@@ -9,6 +9,9 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.kyhsgeekcode.disassembler.UIUtilsKt.ShowEditDialog;
+import static com.kyhsgeekcode.disassembler.UIUtilsKt.ShowSelDialog;
+
 public class DisasmClickListener implements AdapterView.OnItemClickListener {
     MainActivity activity;
     private String TAG = "Disassembler";
@@ -29,7 +32,7 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener {
             menus.add(JUMP);
         }
         if (!menus.isEmpty()) {
-            MainActivity.ShowSelDialog(activity, menus, lvi.toSimpleString() + " at " + lvi.address, new DialogInterface.OnClickListener() {
+            ShowSelDialog(activity, menus, lvi.toSimpleString() + " at " + lvi.address, new DialogInterface.OnClickListener() {
 
 
                 @Override
@@ -38,7 +41,7 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener {
                     if (EDIT_COMMENT.equals(item)) {
                         final EditText et = new EditText(activity);
                         et.setText(lvi.getComments());
-                        MainActivity.ShowEditDialog(activity, EDIT_COMMENT, EDIT_COMMENT, et
+                        ShowEditDialog(activity, EDIT_COMMENT, EDIT_COMMENT, et
                                 , "OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface p1, int p2) {
