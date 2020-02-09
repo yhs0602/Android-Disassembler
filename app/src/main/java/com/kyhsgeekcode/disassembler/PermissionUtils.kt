@@ -20,7 +20,7 @@ fun requestAppPermissions(a: Activity) {
     if (hasReadPermissions(a) && hasWritePermissions(a) /*&&hasGetAccountPermissions(a)*/) {
         Log.i(TAG, "Has permissions")
         a.onRequestPermissionsResult(MainActivity.REQUEST_WRITE_STORAGE_REQUEST_CODE,
-                null, intArrayOf(PackageManager.PERMISSION_GRANTED))
+                emptyArray(), intArrayOf(PackageManager.PERMISSION_GRANTED))
         return
     }
     showPermissionRationales(a, Runnable {

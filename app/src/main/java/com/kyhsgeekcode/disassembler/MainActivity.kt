@@ -233,7 +233,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         //adapter.notifyDataSetChanged();
         listview!!.requestLayout()
     }
-    private var mProjNames: Array<String>
+//    private var mProjNames: Array<String>
     private var mDrawerLayout: DrawerLayout? = null
     private var logAdapter: LogAdapter? = null
     private var stringAdapter: FoundStringAdapter? = null
@@ -435,7 +435,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 				public void onScrollStateChanged(AbsListView view, int scrollState) {}
 			});
 			*/toDoAfterPermQueue.add(Runnable {
-            mProjNames = arrayOf("Exception", "happened")
+//            mProjNames = arrayOf("Exception", "happened")
             colorHelper = try {
                 ColorHelper(this@MainActivity)
             } catch (e: SecurityException) {
@@ -448,7 +448,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             disasmManager!!.setData(adapter!!.itemList(), adapter!!.getAddress())
             // find the retained fragment on activity restarts
             val fm = fragmentManager
-            dataFragment = fm.findFragmentByTag("data") as RetainedFragment
+            dataFragment = fm.findFragmentByTag("data") as RetainedFragment?
             if (dataFragment == null) { // add the fragment
                 dataFragment = RetainedFragment()
                 fm.beginTransaction().add(dataFragment, "data").commit()
@@ -469,7 +469,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             }
             try {
                 projectManager = ProjectManager(this@MainActivity)
-                mProjNames = projectManager!!.strProjects() //new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
+//                mProjNames = projectManager!!.strProjects() //new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
             } catch (e: IOException) {
                 alertError("Failed to load projects", e)
             }
@@ -708,7 +708,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 startActivity(browserIntent)
             }
             R.id.analyze -> {
-                val asyncTask: AsyncTask<Void, Int, Void> = object : AsyncTask<Void?, Int?, Void?>() {
+                val asyncTask: AsyncTask<Void, Int, Void> = object : AsyncTask<Void, Int, Void>() {
                     var dialog: ProgressDialog? = null
                     var progress: ProgressBar? = null
                     var result: String? = null
@@ -728,7 +728,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         dialog!!.show()
                     }
 
-                    protected override fun doInBackground(vararg voids: Void): Void? {
+                    override fun doInBackground(vararg voids: Void): Void? {
                         Log.d(TAG, "BG")
                         val analyzer = Analyzer(filecontent)
                         analyzer.Analyze(dialog)
@@ -737,9 +737,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         return null
                     }
 
-                    protected override fun onProgressUpdate(vararg values: Int) {
-                        super.onProgressUpdate(*values)
-                        progress!!.progress = values[0]
+                    override fun onProgressUpdate(vararg values: Int?) {
+                        super.onProgressUpdate(values[0]!!)
+                        progress!!.progress = values[0]!!
                     }
 
                     override fun onPostExecute(result: Void?) {
@@ -757,7 +757,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 Log.d(TAG, "Executed")
             }
             R.id.findString -> {
-                val asyncTask: AsyncTask<Int, Int, Void> = object : AsyncTask<Int?, Int?, Void?>() {
+                val asyncTask: AsyncTask<Int, Int, Void> = object : AsyncTask<Int, Int, Void>() {
                     var dialog: ProgressDialog? = null
                     var progress: ProgressBar? = null
                     override fun onPreExecute() {
@@ -775,18 +775,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         dialog!!.show()
                     }
 
-                    protected override fun doInBackground(vararg ints: Int): Void? {
+                    override fun doInBackground(vararg ints: Int?): Void? {
                         Log.d(TAG, "BG")
-                        val min = ints[0]
-                        val max = ints[1]
+                        val min = ints[0]!!
+                        val max = ints[1]!!
                         val analyzer = Analyzer(filecontent)
                         analyzer.searchStrings(stringAdapter, dialog, min, max)
                         return null
                     }
 
-                    protected override fun onProgressUpdate(vararg values: Int) {
-                        super.onProgressUpdate(*values)
-                        progress!!.progress = values[0]
+                    override fun onProgressUpdate(vararg values: Int?) {
+                        super.onProgressUpdate(values[0]!!)
+                        progress!!.progress = values[0]!!
                     }
 
                     override fun onPostExecute(result: Void?) {
