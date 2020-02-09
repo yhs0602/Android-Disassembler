@@ -7,12 +7,18 @@ import kotlinx.serialization.Serializable
 data class ProjectModel(
         @SerialName("projectName")
         var name: String = "New project",
+        /**
+         * The folder for temp analysis files
+         */
         @SerialName("baseFolder")
         var baseFolder: String,
         @SerialName("projectType")
         var projectType: String,
+        /**
+         * The file/folder user chose to open
+         */
         @SerialName("sourceFilePath")
         var sourceFilePath: String,
-        @SerialName("infos")
-        val infos: ArrayList<ProjectFileModel> = ArrayList()
+        @SerialName("info")
+        val info: ArrayList<ProjectFileModel> = ArrayList()
 )
