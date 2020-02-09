@@ -19,8 +19,7 @@
 #include <android/log.h>
 #include <cxxabi.h>
 
-extern "C"
-{
+extern "C" {
 #include "../../../../capstone/include/capstone.h"
 }
 
@@ -34,8 +33,7 @@ using namespace std;
 
 //#define CODE "\xED\xFF\xFF\xEB\x04\xe0\x2d\xe5\x00\x00\x00\x00\xe0\x83\x22\xe5\xf1\x02\x03\x0e\x00\x00\xa0\xe3\x02\x30\xc1\xe7\x00\x00\x53\xe3\x00\x02\x01\xf1\x05\x40\xd0\xe8\xf4\x80\x00\x00"
 
-extern "C"
-{
+extern "C" {
 csh handle;
 const char *errmsg(cs_err e);
 
@@ -705,6 +703,86 @@ static void print_insn_detail(string &buf, cs_insn *ins) {
     }
     buf += "\n";
 }
+}
+
+
+#include "elfio/elfio_dump.hpp"
+#include "elfio/elf_types.hpp"
+#include "elfio/elfio_section.hpp"
+#include "elfio/elfio_symbols.hpp"
+
+using namespace ELFIO;
+
+struct DisassemblerSymbol {
+    std::string name;
+    Elf64_Addr value;
+    Elf_Xword size;
+    unsigned char bind;
+    unsigned char type;
+    Elf_Half section;
+    unsigned char other;
+};
+
+//std::vector<DisassemblerSymbol>disassemblerSymbolsList;
+
+//Pure
+void loadSymbols(const elfio &reader, JNIEnv *env, jobject thiz) {
+    jclass symbolcls = env->FindClass("com/kyhsgeekcode/disassembler/Symbol");
+    __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "Symbol");
+    jclass listcls = env->FindClass("java/util/ArrayList");
+    __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "ArrayList");
+    jclass thecls = env->GetObjectClass(thiz);
+    jmethodID ctor = env->GetMethodID(symbolcls, "<init>", "()V");
+    jmethodID addSymbol = env->GetMethodID(thecls, "addSymbol",
+                                           "(Lcom/kyhsgeekcode/disassembler/Symbol;)V");
+    jfieldID fieldName = env->GetFieldID(symbolcls, "name", "Ljava/lang/String;");
+    jfieldID fieldValue = env->GetFieldID(symbolcls, "st_value", "J");
+    jfieldID fieldSize = env->GetFieldID(symbolcls, "st_size", "J");
+    jfieldID fieldInfo = env->GetFieldID(symbolcls, "st_info", "S");
+//    jfieldID fieldBind = env->GetFieldID(symbolcls, "bind", "J");
+//    jfieldID fieldType = env->GetFieldID(symbolcls, "type","J");
+    jfieldID fieldSection = env->GetFieldID(symbolcls, "st_shndx", "S");
+    jfieldID fieldOther = env->GetFieldID(symbolcls, "st_other", "S");
+//    disassemblerSymbolsList.clear();
+    Elf_Half n = reader.sections.size();
+    for (Elf_Half i = 0; i < n; ++i) {
+        section *sec = reader.sections[i];
+        if (SHT_SYMTAB == sec->get_type() || SHT_DYNSYM == sec->get_type()) {
+            symbol_section_accessor symbols(reader, sec);
+            long long sym_no = symbols.get_symbols_num();
+            if (sym_no > 0) {
+                for (long long i = 0; i < sym_no; ++i) {
+                    DisassemblerSymbol symbol_disassembler;
+                    symbols.get_symbol(static_cast<Elf_Xword>(i), symbol_disassembler.name,
+                                       symbol_disassembler.value, symbol_disassembler.size,
+                                       symbol_disassembler.bind, symbol_disassembler.type,
+                                       symbol_disassembler.section, symbol_disassembler.other);
+                    short st_info = symbol_disassembler.bind << 4 | symbol_disassembler.type;
+                    jobject sym = env->NewObject(symbolcls, ctor);
+                    jstring jname = env->NewStringUTF(symbol_disassembler.name.c_str());
+                    env->SetObjectField(sym, fieldName, jname);
+                    env->SetLongField(sym, fieldValue, symbol_disassembler.value);
+                    env->SetLongField(sym, fieldSize, symbol_disassembler.size);
+                    env->SetShortField(sym, fieldInfo, st_info);
+                    env->SetShortField(sym, fieldSection, symbol_disassembler.section);
+                    env->SetShortField(sym, fieldOther, symbol_disassembler.other);
+                    env->CallVoidMethod(thiz, addSymbol, sym);
+//                    disassemblerSymbolsList.push_back(symbol_disassembler);
+                }
+            }
+        }
+    }
+}
+
+extern "C" {
+JNIEXPORT void JNICALL
+Java_com_kyhsgeekcode_disassembler_ELFUtil_loadBinary(JNIEnv *env, jobject thiz, jstring path) {
+    elfio reader;
+    const char *filename = env->GetStringUTFChars(path, NULL);
+    reader.load(filename);
+    loadSymbols(reader, env, thiz);
+}
+}
 //	JNIEXPORT jstring JNICALL Java_com_jourhyang_disasmarm_MainActivity_disassemble(JNIEnv * env, jobject thiz, jbyteArray _bytes,jlong entry)
 //	{
 //		int bytelen=env->GetArrayLength(_bytes);
@@ -914,4 +992,4 @@ static void print_insn_detail(string &buf, cs_insn *ins) {
 //		//	}
 //		//	(*env)->SetObjectField(env, obj, fid, jstr);
 //	}
-}
+

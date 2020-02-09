@@ -64,7 +64,6 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     //implementation 'dotnet.msil.decompiler:+'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation "androidx.core:core-ktx:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
