@@ -189,12 +189,12 @@ public class ELFUtil extends AbstractFile {
             //if (dynsyms != null)
             //symbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
 
-            //First, Analyze Symbol table
-            ParseSymtab(sb, strtable);
-            // Second, Analyze Rela table
-            ArrayList<Rela> relas = new ArrayList<>();
-            ParseRela(relas);
-
+//            //First, Analyze Symbol table
+//            ParseSymtab(sb, strtable);
+//            // Second, Analyze Rela table
+//            ArrayList<Rela> relas = new ArrayList<>();
+//            ParseRela(relas);
+            loadBinary(path);
             //sort it? this should be after plt parse
             Collections.sort(symbols, new Comparator<Symbol>() {
                 @Override
@@ -208,6 +208,10 @@ public class ELFUtil extends AbstractFile {
                     return 0;
                 }
             });
+
+            for(Symbol sym: symbols) {
+                sb.append(sym.toString());
+            }
 			/*https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-35166
 			 Symbol Values
 			 Symbol table entries for different object file types have slightly different interpretations for the st_value member.
@@ -507,6 +511,13 @@ public class ELFUtil extends AbstractFile {
         } catch (IllegalArgumentException | IOException | StringIndexOutOfBoundsException e) {
             Log.e(TAG, "", e);
         }
+    }
+
+    native void loadBinary(String path);
+
+    public void addSymbol(Symbol symbol) {
+        symbol.analyze();
+        symbols.add(symbol);
     }
 }
 
