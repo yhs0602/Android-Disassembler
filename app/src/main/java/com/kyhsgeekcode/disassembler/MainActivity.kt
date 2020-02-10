@@ -223,7 +223,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         //adapter.notifyDataSetChanged();
         listview!!.requestLayout()
     }
-//    private var mProjNames: Array<String>
+    //    private var mProjNames: Array<String>
 //    private var mDrawerLayout: DrawerLayout? = null
     private var logAdapter: LogAdapter? = null
     private var stringAdapter: FoundStringAdapter? = null
@@ -233,7 +233,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     private val ACTION_SNOOZE: String? = null
     private var projectManager: ProjectManager? = null
     private var currentProject: ProjectManager.Project? = null
-//    private var lvSymbols: ListView? = null
+    //    private var lvSymbols: ListView? = null
     private var symbolLvAdapter: SymbolListAdapter? = null
     private val leftListener: View.OnClickListener = object : View.OnClickListener {
         override fun onClick(v: View) {
@@ -418,7 +418,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 				public void onScrollStateChanged(AbsListView view, int scrollState) {}
 			});
 			*/toDoAfterPermQueue.add(Runnable {
-//            mProjNames = arrayOf("Exception", "happened")
+            //            mProjNames = arrayOf("Exception", "happened")
             colorHelper = try {
                 ColorHelper(this@MainActivity)
             } catch (e: SecurityException) {
@@ -1489,22 +1489,27 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 
     private fun onChoosePath(uri: Uri) {
         val tmpfile = File(filesDir, "tmp.so")
+
         try {
-            val `is` = contentResolver.openInputStream(uri)
-            if (HandleZipFIle(getRealPathFromURI(uri), `is`)) {
+            val inputStream = contentResolver.openInputStream(uri)
+            if(inputStream.available() == 0) {
+                handleEmptyFile(uri.toString())
                 return
             }
-            if (HandleUddFile(getRealPathFromURI(uri), `is`)) {
+            if (HandleZipFIle(getRealPathFromURI(uri), inputStream)) {
+                return
+            }
+            if (HandleUddFile(getRealPathFromURI(uri), inputStream)) {
                 return
             }
             //ByteArrayOutputStream bis=new ByteArrayOutputStream();
-            filecontent = Utils.getBytes(`is`)
+            filecontent = Utils.getBytes(inputStream)
             tmpfile.createNewFile()
             val fos = FileOutputStream(tmpfile)
             fos.write(filecontent)
             //elfUtil=new ELFUtil(new FileChannel().transferFrom(Channels.newChannel(is),0,0),filecontent);
             fpath = tmpfile.absolutePath //uri.getPath();
-            AfterReadFully(tmpfile)
+            afterReadFully(tmpfile)
         } catch (e: IOException) {
             if (e.message!!.contains("Permission denied")) {
                 if (RootTools.isRootAvailable()) {
@@ -1516,7 +1521,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         RootTools.copyFile(uri.path, tmpfile.path, false, false)
                         filecontent = Utils.getBytes(FileInputStream(tmpfile))
                         fpath = tmpfile.absolutePath //uri.getPath();
-                        AfterReadFully(tmpfile)
+                        afterReadFully(tmpfile)
                         return
                     } catch (f: IOException) {
                         Log.e(TAG, "", f)
@@ -1533,12 +1538,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             }
             alertError(R.string.fail_readfile, e)
         }
+
     }
 
     fun onChoosePath(path: String) //Intent data)
     {
+        val file = File(path)
+        if(file.length() == 0L) {
+            handleEmptyFile(path)
+            return
+        }
         try {
-            val file = File(path)
+
             val dataInputStream = DataInputStream(FileInputStream(file))
             //Check if it is an apk file
             val lowname = file.name.toLowerCase()
@@ -1561,16 +1572,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             //int index = 0;
             filecontent = Utils.getBytes(dataInputStream /*new byte[(int) fsize]*/)
             /*
-            int len= 0;
-            byte[] b = new byte[1024];
-            while ((len = in.read(b)) > 0) {
-                for (int i = 0; i < len; i++) {
-                    filecontent[index] = b[i];
-                    index++;
-                }
+        int len= 0;
+        byte[] b = new byte[1024];
+        while ((len = in.read(b)) > 0) {
+            for (int i = 0; i < len; i++) {
+                filecontent[index] = b[i];
+                index++;
             }
-            in.close();
-            */OpenNewTab(file, TabType.NATIVE_DISASM)
+        }
+        in.close();
+        */OpenNewTab(file, TabType.NATIVE_DISASM)
             //AfterReadFully(file);
 //Toast.makeText(this, "success size=" + index /*+ type.name()*/, Toast.LENGTH_SHORT).show();
 //OnOpenStream(fsize, path, index, file);
@@ -1586,7 +1597,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         RootTools.copyFile(path, tmpfile.path, false, false)
                         filecontent = Utils.getBytes(FileInputStream(tmpfile))
                         fpath = tmpfile.absolutePath //uri.getPath();
-                        AfterReadFully(tmpfile)
+                        afterReadFully(tmpfile)
                         return
                     } catch (f: IOException) {
                         Log.e(TAG, "", f)
@@ -1606,6 +1617,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 //AlertError("Failed to open and parse the file",e);
 //Toast.makeText(this, Log.getStackTraceString(e), 30).show();
         }
+
+    }
+
+    private fun handleEmptyFile(path: String) {
+        Log.d(TAG, "File $path has zero length")
+        Toast.makeText(this, "The file is empty.", Toast.LENGTH_SHORT).show()
+        return
     }
 
     //TabType Ignored
@@ -1625,10 +1643,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         val candidates: MutableList<String> = ArrayList()
         try {
             val zi = ZipInputStream(`is`)
-            var entry: ZipEntry
+            var entry: ZipEntry?
             val buffer = ByteArray(2048)
             while (zi.nextEntry.also { entry = it } != null) {
-                val name = entry.name
+                val name = entry!!.name
                 lowname = name.toLowerCase()
                 if (!lowname.endsWith(".so") && !lowname.endsWith(".dll") && !lowname.endsWith(".exe")) {
                     continue
@@ -1679,8 +1697,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     }
 
     @Throws(IOException::class)
-    private fun AfterReadFully(file: File) { //	symAdapter.setCellItems(list);
+    private fun afterReadFully(file: File) { //	symAdapter.setCellItems(list);
         supportActionBar!!.title = "Disassembler(" + file.name + ")"
+
         //hexManager.setBytes(filecontent);
 //hexManager.Show(tvHex,0);
         mainGridViewHex.adapter = HexGridAdapter(filecontent)
