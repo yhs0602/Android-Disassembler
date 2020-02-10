@@ -69,11 +69,11 @@ public class GetAPKAsyncTask extends AsyncTaskDialog<Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        activity.ShowSelDialog(apklists, "Choose APK from installed", new DialogInterface.OnClickListener() {
+        activity.showSelDialog(apklists, "Choose APK from installed", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String path = pathlists.get(which);
-                activity.OnChoosePath(path);
+                activity.onChoosePath(path);
             }
         });
     }

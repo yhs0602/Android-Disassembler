@@ -20,7 +20,6 @@ import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.drawerlayout.widget.DrawerLayout
 import at.pollaknet.api.facile.Facile
 import at.pollaknet.api.facile.exception.CoffPeDataNotFoundException
 import at.pollaknet.api.facile.exception.SizeMismatchException
@@ -158,14 +157,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     var touchSource: View? = null
     var clickSource: View? = null
     var llmainLinearLayoutSetupRaw: ConstraintLayout? = null
-    var etCodeBase: EditText? = null
-    var etEntryPoint: EditText? = null
-    var etCodeLimit: EditText? = null
-    var etVirtAddr: EditText? = null
-    var tvArch: TextView? = null
-    var btFinishSetup: Button? = null
-    var btOverrideSetup: Button? = null
-    var spinnerArch: Spinner? = null
+
     var tab1: LinearLayout? = null
     var tab2: LinearLayout? = null
     //FileTabContentFactory factory = new FileTabContentFactory(this);
@@ -224,9 +216,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 //private TableView tvSymbols;
     private val mNotifyManager: NotificationManager? = null
     private val mBuilder: Notification.Builder? = null
-    //DisasmIterator disasmIterator;
-    private var gvHex: GridView? = null
-    private var gvAscii: GridView? = null
+    //DisasmIterator disasmIterator
     private var mCustomDialog: ChooseColumnDialog? = null
     private var adapter: DisasmListViewAdapter? = null
     val runnableRequestLayout = Runnable {
@@ -234,7 +224,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         listview!!.requestLayout()
     }
 //    private var mProjNames: Array<String>
-    private var mDrawerLayout: DrawerLayout? = null
+//    private var mDrawerLayout: DrawerLayout? = null
     private var logAdapter: LogAdapter? = null
     private var stringAdapter: FoundStringAdapter? = null
     private val instantEntry: Long = 0
@@ -243,7 +233,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     private val ACTION_SNOOZE: String? = null
     private var projectManager: ProjectManager? = null
     private var currentProject: ProjectManager.Project? = null
-    private var lvSymbols: ListView? = null
+//    private var lvSymbols: ListView? = null
     private var symbolLvAdapter: SymbolListAdapter? = null
     private val leftListener: View.OnClickListener = object : View.OnClickListener {
         override fun onClick(v: View) {
@@ -305,10 +295,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             Process.killProcess(Process.getGidForName(null))
         }
         setContentView(R.layout.main)
-        mDrawerLayout = findViewById(R.id.drawer_layout)
         //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        val selectFile = findViewById<Button>(R.id.selFile)
-        selectFile.setOnClickListener(this)
+        selFile.setOnClickListener(this)
         btnShowdetail.setOnClickListener(this)
         btnSaveDisasm.setOnClickListener(this)
         btnSaveDetails.setOnClickListener(this)
@@ -316,21 +304,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         fileNameText.isEnabled = false
         llmainLinearLayoutSetupRaw = findViewById(R.id.mainLinearLayoutSetupRaw)
         disableEnableControls(false, llmainLinearLayoutSetupRaw)
-        etCodeLimit = findViewById(R.id.mainETcodeLimit)
-        etCodeBase = findViewById(R.id.mainETcodeOffset)
-        etEntryPoint = findViewById(R.id.mainETentry)
-        etVirtAddr = findViewById(R.id.mainETvirtaddr)
-        tvArch = findViewById(R.id.mainTVarch)
-        btFinishSetup = findViewById(R.id.mainBTFinishSetup)
+//        tvArch = findViewById(R.id.mainTVarch)
+//        btFinishSetup = findViewById(R.id.mainBTFinishSetup)
         mainBTFinishSetup.setOnClickListener(this)
-        btOverrideSetup = findViewById(R.id.mainBTOverrideAuto)
+//        btOverrideSetup = findViewById(R.id.mainBTOverrideAuto)
         mainBTOverrideAuto.setOnClickListener(this)
-        spinnerArch = findViewById(R.id.mainSpinnerArch)
+//        spinnerArch = findViewById(R.id.mainSpinnerArch)
         //https://stackoverflow.com/a/13783744/8614565
         val items = Arrays.toString(MachineType::class.java.enumConstants).replace("^.|.$".toRegex(), "").split(", ").toTypedArray()
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
         mainSpinnerArch.adapter = spinnerAdapter
-        lvSymbols = findViewById(R.id.symlistView)
+//        lvSymbols = findViewById(R.id.symlistView)
         //moved up
 //symbolLvAdapter=new SymbolListAdapter();
         symbolLvAdapter = SymbolListAdapter()
@@ -381,8 +365,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         //tvHex=(TextView)findViewById(R.id.hexTextView);
 //tvAscii=(TextView)findViewById(R.id.hexTextViewAscii);
 //TODO: Add a cusom HEX view
-        gvHex = findViewById(R.id.mainGridViewHex)
-        gvAscii = findViewById(R.id.mainGridViewAscii)
+
         mainGridViewHex.setOnTouchListener { v: View, event: MotionEvent ->
             if (touchSource == null) touchSource = v
             if (v === touchSource) {
@@ -490,9 +473,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     Toast.makeText(this@MainActivity, fitem.caption, Toast.LENGTH_SHORT).show()
                     if (!fitem.isOpenable) return
                     showYesNoCancelDialog(this@MainActivity, "Open file", "Open " + fitem.caption + "?", DialogInterface.OnClickListener { dialog, which ->
-                        if (fitem.tag is String) OnChoosePath(fitem.tag as String) else {
+                        if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
                             val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
-                            if (resultPath != null) OnChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
+                            if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
                         }
                     }, null, null)
                 }
@@ -517,10 +500,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         toks = pname.split(Pattern.quote(".")).toTypedArray()
                         projectManager!!.Open(toks[toks.size - 2])
                     } else { //User opened pther files
-                        OnChoosePath(intent.data)
+                        onChoosePath(intent.data)
                     }
                 } else { //User opened other files
-                    OnChoosePath(intent.data)
+                    onChoosePath(intent.data)
                 }
             } else { // android.intent.action.MAIN
                 val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
@@ -585,10 +568,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 val limit: String
                 val virt: String
                 try {
-                    base = etCodeBase!!.text.toString()
-                    entry = etEntryPoint!!.text.toString()
-                    limit = etCodeLimit!!.text.toString()
-                    virt = etVirtAddr!!.text.toString()
+                    base = mainETcodeOffset.text.toString()
+                    entry = mainETentry.text.toString()
+                    limit = mainETcodeLimit.text.toString()
+                    virt = mainETvirtaddr.text.toString()
                 } catch (e: NullPointerException) {
                     Log.e(TAG, "Error", e)
                     return
@@ -597,7 +580,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 var mct = MachineType.ARM
                 try { //if(checked==R.id.rbAuto)
 //	{
-                    val s = spinnerArch!!.selectedItem as String
+                    val s = mainSpinnerArch.selectedItem as String
                     val mcss = MachineType.values()
                     var i = 0
                     while (i < mcss.size) {
@@ -893,8 +876,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         return builder.show()
     }
 
-    fun ShowSelDialog(ListItems: List<String>?, title: String?, listener: DialogInterface.OnClickListener?) {
-        ShowSelDialog(this, ListItems!!, title, listener)
+    fun showSelDialog(ListItems: List<String>?, title: String?, listener: DialogInterface.OnClickListener?) {
+        showSelDialog(this, ListItems!!, title, listener)
     }
 
     /////////////////////////////////////End Show **** dialog///////////////////////////////////////////
@@ -1197,7 +1180,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         ListItems.add("Simple(Addr: inst op; comment")
         ListItems.add("Json")
         ListItems.add("Database(.db, reloadable)")
-        ShowSelDialog(this, ListItems, getString(R.string.export_as), DialogInterface.OnClickListener { dialog, pos ->
+        showSelDialog(this, ListItems, getString(R.string.export_as), DialogInterface.OnClickListener { dialog, pos ->
             //String selectedText = items[pos].toString();
             dialog.dismiss()
             val dialog2 = showProgressDialog(getString(R.string.saving))
@@ -1250,7 +1233,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     override fun onOpen(proj: ProjectManager.Project) {
         db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
         disableEnableControls(false, llmainLinearLayoutSetupRaw)
-        OnChoosePath(proj.oriFilePath)
+        onChoosePath(proj.oriFilePath)
         currentProject = proj
         val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
         val projecteditor = projectsetting.edit()
@@ -1419,7 +1402,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         val lst: MutableList<String> = ArrayList()
         lst.add("Choose file")
         lst.add("Choose APK")
-        ShowSelDialog(lst, "Choose file/APK?", DialogInterface.OnClickListener { dialog, which ->
+        showSelDialog(lst, "Choose file/APK?", DialogInterface.OnClickListener { dialog, which ->
             when (which) {
                 0 -> showFileChooser()
                 1 -> showAPKChooser()
@@ -1466,7 +1449,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     edi.putString(DiskUtil.SC_PREFERENCE_KEY, path)
                     edi.apply()
                     disableEnableControls(false, llmainLinearLayoutSetupRaw)
-                    OnChoosePath(path)
+                    onChoosePath(path)
                     //Log.e("SELECTED_PATH", path);
                 }
             } catch (e: Exception) {
@@ -1492,7 +1475,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 edi.putString(DiskUtil.SC_PREFERENCE_KEY, path)
                 edi.apply()
                 disableEnableControls(false, llmainLinearLayoutSetupRaw)
-                OnChoosePath(path)
+                onChoosePath(path)
             }
         } else if (requestCode == REQUEST_SELECT_FILE_NEW) {
             if (resultCode == Activity.RESULT_OK) {
@@ -1504,7 +1487,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         }
     }
 
-    private fun OnChoosePath(uri: Uri) {
+    private fun onChoosePath(uri: Uri) {
         val tmpfile = File(filesDir, "tmp.so")
         try {
             val `is` = contentResolver.openInputStream(uri)
@@ -1552,7 +1535,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         }
     }
 
-    fun OnChoosePath(path: String) //Intent data)
+    fun onChoosePath(path: String) //Intent data)
     {
         try {
             val file = File(path)
@@ -1671,11 +1654,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 }
             }
             // Ask which to analyze
-            ShowSelDialog(candidates, "Which file do you want to analyze?", DialogInterface.OnClickListener { dialog, which ->
+            showSelDialog(candidates, "Which file do you want to analyze?", DialogInterface.OnClickListener { dialog, which ->
                 val targetname = candidates[which]
                 val targetPath = File(candfolder, targetname).path
                 Log.d(TAG, "USER choosed :$targetPath")
-                OnChoosePath(targetPath)
+                onChoosePath(targetPath)
             })
             return true
         } catch (e: IOException) {
@@ -1700,8 +1683,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         supportActionBar!!.title = "Disassembler(" + file.name + ")"
         //hexManager.setBytes(filecontent);
 //hexManager.Show(tvHex,0);
-        gvHex!!.adapter = HexGridAdapter(filecontent)
-        gvAscii!!.adapter = HexAsciiAdapter(filecontent)
+        mainGridViewHex.adapter = HexGridAdapter(filecontent)
+        mainGridViewAscii.adapter = HexAsciiAdapter(filecontent)
         //new Analyzer(filecontent).searchStrings();
         if (file.path.endsWith("assets/bin/Data/Managed/Assembly-CSharp.dll")) { //Unity C# dll file
             Logger.v(TAG, "Found C# unity dll")
@@ -1775,14 +1758,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             }
         }
         if (parsedFile !is RawFile) {
-            etCodeBase!!.setText(java.lang.Long.toHexString(parsedFile!!.codeBase))
-            etCodeLimit!!.setText(java.lang.Long.toHexString(parsedFile!!.codeLimit))
-            etEntryPoint!!.setText(java.lang.Long.toHexString(parsedFile!!.entryPoint))
-            etVirtAddr!!.setText(java.lang.Long.toHexString(parsedFile!!.codeVirtualAddress))
+            mainETcodeOffset.setText(java.lang.Long.toHexString(parsedFile!!.codeBase))
+            mainETcodeLimit.setText(java.lang.Long.toHexString(parsedFile!!.codeLimit))
+            mainETentry.setText(java.lang.Long.toHexString(parsedFile!!.entryPoint))
+            mainETvirtaddr.setText(java.lang.Long.toHexString(parsedFile!!.codeVirtualAddress))
             val mcts = MachineType.values()
             for (i in mcts.indices) {
                 if (mcts[i] == parsedFile!!.machineType) {
-                    spinnerArch!!.setSelection(i)
+                    mainSpinnerArch.setSelection(i)
                 }
             }
         }

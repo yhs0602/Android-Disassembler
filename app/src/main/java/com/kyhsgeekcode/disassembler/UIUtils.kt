@@ -39,7 +39,7 @@ fun ShowEditDialog(a: Activity?, title: String?, message: String?, edittext: Edi
 }
 
 //The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
-fun ShowSelDialog(a: Activity?, ListItems: List<String>, title: String?, listener: DialogInterface.OnClickListener?) {
+fun showSelDialog(a: Activity?, ListItems: List<String>, title: String?, listener: DialogInterface.OnClickListener?) {
     val items: Array<String> = ListItems.toTypedArray()
     val builder = AlertDialog.Builder(a)
     builder.setTitle(title)

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.kyhsgeekcode.disassembler.UIUtilsKt.ShowEditDialog;
-import static com.kyhsgeekcode.disassembler.UIUtilsKt.ShowSelDialog;
+import static com.kyhsgeekcode.disassembler.UIUtilsKt.showSelDialog;
 
 public class DisasmClickListener implements AdapterView.OnItemClickListener {
     MainActivity activity;
@@ -32,7 +32,7 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener {
             menus.add(JUMP);
         }
         if (!menus.isEmpty()) {
-            ShowSelDialog(activity, menus, lvi.toSimpleString() + " at " + lvi.address, new DialogInterface.OnClickListener() {
+            showSelDialog(activity, menus, lvi.toSimpleString() + " at " + lvi.address, new DialogInterface.OnClickListener() {
 
 
                 @Override
