@@ -157,4 +157,3 @@ fun getEntryName(source: File, file: File): String {
     val path = file.canonicalPath
     return path.substring(index)
 }
-

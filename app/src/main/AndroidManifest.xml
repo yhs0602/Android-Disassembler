@@ -17,6 +17,7 @@
         tools:remove="android:maxSdkVersion" />
 
     <application
+        android:name=".EnableMultidex"
         android:allowBackup="true"
         android:extractNativeLibs="false"
         android:icon="@drawable/ic_launcher"

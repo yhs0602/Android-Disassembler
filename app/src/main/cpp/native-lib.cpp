@@ -466,7 +466,7 @@ Java_com_kyhsgeekcode_disassembler_ELFUtil_Demangle(JNIEnv *env, jclass thiz, js
     return ret;
 }
 
-#include"plthook/plthook.h"
+//#include"plthook/plthook.h"
 JNIEXPORT jobject JNICALL
 Java_com_kyhsgeekcode_disassembler_ELFUtil_ParsePLT(JNIEnv *env, jclass thiz, jstring filepath) {
     const char *filename = env->GetStringUTFChars(filepath, NULL);
@@ -486,15 +486,15 @@ Java_com_kyhsgeekcode_disassembler_ELFUtil_ParsePLT(JNIEnv *env, jclass thiz, js
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "arraylistaddmethod"
     jmethodID java_util_List_add = env->GetMethodID(listcls, "add", "(Ljava/lang/Object;)Z");
     jobject listobj = env->NewObject(listcls, ctorList);
-    plthook_t *plthook;
+    ///plthook_t *plthook;
     unsigned int pos = 0; /* This must be initialized with zero. */
     const char *name;
     void **addr;
-    if (plthook_open(&plthook, filename) != 0) {
-        __android_log_print(ANDROID_LOG_ERROR, "Disassembler", "plthook_open error: %s\n",
-                            plthook_error());
-        return NULL;
-    }
+    //if (plthook_open(&plthook, filename) != 0) {
+    //    __android_log_print(ANDROID_LOG_ERROR, "Disassembler", "plthook_open error: %s\n",
+    //                       plthook_error());
+    return NULL;
+    //}
     jfieldID fidName = env->GetFieldID(pltcls, "name", "Ljava/lang/String;");
     if (fidName == NULL) {
         return NULL; /* failed to find the field */
@@ -507,18 +507,18 @@ Java_com_kyhsgeekcode_disassembler_ELFUtil_ParsePLT(JNIEnv *env, jclass thiz, js
     if (fidValue == NULL) {
         return NULL; /* failed to find the field */
     }
-    while (plthook_enum(plthook, &pos, &name, &addr) == 0) {
-        jobject plt = env->NewObject(pltcls, ctor);
-        jstring jname = env->NewStringUTF(name);
-        env->SetObjectField(plt, fidName, jname);
-        env->DeleteLocalRef(jname);
-        env->SetLongField(plt, fidAddress, (long) addr);
-        env->SetLongField(plt, fidValue, *((unsigned long *) addr));
-        env->CallBooleanMethod(listobj, java_util_List_add, plt);
-        env->DeleteLocalRef(plt);
-        __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "%p(%p) %s\n", addr, *addr, name);
-    }
-    plthook_close(plthook);
+    // while (plthook_enum(plthook, &pos, &name, &addr) == 0) {
+    jobject plt = env->NewObject(pltcls, ctor);
+    jstring jname = env->NewStringUTF(name);
+    env->SetObjectField(plt, fidName, jname);
+    env->DeleteLocalRef(jname);
+    env->SetLongField(plt, fidAddress, (long) addr);
+    env->SetLongField(plt, fidValue, *((unsigned long *) addr));
+    env->CallBooleanMethod(listobj, java_util_List_add, plt);
+    env->DeleteLocalRef(plt);
+    __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "%p(%p) %s\n", addr, *addr, name);
+    //}
+    //plthook_close(plthook);
     env->ReleaseStringUTFChars(filepath, filename);
 
     return listobj;
@@ -767,6 +767,8 @@ void loadSymbols(const elfio &reader, JNIEnv *env, jobject thiz) {
                     env->SetShortField(sym, fieldSection, symbol_disassembler.section);
                     env->SetShortField(sym, fieldOther, symbol_disassembler.other);
                     env->CallVoidMethod(thiz, addSymbol, sym);
+                    env->DeleteLocalRef(sym);
+                    env->DeleteLocalRef(jname);
 //                    disassemblerSymbolsList.push_back(symbol_disassembler);
                 }
             }

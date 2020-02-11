@@ -18,7 +18,7 @@ add_library( # Specifies the name of the library.
 
         # Provides a relative path to your source file(s).
         src/main/cpp/native-lib.cpp
-        src/main/cpp/plthook/plthook_elf.c
+        #src/main/cpp/plthook/plthook_elf.c
         #src/main/cpp/plthook/plthook_osx.c
         #src/main/cpp/plthook/plthook_win32.c
 

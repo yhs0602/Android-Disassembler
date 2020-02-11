@@ -430,11 +430,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             setupListView()
             disasmManager!!.setData(adapter!!.itemList(), adapter!!.getAddress())
             // find the retained fragment on activity restarts
-            val fm = fragmentManager
+            val fm = supportFragmentManager
             dataFragment = fm.findFragmentByTag("data") as RetainedFragment?
             if (dataFragment == null) { // add the fragment
                 dataFragment = RetainedFragment()
-                fm.beginTransaction().add(dataFragment, "data").commit()
+                fm.beginTransaction().add(dataFragment!!, "data").commit()
                 // load the data from the web
                 dataFragment!!.disasmManager = disasmManager
             } else { //It should be handled
@@ -486,9 +486,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             //https://www.androidpub.com/1351553
             val intent = intent
             if (intent.action == Intent.ACTION_VIEW) { // User opened this app from file browser
-                val filePath = intent.data.path
+                val filePath = intent.data?.path
                 Log.d(TAG, "intent path=$filePath")
-                var toks: Array<String?> = filePath.split(Pattern.quote(".")).toTypedArray()
+                var toks: Array<String?> = filePath!!.split(Pattern.quote("."))!!.toTypedArray()
                 val last = toks.size - 1
                 val ext: String?
                 if (last >= 1) {
@@ -500,10 +500,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         toks = pname.split(Pattern.quote(".")).toTypedArray()
                         projectManager!!.Open(toks[toks.size - 2])
                     } else { //User opened pther files
-                        onChoosePath(intent.data)
+                        onChoosePath(intent!!.data!!)
                     }
                 } else { //User opened other files
-                    onChoosePath(intent.data)
+                    onChoosePath(intent!!.data!!)
                 }
             } else { // android.intent.action.MAIN
                 val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
@@ -811,7 +811,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         return true
                     }
 
-                    override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect) {
+                    override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
                         super.onFocusChanged(focused, direction, previouslyFocusedRect)
                         if (focused && adapter != null) {
                             performFiltering(text, 0)
@@ -841,7 +841,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     }
                 },
                         getString(R.string.cancel) /*R.string.symbol*/, null)
-                ab.window.setGravity(Gravity.TOP)
+                ab.window?.setGravity(Gravity.TOP)
             }
             R.id.find -> {
             }
@@ -933,7 +933,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     fun setClipBoard(s: String?) {
         val cb = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("Android Disassembler", s)
-        cb.primaryClip = clip
+        cb.setPrimaryClip(clip)
         //Toast.makeText(this,"Copied to clipboard:"+s,Toast.LENGTH_SHORT).show();
     }
 
@@ -1491,7 +1491,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         val tmpfile = File(filesDir, "tmp.so")
 
         try {
-            val inputStream = contentResolver.openInputStream(uri)
+            val inputStream = contentResolver.openInputStream(uri) ?: return
             if(inputStream.available() == 0) {
                 handleEmptyFile(uri.toString())
                 return
@@ -1815,7 +1815,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 
     private fun getRealPathFromURI(uri: Uri): String {
         var filePath: String
-        filePath = uri.path
+        filePath = uri.path?:return ""
         //경로에 /storage가 들어가면 real file path로 판단
         if (filePath.startsWith("/storage")) return filePath
         val wholeID = DocumentsContract.getDocumentId(uri)
@@ -1827,7 +1827,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         //파일의 이름을 통해 where 조건식을 만듭니다.
         val sel = MediaStore.Files.FileColumns.DATA + " LIKE '%" + id + "%'"
         //External storage에 있는 파일의 DB를 접근하는 방법 입니다.
-        val cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), column, sel, null, null)
+        val cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), column, sel, null, null)?:return ""
         //SQL문으로 표현하면 아래와 같이 되겠죠????
 //SELECT _dtat FROM files WHERE _data LIKE '%selected file name%'
         val columnIndex = cursor.getColumnIndex(column[0])

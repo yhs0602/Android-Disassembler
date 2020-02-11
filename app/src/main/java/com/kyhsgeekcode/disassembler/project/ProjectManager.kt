@@ -32,7 +32,7 @@ object ProjectManager {
     val projectModels: MutableMap<String, ProjectModel> = HashMap()
     val projectModelToPath: MutableMap<ProjectModel, String> = HashMap()
     val projectPaths: MutableSet<String> = HashSet()
-    val rootdir = appCtx.getExternalFilesDir(null).resolve("projects/")
+    val rootdir = appCtx.getExternalFilesDir(null)!!.resolve("projects/")
 
     init {
         val sharedPreference = appCtx.getSharedPreferences("ProjectManager", Context.MODE_PRIVATE)
@@ -170,7 +170,7 @@ object ProjectManager {
         if (!infoFile.isAccessible())
             throw NotProjectException(source.absolutePath)
         val projectModel = openProject(infoFile.absolutePath)
-        val projectDir = appCtx.getExternalFilesDir(null).resolve(projectModel.name.toValidFileName())
+        val projectDir = rootdir.resolve(projectModel.name.toValidFileName())
         projectDir.mkdirs()
         FileUtils.moveDirectory(dest, projectDir)
         return projectModel

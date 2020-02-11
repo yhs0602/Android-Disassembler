@@ -4,19 +4,18 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     defaultConfig {
         applicationId "com.kyhsgeekcode.disassembler"
-        minSdkVersion 23
-        targetSdkVersion 28
+        minSdkVersion 19
+        targetSdkVersion 29
         versionCode 9
         versionName "1.5.0"
-
-        //multiDexEnabled true
+        multiDexEnabled true
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -24,6 +23,7 @@ android {
             }
         }
     }
+
     /*packagingOptions {
         pickFirst 'lib/armeabi-v7a/libhello-jni.so'
         pickFirst 'lib/x86/libhello-jni.so'
@@ -72,6 +72,7 @@ dependencies {
     implementation 'org.apache.commons:commons-compress:1.19'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version" // or "kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0" // JVM dependency
+    implementation "androidx.multidex:multidex:2.0.1"
 
 //    implementation 'mnemonik:mnemonik:2.0.2'
 }
