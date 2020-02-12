@@ -1,12 +1,14 @@
-[![Play Store Info](https://img.shields.io/badge/Play_Store-v1.4.7.1-36B0C1.svg?style=flat-square)](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler)
+[![Play Store Info](https://img.shields.io/badge/Play_Store-v1.4.7.1-36B0C1.svg?style=flat-square)](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler)![Android CI](https://github.com/KYHSGeekCode/Android-Disassembler/workflows/Android%20CI/badge.svg)
+
 [<img src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge-border.png" width="200" alt="Get Android Disassembler on Google Play" />](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler "Get Android Disassembler on Google Play")
+
 # Android-Disassembler - Analyze your malicious app on your phone
 
 Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
 
-# Version 1.6.0 [pre-release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 1.6.2 [pre-release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
-## What's new : File navigation drawer in the left, support dex, il assemblies, auto-detect .net dlls
+## What's new : Support Kitkat
 # Features
 - Shows details of elf files.
 - Shows symbol table(functions or objects' ,... names) of elf files.
