@@ -52,7 +52,7 @@ find_library( # Defines the name of the path variable that stores the
 #        # Provides the path to the library you want to import.
 #        C:/Users/82102/AndroidStudioProjects/Android-Disassembler/capstone/${ANDROID_ABI}/libcapstone. )
 
-target_link_libraries(native-lib C:/Users/82102/AndroidStudioProjects/Android-Disassembler/capstone/${ANDROID_ABI}/libcapstone.a ${log-lib}) #app-glue
+target_link_libraries(native-lib ${CMAKE_CURRENT_SOURCE_DIR}/../capstone/${ANDROID_ABI}/libcapstone.a ${log-lib}) #app-glue
 
 
 include_directories(capstone/include/)
