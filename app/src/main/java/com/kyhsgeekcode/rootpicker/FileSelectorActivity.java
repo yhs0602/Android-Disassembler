@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -49,7 +50,7 @@ public class FileSelectorActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fileaselactivity);
         mPath = findViewById(R.id.path);
-        String[] abis = android.os.Build.SUPPORTED_ABIS;
+        String[] abis = Build.VERSION.SDK_INT<Build.VERSION_CODES.LOLLIPOP? new String[]{"x86","armeabi-v7a"}: android.os.Build.SUPPORTED_ABIS;
         String binary = null;
         AssetManager asm = getAssets();
         for (String abi : abis) {

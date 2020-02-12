@@ -183,7 +183,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     var parsedFile //Parsed file info
             : AbstractFile? = null
     /////////////////////////////////////////////////Settings/////////////////////////////////////////////////////
-    var settingPath: SharedPreferences? = null
+//    var settingPath: SharedPreferences? = null
     /////////////////////////////////////////////////Choose Column////////////////////////////////////
     var isShowAddress = true
     var isShowLabel = true
@@ -1414,11 +1414,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     private fun showAPKChooser() {
         GetAPKAsyncTask(this).execute()
     }
-
+    val PATHPREF = "path"
     private fun showFileChooser() {
         requestAppPermissions(this)
         //SharedPreferences sharedPreferences = null;
-        val settingPath1 = getSharedPreferences("path", Context.MODE_PRIVATE)
+        val settingPath1 = getSharedPreferences(PATHPREF, Context.MODE_PRIVATE)
         var prepath = settingPath1.getString(DiskUtil.SC_PREFERENCE_KEY, "/storage/emulated/0/")
         var tmp = File(prepath)
         if (tmp.isFile) {
@@ -1469,12 +1469,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SELECT_FILE) {
+            Log.d(TAG,"OnActivityResult1")
             if (resultCode == Activity.RESULT_OK) {
                 val path = data!!.getStringExtra("path")
-                val edi = settingPath!!.edit()
+                Log.d(TAG,"OnActivityResult2")
+                val settingPath = getSharedPreferences(PATHPREF, MODE_PRIVATE)
+                val edi = settingPath.edit()
+                Log.d(TAG,"OnActivityResult3")
                 edi.putString(DiskUtil.SC_PREFERENCE_KEY, path)
                 edi.apply()
                 disableEnableControls(false, llmainLinearLayoutSetupRaw)
+                Log.d(TAG,"OnActivityResult4")
                 onChoosePath(path)
             }
         } else if (requestCode == REQUEST_SELECT_FILE_NEW) {
@@ -1587,7 +1592,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 //OnOpenStream(fsize, path, index, file);
         } catch (e: IOException) {
             if (e.message!!.contains("Permission denied")) {
-                val tmpfile = File(filesDir, "tmp.so")
+                val tmpfile = File(getExternalFilesDir(null), "tmp.so")
                 if (RootTools.isRootAvailable()) {
                     while (!RootTools.isAccessGiven()) {
                         Toast.makeText(this, "This file requires root to read.", Toast.LENGTH_SHORT).show()
@@ -1602,6 +1607,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     } catch (f: IOException) {
                         Log.e(TAG, "", f)
                         //?
+                        alertError(R.string.fail_readfile, e)
+                        return
                     }
                 } else {
                     Toast.makeText(this, "This file requires root permission to read.", Toast.LENGTH_SHORT).show()
@@ -1611,8 +1618,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             } else {
                 Log.e(TAG, "", e)
                 //Toast.makeText(this,"Not needed",Toast.LENGTH_SHORT).show();
+                alertError(R.string.fail_readfile, e)
             }
-            alertError(R.string.fail_readfile, e)
+
             //Log.e(TAG, "", e);
 //AlertError("Failed to open and parse the file",e);
 //Toast.makeText(this, Log.getStackTraceString(e), 30).show();
