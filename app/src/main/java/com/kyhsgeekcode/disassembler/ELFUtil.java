@@ -39,7 +39,6 @@ public class ELFUtil extends AbstractFile {
     boolean bExecutable;
     private String TAG = "Disassembler elfutil";
 
-
     public ELFUtil(File file, byte[] filec) throws IOException {
         elf = new Elf(file);
         setPath(file.getPath());
@@ -59,10 +58,12 @@ public class ELFUtil extends AbstractFile {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(super.toString());
+        sb.append(System.lineSeparator());
         importSymbols = getImportSymbols();
         for (PLT plt : importSymbols) {
             sb.append(plt).append(System.lineSeparator());
         }
+
         sb.append(elf.toString())
                 //.append(Arrays.toString(symstrings))
                 .append("\n").append(info);
@@ -93,14 +94,12 @@ public class ELFUtil extends AbstractFile {
         machineType = elf.header.machineType;
         Header header = elf.header;
         //assertNotNull( header );
-
         if (header.entryPoint == 0) {
             //Log.i(TAG, "file " + file.getName() + "doesnt have entry point. currently set to 0x30");
             //entryPoint = 0;
         } else {
             entryPoint = header.entryPoint;
         }
-
         //Analyze ExportAddressTable(DynSym)
         if (elf.dynamicTable != null) {
             StringBuilder sb = new StringBuilder();
@@ -120,7 +119,6 @@ public class ELFUtil extends AbstractFile {
 			{
 				dynsymbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.DYNSYM));
 				ElfClass elfClass=elf.header.elfClass;
-
 				if (elfClass.equals(ElfClass.CLASS_32))
 				{
 					while (dynsymbuffer.hasRemaining())
@@ -183,12 +181,10 @@ public class ELFUtil extends AbstractFile {
 				Log.e(TAG, "", e);
 			}*/
             sb.append(System.lineSeparator()).append("syms;").append(System.lineSeparator());
-
             if (symbols == null)
                 symbols = new ArrayList<>();
             //if (dynsyms != null)
             //symbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
-
 //            //First, Analyze Symbol table
 //            ParseSymtab(sb, strtable);
 //            // Second, Analyze Rela table
@@ -208,20 +204,15 @@ public class ELFUtil extends AbstractFile {
                     return 0;
                 }
             });
-
-            for(Symbol sym: symbols) {
+            for (Symbol sym : symbols) {
                 sb.append(sym.toString());
             }
 			/*https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-35166
 			 Symbol Values
 			 Symbol table entries for different object file types have slightly different interpretations for the st_value member.
-
 			 In relocatable files, st_value holds alignment constraints for a symbol whose section index is SHN_COMMON.
-
 			 In relocatable files, st_value holds a section offset for a defined symbol. st_value is an offset from the beginning of the section that st_shndx identifies.
-
 			 In executable and shared object files, st_value holds a virtual address. To make these files' symbols more useful for the runtime linker, the section offset (file interpretation) gives way to a virtual address (memory interpretation) for which the section number is irrelevant.
-
 			 Although the symbol table values have similar meanings for different object files, the data allow efficient access by the appropriate programs.
 			 */
 			/*https://github.com/torvalds/linux/blob/master/include/uapi/linux/elf.h
@@ -231,7 +222,6 @@ public class ELFUtil extends AbstractFile {
 			 typedef __u32	Elf32_Off;
 			 typedef __s32	Elf32_Sword;
 			 typedef __u32	Elf32_Word;
-
 			 /* 64-bit ELF base types.
 			 typedef __u64	Elf64_Addr;
 			 typedef __u16	Elf64_Half;
@@ -241,7 +231,6 @@ public class ELFUtil extends AbstractFile {
 			 typedef __u32	Elf64_Word;
 			 typedef __u64	Elf64_Xword;
 			 typedef __s64	Elf64_Sxword;
-
 			 */
 			/*https://docs.oracle.com/cd/E19683-01/816-1386/chapter6-79797/index.html
 			 typedef struct {
@@ -252,7 +241,6 @@ public class ELFUtil extends AbstractFile {
 			 unsigned char   st_other;
 			 Elf32_Half      st_shndx;
 			 } Elf32_Sym; size 16
-
 			 typedef struct {
 			 Elf64_Word      st_name;
 			 unsigned char   st_info;
@@ -262,23 +250,19 @@ public class ELFUtil extends AbstractFile {
 			 Elf64_Xword     st_size;
 			 } Elf64_Sym; size 24
 			 The elements of this structure are:
-
 			 st_name
 			 An index into the object file's symbol string table, which holds the character representations of the symbol names.
 			 If the value is nonzero, it represents a string table index that gives the symbol name.
 			 Otherwise, the symbol table entry has no name.
-
 			 st_value
 			 The value of the associated symbol. Depending on the context, this can be an absolute value, an address, and so forth. See "Symbol Values".
-
 			 st_size
 			 Many symbols have associated sizes. For example, a data object's size is the number of bytes contained in the object. This member holds 0 if the symbol has no size or an unknown size.
-
 			 */
-            ByteBuffer relBuf = elf.getSection(elf.getSectionHeaderByType(SectionType.REL));
-            ElfClass elfClass = elf.header.elfClass;
-            if (elfClass.equals(ElfClass.CLASS_32)) {
-                while (relBuf.remaining() > 0) {
+//            ByteBuffer relBuf = elf.getSection(elf.getSectionHeaderByType(SectionType.REL));
+//            ElfClass elfClass = elf.header.elfClass;
+//            if (elfClass.equals(ElfClass.CLASS_32)) {
+//                while (relBuf.remaining() > 0) {
 					/*t y p e d e f s t r u c t {
 						E l f 3 2 _ A d d r r _ o f f s e t ;
 						E l f 3 2 _ W o r d r _ i n f o ;
@@ -288,17 +272,15 @@ public class ELFUtil extends AbstractFile {
 							E l f 3 2 _ W o r d  r _ i n f o ;
 							E l f 3 2 _ S w o r d  r _ a d d e n d ;
 						} E l f 3 2 _ R e l a;
-
 					 # d e f i n e E L F 3 2 _ R _ S Y M ( i ) ( ( i ) > > 8 )
 					 # d e f i n e E L F 3 2 _ R _ T Y P E ( i ) ( ( u n s i g n e d c h a r ) ( i ) )
 					 # d e f i n e E L F 3 2 _ R _ I N F O ( s , t ) ( ( ( s ) < < 8 ) + ( u n s i g n e d c h a r ) ( t ) )
 					*/
-                    int offset = relBuf.getInt();
-                    int info = relBuf.getInt();
-                    int symidx = info >> 8;
-                    int type = info & 0x7F;
-
-                    Log.v(TAG, "offset=" + Integer.toHexString(offset) + "symidx=" + symidx + "&type=" + type + "&info=" + info);
+//                    int offset = relBuf.getInt();
+//                    int info = relBuf.getInt();
+//                    int symidx = info >> 8;
+//                    int type = info & 0x7F;
+//                    Log.v(TAG, "offset=" + Integer.toHexString(offset) + "symidx=" + symidx + "&type=" + type + "&info=" + info);
 					/*
 					Intel
 					 Name Value  Field  Calculation
@@ -316,7 +298,6 @@ public class ELFUtil extends AbstractFile {
 					 10 word32 GOT + A - P
 					 _ __________________________________________________
 					 Tool Interface Standards (TIS)  Portable  Formats Specification, Version 1.1
-
 					 ARM
 					 Code  Name Type Class
 					 0 R_ARM_NONE Static Operation Miscellaneous
@@ -363,7 +344,6 @@ public class ELFUtil extends AbstractFile {
 					 41 R_ARM_TARGET2 Static Miscellaneous
 					 42 R_ARM_PREL31 Static Data ((S + A) | T) – P
 					 ARM  IHI  0044F Copyright  ©  2003-2009,  2012,  2014-2015  ARM  Limited.  All  rights  reserved. Page  26  of  48
-
 					 Table  4-18,  Dynamic  relocations
 					 Code  Relocation  Comment
 					 17 (S  ≠  0) R_ARM_TLS_DTPMOD32 Resolves  to the module number  of  the module  defining the specified TLS  symbol,  S. (S  =  0)  Resolves  to the module number  of  the current  module (ie.  the module containing this  relocation).
@@ -377,12 +357,12 @@ public class ELFUtil extends AbstractFile {
 					 23 R_ARM_RELATIVE (S  ≠  0)  B(S)  resolves  to  the  difference between  the  address  at  which the segment  defining the symbol  S  was  loaded  and the address  at  which it  was linked. l
 								       (S =  0)  B(S)  resolves  to  the  difference between  the  address  at  which the segment  being relocated  was  loaded  and the address  at  which it  was  linked
 					*/
-                }
-            }
+//                }
+//            }
             //Now prepare IAT(PLT/GOT)
             //get .got
-            for (SectionHeader hdr : sections) {
-                if (".plt".equalsIgnoreCase(hdr.getName())) {
+//            for (SectionHeader hdr : sections) {
+//                if (".plt".equalsIgnoreCase(hdr.getName())) {
                     //plt is code
 //					 000173ec __android_log_print@plt:
 //					 173ec:       e28fc600        add     ip, pc, #0, 12  ; ip!=pc?
@@ -393,13 +373,11 @@ public class ELFUtil extends AbstractFile {
 //					 173fc:       e28cca11        add     ip, ip, #69632
 //					 17400:       e5bcf9ec        ldr     pc, [ip, #2540]!
 //					 ...
-                    ByteBuffer buf = elf.getSection(hdr);
-
-                }
-            }
-            dynsymbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.PROGBITS));
+//                    ByteBuffer buf = elf.getSection(hdr);
+//                }
+//            }
+//            dynsymbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.PROGBITS));
             // importSymbols=ParsePLT(path);
-
             info = sb.toString();
             //Log.i(TAG, "info=" + info);
         }
@@ -420,11 +398,11 @@ public class ELFUtil extends AbstractFile {
             }
         }
     }
+
     //private long codeOffset=0L;
     //private long codeLimit=0L;
     //private long codeVirtualAddress=0L;
     //String[] symstrings;
-
     private void ParseRela(ArrayList<Rela> relas) throws IOException {
         SectionHeader relaSec = elf.getSectionHeaderByType(SectionType.RELA);
         if (relaSec != null) {
@@ -520,7 +498,6 @@ public class ELFUtil extends AbstractFile {
         symbols.add(symbol);
     }
 }
-
 //	public static int getWord(byte a, byte b, byte c, byte d)
 //	{
 //		return ((int)a << 24) & ((int)b << 16) & ((int)c << 8) & d;
@@ -544,7 +521,6 @@ public class ELFUtil extends AbstractFile {
 	 counter++;
 	 }
 	 }
-
 	 ParseData();
 	 }
 	 public ELFUtil(byte[] bytes) throws Exception

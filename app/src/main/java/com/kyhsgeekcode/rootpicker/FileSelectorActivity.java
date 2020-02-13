@@ -85,7 +85,7 @@ public class FileSelectorActivity extends ListActivity {
             fos.close();
             lspath = dest.getAbsolutePath();
             try {
-                ProcessBuilder builder = new ProcessBuilder("su");
+                ProcessBuilder builder = new ProcessBuilder("sh");
                 builder.redirectErrorStream(true);
                 java.lang.Process shProcess = builder.start();
                 DataOutputStream os = new DataOutputStream(shProcess.getOutputStream());

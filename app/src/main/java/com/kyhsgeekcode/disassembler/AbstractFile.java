@@ -2,6 +2,8 @@ package com.kyhsgeekcode.disassembler;
 
 //represents a raw file and interface
 
+import android.util.Log;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,6 +58,7 @@ public abstract class AbstractFile implements Closeable {
                 return new ELFUtil(file, content);
             } catch (Exception e) {
                 //not an elf file. try PE parser
+                Log.d(TAG, "Fail elfutil", e);
                 try {
                     return new PEFile(file, content);
                 } catch (NotThisFormatException f) {

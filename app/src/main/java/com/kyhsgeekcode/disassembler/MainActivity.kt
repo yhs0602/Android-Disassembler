@@ -1868,23 +1868,25 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     object Utils {
         @JvmStatic
         @Throws(IOException::class)
-        fun getBytes(`is`: InputStream): ByteArray {
-            var len: Int
-            var size = 1024
-            var buf: ByteArray
-            if (`is` is ByteArrayInputStream) {
-                size = `is`.available()
-                buf = ByteArray(size)
-                len = `is`.read(buf, 0, size)
-            } else {
-                val bos = ByteArrayOutputStream()
-                buf = ByteArray(size)
-                while (`is`.read(buf, 0, size).also { len = it } != -1) bos.write(buf, 0, len)
-                buf = bos.toByteArray()
-            }
-            `is`.close()
-            return buf
+        fun getBytes(inputStream: InputStream): ByteArray {
+            return inputStream.use{ it.readBytes()}
         }
+//            var len: Int
+//            var size = 1024
+//            var buf: ByteArray
+//            if (inputStream is ByteArrayInputStream) {
+//                size = inputStream.available()
+//                buf = ByteArray(size)
+//                len = inputStream.read(buf, 0, size)
+//            } else {
+//                val bos = ByteArrayOutputStream()
+//                buf = ByteArray(size)
+//                while (inputStream.read(buf, 0, size).also { len = it } != -1) bos.write(buf, 0, len)
+//                buf = bos.toByteArray()
+//            }
+//            inputStream.close()
+//            return buf
+//        }
     }
 
 //    internal inner class SaveDBAsync : AsyncTask<DatabaseHelper?, Int?, Void?>() {
