@@ -73,6 +73,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version" // or "kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0" // JVM dependency
     implementation "androidx.multidex:multidex:2.0.1"
+    implementation 'com.google.android.material:material:1.1.0'
 
 //    implementation 'mnemonik:mnemonik:2.0.2'
 }
