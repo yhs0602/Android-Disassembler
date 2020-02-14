@@ -1,4 +1,4 @@
-[![Play Store Info](https://img.shields.io/badge/Play_Store-v1.4.7.1-36B0C1.svg?style=flat-square)](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler)![Android CI](https://github.com/KYHSGeekCode/Android-Disassembler/workflows/Android%20CI/badge.svg)
+[![Play Store Info](https://img.shields.io/badge/Play_Store-v1.4.7.1-36B0C1.svg?style=flat-square)](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler)![Android CI](https://github.com/KYHSGeekCode/Android-Disassembler/workflows/Android%20CI/badge.svg)[![CodeFactor](https://www.codefactor.io/repository/github/kyhsgeekcode/android-disassembler/badge/master)](https://www.codefactor.io/repository/github/kyhsgeekcode/android-disassembler/overview/master)
 
 [<img src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge-border.png" width="200" alt="Get Android Disassembler on Google Play" />](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler "Get Android Disassembler on Google Play")
 
