@@ -70,12 +70,14 @@ dependencies {
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
     implementation("com.louiscad.splitties:splitties-appctx:$splitties_version")
     implementation 'org.apache.commons:commons-compress:1.20'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version" // or "kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    // or "kotlin-stdlib-jdk8"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.14.0" // JVM dependency
     implementation "androidx.multidex:multidex:2.0.1"
     implementation 'com.google.android.material:material:1.1.0'
 
 //    implementation 'mnemonik:mnemonik:2.0.2'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }
 repositories {
     mavenCentral()

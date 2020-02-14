@@ -1,5 +1,6 @@
 package com.kyhsgeekcode
 
+import android.content.ClipData
 import android.util.Log
 import at.pollaknet.api.facile.Facile
 import org.apache.commons.compress.archivers.ArchiveEntry
@@ -8,6 +9,7 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.utils.IOUtils
 import org.apache.commons.io.FileUtils
+import splitties.systemservices.clipboardManager
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
@@ -156,4 +158,16 @@ fun getEntryName(source: File, file: File): String {
     val index: Int = source.absolutePath.length + 1
     val path = file.canonicalPath
     return path.substring(index)
+}
+
+
+//https://stackoverflow.com/a/6425744/8614565
+fun deleteRecursive(fileOrDirectory: File) {
+    if (fileOrDirectory.isDirectory) for (child in fileOrDirectory.listFiles()) deleteRecursive(child)
+    fileOrDirectory.delete()
+}
+
+fun setClipBoard(s: String?) {
+    val clip = ClipData.newPlainText("Android Disassembler", s)
+    clipboardManager.setPrimaryClip(clip)
 }

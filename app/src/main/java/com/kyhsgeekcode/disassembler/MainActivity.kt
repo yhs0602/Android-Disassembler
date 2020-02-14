@@ -28,6 +28,7 @@ import capstone.Capstone
 import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
 import com.github.chrisbanes.photoview.PhotoView
+import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.FileTabFactory.FileTabContentFactory
 import com.kyhsgeekcode.disassembler.FileTabFactory.ImageFileTabFactory
@@ -45,6 +46,7 @@ import pl.openrnd.multilevellistview.ItemInfo
 import pl.openrnd.multilevellistview.MultiLevelListView
 import pl.openrnd.multilevellistview.OnItemClickListener
 import splitties.init.appCtx
+import splitties.systemservices.clipboardManager
 import java.io.*
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
@@ -57,39 +59,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     companion object {
         const val SETTINGKEY = "setting"
         const val REQUEST_WRITE_STORAGE_REQUEST_CODE = 1
-        const val CS_ARCH_ARM = 0
-        const val CS_ARCH_ARM64 = 1
-        const val CS_ARCH_MIPS = 2
-        const val CS_ARCH_X86 = 3
-        const val CS_ARCH_PPC = 4
-        const val CS_ARCH_SPARC = 5
-        const val CS_ARCH_SYSZ = 6
-        const val CS_ARCH_XCORE = 7
-        const val CS_ARCH_MAX = 8
-        const val CS_ARCH_ALL = 0xFFFF // query id for cs_support()
-        const val CS_MODE_LITTLE_ENDIAN = 0 // little-endian mode (default mode)
-        const val CS_MODE_ARM = 0 // 32-bit ARM
-        const val CS_MODE_16 = 1 shl 1 // 16-bit mode (X86)
-        const val CS_MODE_32 = 1 shl 2 // 32-bit mode (X86)
-        const val CS_MODE_64 = 1 shl 3 // 64-bit mode (X86; PPC)
-        const val CS_MODE_THUMB = 1 shl 4 // ARM's Thumb mode; including Thumb-2
-        const val CS_MODE_MCLASS = 1 shl 5 // ARM's Cortex-M series
-        const val CS_MODE_V8 = 1 shl 6 // ARMv8 A32 encodings for ARM
-        const val CS_MODE_MICRO = 1 shl 4 // MicroMips mode (MIPS)
-        const val CS_MODE_MIPS3 = 1 shl 5 // Mips III ISA
-        const val CS_MODE_MIPS32R6 = 1 shl 6 // Mips32r6 ISA
-        const val CS_MODE_MIPSGP64 = 1 shl 7 // General Purpose Registers are 64-bit wide (MIPS)
-        const val CS_MODE_V9 = 1 shl 4 // SparcV9 mode (Sparc)
-        const val CS_MODE_BIG_ENDIAN = 1 shl 31 // big-endian mode
-        const val CS_MODE_MIPS32 = CS_MODE_32 // Mips32 ISA (Mips)
-        const val CS_MODE_MIPS64 = CS_MODE_64 // Mips64 ISA (Mips)
+
         private const val TAB_EXPORT = 3
         private const val TAB_DISASM = 4
         private const val TAB_LOG = 5
         private const val TAB_STRINGS = 6
         private const val TAB_ANALYSIS = 7
         private const val REQUEST_SELECT_FILE = 123
-        private const val REQUEST_SELECT_FILE_NEW = 124
+        const val REQUEST_SELECT_FILE_NEW = 124
         private const val BULK_SIZE = 1024
         //https://medium.com/@gurpreetsk/memory-management-on-android-using-ontrimmemory-f500d364bc1a
         private const val LASTPROJKEY = "lastProject"
@@ -104,30 +81,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         var context: Context? = null
 
         ////////////////////////////////////////////Data Conversion//////////////////////////////////
-        @JvmStatic
-        fun getArchitecture(type: MachineType): IntArray {
-            when (type) {
-                MachineType.NONE -> return intArrayOf(CS_ARCH_ALL)
-                MachineType.M32, MachineType.SPARC -> return intArrayOf(CS_ARCH_SPARC)
-                MachineType.i386 -> return intArrayOf(CS_ARCH_X86, CS_MODE_32)
-                MachineType.m68K, MachineType.m88K, MachineType.i860 -> return intArrayOf(CS_ARCH_X86, CS_MODE_32)
-                MachineType.MIPS -> return intArrayOf(CS_ARCH_MIPS)
-                MachineType.S370, MachineType.MIPS_RS3_LE -> return intArrayOf(CS_ARCH_MIPS)
-                MachineType.PARISC, MachineType.VPP500, MachineType.SPARC32PLUS, MachineType.i960 -> return intArrayOf(CS_ARCH_X86, CS_MODE_32)
-                MachineType.PPC -> return intArrayOf(CS_ARCH_PPC)
-                MachineType.PPC64 -> return intArrayOf(CS_ARCH_PPC)
-                MachineType.S390, MachineType.V800, MachineType.FR20, MachineType.RH32, MachineType.RCE, MachineType.ARM -> return intArrayOf(CS_ARCH_ARM)
-                MachineType.FAKE_ALPHA, MachineType.SH, MachineType.SPARCV9 -> return intArrayOf(CS_ARCH_SPARC)
-                MachineType.TRICORE, MachineType.ARC, MachineType.H8_300, MachineType.H8_300H, MachineType.H8S, MachineType.H8_500, MachineType.IA_64 -> return intArrayOf(CS_ARCH_X86)
-                MachineType.MIPS_X -> return intArrayOf(CS_ARCH_MIPS)
-                MachineType.COLDFIRE, MachineType.m68HC12, MachineType.MMA, MachineType.PCP, MachineType.NCPU, MachineType.NDR1, MachineType.STARCORE, MachineType.ME16, MachineType.ST100, MachineType.TINYJ, MachineType.x86_64 -> return intArrayOf(CS_ARCH_X86)
-                MachineType.PDSP, MachineType.FX66, MachineType.ST9PLUS, MachineType.ST7, MachineType.m68HC16, MachineType.m68HC11, MachineType.m68HC08, MachineType.m68HC05, MachineType.SVX, MachineType.ST19, MachineType.VAX, MachineType.CRIS, MachineType.JAVELIN, MachineType.FIREPATH, MachineType.ZSP, MachineType.MMIX, MachineType.HUANY, MachineType.PRISM, MachineType.AVR, MachineType.FR30, MachineType.D10V, MachineType.D30V, MachineType.V850, MachineType.M32R, MachineType.MN10300, MachineType.MN10200, MachineType.PJ, MachineType.OPENRISC, MachineType.ARC_A5, MachineType.XTENSA, MachineType.AARCH64 -> return intArrayOf(CS_ARCH_ARM64)
-                MachineType.TILEPRO, MachineType.MICROBLAZE, MachineType.TILEGX -> {
-                }
-            }
-            Log.e(TAG, "Unsupported machine!!" + type.name)
-            return intArrayOf(CS_ARCH_ALL)
-        }
 
         @JvmStatic
         external fun Open(arch: Int, mode: Int): Int
@@ -269,155 +222,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         super.onCreate(savedInstanceState)
         context = this
         //final Thread.UncaughtExceptionHandler ori=Thread.getDefaultUncaughtExceptionHandler();
-        Thread.setDefaultUncaughtExceptionHandler { p1: Thread?, p2: Throwable ->
-            Toast.makeText(this@MainActivity, Log.getStackTraceString(p2), Toast.LENGTH_SHORT).show()
-            context = null
-            if (p2 is SecurityException) {
-                Toast.makeText(this@MainActivity, R.string.didUgrant, Toast.LENGTH_SHORT).show()
-                val permSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
-                val permEditor = permSetting.edit()
-                permEditor.putBoolean("show", true)
-                permEditor.apply()
-            }
-            requestAppPermissions(this@MainActivity)
-            //String [] accs=getAccounts();
-            SendErrorReport(p2)
-            //	ori.uncaughtException(p1, p2);
-            Log.wtf(TAG, "UncaughtException", p2)
-            finish()
-        }
-        try {
-            if (Init() == -1) {
-                throw RuntimeException()
-            }
-        } catch (e: RuntimeException) {
-            Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), Toast.LENGTH_LONG).show()
-            Process.killProcess(Process.getGidForName(null))
-        }
+        setupUncaughtException()
+        initNative()
         setContentView(R.layout.main)
         //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        selFile.setOnClickListener(this)
-        btnShowdetail.setOnClickListener(this)
-        btnSaveDisasm.setOnClickListener(this)
-        btnSaveDetails.setOnClickListener(this)
-        fileNameText.isFocusable = false
-        fileNameText.isEnabled = false
-        llmainLinearLayoutSetupRaw = findViewById(R.id.mainLinearLayoutSetupRaw)
-        disableEnableControls(false, llmainLinearLayoutSetupRaw)
-//        tvArch = findViewById(R.id.mainTVarch)
-//        btFinishSetup = findViewById(R.id.mainBTFinishSetup)
-        mainBTFinishSetup.setOnClickListener(this)
-//        btOverrideSetup = findViewById(R.id.mainBTOverrideAuto)
-        mainBTOverrideAuto.setOnClickListener(this)
-//        spinnerArch = findViewById(R.id.mainSpinnerArch)
-        //https://stackoverflow.com/a/13783744/8614565
-        val items = Arrays.toString(MachineType::class.java.enumConstants).replace("^.|.$".toRegex(), "").split(", ").toTypedArray()
-        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
-        mainSpinnerArch.adapter = spinnerAdapter
-//        lvSymbols = findViewById(R.id.symlistView)
-        //moved up
-//symbolLvAdapter=new SymbolListAdapter();
-        symbolLvAdapter = SymbolListAdapter()
-        symlistView.adapter = symbolLvAdapter
-        symlistView.setOnItemLongClickListener { parent, view, position, id ->
-            val symbol = parent.getItemAtPosition(position) as Symbol
-            if (symbol.type != Symbol.Type.STT_FUNC) {
-                Toast.makeText(this@MainActivity, "This is not a function.", Toast.LENGTH_SHORT).show()
-                return@setOnItemLongClickListener true
-            }
-            val address = symbol.st_value
-            //LongSparseArray arr;
-            Toast.makeText(this@MainActivity, "Jump to" + java.lang.Long.toHexString(address), Toast.LENGTH_SHORT).show()
-            tabhost1!!.currentTab = TAB_DISASM
-            jumpto(address)
-            true
-        }
-        //symAdapter = new SymbolTableAdapter(this.getApplicationContext());
-//tvSymbols = (TableView)findViewById(R.id.content_container);
-//tvSymbols.setAdapter(symAdapter);
+        val adapter = ViewPagerAdapter(supportFragmentManager)
+        pagerMain.adapter = adapter
+        tablayout.setupWithViewPager(pagerMain)
+
+
         autoSymAdapter = ArrayAdapter(this, android.R.layout.select_dialog_item)
         //autocomplete.setThreshold(2);
-//autocomplete.setAdapter(autoSymAdapter);
-        refreshlog.setOnClickListener(this)
-        loglistView.adapter = LogAdapter().also { logAdapter = it }
-        stringAdapter = FoundStringAdapter()
-        stringlistView.adapter = stringAdapter
-        imageViewCount.setOnClickListener(this)
-        tabhost1.setup()
-        val tab0 = tabhost1.newTabSpec("1").setContent(R.id.tab0).setIndicator(getString(R.string.overview))
-        val tab1 = tabhost1.newTabSpec("2").setContent(R.id.tab1).setIndicator(getString(R.string.details))
-        val tab2 = tabhost1.newTabSpec("3").setContent(R.id.tab2).setIndicator(getString(R.string.disassembly))
-        val tab3 = tabhost1.newTabSpec("4").setContent(R.id.tab3).setIndicator(getString(R.string.symbols))
-        val tab4 = tabhost1.newTabSpec("5").setContent(R.id.tab4).setIndicator(getString(R.string.hexview))
-        val tab5 = tabhost1.newTabSpec("6").setContent(R.id.tab5).setIndicator(getString(R.string.viewlog))
-        val tab6 = tabhost1.newTabSpec("7").setContent(R.id.tab6).setIndicator(getString(R.string.foundstrings))
-        val tab7 = tabhost1.newTabSpec("8").setContent(R.id.tab7).setIndicator(getString(R.string.analysis))
-        tabhost1.addTab(tab0)
-        tabhost1.addTab(tab1)
-        tabhost1.addTab(tab4)
-        tabhost1.addTab(tab3)
-        tabhost1.addTab(tab2)
-        tabhost1.addTab(tab5)
-        tabhost1.addTab(tab6)
-        tabhost1.addTab(tab7)
-        this.tab1 = findViewById(R.id.tab1)
-        this.tab2 = findViewById(R.id.tab2)
-        //tvHex=(TextView)findViewById(R.id.hexTextView);
-//tvAscii=(TextView)findViewById(R.id.hexTextViewAscii);
-//TODO: Add a cusom HEX view
+        //autocomplete.setAdapter(autoSymAdapter);
 
-        mainGridViewHex.setOnTouchListener { v: View, event: MotionEvent ->
-            if (touchSource == null) touchSource = v
-            if (v === touchSource) {
-                mainGridViewAscii.dispatchTouchEvent(event)
-                if (event.action == MotionEvent.ACTION_UP) {
-                    clickSource = v
-                    touchSource = null
-                }
-            }
-            false
-        }
-        mainGridViewHex.onItemClickListener = AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id: Long ->
-            if (parent === clickSource) { // Do something with the ListView was clicked
-            }
-        } /*
-		gvHex.setOnScrollListener(new OnScrollListener() {
-				@Override
-				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-					if(view == clickSource)
-						gvAscii.setSelectionFromTop(firstVisibleItem, view.getChildAt(0).getTop() + offset);
-				}
-
-				@Override
-				public void onScrollStateChanged(AbsListView view, int scrollState) {}
-			});*/
-        mainGridViewAscii.setOnTouchListener { v, event ->
-            if (touchSource == null) touchSource = v
-            if (v === touchSource) {
-                mainGridViewHex.dispatchTouchEvent(event)
-                if (event.action == MotionEvent.ACTION_UP) {
-                    clickSource = v
-                    touchSource = null
-                }
-            }
-            false
-        }
-        mainGridViewAscii.setOnItemClickListener { parent, view, position, id ->
-            if (parent === clickSource) { // Do something with the ListView was clicked
-            }
-        }
-        /*
-		gvAscii.setOnScrollListener(new OnScrollListener() {
-				@Override
-				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-					if(view == clickSource)
-						gvHex.setSelectionFromTop(firstVisibleItem, view.getChildAt(0).getTop()/ * + offset);
-				}
-
-				@Override
-				public void onScrollStateChanged(AbsListView view, int scrollState) {}
-			});
-			*/toDoAfterPermQueue.add(Runnable {
+        toDoAfterPermQueue.add(Runnable {
             //            mProjNames = arrayOf("Exception", "happened")
             colorHelper = try {
                 ColorHelper(this@MainActivity)
@@ -523,7 +341,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 //	tlDisasmTable.addView(tbrow0);
 //setupListView();
         val showRationalSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
-        val showRationalEditor = showRationalSetting.edit()
         val show = showRationalSetting.getBoolean("show", true)
         if (show) { //showPermissionRationales();
             val editorShowPermission = showRationalSetting.edit()
@@ -537,11 +354,37 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         }
     }
 
-    //https://stackoverflow.com/a/6425744/8614565
-    private fun deleteRecursive(fileOrDirectory: File) {
-        if (fileOrDirectory.isDirectory) for (child in fileOrDirectory.listFiles()) deleteRecursive(child)
-        fileOrDirectory.delete()
+    private fun setupUncaughtException() {
+        Thread.setDefaultUncaughtExceptionHandler { p1: Thread?, p2: Throwable ->
+            Toast.makeText(this@MainActivity, Log.getStackTraceString(p2), Toast.LENGTH_SHORT).show()
+            context = null
+            if (p2 is SecurityException) {
+                Toast.makeText(this@MainActivity, R.string.didUgrant, Toast.LENGTH_SHORT).show()
+                val permSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
+                val permEditor = permSetting.edit()
+                permEditor.putBoolean("show", true)
+                permEditor.apply()
+            }
+            requestAppPermissions(this@MainActivity)
+            //String [] accs=getAccounts();
+            SendErrorReport(p2)
+            //	ori.uncaughtException(p1, p2);
+            Log.wtf(TAG, "UncaughtException", p2)
+            finish()
+        }
     }
+
+    private fun initNative() {
+        try {
+            if (Init() == -1) {
+                throw RuntimeException()
+            }
+        } catch (e: RuntimeException) {
+            Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), Toast.LENGTH_LONG).show()
+            Process.killProcess(Process.getGidForName(null))
+        }
+    }
+
 
     override fun onClick(p1: View) { //Button btn = (Button) p1;
         when (p1.id) {
@@ -890,7 +733,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         when (requestCode) {
             REQUEST_WRITE_STORAGE_REQUEST_CODE -> {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.size > 0
+                if (grantResults.isNotEmpty()
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) { // permission was granted, yay! Do the
 // contacts-related task you need to do.
                     while (!toDoAfterPermQueue.isEmpty()) {
@@ -930,12 +773,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         Toast.makeText(this, resid, Toast.LENGTH_SHORT).show()
     }
 
-    fun setClipBoard(s: String?) {
-        val cb = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("Android Disassembler", s)
-        cb.setPrimaryClip(clip)
-        //Toast.makeText(this,"Copied to clipboard:"+s,Toast.LENGTH_SHORT).show();
-    }
 
     //https://stackoverflow.com/a/8127716/8614565
     private fun disableEnableControls(enable: Boolean, vg: ViewGroup?) {
@@ -1399,10 +1236,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 
     //////////////////////////////////////////////Input////////////////////////////////////////
     private fun showChooser() {
-        val lst: MutableList<String> = ArrayList()
-        lst.add("Choose file")
-        lst.add("Choose APK")
-        showSelDialog(lst, "Choose file/APK?", DialogInterface.OnClickListener { dialog, which ->
+
+        showSelDialog(lst, "", DialogInterface.OnClickListener { dialog, which ->
             when (which) {
                 0 -> showFileChooser()
                 1 -> showAPKChooser()
@@ -1414,6 +1249,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     private fun showAPKChooser() {
         GetAPKAsyncTask(this).execute()
     }
+
     val PATHPREF = "path"
     private fun showFileChooser() {
         requestAppPermissions(this)
@@ -1469,17 +1305,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SELECT_FILE) {
-            Log.d(TAG,"OnActivityResult1")
+            Log.d(TAG, "OnActivityResult1")
             if (resultCode == Activity.RESULT_OK) {
                 val path = data!!.getStringExtra("path")
-                Log.d(TAG,"OnActivityResult2")
+                Log.d(TAG, "OnActivityResult2")
                 val settingPath = getSharedPreferences(PATHPREF, MODE_PRIVATE)
                 val edi = settingPath.edit()
-                Log.d(TAG,"OnActivityResult3")
+                Log.d(TAG, "OnActivityResult3")
                 edi.putString(DiskUtil.SC_PREFERENCE_KEY, path)
                 edi.apply()
                 disableEnableControls(false, llmainLinearLayoutSetupRaw)
-                Log.d(TAG,"OnActivityResult4")
+                Log.d(TAG, "OnActivityResult4")
                 onChoosePath(path)
             }
         } else if (requestCode == REQUEST_SELECT_FILE_NEW) {
@@ -1497,7 +1333,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 
         try {
             val inputStream = contentResolver.openInputStream(uri) ?: return
-            if(inputStream.available() == 0) {
+            if (inputStream.available() == 0) {
                 handleEmptyFile(uri.toString())
                 return
             }
@@ -1549,7 +1385,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     fun onChoosePath(path: String) //Intent data)
     {
         val file = File(path)
-        if(file.length() == 0L) {
+        if (file.length() == 0L) {
             handleEmptyFile(path)
             return
         }
@@ -1823,7 +1659,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 
     private fun getRealPathFromURI(uri: Uri): String {
         var filePath: String
-        filePath = uri.path?:return ""
+        filePath = uri.path ?: return ""
         //경로에 /storage가 들어가면 real file path로 판단
         if (filePath.startsWith("/storage")) return filePath
         val wholeID = DocumentsContract.getDocumentId(uri)
@@ -1835,7 +1671,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         //파일의 이름을 통해 where 조건식을 만듭니다.
         val sel = MediaStore.Files.FileColumns.DATA + " LIKE '%" + id + "%'"
         //External storage에 있는 파일의 DB를 접근하는 방법 입니다.
-        val cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), column, sel, null, null)?:return ""
+        val cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), column, sel, null, null)
+                ?: return ""
         //SQL문으로 표현하면 아래와 같이 되겠죠????
 //SELECT _dtat FROM files WHERE _data LIKE '%selected file name%'
         val columnIndex = cursor.getColumnIndex(column[0])
@@ -1869,7 +1706,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         @JvmStatic
         @Throws(IOException::class)
         fun getBytes(inputStream: InputStream): ByteArray {
-            return inputStream.use{ it.readBytes()}
+            return inputStream.use { it.readBytes() }
         }
 //            var len: Int
 //            var size = 1024
