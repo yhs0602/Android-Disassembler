@@ -12,10 +12,10 @@ public class DisasmIterator extends AssemblyProvider {
     //public DisasmIterator(MainActivity activity, NotificationManager mNotifyManager, Notification.Builder mBuilder, DisasmListViewAdapter adapter,  long total)
 //>>>>>>> parent of 2644076... Update readme with assembly materials links
 //=======
-    public DisasmIterator(MainActivity activity,/* NotificationManager mNotifyManager, Notification.Builder mBuilder, */DisasmListViewAdapter adapter, long total)
+    public DisasmIterator(/* NotificationManager mNotifyManager, Notification.Builder mBuilder, */DisasmListViewAdapter adapter, long total)
 //>>>>>>> parent of 2644076... Update readme with assembly materials links
     {
-        super(activity, adapter, total);
+        super(adapter, total);
     }
 
     public native long getAll(byte[] bytes, long offset, long size, long virtaddr/*,ArrayList<ListViewItem> arr*/);

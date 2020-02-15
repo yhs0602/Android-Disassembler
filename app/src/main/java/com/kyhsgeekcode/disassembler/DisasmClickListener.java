@@ -9,7 +9,7 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.kyhsgeekcode.disassembler.UIUtilsKt.ShowEditDialog;
+import static com.kyhsgeekcode.disassembler.UIUtilsKt.showEditDialog;
 import static com.kyhsgeekcode.disassembler.UIUtilsKt.showSelDialog;
 
 public class DisasmClickListener implements AdapterView.OnItemClickListener {
@@ -22,7 +22,7 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener {
 
     @Override
     public void onItemClick(AdapterView<?> parent, View p2, int position, long id) {
-        final ListViewItem lvi = (ListViewItem) parent.getItemAtPosition(position);
+        final DisassemblyListItem lvi = (DisassemblyListItem) parent.getItemAtPosition(position);
         final DisasmResult dar = lvi.disasmResult;
         menus = new ArrayList<>();
         menus.add(EDIT_COMMENT);
@@ -41,7 +41,7 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener {
                     if (EDIT_COMMENT.equals(item)) {
                         final EditText et = new EditText(activity);
                         et.setText(lvi.getComments());
-                        ShowEditDialog(activity, EDIT_COMMENT, EDIT_COMMENT, et
+                        showEditDialog(activity, EDIT_COMMENT, EDIT_COMMENT, et
                                 , "OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface p1, int p2) {

@@ -25,7 +25,7 @@ public class ILAssmebly extends AbstractFile {
 
     @Override
     public MachineType getMachineType() {
-        return super.getMachineType();
+        return super.machineType;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ILAssmebly extends AbstractFile {
 
     @Override
     public long getEntryPoint() {
-        return super.getEntryPoint();
+        return super.entryPoint;
     }
 
     @Override

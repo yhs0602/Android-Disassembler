@@ -34,4 +34,5 @@ class BinarySymbolFragment : Fragment() {
 //tvSymbols = (TableView)findViewById(R.id.content_container);
 //tvSymbols.setAdapter(symAdapter);
     }
+
 }

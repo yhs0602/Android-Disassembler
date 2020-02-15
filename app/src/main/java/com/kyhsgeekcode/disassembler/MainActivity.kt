@@ -1,7 +1,9 @@
 package com.kyhsgeekcode.disassembler
 
 import android.app.*
-import android.content.*
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Rect
@@ -9,13 +11,9 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
-import android.os.Environment
 import android.os.Process
-import android.provider.DocumentsContract
-import android.provider.MediaStore
 import android.util.Log
 import android.util.LongSparseArray
-import android.util.SparseArray
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -27,14 +25,16 @@ import at.pollaknet.api.facile.exception.UnexpectedHeaderDataException
 import capstone.Capstone
 import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
-import com.github.chrisbanes.photoview.PhotoView
 import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.FileTabFactory.FileTabContentFactory
 import com.kyhsgeekcode.disassembler.FileTabFactory.ImageFileTabFactory
 import com.kyhsgeekcode.disassembler.FileTabFactory.NativeDisassemblyFactory
 import com.kyhsgeekcode.disassembler.FileTabFactory.TextFileTabFactory
-import com.kyhsgeekcode.disassembler.ProjectManager.OnProjectOpenListener
+import com.kyhsgeekcode.disassembler.RealPathUtils.getRealPathFromURI
+import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_ALL
+import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_MAX
+import com.kyhsgeekcode.disassembler.models.Architecture.getArchitecture
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.rootpicker.FileSelectorActivity
@@ -46,16 +46,14 @@ import pl.openrnd.multilevellistview.ItemInfo
 import pl.openrnd.multilevellistview.MultiLevelListView
 import pl.openrnd.multilevellistview.OnItemClickListener
 import splitties.init.appCtx
-import splitties.systemservices.clipboardManager
 import java.io.*
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.regex.Pattern
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
 
-class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenListener {
+class MainActivity : AppCompatActivity() {
     companion object {
         const val SETTINGKEY = "setting"
         const val REQUEST_WRITE_STORAGE_REQUEST_CODE = 1
@@ -77,8 +75,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         const val TAG_PROJECTS = 2
         const val TAG_PROCESSES = 3
         const val TAG_RUNNING_APPS = 4
-        @JvmField
-        var context: Context? = null
+
 
         ////////////////////////////////////////////Data Conversion//////////////////////////////////
 
@@ -107,11 +104,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     }
 
     //////////////////////////////////////////////Views/////////////////////////////////////
-    var touchSource: View? = null
-    var clickSource: View? = null
+//    var touchSource: View? = null
+//    var clickSource: View? = null
     var llmainLinearLayoutSetupRaw: ConstraintLayout? = null
 
-    var tab1: LinearLayout? = null
+//    var tab1: LinearLayout? = null
     var tab2: LinearLayout? = null
     //FileTabContentFactory factory = new FileTabContentFactory(this);
     val textFactory: FileTabContentFactory = TextFileTabFactory(this)
@@ -150,13 +147,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     var columns = ColumnSetting()
         private set
     /*ArrayList*/
-    var disasmResults: LongSparseArray<ListViewItem>? = LongSparseArray()
+    var disasmResults: LongSparseArray<DisassemblyListItem>? = LongSparseArray()
     var workerThread: Thread? = null
     var db: DatabaseHelper? = null
     var shouldSave = false
     var rowClkListener = View.OnClickListener { view ->
         val tablerow = view as TableRow
-        val lvi = tablerow.tag as ListViewItem
+        val lvi = tablerow.tag as DisassemblyListItem
         //TextView sample = (TextView) tablerow.getChildAt(1);
         tablerow.setBackgroundColor(Color.GREEN)
     }
@@ -164,7 +161,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     private var autoSymAdapter: ArrayAdapter<String>? = null
     private var dataFragment: RetainedFragment? = null
     private var disasmManager: DisassemblyManager? = null
-    private var colorHelper: ColorHelper? = null
+
     //private SymbolTableAdapter symAdapter;
 //private TableView tvSymbols;
     private val mNotifyManager: NotificationManager? = null
@@ -172,10 +169,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     //DisasmIterator disasmIterator
     private var mCustomDialog: ChooseColumnDialog? = null
     private var adapter: DisasmListViewAdapter? = null
-    val runnableRequestLayout = Runnable {
-        //adapter.notifyDataSetChanged();
-        listview!!.requestLayout()
-    }
+//    val runnableRequestLayout = Runnable {
+//        //adapter.notifyDataSetChanged();
+//        listview!!.requestLayout()
+//    }
     //    private var mProjNames: Array<String>
 //    private var mDrawerLayout: DrawerLayout? = null
     private var logAdapter: LogAdapter? = null
@@ -184,8 +181,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     private var cs: Capstone? = null
     private val EXTRA_NOTIFICATION_ID: String? = null
     private val ACTION_SNOOZE: String? = null
-    private var projectManager: ProjectManager? = null
-    private var currentProject: ProjectManager.Project? = null
+    //    private var projectManager: ProjectManager? = null
+//    private var currentProject: ProjectManager.Project? = null
     //    private var lvSymbols: ListView? = null
     private var symbolLvAdapter: SymbolListAdapter? = null
     private val leftListener: View.OnClickListener = object : View.OnClickListener {
@@ -220,126 +217,63 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        context = this
-        //final Thread.UncaughtExceptionHandler ori=Thread.getDefaultUncaughtExceptionHandler();
         setupUncaughtException()
         initNative()
         setContentView(R.layout.main)
-        //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        val adapter = ViewPagerAdapter(supportFragmentManager)
-        pagerMain.adapter = adapter
+        val pagerAdapter = ViewPagerAdapter(supportFragmentManager)
+        pagerMain.adapter = pagerAdapter
         tablayout.setupWithViewPager(pagerMain)
 
+        setupSymCompleteAdapter()
+        toDoAfterPermQueue.add(Runnable {
+            if (disasmManager == null) {
+                disasmManager = DisassemblyManager()
+            }
+            adapter = DisasmListViewAdapter(null)
 
+            disasmManager!!.setData(adapter!!.itemList(), adapter!!.getAddress())
+            handleDataFragment()
+            //LoadProjects
+            setupLeftDrawer()
+            handleViewActionIntent()
+        })
+        requestAppPermissions(this)
+        manageShowRational()
+        clearCache()
+    }
+
+    private fun setupSymCompleteAdapter() {
         autoSymAdapter = ArrayAdapter(this, android.R.layout.select_dialog_item)
         //autocomplete.setThreshold(2);
         //autocomplete.setAdapter(autoSymAdapter);
 
-        toDoAfterPermQueue.add(Runnable {
-            //            mProjNames = arrayOf("Exception", "happened")
-            colorHelper = try {
-                ColorHelper(this@MainActivity)
-            } catch (e: SecurityException) {
-                Log.e(TAG, "Theme failed", e)
-                throw e
-            }
-            if (disasmManager == null) disasmManager = DisassemblyManager()
-            adapter = DisasmListViewAdapter(null, colorHelper, this@MainActivity)
-            setupListView()
-            disasmManager!!.setData(adapter!!.itemList(), adapter!!.getAddress())
-            // find the retained fragment on activity restarts
-            val fm = supportFragmentManager
-            dataFragment = fm.findFragmentByTag("data") as RetainedFragment?
-            if (dataFragment == null) { // add the fragment
-                dataFragment = RetainedFragment()
-                fm.beginTransaction().add(dataFragment!!, "data").commit()
-                // load the data from the web
-                dataFragment!!.disasmManager = disasmManager
-            } else { //It should be handled
-                disasmManager = dataFragment!!.disasmManager
-                filecontent = dataFragment!!.filecontent
-                parsedFile = dataFragment!!.parsedFile
-                fpath = dataFragment!!.path
-                if (parsedFile != null) {
-                    symbolLvAdapter!!.itemList().clear()
-                    symbolLvAdapter!!.addAll(parsedFile!!.getSymbols())
-                    for (s in symbolLvAdapter!!.itemList()) {
-                        autoSymAdapter!!.add(s.name)
-                    }
-                }
-            }
-            try {
-                projectManager = ProjectManager(this@MainActivity)
-//                mProjNames = projectManager!!.strProjects() //new String[]{"a","v","vf","vv"}; //getResources().getStringArray(R.array.planets_array);
-            } catch (e: IOException) {
-                alertError("Failed to load projects", e)
-            }
-            // Set the adapter for the list view
-            left_drawer.setAdapter(FileDrawerListAdapter(this@MainActivity).also { mDrawerAdapter = it }) //new ArrayAdapter<String>(MainActivity.this,
-            //R.layout.row, mProjNames));
-            val initialDrawers: MutableList<FileDrawerListItem?> = ArrayList()
-            initialDrawers.add(FileDrawerListItem("Installed", FileDrawerListItem.DrawerItemType.HEAD, TAG_INSTALLED, 0))
-            initialDrawers.add(FileDrawerListItem("Internal Storage", FileDrawerListItem.DrawerItemType.HEAD, TAG_STORAGE, 0))
-            initialDrawers.add(FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROJECTS, 0))
-            initialDrawers.add(FileDrawerListItem("Processes-requires root", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROCESSES, 0))
-            //initialDrawers.add(new FileDrawerListItem("Running apps", FileDrawerListItem.DrawerItemType.HEAD, TAG_RUNNING_APPS, 0));
-            mDrawerAdapter!!.setDataItems(initialDrawers)
-            mDrawerAdapter!!.notifyDataSetChanged()
-            left_drawer.setOnItemClickListener(object : OnItemClickListener {
-                override fun onItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) {
-                    val fitem = item as FileDrawerListItem
-                    Toast.makeText(this@MainActivity, fitem.caption, Toast.LENGTH_SHORT).show()
-                    if (!fitem.isOpenable) return
-                    showYesNoCancelDialog(this@MainActivity, "Open file", "Open " + fitem.caption + "?", DialogInterface.OnClickListener { dialog, which ->
-                        if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
-                            val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
-                            if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
-                        }
-                    }, null, null)
-                }
+    }
 
-                override fun onGroupItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) { //Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
+    private fun handleDataFragment() {
+        // find the retained fragment on activity restarts
+        val fm = supportFragmentManager
+        dataFragment = fm.findFragmentByTag("data") as RetainedFragment?
+        if (dataFragment == null) { // add the fragment
+            dataFragment = RetainedFragment()
+            fm.beginTransaction().add(dataFragment!!, "data").commit()
+            // load the data from the web
+            dataFragment!!.disasmManager = disasmManager
+        } else { //It should be handled
+            disasmManager = dataFragment!!.disasmManager
+            filecontent = dataFragment!!.filecontent
+            parsedFile = dataFragment!!.parsedFile
+            fpath = dataFragment!!.path
+            if (parsedFile != null) {
+                symbolLvAdapter!!.itemList().clear()
+                symbolLvAdapter!!.addAll(parsedFile!!.getSymbols())
+                for (s in symbolLvAdapter!!.itemList()) {
+                    autoSymAdapter!!.add(s.name)
                 }
-            })
-            //https://www.androidpub.com/1351553
-            val intent = intent
-            if (intent.action == Intent.ACTION_VIEW) { // User opened this app from file browser
-                val filePath = intent.data?.path
-                Log.d(TAG, "intent path=$filePath")
-                var toks: Array<String?> = filePath!!.split(Pattern.quote("."))!!.toTypedArray()
-                val last = toks.size - 1
-                val ext: String?
-                if (last >= 1) {
-                    ext = toks[last]
-                    if ("adp".equals(ext, ignoreCase = true)) { //User opened the project file
-//now get the project name
-                        val file = File(filePath)
-                        val pname = file.name
-                        toks = pname.split(Pattern.quote(".")).toTypedArray()
-                        projectManager!!.Open(toks[toks.size - 2])
-                    } else { //User opened pther files
-                        onChoosePath(intent!!.data!!)
-                    }
-                } else { //User opened other files
-                    onChoosePath(intent!!.data!!)
-                }
-            } else { // android.intent.action.MAIN
-                val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
-                val lastProj = projectsetting.getString(LASTPROJKEY, "")
-                if (projectManager != null) projectManager!!.Open(lastProj)
             }
-        })
-        requestAppPermissions(this)
-        /*if (cs == null)
-		 {
-		 Toast.makeText(this, "Failed to initialize the native engine", Toast.LENGTH_SHORT).show();
-		 android.os.Process.killProcess(android.os.Process.getGidForName(null));
-		 }*/
-//tlDisasmTable = (TableLayout) findViewById(R.id.table_main);
-//	TableRow tbrow0 = new TableRow(MainActivity.this);
-//	CreateDisasmTopRow(tbrow0);
-//	tlDisasmTable.addView(tbrow0);
-//setupListView();
+        }
+    }
+
+    private fun manageShowRational() {
         val showRationalSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
         val show = showRationalSetting.getBoolean("show", true)
         if (show) { //showPermissionRationales();
@@ -347,6 +281,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             editorShowPermission.putBoolean("show", false)
             editorShowPermission.apply()
         }
+    }
+
+    private fun clearCache() {
         val filesDir = filesDir
         val files = filesDir.listFiles()
         for (file in files) {
@@ -354,10 +291,70 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         }
     }
 
+    private fun handleViewActionIntent() {
+        //https://www.androidpub.com/1351553
+        val intent = intent
+        if (intent.action == Intent.ACTION_VIEW) { // User opened this app from file browser
+            val filePath = intent.data?.path
+            Log.d(TAG, "intent path=$filePath")
+            var toks: Array<String?> = filePath!!.split(Pattern.quote("."))!!.toTypedArray()
+            val last = toks.size - 1
+            val ext: String?
+            if (last >= 1) {
+                ext = toks[last]
+                if ("adp".equals(ext, ignoreCase = true)) { //User opened the project file
+                    //now get the project name
+                    val file = File(filePath)
+                    val pname = file.name
+                    toks = pname.split(Pattern.quote(".")).toTypedArray()
+                    //                        projectManager!!.Open(toks[toks.size - 2])
+                } else { //User opened pther files
+                    onChoosePath(intent!!.data!!)
+                }
+            } else { //User opened other files
+                onChoosePath(intent!!.data!!)
+            }
+        } else { // android.intent.action.MAIN
+            val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
+            val lastProj = projectsetting.getString(LASTPROJKEY, "")
+            //                if (projectManager != null) projectManager!!.Open(lastProj)
+        }
+    }
+
+    private fun setupLeftDrawer() {
+        //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        // Set the adapter for the list view
+        left_drawer.setAdapter(FileDrawerListAdapter(this@MainActivity).also { mDrawerAdapter = it }) //new ArrayAdapter<String>(MainActivity.this,
+        //R.layout.row, mProjNames));
+        val initialDrawers: MutableList<FileDrawerListItem?> = ArrayList()
+        initialDrawers.add(FileDrawerListItem("Installed", FileDrawerListItem.DrawerItemType.HEAD, TAG_INSTALLED, 0))
+        initialDrawers.add(FileDrawerListItem("Internal Storage", FileDrawerListItem.DrawerItemType.HEAD, TAG_STORAGE, 0))
+        initialDrawers.add(FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROJECTS, 0))
+        initialDrawers.add(FileDrawerListItem("Processes-requires root", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROCESSES, 0))
+        //initialDrawers.add(new FileDrawerListItem("Running apps", FileDrawerListItem.DrawerItemType.HEAD, TAG_RUNNING_APPS, 0));
+        mDrawerAdapter!!.setDataItems(initialDrawers)
+        mDrawerAdapter!!.notifyDataSetChanged()
+        left_drawer.setOnItemClickListener(object : OnItemClickListener {
+            override fun onItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) {
+                val fitem = item as FileDrawerListItem
+                Toast.makeText(this@MainActivity, fitem.caption, Toast.LENGTH_SHORT).show()
+                if (!fitem.isOpenable) return
+                showYesNoCancelDialog(this@MainActivity, "Open file", "Open " + fitem.caption + "?", DialogInterface.OnClickListener { dialog, which ->
+                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
+                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
+                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
+                    }
+                }, null, null)
+            }
+
+            override fun onGroupItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) { //Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
+            }
+        })
+    }
+
     private fun setupUncaughtException() {
         Thread.setDefaultUncaughtExceptionHandler { p1: Thread?, p2: Throwable ->
             Toast.makeText(this@MainActivity, Log.getStackTraceString(p2), Toast.LENGTH_SHORT).show()
-            context = null
             if (p2 is SecurityException) {
                 Toast.makeText(this@MainActivity, R.string.didUgrant, Toast.LENGTH_SHORT).show()
                 val permSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
@@ -379,102 +376,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             if (Init() == -1) {
                 throw RuntimeException()
             }
-        } catch (e: RuntimeException) {
+        } catch (e: Exception) {
             Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), Toast.LENGTH_LONG).show()
             Process.killProcess(Process.getGidForName(null))
-        }
-    }
-
-
-    override fun onClick(p1: View) { //Button btn = (Button) p1;
-        when (p1.id) {
-            R.id.selFile -> showChooser()
-            R.id.btnShowdetail -> {
-                if (parsedFile == null) {
-                    AlertSelFile()
-                    return
-                }
-                ShowDetail()
-            }
-            R.id.btnSaveDisasm -> ExportDisasm()
-            R.id.btnSaveDetails -> SaveDetail()
-            R.id.mainBTFinishSetup -> {
-                if (parsedFile == null) {
-                    AlertSelFile()
-                    return
-                }
-                if (parsedFile !is RawFile) { //AlertError("Not a raw file, but enabled?",new Exception());
-//return;
-                }
-                val base: String
-                val entry: String
-                val limit: String
-                val virt: String
-                try {
-                    base = mainETcodeOffset.text.toString()
-                    entry = mainETentry.text.toString()
-                    limit = mainETcodeLimit.text.toString()
-                    virt = mainETvirtaddr.text.toString()
-                } catch (e: NullPointerException) {
-                    Log.e(TAG, "Error", e)
-                    return
-                }
-                //int checked=rgdArch.getCheckedRadioButtonId();
-                var mct = MachineType.ARM
-                try { //if(checked==R.id.rbAuto)
-//	{
-                    val s = mainSpinnerArch.selectedItem as String
-                    val mcss = MachineType.values()
-                    var i = 0
-                    while (i < mcss.size) {
-                        if (mcss[i].toString() == s) {
-                            mct = mcss[i]
-                            break
-                        }
-                        ++i
-                    }
-                    val lbase = base.toLong(16)
-                    val llimit = limit.toLong(16)
-                    val lentry = entry.toLong(16)
-                    val lvirt = virt.toLong(16)
-                    if (lbase > llimit) throw Exception("CS base<0")
-                    if (llimit <= 0) throw Exception("CS limit<0")
-                    if (lentry > llimit - lbase || lentry < 0) throw Exception("Entry point out of code section!")
-                    if (lvirt < 0) throw Exception("Virtual address<0")
-                    parsedFile!!.codeBase = lbase
-                    parsedFile!!.codeLimit = llimit
-                    parsedFile!!.codeVirtualAddress = lvirt
-                    parsedFile!!.entryPoint = lentry
-                    parsedFile!!.machineType = mct
-                    AfterParse()
-                } catch (e: Exception) {
-                    Log.e(TAG, "", e)
-                    Toast.makeText(this, getString(R.string.err_invalid_value) + e.message, Toast.LENGTH_SHORT).show()
-                }
-            }
-            R.id.mainBTOverrideAuto -> {
-                AllowRawSetup()
-            }
-            R.id.refreshlog -> {
-                logAdapter!!.Refresh()
-            }
-            R.id.imageViewCount -> {
-                val builder = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-                builder.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                //builder.getWindow().setBackgroundDrawable(
-//        new ColorDrawable(android.graphics.Color.TRANSPARENT));
-                builder.setOnDismissListener {
-                    //nothing;
-                }
-                val imageView: ImageView = PhotoView(this)
-                imageView.setImageDrawable(imageViewCount!!.drawable)
-                builder.addContentView(imageView, RelativeLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT))
-                builder.show()
-            }
-            else -> {
-            }
         }
     }
 
@@ -514,9 +418,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         cs = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean { // Inflate the menu; this adds items to the action bar if it is present.
-// 메뉴버튼이 처음 눌러졌을 때 실행되는 콜백메서드
-// 메뉴버튼을 눌렀을 때 보여줄 menu 에 대해서 정의
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
@@ -525,9 +427,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         val id = item.itemId
         when (id) {
             R.id.settings -> {
-                val SettingActivity = Intent(this, SettingsActivity::class.java)
+                val intent = Intent(this, SettingsActivity::class.java)
                 //SettingActivity.putExtra("ColorHelper",colorHelper);
-                startActivity(SettingActivity)
+                startActivity(intent)
             }
             R.id.online_help -> {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/KYHSGeekCode/Android-Disassembler/blob/master/README.md"))
@@ -543,7 +445,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         super.onPreExecute()
                         Log.d(TAG, "Preexecute")
                         // create dialog
-                        dialog = ProgressDialog(context)
+                        dialog = ProgressDialog(this@MainActivity)
                         dialog!!.setTitle("Analyzing ...")
                         dialog!!.setMessage("Counting bytes ...")
                         dialog!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
@@ -590,7 +492,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                         super.onPreExecute()
                         Log.d(TAG, "Pre-execute")
                         // create dialog
-                        dialog = ProgressDialog(context)
+                        dialog = ProgressDialog(this@MainActivity)
                         dialog!!.setTitle("Searching ...")
                         dialog!!.setMessage("Searching for string")
                         dialog!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
@@ -626,7 +528,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 }
                 val et = EditText(this)
                 et.setText("5-100")
-                ShowEditDialog("Search String", "Set minimum and maximum length of result (min-max)", et, "OK", DialogInterface.OnClickListener { dialog, which ->
+                showEditDialog("Search String", "Set minimum and maximum length of result (min-max)", et, "OK", DialogInterface.OnClickListener { dialog, which ->
                     val s = et.text.toString()
                     val splitt = s.split("-").toTypedArray()
                     var min = splitt[0].toInt()
@@ -662,7 +564,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                     }
                 }
                 autocomplete.setAdapter<ArrayAdapter<String>>(autoSymAdapter)
-                val ab = ShowEditDialog("Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
+                val ab = showEditDialog("Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
                         "Go", DialogInterface.OnClickListener { p1, p2 ->
                     val dest = autocomplete.text.toString()
                     try {
@@ -688,16 +590,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             }
             R.id.find -> {
             }
-            R.id.save -> {
-                //if(currentProject==null)
-                run { ExportDisasm(Runnable { this.SaveDetail() }) }
-            }
-            R.id.export -> {
-                ExportDisasm(Runnable { SaveDetail(Runnable { createZip() }) })
-            }
             R.id.calc -> {
                 val et = EditText(this)
-                ShowEditDialog(getString(R.string.calculator), "Enter an expression to measure", et, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 -> Toast.makeText(this@MainActivity, Calculator.Calc(et.text.toString()).toString(), Toast.LENGTH_SHORT).show() }, getString(R.string.cancel), null)
+                showEditDialog(getString(R.string.calculator), "Enter an expression to measure", et, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 -> Toast.makeText(this@MainActivity, Calculator.Calc(et.text.toString()).toString(), Toast.LENGTH_SHORT).show() }, getString(R.string.cancel), null)
             }
             R.id.donate -> {
                 val intent = Intent(this, DonateActivity::class.java)
@@ -707,7 +602,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         return super.onOptionsItemSelected(item)
     }
 
-    private fun ShowEditDialog(title: String, message: String, edittext: EditText,
+    private fun showEditDialog(title: String, message: String, edittext: EditText,
                                positive: String, pos: DialogInterface.OnClickListener,
                                negative: String, neg: DialogInterface.OnClickListener?): AlertDialog {
         val builder = AlertDialog.Builder(this@MainActivity)
@@ -721,11 +616,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 
     fun showSelDialog(ListItems: List<String>?, title: String?, listener: DialogInterface.OnClickListener?) {
         showSelDialog(this, ListItems!!, title, listener)
-    }
-
-    /////////////////////////////////////End Show **** dialog///////////////////////////////////////////
-    private fun showPermissionRationales() {
-        showPermissionRationales(this, null)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
@@ -762,7 +652,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         tvOperands.visibility = if (isShowOperands) View.VISIBLE else View.GONE
         tvComments.visibility = if (isShowComment) View.VISIBLE else View.GONE
     }
-
     //////////////////////////////////////////////End Column Picking///////////////////////////////////////////////////
 //////////////////////////////////////////////////////UI Utility///////////////////////////////////////////////////
     fun showToast(s: String?) {
@@ -773,17 +662,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         Toast.makeText(this, resid, Toast.LENGTH_SHORT).show()
     }
 
-
-    //https://stackoverflow.com/a/8127716/8614565
-    private fun disableEnableControls(enable: Boolean, vg: ViewGroup?) {
-        for (i in 0 until vg!!.childCount) {
-            val child = vg.getChildAt(i)
-            child.isEnabled = enable
-            if (child is ViewGroup) {
-                disableEnableControls(enable, child)
-            }
-        }
-    }
 
     ///////////////////////////////////////////////////End UI Utility//////////////////////////////////////////////////
 ///////////////////////////////////////////////////Target setter/getter////////////////////////////////////////////
@@ -798,17 +676,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     ////////////////////////////////////////////////////////////End target setter/getter/////////////////////////////////////////
     private fun parseAddress(toString: String?): Long {
         if (toString == null) {
-            return parsedFile!!.getEntryPoint()
+            return parsedFile!!.entryPoint
         }
         if (toString == "") {
-            return parsedFile!!.getEntryPoint()
+            return parsedFile!!.entryPoint
         }
         try {
             return java.lang.Long.decode(toString)
         } catch (e: NumberFormatException) {
             Toast.makeText(this, R.string.validaddress, Toast.LENGTH_SHORT).show()
         }
-        return parsedFile!!.getEntryPoint()
+        return parsedFile!!.entryPoint
     }
 
     private fun AlertSelFile() {
@@ -817,334 +695,297 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     }
 
     /////////////////////////////////////////////Export - Output//////////////////////////////////
-    fun ExportDisasm() {
-        ExportDisasm(null)
-    }
+//    fun ExportDisasm() {
+//        ExportDisasm(null)
+//    }
 
-    private fun ExportDisasm(runnable: Runnable?) {
-        requestAppPermissions(this)
-        if (fpath == null || "".compareTo(fpath!!, ignoreCase = true) == 0) {
-            AlertSelFile()
-            return
-        }
-        Toast.makeText(this, "Sorry, not stable yet", Toast.LENGTH_SHORT).show()
-        if (true) return
-        if (currentProject == null) {
-            val etName = EditText(this)
-            ShowEditDialog(getString(R.string.newProject), getString(R.string.enterNewProjName), etName, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 ->
-                val projn = etName.text.toString()
-                SaveDisasmNewProject(projn, runnable)
-            }, getString(R.string.cancel), DialogInterface.OnClickListener { p1, p2 -> })
-        } else {
-            ShowExportOptions(runnable)
-        }
-    }
+//    private fun ExportDisasm(runnable: Runnable?) {
+//        requestAppPermissions(this)
+//        if (fpath == null || "".compareTo(fpath!!, ignoreCase = true) == 0) {
+//            AlertSelFile()
+//            return
+//        }
+//        Toast.makeText(this, "Sorry, not stable yet", Toast.LENGTH_SHORT).show()
+//        if (true) return
+//        if (currentProject == null) {
+//            val etName = EditText(this)
+//            ShowEditDialog(getString(R.string.newProject), getString(R.string.enterNewProjName), etName, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 ->
+//                val projn = etName.text.toString()
+//                SaveDisasmNewProject(projn, runnable)
+//            }, getString(R.string.cancel), DialogInterface.OnClickListener { p1, p2 -> })
+//        } else {
+//            ShowExportOptions(runnable)
+//        }
+//    }
 
-    //FIXME, TODO
-    private fun ExportDisasmSub(mode: Int) {
-        Log.v(TAG, "Saving disassembly")
-        if (mode == 0) //Raw mode
-        {
-            SaveDisasmRaw()
-            return
-        }
-        if (mode == 4) //Database mode
-        {
-            SaveDisasm(currentProject!!.disasmDb)
-            return
-        }
-        val dir = File(ProjectManager.RootFile, currentProject!!.name + "/")
-        Log.d(TAG, "dirpath=" + dir.absolutePath)
-        val file = File(dir, "Disassembly_" + Date(System.currentTimeMillis()).toString() + if (mode == 3) ".json" else ".txt")
-        Log.d(TAG, "filepath=" + file.absolutePath)
-        dir.mkdirs()
-        try {
-            file.createNewFile()
-        } catch (e: IOException) {
-            Log.e(TAG, "", e)
-            Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show()
-        }
-        //Editable et=etDetails.getText();
-        try {
-            val fos = FileOutputStream(file)
-            try {
-                val sb = StringBuilder()
-                val   /*ListViewItem[]*/items = ArrayList<ListViewItem>()
-                //items.addAll(adapter.itemList());
-                for (lvi in items) {
-                    when (mode) {
-                        1 -> {
-                            sb.append(lvi.address)
-                            sb.append("\t")
-                            sb.append(lvi.bytes)
-                            sb.append("\t")
-                            sb.append(lvi.instruction)
-                            sb.append(" ")
-                            sb.append(lvi.operands)
-                            sb.append("\t")
-                            sb.append(lvi.comments)
-                        }
-                        2 -> {
-                            sb.append(lvi.address)
-                            sb.append(":")
-                            sb.append(lvi.instruction)
-                            sb.append(" ")
-                            sb.append(lvi.operands)
-                            sb.append("  ;")
-                            sb.append(lvi.comments)
-                        }
-                        3 -> sb.append(lvi.toString())
-                    }
-                    sb.append(System.lineSeparator())
-                }
-                fos.write(sb.toString().toByteArray())
-            } catch (e: IOException) {
-                alertError("", e)
-                return
-            }
-        } catch (e: FileNotFoundException) {
-            alertError("", e)
-        }
-        AlertSaveSuccess(file)
-    }
+//    //FIXME, TODO
+//    private fun ExportDisasmSub(mode: Int) {
+//        Log.v(TAG, "Saving disassembly")
+//        if (mode == 0) //Raw mode
+//        {
+//            SaveDisasmRaw()
+//            return
+//        }
+//        if (mode == 4) //Database mode
+//        {
+//            SaveDisasm(currentProject!!.disasmDb)
+//            return
+//        }
+//        val dir = File(ProjectManager.RootFile, currentProject!!.name + "/")
+//        Log.d(TAG, "dirpath=" + dir.absolutePath)
+//        val file = File(dir, "Disassembly_" + Date(System.currentTimeMillis()).toString() + if (mode == 3) ".json" else ".txt")
+//        Log.d(TAG, "filepath=" + file.absolutePath)
+//        dir.mkdirs()
+//        try {
+//            file.createNewFile()
+//        } catch (e: IOException) {
+//            Log.e(TAG, "", e)
+//            Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show()
+//        }
+//        //Editable et=etDetails.getText();
+//        try {
+//            val fos = FileOutputStream(file)
+//            try {
+//                val sb = StringBuilder()
+//                val   /*ListViewItem[]*/items = ArrayList<ListViewItem>()
+//                //items.addAll(adapter.itemList());
+//                for (lvi in items) {
+//                    when (mode) {
+//                        1 -> {
+//                            sb.append(lvi.address)
+//                            sb.append("\t")
+//                            sb.append(lvi.bytes)
+//                            sb.append("\t")
+//                            sb.append(lvi.instruction)
+//                            sb.append(" ")
+//                            sb.append(lvi.operands)
+//                            sb.append("\t")
+//                            sb.append(lvi.comments)
+//                        }
+//                        2 -> {
+//                            sb.append(lvi.address)
+//                            sb.append(":")
+//                            sb.append(lvi.instruction)
+//                            sb.append(" ")
+//                            sb.append(lvi.operands)
+//                            sb.append("  ;")
+//                            sb.append(lvi.comments)
+//                        }
+//                        3 -> sb.append(lvi.toString())
+//                    }
+//                    sb.append(System.lineSeparator())
+//                }
+//                fos.write(sb.toString().toByteArray())
+//            } catch (e: IOException) {
+//                alertError("", e)
+//                return
+//            }
+//        } catch (e: FileNotFoundException) {
+//            alertError("", e)
+//        }
+//        AlertSaveSuccess(file)
+//    }
 
-    private fun SaveDisasmRaw() {
-        val dir = File(ProjectManager.RootFile, currentProject!!.name + "/")
-        Log.d(TAG, "dirpath=" + dir.absolutePath)
-        val file = File(dir, "Disassembly.raw")
-        Log.d(TAG, "filepath=" + file.absolutePath)
-        dir.mkdirs()
-        try {
-            file.createNewFile()
-        } catch (e: IOException) {
-            Log.e(TAG, "", e)
-            Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show()
-        }
-        try {
-            val fos = FileOutputStream(file)
-            val oos = ObjectOutputStream(fos)
-            oos.writeObject(disasmResults)
-            oos.close()
-        } catch (e: IOException) {
-            alertError(getString(R.string.failSaveFile), e)
-            return
-        }
-        AlertSaveSuccess(file)
-    }
+//    private fun SaveDisasmRaw() {
+//        val dir = File(ProjectManager.RootFile, currentProject!!.name + "/")
+//        Log.d(TAG, "dirpath=" + dir.absolutePath)
+//        val file = File(dir, "Disassembly.raw")
+//        Log.d(TAG, "filepath=" + file.absolutePath)
+//        dir.mkdirs()
+//        try {
+//            file.createNewFile()
+//        } catch (e: IOException) {
+//            Log.e(TAG, "", e)
+//            Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show()
+//        }
+//        try {
+//            val fos = FileOutputStream(file)
+//            val oos = ObjectOutputStream(fos)
+//            oos.writeObject(disasmResults)
+//            oos.close()
+//        } catch (e: IOException) {
+//            alertError(getString(R.string.failSaveFile), e)
+//            return
+//        }
+//        AlertSaveSuccess(file)
+//    }
 
-    private fun SaveDetail(runnable: Runnable? = null) {
-        requestAppPermissions(this)
-        if (fpath == null || "".compareTo(fpath!!, ignoreCase = true) == 0) {
-            AlertSelFile()
-            return
-        }
-        if (currentProject == null) {
-            val etName = EditText(this)
-            ShowEditDialog(getString(R.string.newProject), getString(R.string.enterNewProjName), etName, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 ->
-                val projn = etName.text.toString()
-                SaveDetailNewProject(projn)
-                runnable?.run()
-            }, getString(R.string.cancel), DialogInterface.OnClickListener { p1, p2 -> })
-        } else {
-            try {
-                SaveDetailSub(currentProject!!)
-                runnable?.run()
-            } catch (e: IOException) {
-                alertError(getString(R.string.failSaveFile), e)
-            }
-        }
-        //SaveDetailOld();
-    }
+//    private fun SaveDetail(runnable: Runnable? = null) {
+//        requestAppPermissions(this)
+//        if (fpath == null || "".compareTo(fpath!!, ignoreCase = true) == 0) {
+//            AlertSelFile()
+//            return
+//        }
+//        if (currentProject == null) {
+//            val etName = EditText(this)
+//            showEditDialog(getString(R.string.newProject), getString(R.string.enterNewProjName), etName, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 ->
+//                val projn = etName.text.toString()
+//                SaveDetailNewProject(projn)
+//                runnable?.run()
+//            }, getString(R.string.cancel), DialogInterface.OnClickListener { p1, p2 -> })
+//        } else {
+//            try {
+//                SaveDetailSub(currentProject!!)
+//                runnable?.run()
+//            } catch (e: IOException) {
+//                alertError(getString(R.string.failSaveFile), e)
+//            }
+//        }
+//        //SaveDetailOld();
+//    }
+//
+//    private fun SaveDetail(dir: File, file: File) {
+//        dir.mkdirs()
+//        try {
+//            file.createNewFile()
+//        } catch (e: IOException) {
+//            Log.e(TAG, "", e)
+//            Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show()
+//        }
+//        try {
+//            val fos = FileOutputStream(file)
+//            try {
+//                fos.write(parsedFile.toString().toByteArray())
+//            } catch (e: IOException) {
+//                Log.e(TAG, "", e)
+//            }
+//        } catch (e: FileNotFoundException) {
+//            Log.e(TAG, "", e)
+//        }
+//        AlertSaveSuccess(file)
+//    }
+//
+//    private fun SaveDetailNewProject(projn: String) {
+//        try {
+//            val proj = projectManager!!.newProject(projn, fpath)
+//            proj.Open(false)
+//            db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
+//            SaveDetailSub(proj)
+//        } catch (e: IOException) {
+//            alertError(R.string.failCreateProject, e)
+//        }
+//    }
 
-    private fun SaveDetail(dir: File, file: File) {
-        dir.mkdirs()
-        try {
-            file.createNewFile()
-        } catch (e: IOException) {
-            Log.e(TAG, "", e)
-            Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show()
-        }
-        try {
-            val fos = FileOutputStream(file)
-            try {
-                fos.write(parsedFile.toString().toByteArray())
-            } catch (e: IOException) {
-                Log.e(TAG, "", e)
-            }
-        } catch (e: FileNotFoundException) {
-            Log.e(TAG, "", e)
-        }
-        AlertSaveSuccess(file)
-    }
+//    @Throws(IOException::class)
+//    private fun SaveDetailSub(proj: ProjectManager.Project) {
+//        val detailF = proj.getDetailFile() ?: throw IOException("Failed to create detail File")
+//        currentProject = proj
+//        detailF.createNewFile()
+//        SaveDetail(File(ProjectManager.Path), detailF)
+//        proj.Save()
+//    }
+//
+//    private fun SaveDisasmNewProject(projn: String, runnable: Runnable? = null) {
+//        try {
+//            val proj = projectManager!!.newProject(projn, fpath)
+//            currentProject = proj
+//            proj.Open(false)
+//            db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
+//            ShowExportOptions(runnable)
+//            proj.Save()
+//        } catch (e: IOException) {
+//            alertError(getString(R.string.failCreateProject), e)
+//        }
+//    }
 
-    private fun SaveDetailNewProject(projn: String) {
-        try {
-            val proj = projectManager!!.newProject(projn, fpath)
-            proj.Open(false)
-            db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
-            SaveDetailSub(proj)
-        } catch (e: IOException) {
-            alertError(R.string.failCreateProject, e)
-        }
-    }
+//    private fun ShowExportOptions(runnable: Runnable? = null) {
+//        val ListItems: MutableList<String> = ArrayList()
+//        ListItems.add("Raw(Fast,Reloadable)")
+//        ListItems.add("Classic(Addr bytes inst op comment)")
+//        ListItems.add("Simple(Addr: inst op; comment")
+//        ListItems.add("Json")
+//        ListItems.add("Database(.db, reloadable)")
+//        showSelDialog(this, ListItems, getString(R.string.export_as), DialogInterface.OnClickListener { dialog, pos ->
+//            //String selectedText = items[pos].toString();
+//            dialog.dismiss()
+//            val dialog2 = showProgressDialog(getString(R.string.saving))
+//            ExportDisasmSub(pos)
+//            runnable?.run()
+//            dialog2.dismiss()
+//        })
+//    }
 
-    @Throws(IOException::class)
-    private fun SaveDetailSub(proj: ProjectManager.Project) {
-        val detailF = proj.getDetailFile() ?: throw IOException("Failed to create detail File")
-        currentProject = proj
-        detailF.createNewFile()
-        SaveDetail(File(ProjectManager.Path), detailF)
-        proj.Save()
-    }
-
-    private fun SaveDisasmNewProject(projn: String, runnable: Runnable? = null) {
-        try {
-            val proj = projectManager!!.newProject(projn, fpath)
-            currentProject = proj
-            proj.Open(false)
-            db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
-            ShowExportOptions(runnable)
-            proj.Save()
-        } catch (e: IOException) {
-            alertError(getString(R.string.failCreateProject), e)
-        }
-    }
-
-    private fun ShowExportOptions(runnable: Runnable? = null) {
-        val ListItems: MutableList<String> = ArrayList()
-        ListItems.add("Raw(Fast,Reloadable)")
-        ListItems.add("Classic(Addr bytes inst op comment)")
-        ListItems.add("Simple(Addr: inst op; comment")
-        ListItems.add("Json")
-        ListItems.add("Database(.db, reloadable)")
-        showSelDialog(this, ListItems, getString(R.string.export_as), DialogInterface.OnClickListener { dialog, pos ->
-            //String selectedText = items[pos].toString();
-            dialog.dismiss()
-            val dialog2 = showProgressDialog(getString(R.string.saving))
-            ExportDisasmSub(pos)
-            runnable?.run()
-            dialog2.dismiss()
-        })
-    }
-
-    private fun createZip() {
-        var targetFile: File?
-        try {
-            val projFolder = File(ProjectManager.RootFile, currentProject!!.name + "/")
-            val fos = FileOutputStream(File(ProjectManager.RootFile, currentProject!!.name + ".zip").also { targetFile = it })
-            val zos = ZipOutputStream(fos)
-            val targets = projFolder.listFiles()
-            val buf = ByteArray(4096)
-            var readlen: Int
-            for (file in targets) {
-                Log.v(TAG, "writing " + file.name)
-                val ze = ZipEntry(file.name)
-                zos.putNextEntry(ze)
-                val fis = FileInputStream(file)
-                while (fis.read(buf, 0, 4096).also { readlen = it } > 0) zos.write(buf, 0, readlen)
-                zos.closeEntry()
-                fis.close()
-            }
-            zos.close()
-            fos.close()
-        } catch (e: Exception) {
-            alertError(R.string.fail_exportzip, e)
-            targetFile = null
-        }
-        if (targetFile != null) AlertSaveSuccess(targetFile!!)
-    }
-
-    private fun SaveDisasm(disasmF: DatabaseHelper) {
-//        SaveDBAsync().execute(disasmF)
-    }
-
-    private fun SaveDetailOld() {
-        Log.v(TAG, "Saving details")
-        val dir = File(Environment.getExternalStorageDirectory().path + "disasm/")
-        val file = File(dir, File(fpath).name + "_" + Date(System.currentTimeMillis()).toString() + ".details.txt")
-        SaveDetail(dir, file)
-    }
+//    private fun createZip() {
+//        var targetFile: File?
+//        try {
+//            val projFolder = File(ProjectManager.RootFile, currentProject!!.name + "/")
+//            val fos = FileOutputStream(File(ProjectManager.RootFile, currentProject!!.name + ".zip").also { targetFile = it })
+//            val zos = ZipOutputStream(fos)
+//            val targets = projFolder.listFiles()
+//            val buf = ByteArray(4096)
+//            var readlen: Int
+//            for (file in targets) {
+//                Log.v(TAG, "writing " + file.name)
+//                val ze = ZipEntry(file.name)
+//                zos.putNextEntry(ze)
+//                val fis = FileInputStream(file)
+//                while (fis.read(buf, 0, 4096).also { readlen = it } > 0) zos.write(buf, 0, readlen)
+//                zos.closeEntry()
+//                fis.close()
+//            }
+//            zos.close()
+//            fos.close()
+//        } catch (e: Exception) {
+//            alertError(R.string.fail_exportzip, e)
+//            targetFile = null
+//        }
+//        if (targetFile != null) AlertSaveSuccess(targetFile!!)
+//    }
+//
+//    private fun SaveDisasm(disasmF: DatabaseHelper) {
+////        SaveDBAsync().execute(disasmF)
+//    }
+//
+//    private fun SaveDetailOld() {
+//        Log.v(TAG, "Saving details")
+//        val dir = File(Environment.getExternalStorageDirectory().path + "disasm/")
+//        val file = File(dir, File(fpath).name + "_" + Date(System.currentTimeMillis()).toString() + ".details.txt")
+//        SaveDetail(dir, file)
+//    }
 
     ////////////////////////////////////////////End Export - Output/////////////////////////////////////////
 //////////////////////////////////////////////Projects////////////////////////////////////////////////////////////////////////
-    override fun onOpen(proj: ProjectManager.Project) {
-        db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
-        disableEnableControls(false, llmainLinearLayoutSetupRaw)
-        onChoosePath(proj.oriFilePath)
-        currentProject = proj
-        val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
-        val projecteditor = projectsetting.edit()
-        projecteditor.putString(LASTPROJKEY, proj.name)
-        projecteditor.apply()
-        val det = proj.detail
-        if ("" != det) {
-            detailText.setText(det)
-        }
-        val dir = File(ProjectManager.RootFile, currentProject!!.name + "/")
-        Log.d(TAG, "dirpath=" + dir.absolutePath)
-        val file = File(dir, "Disassembly.raw")
-        if (file.exists()) {
-            try {
-                val fis = FileInputStream(file)
-                val ois = ObjectInputStream(fis)
-                disasmResults = ois.readObject() as LongSparseArray<ListViewItem>
-                ois.close()
-            } catch (e: ClassNotFoundException) {
-                alertError(R.string.fail_loadraw, e)
-            } catch (e: IOException) {
-                alertError(R.string.fail_loadraw, e)
-            }
-        } else {
-            disasmResults = LongSparseArray() //(LongSparseArray<ListViewItem>) db.getAll();
-        }
-        if (disasmResults != null) {
-            adapter!!.addAll(disasmResults, SparseArray())
-        } else {
-            disasmResults = LongSparseArray()
-        }
-        shouldSave = true
-    }
+//    override fun onOpen(proj: ProjectManager.Project) {
+//        db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
+//        disableEnableControls(false, llmainLinearLayoutSetupRaw)
+//        onChoosePath(proj.oriFilePath)
+//        currentProject = proj
+//        val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
+//        val projecteditor = projectsetting.edit()
+//        projecteditor.putString(LASTPROJKEY, proj.name)
+//        projecteditor.apply()
+//        val det = proj.detail
+//        if ("" != det) {
+//            detailText.setText(det)
+//        }
+//        val dir = File(ProjectManager.RootFile, currentProject!!.name + "/")
+//        Log.d(TAG, "dirpath=" + dir.absolutePath)
+//        val file = File(dir, "Disassembly.raw")
+//        if (file.exists()) {
+//            try {
+//                val fis = FileInputStream(file)
+//                val ois = ObjectInputStream(fis)
+//                disasmResults = ois.readObject() as LongSparseArray<ListViewItem>
+//                ois.close()
+//            } catch (e: ClassNotFoundException) {
+//                alertError(R.string.fail_loadraw, e)
+//            } catch (e: IOException) {
+//                alertError(R.string.fail_loadraw, e)
+//            }
+//        } else {
+//            disasmResults = LongSparseArray() //(LongSparseArray<ListViewItem>) db.getAll();
+//        }
+//        if (disasmResults != null) {
+//            adapter!!.addAll(disasmResults, SparseArray())
+//        } else {
+//            disasmResults = LongSparseArray()
+//        }
+//        shouldSave = true
+//    }
 
     ////////////////////////////////////////////////End Project//////////////////////////////////////////////
-////TODO: DisassembleFile(long address, int amt);
-    fun DisassembleFile(offset: Long) {
-        Toast.makeText(this, "started", Toast.LENGTH_SHORT).show()
-        Log.v(TAG, "Strted disasm")
-        btnSaveDisasm.isEnabled = false
-        //NOW there's no notion of pause or resume
-        workerThread = Thread(Runnable {
-            val codesection = parsedFile!!.codeSectionBase
-            val start = codesection + offset //elfUtil.getCodeSectionOffset();
-            val limit = parsedFile!!.codeSectionLimit
-            val addr = parsedFile!!.codeVirtAddr + offset
-            Log.v(TAG, "code section point :" + java.lang.Long.toHexString(start))
-            //ListViewItem lvi;
-//	getFunctionNames();
-            val size = limit - start
-            val leftbytes = size
-            //DisasmIterator dai = new DisasmIterator(MainActivity.this,/*mNotifyManager,mBuilder,*/adapter, size);
-//IMPORTANT: un-outcomment here if it causes a bug
-//adapter.setDit(dai);
-            adapter!!.LoadMore(0, addr)
-            //long toresume=dai.getSome(filecontent,start,size,addr,1000000/*, disasmResults*/);
-/*if(toresume<0)
-					 {
-					 AlertError("Failed to disassemble:"+toresume,new Exception());
-					 }else{
-					 disasmManager.setResumeOffsetFromCode(toresume);
-					 }*/disasmResults = adapter!!.itemList()
-            //mNotifyManager.cancel(0);
-//final int len=disasmResults.size();
-//add xrefs
-            runOnUiThread {
-                listview!!.requestLayout()
-                tab2!!.invalidate()
-                btnSaveDisasm!!.isEnabled = true
-                Toast.makeText(this@MainActivity, "done", Toast.LENGTH_SHORT).show()
-            }
-            Log.v(TAG, "disassembly done")
-        })
-        workerThread!!.start()
+    fun disassembleFile(offset: Long) {
+
     }
 
     private fun SendErrorReport(error: Throwable) {
@@ -1153,7 +994,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("1641832e@fire.fundersclub.com"))
         var ver = ""
         try {
-            val pInfo = context!!.packageManager.getPackageInfo(packageName, 0)
+            val pInfo = packageManager.getPackageInfo(packageName, 0)
             ver = pInfo.versionName
         } catch (e: PackageManager.NameNotFoundException) {
             e.printStackTrace()
@@ -1193,13 +1034,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         builder.show()
     }
 
-    private fun setupListView() { //moved to onCreate for avoiding NPE
-//adapter = new DisasmListViewAdapter();
-        listview.adapter = adapter
-        listview.onItemClickListener = DisasmClickListener(this)
-        adapter!!.addAll(disasmManager!!.getItems(), disasmManager!!.address)
-        listview.setOnScrollListener(adapter)
-    }
 
     private fun alertError(p0: Int, e: Exception, sendError: Boolean = true) {
         Log.e(TAG, "" + p0, e)
@@ -1215,8 +1049,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         Toast.makeText(this, "Successfully saved to file: " + file.path, Toast.LENGTH_LONG).show()
     }
 
-    private fun ShowDetail() {
-        detailText.setText(parsedFile.toString())
+    private fun showDetail() {
+
     }
 
     fun jumpto(address: Long) {
@@ -1231,7 +1065,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
     }
 
     private fun isValidAddress(address: Long): Boolean {
-        return if (address > parsedFile!!.fileContents.size + parsedFile!!.codeVirtualAddress) false else address >= 0
+        return if (address > parsedFile!!.fileContents.size + parsedFile!!.codeVirtAddr) false else address >= 0
     }
 
     //////////////////////////////////////////////Input////////////////////////////////////////
@@ -1340,7 +1174,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             if (HandleZipFIle(getRealPathFromURI(uri), inputStream)) {
                 return
             }
-            if (HandleUddFile(getRealPathFromURI(uri), inputStream)) {
+            if (handleUDDFile(getRealPathFromURI(uri), inputStream)) {
                 return
             }
             //ByteArrayOutputStream bis=new ByteArrayOutputStream();
@@ -1403,7 +1237,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
                 if (HandleZipFIle(path, dataInputStream)) return
             }
             if (lowname.endsWith(".udd")) {
-                if (HandleUddFile(path, dataInputStream)) {
+                if (handleUDDFile(path, dataInputStream)) {
                     return
                 }
             }
@@ -1529,7 +1363,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         return false
     }
 
-    private fun HandleUddFile(path: String, `is`: InputStream): Boolean {
+    private fun handleUDDFile(path: String, `is`: InputStream): Boolean {
         return try {
             val data = com.kyhsgeekcode.disassembler.Utils.ProjectManager.ReadUDD(DataInputStream(`is`))
             false //true;
@@ -1546,8 +1380,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
 
         //hexManager.setBytes(filecontent);
 //hexManager.Show(tvHex,0);
-        mainGridViewHex.adapter = HexGridAdapter(filecontent)
-        mainGridViewAscii.adapter = HexAsciiAdapter(filecontent)
+
         //new Analyzer(filecontent).searchStrings();
         if (file.path.endsWith("assets/bin/Data/Managed/Assembly-CSharp.dll")) { //Unity C# dll file
             Logger.v(TAG, "Found C# unity dll")
@@ -1580,11 +1413,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         } else {
             try {
                 setParsedFile(ELFUtil(file, filecontent))
-                AfterParse()
+                afterParse()
             } catch (e: Exception) { //not an elf file. try PE parser
                 try {
                     setParsedFile(PEFile(file, filecontent))
-                    AfterParse()
+                    afterParse()
                 } catch (f: NotThisFormatException) {
                     showAlertDialog(this, "Failed to parse the file(Unknown format). Please setup manually.", "")
                     setParsedFile(RawFile(file, filecontent))
@@ -1603,8 +1436,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
         }
     }
 
-    private fun AfterParse() {
-        val type = parsedFile!!.getMachineType() //elf.header.machineType;
+    private fun afterParse() {
+        val type = parsedFile!!.machineType //elf.header.machineType;
         val archs = getArchitecture(type)
         val arch = archs[0]
         var mode = 0
@@ -1621,10 +1454,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             }
         }
         if (parsedFile !is RawFile) {
-            mainETcodeOffset.setText(java.lang.Long.toHexString(parsedFile!!.codeBase))
-            mainETcodeLimit.setText(java.lang.Long.toHexString(parsedFile!!.codeLimit))
+            mainETcodeOffset.setText(java.lang.Long.toHexString(parsedFile!!.codeSectionBase))
+            mainETcodeLimit.setText(java.lang.Long.toHexString(parsedFile!!.codeSectionLimit))
             mainETentry.setText(java.lang.Long.toHexString(parsedFile!!.entryPoint))
-            mainETvirtaddr.setText(java.lang.Long.toHexString(parsedFile!!.codeVirtualAddress))
+            mainETvirtaddr.setText(java.lang.Long.toHexString(parsedFile!!.codeVirtAddr))
             val mcts = MachineType.values()
             for (i in mcts.indices) {
                 if (mcts[i] == parsedFile!!.machineType) {
@@ -1648,40 +1481,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, OnProjectOpenLis
             autoSymAdapter!!.add(s.name)
         }
         adapter!!.Clear()
-        ShowDetail()
-        parsedFile!!.Disassemble(this)
+        showDetail()
+        disassemble()
         //DisassembleFile(0/*parsedFile.getEntryPoint()*/);
     }
 
-    private fun AllowRawSetup() {
-        disableEnableControls(true, llmainLinearLayoutSetupRaw)
-    }
-
-    private fun getRealPathFromURI(uri: Uri): String {
-        var filePath: String
-        filePath = uri.path ?: return ""
-        //경로에 /storage가 들어가면 real file path로 판단
-        if (filePath.startsWith("/storage")) return filePath
-        val wholeID = DocumentsContract.getDocumentId(uri)
-        //wholeID는 파일명이 abc.zip이라면 /document/B5D7-1CE9:abc.zip와 같습니다.
-// Split at colon, use second item in the array
-        val id = wholeID.split(":").toTypedArray()[0]
-        //Log.e(TAG, "id = " + id);
-        val column = arrayOf(MediaStore.Files.FileColumns.DATA)
-        //파일의 이름을 통해 where 조건식을 만듭니다.
-        val sel = MediaStore.Files.FileColumns.DATA + " LIKE '%" + id + "%'"
-        //External storage에 있는 파일의 DB를 접근하는 방법 입니다.
-        val cursor = contentResolver.query(MediaStore.Files.getContentUri("external"), column, sel, null, null)
-                ?: return ""
-        //SQL문으로 표현하면 아래와 같이 되겠죠????
-//SELECT _dtat FROM files WHERE _data LIKE '%selected file name%'
-        val columnIndex = cursor.getColumnIndex(column[0])
-        if (cursor.moveToFirst()) {
-            filePath = cursor.getString(columnIndex)
-        }
-        cursor.close()
-        return filePath
-    }
 
     private fun showProgressDialog(s: String): ProgressDialog {
         val dialog = ProgressDialog(this)

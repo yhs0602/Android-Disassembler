@@ -10,9 +10,20 @@ import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_hexview.*
 //TODO: Add a cusom HEX view
 class HexFragment : Fragment() {
+    val ARG_PARAM = "param"
+    private lateinit var fileContent : ByteArray
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let{
+            fileContent = it.getByteArray(ARG_PARAM)!!
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater.inflate(R.layout.fragment_analysis_result, container, false)!!
 
+    var touchSource : View? = null
+    var clickSource : View? = null
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -68,5 +79,25 @@ class HexFragment : Fragment() {
 				public void onScrollStateChanged(AbsListView view, int scrollState) {}
 			});
 			*/
+        mainGridViewHex.adapter = HexGridAdapter(fileContent)
+        mainGridViewAscii.adapter = HexAsciiAdapter(fileContent)
+    }
+
+    companion object {
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment using the provided parameters.
+         *
+         * @param fileContent Parameter 1.
+         * @return A new instance of fragment HexFragment.
+         */
+        // TODO: Rename and change types and number of parameters
+        @JvmStatic
+        fun newInstance(fileContent: ByteArray) =
+                HexFragment().apply {
+                    arguments = Bundle().apply {
+                        putByteArray(ARG_PARAM, fileContent)
+                    }
+                }
     }
 }

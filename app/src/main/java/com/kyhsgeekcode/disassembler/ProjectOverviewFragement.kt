@@ -16,12 +16,6 @@ class ProjectOverviewFragement : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         selFile.setOnClickListener {
-            //            val lst: MutableList<String> = ArrayList()
-//            lst.add("Choose file")
-//            lst.add("Choose APK")
-//            showSelDialog(activity,lst, "Choose file/APK?", DialogInterface.OnClickListener { _, which->
-//                0->showFileChooser
-//            })
             val j = Intent(activity, NewFileChooserActivity::class.java)
             startActivityForResult(j, MainActivity.REQUEST_SELECT_FILE_NEW) //Control goes to activity
         }

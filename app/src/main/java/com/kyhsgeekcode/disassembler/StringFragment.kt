@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.fragment_string.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -58,8 +59,8 @@ class StringFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        stringAdapter = FoundStringAdapter()
-        stringlistView.adapter = stringAdapter
+        val stringAdapter = FoundStringAdapter()
+        stringListVIew.adapter = stringAdapter
     }
 
     override fun onDetach() {

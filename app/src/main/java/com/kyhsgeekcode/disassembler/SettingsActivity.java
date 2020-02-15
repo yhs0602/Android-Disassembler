@@ -21,8 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Set;
 
-import static com.kyhsgeekcode.disassembler.PermissionUtilsKt.requestAppPermissions;
-import static com.kyhsgeekcode.disassembler.UIUtilsKt.ShowEditDialog;
+import static com.kyhsgeekcode.disassembler.UIUtilsKt.showEditDialog;
 
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
 
@@ -37,7 +36,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             if (val == prefnames.length) {
                 //Add new
                 final EditText et = new EditText(this);
-                ShowEditDialog(this, "New theme", "Set name for the theme..", et,
+                showEditDialog(this, "New theme", "Set name for the theme..", et,
                         "Create", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface p1, int p2) {

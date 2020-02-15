@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/mainLinearLayoutSetupRaw"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fileNameText">
+
+        <TextView
+            android:id="@+id/tvFoffCS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/FoffsCS"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toStartOf="@id/mainETcodeOffset"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/mainETcodeOffset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:autofillHints=""
+            android:ems="10"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvFoffCS"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvFoffCSe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/FoffsCSEd"
+            app:layout_constraintEnd_toStartOf="@id/mainETcodeLimit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainETcodeOffset" />
+
+        <EditText
+            android:id="@+id/mainETcodeLimit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:ems="10"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvFoffCSe"
+            app:layout_constraintTop_toBottomOf="@+id/mainETcodeOffset" />
+
+        <TextView
+            android:id="@+id/tvVaEP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/VAofEP"
+            app:layout_constraintEnd_toStartOf="@id/mainETentry"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainETcodeLimit" />
+
+        <EditText
+            android:id="@+id/mainETentry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:autofillHints=""
+            android:ems="10"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvVaEP"
+            app:layout_constraintTop_toBottomOf="@id/mainETcodeLimit" />
+
+        <TextView
+            android:id="@+id/tvVACS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/VAofCS"
+            app:layout_constraintEnd_toStartOf="@id/mainETvirtaddr"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainETentry" />
+
+        <EditText
+            android:id="@+id/mainETvirtaddr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:ems="10"
+            android:inputType="number"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tvVACS"
+            app:layout_constraintTop_toBottomOf="@id/mainETentry" />
+
+        <TextView
+            android:id="@+id/mainTVarch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:text="@string/architecture"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            app:layout_constraintEnd_toStartOf="@id/mainSpinnerArch"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainETvirtaddr" />
+
+        <Spinner
+            android:id="@+id/mainSpinnerArch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown"
+            app:layout_constraintStart_toEndOf="@id/mainTVarch"
+            app:layout_constraintTop_toBottomOf="@id/mainETvirtaddr" />
+
+        <Button
+            android:id="@+id/mainBTFinishSetup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/finish_setup"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mainTVarch" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/mainBTOverrideAuto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/override_autosetup"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mainLinearLayoutSetupRaw" />
+</LinearLayout>

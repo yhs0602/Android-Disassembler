@@ -1,6 +1,10 @@
 package com.kyhsgeekcode
 
 import android.content.ClipData
+import android.content.res.Resources
+import android.net.Uri
+import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.util.Log
 import at.pollaknet.api.facile.Facile
 import org.apache.commons.compress.archivers.ArchiveEntry
@@ -9,11 +13,13 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.utils.IOUtils
 import org.apache.commons.io.FileUtils
+import splitties.init.appCtx
 import splitties.systemservices.clipboardManager
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
+import kotlin.math.roundToInt
 
 
 fun extractZip(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ -> }) {
@@ -170,4 +176,37 @@ fun deleteRecursive(fileOrDirectory: File) {
 fun setClipBoard(s: String?) {
     val clip = ClipData.newPlainText("Android Disassembler", s)
     clipboardManager.setPrimaryClip(clip)
+}
+
+private fun getRealPathFromURI(uri: Uri): String {
+    var filePath: String
+    filePath = uri.path ?: return ""
+    //경로에 /storage가 들어가면 real file path로 판단
+    if (filePath.startsWith("/storage")) return filePath
+    val wholeID = DocumentsContract.getDocumentId(uri)
+    //wholeID는 파일명이 abc.zip이라면 /document/B5D7-1CE9:abc.zip와 같습니다.
+// Split at colon, use second item in the array
+    val id = wholeID.split(":").toTypedArray()[0]
+    //Log.e(TAG, "id = " + id);
+    val column = arrayOf(MediaStore.Files.FileColumns.DATA)
+    //파일의 이름을 통해 where 조건식을 만듭니다.
+    val sel = MediaStore.Files.FileColumns.DATA + " LIKE '%" + id + "%'"
+    //External storage에 있는 파일의 DB를 접근하는 방법 입니다.
+    val cursor = appCtx.contentResolver.query(MediaStore.Files.getContentUri("external"), column, sel, null, null)
+            ?: return ""
+    //SQL문으로 표현하면 아래와 같이 되겠죠????
+//SELECT _dtat FROM files WHERE _data LIKE '%selected file name%'
+    val columnIndex = cursor.getColumnIndex(column[0])
+    if (cursor.moveToFirst()) {
+        filePath = cursor.getString(columnIndex)
+    }
+    cursor.close()
+    return filePath
+}
+
+//https://stackoverflow.com/a/48351453/8614565
+fun convertDpToPixel(dp: Float): Int {
+    val metrics = Resources.getSystem().displayMetrics
+    val px = dp * (metrics.densityDpi / 160f)
+    return px.roundToInt()
 }

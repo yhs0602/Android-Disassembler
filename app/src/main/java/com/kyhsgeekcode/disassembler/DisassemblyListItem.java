@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 import static com.kyhsgeekcode.disassembler.UtilsKt.bytesToHex;
 
-public class ListViewItem implements Serializable {
+public class DisassemblyListItem implements Serializable {
     String address, bytes, label, instruction, operands, comments, condition;
     DisasmResult disasmResult;
 
     //Capstone.CsInsn insn;
-    public ListViewItem(String address, String bytes, String label, String instruction, String operands, String comments, String condition) {
+    public DisassemblyListItem(String address, String bytes, String label, String instruction, String operands, String comments, String condition) {
         this.address = address;
         this.bytes = bytes;
         this.label = label;
@@ -20,7 +20,7 @@ public class ListViewItem implements Serializable {
         //this.disasmResult = disasmResult;
     }
 
-    public ListViewItem(DisasmResult disasmResult) {
+    public DisassemblyListItem(DisasmResult disasmResult) {
         this.disasmResult = disasmResult;
         this.address = Long.toHexString(disasmResult.address);
         byte[] bytestmp = new byte[disasmResult.size];
@@ -50,7 +50,7 @@ public class ListViewItem implements Serializable {
      this.operands=insn.opStr;
      }
      */
-    public ListViewItem() {
+    public DisassemblyListItem() {
 
     }
 

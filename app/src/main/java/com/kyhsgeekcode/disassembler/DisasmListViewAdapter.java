@@ -1,8 +1,6 @@
 package com.kyhsgeekcode.disassembler;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.SparseArray;
@@ -13,6 +11,8 @@ import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import static com.kyhsgeekcode.UtilKt.convertDpToPixel;
 
 public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScrollListener {
     public static final int INSERT_COUNT = 80;
@@ -52,14 +52,14 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         if (totalItemCount < 2)
             return;
-        currentAddress = ((ListViewItem) getItem(firstVisibleItem)).disasmResult.address;
+        currentAddress = ((DisassemblyListItem) getItem(firstVisibleItem)).disasmResult.address;
         //Log.v(TAG,"onScroll("+firstVisibleItem+","+visibleItemCount+","+totalItemCount);
         // 리스트뷰가 구성이 완료되어 보이는 경우
         if (view.isShown()) {
             // 리스트뷰의 *0* 번 인덱스 항목이 리스트뷰의 상단에 보이고 있는 경우
             if (firstVisibleItem == totalItemCount - visibleItemCount) {
                 // 항목을 추가한다.
-                ListViewItem lvi = (ListViewItem) getItem(totalItemCount - 1);//itemsNew.get(totalItemCount-1);
+                DisassemblyListItem lvi = (DisassemblyListItem) getItem(totalItemCount - 1);//itemsNew.get(totalItemCount-1);
                 LoadMore(totalItemCount, lvi.disasmResult.address + lvi.disasmResult.size);
 //				String str;
 //				for(int i = 0; i < INSERT_COUNT; i++) {
@@ -128,7 +128,7 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
     //private long lvLength=0;
     //LinkedList ll;
 
-    public void addAll(/*ArrayList*/LongSparseArray<ListViewItem> data, SparseArray<Long> addr) {
+    public void addAll(/*ArrayList*/LongSparseArray<DisassemblyListItem> data, SparseArray<Long> addr) {
         this.itemsNew = data;//.clone();
         this.address = addr;//.clone();
         //for(;;)
@@ -143,7 +143,7 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
     }
 
     //You should not modify
-    public /*ArrayList*/LongSparseArray<ListViewItem> itemList() {
+    public /*ArrayList*/LongSparseArray<DisassemblyListItem> itemList() {
         return itemsNew;///*listViewItemList;//*/new ArrayList<ListViewItem>().addAll(listViewItemList);
     }
 
@@ -158,7 +158,7 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.listview_item, parent, false);
         }
-        Palette palette = colorHelper.getPalette();
+        Palette palette = ColorHelper.INSTANCE.getPalette();
         // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
         TextView addrTextView = convertView.findViewById(R.id.tvAddr);
         TextView bytesTextView = convertView.findViewById(R.id.tvBytes);
@@ -184,8 +184,8 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
 //			spannable.setSpan(new ForegroundColorSpan(Color.WHITE), text.length(), (text + CepVizyon.getPhoneCode()).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 //
 //			myTextView.setText(spannable, TextView.BufferType.SPANNABLE);
-            ListViewItem listViewItem = (ListViewItem) getItem(position);//listViewItemList/*[position];*/.get(position);
-            DisasmResult dar = listViewItem.disasmResult;
+            DisassemblyListItem disassemblyListItem = (DisassemblyListItem) getItem(position);//listViewItemList/*[position];*/.get(position);
+            DisasmResult dar = disassemblyListItem.disasmResult;
             //int bkColor=ColorHelper.getBkColor( listViewItem.disasmResult.groups,listViewItem.disasmResult.groups_count);
             //int txtColor=ColorHelper.getTxtColor(listViewItem.disasmResult.groups,listViewItem.disasmResult.groups_count);
             //if(listViewItem.isBranch()){
@@ -208,13 +208,13 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
             labelTextView.setTextColor(defTxtColor);
             operandTextView.setTextColor(palette.getTxtColorByGrps(dar.groups, dar.groups_count, dar.id));
 
-            addrTextView.setText(listViewItem.getAddress());
-            bytesTextView.setText(listViewItem.getBytes());
-            commentTextView.setText(listViewItem.getComments());
-            condTextView.setText(listViewItem.getCondition());
-            instTextView.setText(listViewItem.getInstruction());
-            labelTextView.setText(listViewItem.getLabel());
-            operandTextView.setText(listViewItem.getOperands());
+            addrTextView.setText(disassemblyListItem.getAddress());
+            bytesTextView.setText(disassemblyListItem.getBytes());
+            commentTextView.setText(disassemblyListItem.getComments());
+            condTextView.setText(disassemblyListItem.getCondition());
+            instTextView.setText(disassemblyListItem.getInstruction());
+            labelTextView.setText(disassemblyListItem.getLabel());
+            operandTextView.setText(disassemblyListItem.getOperands());
             //    iconImageView.setImageDrawable(listViewItem.getIcon());
         }
         return convertView;
@@ -225,7 +225,7 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
     //position->address
     SparseArray<Long> address = new SparseArray<Long>();
     //address->item
-    private LongSparseArray<ListViewItem> itemsNew = new LongSparseArray<>();
+    private LongSparseArray<DisassemblyListItem> itemsNew = new LongSparseArray<>();
     int writep = 0;
 
     private DisasmIterator dit;
@@ -235,7 +235,7 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
         //this.address.clear();
         Log.d(TAG, "LoadMore" + position + "," + writep + "," + address);
         writep = position;
-        dit.getSome(file.fileContents, address + file.codeBase - file.codeVirtualAddress/*address-file.codeVirtualAddress*/, file.fileContents.length, address, INSERT_COUNT);
+        dit.getSome(file.fileContents, address + file.getCodeSectionBase() - file.getCodeVirtAddr()/*address-file.codeVirtualAddress*/, file.fileContents.length, address, INSERT_COUNT);
     }
 
     // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
@@ -248,16 +248,16 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
     public Object getItem(int position) {
         Long addrl = address.get(position);
         if (addrl == null)
-            return new ListViewItem();//? FIXME. crashes when rotated screen here, NPE.
+            return new DisassemblyListItem();//? FIXME. crashes when rotated screen here, NPE.
         long addr = addrl.longValue();
-        ListViewItem lvi = itemsNew.get(addr);
+        DisassemblyListItem lvi = itemsNew.get(addr);
         if (lvi == null) {
             LoadMore(position, addr);
         }
         return lvi;
     }
 
-    public void addItem(ListViewItem item) {
+    public void addItem(DisassemblyListItem item) {
         itemsNew.put(item.disasmResult.address, item);
         address.put(writep, Long.valueOf(item.disasmResult.address));
         writep++;//continuously add
@@ -295,23 +295,21 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
     }
 
     public void addItem(DisasmResult disasm) {
-        ListViewItem item = new ListViewItem(disasm);
+        DisassemblyListItem item = new DisassemblyListItem(disasm);
         addItem(item);
         //notifyDataSetChanged();
     }
 
-    ColorHelper colorHelper;
     private int architecture;
 
-    public DisasmListViewAdapter(AbstractFile file, ColorHelper ch, MainActivity ma) {
+    public DisasmListViewAdapter(AbstractFile file) {
         this.file = file;
-        colorHelper = ch;
         architecture = 0;//FIXME:clarification needed but OK now
         //address=//new long[file.fileContents.length];//Use sparseArray if oom
-        mainactivity = ma;
+//        mainactivity = ma;
 
         //IMPORTANT Note: total arg is unused
-        dit = new DisasmIterator(ma,this,0);
+        dit = new DisasmIterator(this, 0);
     }
 
     public void setArchitecture(int architecture) {
@@ -322,14 +320,7 @@ public class DisasmListViewAdapter extends BaseAdapter implements ListView.OnScr
         return architecture;
     }
 
-    //https://stackoverflow.com/a/48351453/8614565
-    public static int convertDpToPixel(float dp) {
-        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
-        float px = dp * (metrics.densityDpi / 160f);
-        return Math.round(px);
-    }
-
-    public int dp180 = convertDpToPixel(180);
-    public int dp260 = convertDpToPixel(260);
+    private int dp180 = convertDpToPixel(180);
+    private int dp260 = convertDpToPixel(260);
 }
 //http://recipes4dev.tistory.com/m/43

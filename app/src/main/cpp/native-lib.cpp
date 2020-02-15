@@ -190,7 +190,7 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "ArrayListcls");
     jclass darcls = env->FindClass("com/kyhsgeekcode/disassembler/DisasmResult");
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "Disasmresult");
-    jclass lvicls = env->FindClass("com/kyhsgeekcode/disassembler/ListViewItem");
+    jclass lvicls = env->FindClass("com/kyhsgeekcode/disassembler/DisassemblyListItem");
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "Listviewitem");
     jclass thecls = env->GetObjectClass(thiz);
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "thizclass");
@@ -206,7 +206,7 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
     jmethodID notify = env->GetMethodID(thecls, "showNoti", "(I)I");
     __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "shownotimethod");
     jmethodID additem = env->GetMethodID(thecls, "AddItem",
-                                         "(Lcom/kyhsgeekcode/disassembler/ListViewItem;)V");
+                                         "(Lcom/kyhsgeekcode/disassembler/DisassemblyListItem;)V");
     int done = 0;
     // allocate memory cache for 1 instruction, to be used by cs_disasm_iter later.
     cs_insn *insn = cs_malloc(handle);

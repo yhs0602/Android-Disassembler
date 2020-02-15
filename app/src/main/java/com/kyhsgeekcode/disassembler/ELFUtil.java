@@ -72,8 +72,8 @@ public class ELFUtil extends AbstractFile {
 
     @Override
     public long getCodeSectionBase() {
-        if (codeBase != 0) {
-            return codeBase;
+        if (codeSectionBase != 0) {
+            return codeSectionBase;
         }
         Log.e(TAG, "Code base 0?");
         //Do some error
@@ -390,9 +390,9 @@ public class ELFUtil extends AbstractFile {
                 if (name != null) {
                     Log.i(TAG, "name nonnull:name=" + name);
                     if (name.equals(".text")) {
-                        codeBase = sh.fileOffset;
-                        codeLimit = codeBase + sh.size;
-                        codeVirtualAddress = sh.virtualAddress;
+                        codeSectionBase = sh.fileOffset;
+                        codeSectionLimit = codeSectionBase + sh.size;
+                        codeVirtAddr = sh.virtualAddress;
                     }
                 }
             }

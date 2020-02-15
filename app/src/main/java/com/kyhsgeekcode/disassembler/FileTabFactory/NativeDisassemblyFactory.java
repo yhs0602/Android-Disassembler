@@ -45,7 +45,7 @@ public class NativeDisassemblyFactory extends FileTabContentFactory {
             adapter = new DisasmListViewAdapter(file, ColorHelper.getInstance(), (MainActivity) context);
 
             Log.v(TAG,"");
-            MachineType type = file.getMachineType();//elf.header.machineType;
+            MachineType type = file.machineType;//elf.header.machineType;
             int[] archs = MainActivity.getArchitecture(type);
             int arch = archs[0];
             int mode = 0;

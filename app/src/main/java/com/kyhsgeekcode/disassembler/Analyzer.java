@@ -56,7 +56,7 @@ public class Analyzer {
         //List<String> list=new ArrayList<>();
         //char lastch=0;
         int strstart = -1;
-        adapter.Reset();
+        adapter.reset();
         for (int i = 0; i < bytes.length; ++i) {
             char v = (char) (bytes[i] & 0xFF);
             //Log.v(TAG,""+v);
@@ -73,7 +73,7 @@ public class Analyzer {
                     fs.offset = offset;
                     fs.string = str;
                     //Log.v(TAG,str);
-                    adapter.AddItem(fs);
+                    adapter.addItem(fs);
                 } else {
                     //Logger.v(TAG,"Ignoring short string at:"+offset);
                 }

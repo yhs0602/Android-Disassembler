@@ -44,9 +44,9 @@ public class PEFile extends AbstractFile {
         //byte[] bytes=imd.getArchitecture();
         //int machine=ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getShort()&0xFFFF;
         machineType = getMachineTypeFromPE(machine);
-        codeBase = oph.getBaseOfCode();
-        codeLimit = codeBase + oph.getSizeOfCode();
-        codeVirtualAddress = oph.getImageBase() + codeBase;
+        codeSectionBase = oph.getBaseOfCode();
+        codeSectionLimit = codeSectionBase + oph.getSizeOfCode();
+        codeVirtAddr = oph.getImageBase() + codeSectionBase;
         entryPoint = oph.getAddressOfEntryPoint();
         fileContents = filec;
         //Setup symbol table

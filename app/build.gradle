@@ -12,11 +12,11 @@ android {
     defaultConfig {
         applicationId "com.kyhsgeekcode.disassembler"
         minSdkVersion 19
-        targetSdkVersion 29
+        targetSdkVersion 28
         versionCode 9
         versionName "1.5.0"
         multiDexEnabled true
-        //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        //testInstrumentationRunner "android.support.test.runner.   AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
                 cppFlags ""
@@ -78,6 +78,7 @@ dependencies {
 
 //    implementation 'mnemonik:mnemonik:2.0.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 }
 repositories {
     mavenCentral()

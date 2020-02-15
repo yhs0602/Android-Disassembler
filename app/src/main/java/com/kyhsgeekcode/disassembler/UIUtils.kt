@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.res.Resources
+import android.view.ViewGroup
 import android.widget.EditText
 
 fun getScreenHeight(): Int {
@@ -26,7 +27,7 @@ fun showYesNoCancelDialog(a: Activity?, title: String?, content: String?,
 
 ///////////////////////////////////Show***Dialog/////////////////////////////////////
 //The first arg should be a valid Activity or Service! android.view.WindowManager$BadTokenException: Unable to add window -- token null is not for an application
-fun ShowEditDialog(a: Activity?, title: String?, message: String?, edittext: EditText?,
+fun showEditDialog(a: Activity?, title: String?, message: String?, edittext: EditText?,
                    positive: String?, pos: DialogInterface.OnClickListener?,
                    negative: String?, neg: DialogInterface.OnClickListener?) {
     val builder = AlertDialog.Builder(a)
@@ -60,3 +61,13 @@ fun showAlertDialog(a: Activity?, title: String?, content: String?) {
     showAlertDialog(a, title, content, null)
 }
 
+//https://stackoverflow.com/a/8127716/8614565
+fun disableEnableControls(enable: Boolean, vg: ViewGroup?) {
+    for (i in 0 until vg!!.childCount) {
+        val child = vg.getChildAt(i)
+        child.isEnabled = enable
+        if (child is ViewGroup) {
+            disableEnableControls(enable, child)
+        }
+    }
+}
