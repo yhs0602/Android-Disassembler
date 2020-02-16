@@ -329,7 +329,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupLeftDrawer() {
         //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         // Set the adapter for the list view
-        left_drawer.setAdapter(FileDrawerListAdapter(this).also { mDrawerAdapter = it }) //new ArrayAdapter<String>(MainActivity.this,
+        left_drawer.setAdapter(FileDrawerListAdapter().also { mDrawerAdapter = it }) //new ArrayAdapter<String>(MainActivity.this,
         //R.layout.row, mProjNames));
         val initialDrawers: MutableList<FileDrawerListItem> = ArrayList()
         initialDrawers.add(FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD, TAG_INSTALLED, 0))

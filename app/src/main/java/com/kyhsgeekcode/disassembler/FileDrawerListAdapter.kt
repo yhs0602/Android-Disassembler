@@ -1,12 +1,10 @@
 package com.kyhsgeekcode.disassembler
 
-import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import at.pollaknet.api.facile.Facile
 import at.pollaknet.api.facile.FacileReflector
 import at.pollaknet.api.facile.symtab.TypeKind
@@ -18,6 +16,7 @@ import com.kyhsgeekcode.getDrawable
 import org.jf.baksmali.Main
 import pl.openrnd.multilevellistview.ItemInfo
 import pl.openrnd.multilevellistview.MultiLevelListAdapter
+import splitties.init.appCtx
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -27,8 +26,9 @@ import java.nio.ByteOrder
 import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
+import kotlin.experimental.and
 
-class FileDrawerListAdapter(private val context: Context) : MultiLevelListAdapter() {
+class FileDrawerListAdapter : MultiLevelListAdapter() {
     var mAlwaysExpandend = false
     override fun isExpandable(anObject: Any): Boolean {
         val item = anObject as FileDrawerListItem
@@ -39,7 +39,7 @@ class FileDrawerListAdapter(private val context: Context) : MultiLevelListAdapte
         val items: MutableList<FileDrawerListItem> = ArrayList()
         val item = anObject as FileDrawerListItem
         //Moved From MainActivity.java
-        Toast.makeText(context, item.caption, Toast.LENGTH_SHORT).show()
+//        Toast.makeText(context, item.caption, Toast.LENGTH_SHORT).show()
         //
         val initialLevel = item.level
         val newLevel = initialLevel + 1
@@ -112,16 +112,16 @@ class FileDrawerListAdapter(private val context: Context) : MultiLevelListAdapte
                                 }
                             })
                         } else {
-                            items.add(FileDrawerListItem("The folder is empty", context.getDrawable(android.R.drawable.ic_secure), newLevel))
+                            items.add(FileDrawerListItem("The folder is empty", getDrawable(android.R.drawable.ic_secure), newLevel))
                         }
                     } else {
-                        items.add(FileDrawerListItem("Could not be read!", context.getDrawable(android.R.drawable.ic_secure), newLevel))
+                        items.add(FileDrawerListItem("Could not be read!", getDrawable(android.R.drawable.ic_secure), newLevel))
                     }
                 }
             }
             DrawerItemType.ZIP, DrawerItemType.APK -> {
                 val path = item.tag as String
-                val targetDirectory = File(File(context.filesDir, "/extracted/"), File(path).name + "/")
+                val targetDirectory = File(File(appCtx.filesDir, "/extracted/"), File(path).name + "/")
                 targetDirectory.mkdirs()
                 try {
                     val zi = ZipInputStream(FileInputStream(path))
@@ -149,12 +149,12 @@ class FileDrawerListAdapter(private val context: Context) : MultiLevelListAdapte
                     return getSubObjects(FileDrawerListItem(targetDirectory, initialLevel))
                 } catch (e: IOException) {
                     Log.e("FileAdapter", "", e)
-                    items.add(FileDrawerListItem("NO", context.getDrawable(android.R.drawable.ic_secure), newLevel))
+                    items.add(FileDrawerListItem("NO", getDrawable(android.R.drawable.ic_secure), newLevel))
                 }
             }
             DrawerItemType.DEX -> {
                 val filename = item.tag as String
-                val targetDirectory = File(File(context.filesDir, "/dex-decompiled/"), File(filename).name + "/")
+                val targetDirectory = File(File(appCtx.filesDir, "/dex-decompiled/"), File(filename).name + "/")
                 targetDirectory.mkdirs()
                 Main.main(arrayOf("d", "-o", targetDirectory.absolutePath, filename))
                 return getSubObjects(FileDrawerListItem(targetDirectory, initialLevel))
@@ -203,7 +203,7 @@ class FileDrawerListAdapter(private val context: Context) : MultiLevelListAdapte
     private fun getValueFromTypeKindAndBytes(bytes: ByteArray, kind: Int): Any {
         val bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
         return when (kind) {
-            TypeKind.ELEMENT_TYPE_BOOLEAN -> bytes[0] != 0
+            TypeKind.ELEMENT_TYPE_BOOLEAN -> bytes[0].toInt() != 0
             TypeKind.ELEMENT_TYPE_CHAR -> bytes[0].toChar()
             TypeKind.ELEMENT_TYPE_I -> bb.int
             TypeKind.ELEMENT_TYPE_I1 -> bb.get()
@@ -211,8 +211,8 @@ class FileDrawerListAdapter(private val context: Context) : MultiLevelListAdapte
             TypeKind.ELEMENT_TYPE_I4 -> bb.int
             TypeKind.ELEMENT_TYPE_I8 -> bb.long
             TypeKind.ELEMENT_TYPE_U -> bb.long
-            TypeKind.ELEMENT_TYPE_U1 -> bb.get() and 0xFF
-            TypeKind.ELEMENT_TYPE_U2 -> bb.short and 0xFFFF
+            TypeKind.ELEMENT_TYPE_U1 -> bb.get() and 0xFF.toByte()
+            TypeKind.ELEMENT_TYPE_U2 -> bb.short and 0xFFFF.toShort()
             TypeKind.ELEMENT_TYPE_U4 -> bb.int
             TypeKind.ELEMENT_TYPE_U8 -> bb.long
             TypeKind.ELEMENT_TYPE_R4 -> bb.float
@@ -231,7 +231,7 @@ class FileDrawerListAdapter(private val context: Context) : MultiLevelListAdapte
         val viewHolder: ViewHolder
         if (convertView == null) {
             viewHolder = ViewHolder()
-            convertView = LayoutInflater.from(context).inflate(R.layout.filedraweritem, null)
+            convertView = LayoutInflater.from(appCtx).inflate(R.layout.filedraweritem, null)
             viewHolder.nameView = convertView.findViewById(R.id.fileDrawerTextView)
             //viewHolder.levelBeamView = (LevelBeamView) convertView.findViewById(R.id.dataItemLevelBeam);
             convertView.tag = viewHolder
@@ -242,7 +242,7 @@ class FileDrawerListAdapter(private val context: Context) : MultiLevelListAdapte
         viewHolder.nameView!!.text = item.caption
         val compounds = arrayOfNulls<Drawable>(4)
         if (itemInfo.isExpandable && !mAlwaysExpandend) {
-            compounds[0] = context.getDrawable(if (itemInfo.isExpanded) android.R.drawable.arrow_up_float else android.R.drawable.arrow_down_float)
+            compounds[0] = getDrawable(if (itemInfo.isExpanded) android.R.drawable.arrow_up_float else android.R.drawable.arrow_down_float)
         } else {
             compounds[0] = null
         }
@@ -261,7 +261,7 @@ class FileDrawerListAdapter(private val context: Context) : MultiLevelListAdapte
         Log.d(TAG, "type=" + type.name)
         var i = iconTable[type]
         if (i == null) i = android.R.drawable.ic_delete
-        return context.getDrawable(i)
+        return getDrawable(i)
     }
 
     companion object {
