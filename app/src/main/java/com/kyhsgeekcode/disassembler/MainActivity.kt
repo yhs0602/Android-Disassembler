@@ -329,14 +329,10 @@ class MainActivity : AppCompatActivity() {
     private fun setupLeftDrawer() {
         //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         // Set the adapter for the list view
-        left_drawer.setAdapter(FileDrawerListAdapter(this@MainActivity).also { mDrawerAdapter = it }) //new ArrayAdapter<String>(MainActivity.this,
+        left_drawer.setAdapter(FileDrawerListAdapter(this).also { mDrawerAdapter = it }) //new ArrayAdapter<String>(MainActivity.this,
         //R.layout.row, mProjNames));
-        val initialDrawers: MutableList<FileDrawerListItem?> = ArrayList()
-        initialDrawers.add(FileDrawerListItem("Installed", FileDrawerListItem.DrawerItemType.HEAD, TAG_INSTALLED, 0))
-        initialDrawers.add(FileDrawerListItem("Internal Storage", FileDrawerListItem.DrawerItemType.HEAD, TAG_STORAGE, 0))
-        initialDrawers.add(FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROJECTS, 0))
-        initialDrawers.add(FileDrawerListItem("Processes-requires root", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROCESSES, 0))
-        //initialDrawers.add(new FileDrawerListItem("Running apps", FileDrawerListItem.DrawerItemType.HEAD, TAG_RUNNING_APPS, 0));
+        val initialDrawers: MutableList<FileDrawerListItem> = ArrayList()
+        initialDrawers.add(FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD, TAG_INSTALLED, 0))
         mDrawerAdapter!!.setDataItems(initialDrawers)
         mDrawerAdapter!!.notifyDataSetChanged()
         left_drawer.setOnItemClickListener(object : OnItemClickListener {
@@ -345,10 +341,10 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, fitem.caption, Toast.LENGTH_SHORT).show()
                 if (!fitem.isOpenable) return
                 showYesNoCancelDialog(this@MainActivity, "Open file", "Open " + fitem.caption + "?", DialogInterface.OnClickListener { dialog, which ->
-                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
-                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
-                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
-                    }
+//                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
+//                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
+//                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
+//                    }
                 }, null, null)
             }
 

@@ -32,7 +32,7 @@ object ProjectManager {
     val projectModelToPath: MutableMap<ProjectModel, String> = HashMap()
     val projectPaths: MutableSet<String> = HashSet()
     val rootdir = appCtx.getExternalFilesDir(null)!!.resolve("projects/")
-
+    var currentProject: ProjectModel? = null
     init {
         val sharedPreference = appCtx.getSharedPreferences("ProjectManager", Context.MODE_PRIVATE)
         val paths = sharedPreference.getStringSet("projectsPaths", setOf(""))!!

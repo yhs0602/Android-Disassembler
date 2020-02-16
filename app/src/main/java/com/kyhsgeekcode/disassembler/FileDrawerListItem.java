@@ -191,7 +191,7 @@ public class FileDrawerListItem {
         this.level = level;
     }
 
-    public boolean IsExpandable() {
+    public boolean isExpandable() {
         return expandables.contains(type);
     }
 

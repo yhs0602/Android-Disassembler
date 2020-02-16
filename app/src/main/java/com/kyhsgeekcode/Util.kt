@@ -6,6 +6,7 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
+import androidx.core.content.ContextCompat
 import at.pollaknet.api.facile.Facile
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveException
@@ -210,3 +211,5 @@ fun convertDpToPixel(dp: Float): Int {
     val px = dp * (metrics.densityDpi / 160f)
     return px.roundToInt()
 }
+
+fun getDrawable(id: Int) = ContextCompat.getDrawable(appCtx, id)

@@ -1,10 +1,7 @@
 package com.kyhsgeekcode.disassembler
 
-import android.app.ActivityManager
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
-import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +12,9 @@ import at.pollaknet.api.facile.FacileReflector
 import at.pollaknet.api.facile.symtab.TypeKind
 import at.pollaknet.api.facile.symtab.symbols.Type
 import com.kyhsgeekcode.disassembler.FileDrawerListItem.DrawerItemType
+import com.kyhsgeekcode.disassembler.project.ProjectManager
+import com.kyhsgeekcode.disassembler.project.models.ProjectModel
+import com.kyhsgeekcode.getDrawable
 import org.jf.baksmali.Main
 import pl.openrnd.multilevellistview.ItemInfo
 import pl.openrnd.multilevellistview.MultiLevelListAdapter
@@ -32,7 +32,7 @@ class FileDrawerListAdapter(private val context: Context) : MultiLevelListAdapte
     var mAlwaysExpandend = false
     override fun isExpandable(anObject: Any): Boolean {
         val item = anObject as FileDrawerListItem
-        return item.IsExpandable()
+        return item.isExpandable
     }
 
     override fun getSubObjects(anObject: Any): List<*> {
@@ -46,46 +46,22 @@ class FileDrawerListAdapter(private val context: Context) : MultiLevelListAdapte
         when (item.type) {
             DrawerItemType.HEAD -> {
                 when (item.tag as Int) {
-                    MainActivity.TAG_INSTALLED -> {
-                        val pm = context.packageManager
-                        val ais = pm.getInstalledApplications(0)
-                        Collections.sort(ais) { o1, o2 ->
-                            val applabel1 = pm.getApplicationLabel(o1) as String
-                            val applabel2 = pm.getApplicationLabel(o2) as String
-                            applabel1.compareTo(applabel2)
-                        }
-                        for (ai in ais) {
-                            val applabel = pm.getApplicationLabel(ai) as String
-                            val caption = applabel + "(" + ai.packageName + ")"
-                            var drawable: Drawable?
-                            drawable = try {
-                                pm.getApplicationIcon(ai.packageName)
-                            } catch (e: PackageManager.NameNotFoundException) {
-                                Log.e("FileAdapter", "Fail icon", e)
-                                context.getDrawable(android.R.drawable.sym_def_app_icon)
-                            }
-                            val newitem = FileDrawerListItem(caption, drawable, newLevel)
-                            newitem.tag = ai.sourceDir
-                            newitem.type = DrawerItemType.APK
-                            items.add(newitem)
-                        }
-                    }
-                    MainActivity.TAG_STORAGE -> {
-                        items.add(FileDrawerListItem(File("/"), newLevel))
-                        items.add(FileDrawerListItem(Environment.getExternalStorageDirectory(), newLevel))
-                    }
-                    MainActivity.TAG_PROJECTS -> items.add(FileDrawerListItem("Not implemented :O", context.getDrawable(android.R.drawable.ic_secure), newLevel))
-                    MainActivity.TAG_PROCESSES -> items.add(FileDrawerListItem("Not implemented :0", context.getDrawable(android.R.drawable.ic_secure), newLevel))
-                    MainActivity.TAG_RUNNING_APPS -> {
-                        val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-                        val runnings = am.runningAppProcesses
-                        for (info in runnings) {
-                            val caption = info.processName + " (pid " + info.pid + ", uid " + info.uid + ")"
-                            //info.pkgList
-                            items.add(FileDrawerListItem(caption, context.getDrawable(android.R.drawable.ic_secure), newLevel))
+                    MainActivity.TAG_PROJECTS -> {
+                        val curProj = ProjectManager.currentProject
+                        if (curProj == null) {
+                            items.add(FileDrawerListItem("Nothing opened",
+                                    getDrawable(android.R.drawable.ic_secure), newLevel))
+                        } else {
+                            items.add(FileDrawerListItem(curProj.name,
+                                    getDrawable(android.R.drawable.ic_secure), newLevel))
                         }
                     }
                 }
+            }
+            DrawerItemType.PROJECT -> {
+                val projectModel = item.tag as ProjectModel
+                val file = File(projectModel.sourceFilePath)
+                items.add(FileDrawerListItem(file, newLevel))
             }
             DrawerItemType.FOLDER -> {
                 val path = item.tag as String
