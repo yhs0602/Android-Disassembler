@@ -35,11 +35,16 @@ import com.kyhsgeekcode.disassembler.RealPathUtils.getRealPathFromURI
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_ALL
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_MAX
 import com.kyhsgeekcode.disassembler.models.Architecture.getArchitecture
+import com.kyhsgeekcode.disassembler.project.ProjectManager
+import com.kyhsgeekcode.disassembler.project.models.ProjectModel
+import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
+import com.kyhsgeekcode.isArchive
 import com.kyhsgeekcode.rootpicker.FileSelectorActivity
 import com.stericson.RootTools.RootTools
 import kotlinx.android.synthetic.main.main.*
+import kotlinx.serialization.UnstableDefault
 import nl.lxtreme.binutils.elf.MachineType
 import org.apache.commons.io.FilenameUtils
 import pl.openrnd.multilevellistview.ItemInfo
@@ -108,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 //    var clickSource: View? = null
     var llmainLinearLayoutSetupRaw: ConstraintLayout? = null
 
-//    var tab1: LinearLayout? = null
+    //    var tab1: LinearLayout? = null
     var tab2: LinearLayout? = null
     //FileTabContentFactory factory = new FileTabContentFactory(this);
     val textFactory: FileTabContentFactory = TextFileTabFactory(this)
@@ -169,7 +174,7 @@ class MainActivity : AppCompatActivity() {
     //DisasmIterator disasmIterator
     private var mCustomDialog: ChooseColumnDialog? = null
     private var adapter: DisasmListViewAdapter? = null
-//    val runnableRequestLayout = Runnable {
+    //    val runnableRequestLayout = Runnable {
 //        //adapter.notifyDataSetChanged();
 //        listview!!.requestLayout()
 //    }
@@ -207,11 +212,9 @@ class MainActivity : AppCompatActivity() {
     /////////////////////////////////////////Activity Life Cycle///////////////////////////////////////////////////
     override fun onResume() {
         super.onResume()
-        if (colorHelper != null) {
-            if (colorHelper!!.isUpdatedColor) {
-                listview!!.refreshDrawableState()
-                colorHelper!!.isUpdatedColor = false
-            }
+        if (ColorHelper.isUpdatedColor) {
+            listview!!.refreshDrawableState()
+            ColorHelper.isUpdatedColor = false
         }
     }
 
@@ -223,6 +226,8 @@ class MainActivity : AppCompatActivity() {
         val pagerAdapter = ViewPagerAdapter(supportFragmentManager)
         pagerMain.adapter = pagerAdapter
         tablayout.setupWithViewPager(pagerMain)
+
+        pagerAdapter.addFragment(ProjectOverviewFragment.newInstance(), "Overview")
 
         setupSymCompleteAdapter()
         toDoAfterPermQueue.add(Runnable {
@@ -297,7 +302,7 @@ class MainActivity : AppCompatActivity() {
         if (intent.action == Intent.ACTION_VIEW) { // User opened this app from file browser
             val filePath = intent.data?.path
             Log.d(TAG, "intent path=$filePath")
-            var toks: Array<String?> = filePath!!.split(Pattern.quote("."))!!.toTypedArray()
+            var toks: Array<String?> = filePath!!.split(Pattern.quote(".")).toTypedArray()
             val last = toks.size - 1
             val ext: String?
             if (last >= 1) {
@@ -652,6 +657,7 @@ class MainActivity : AppCompatActivity() {
         tvOperands.visibility = if (isShowOperands) View.VISIBLE else View.GONE
         tvComments.visibility = if (isShowComment) View.VISIBLE else View.GONE
     }
+
     //////////////////////////////////////////////End Column Picking///////////////////////////////////////////////////
 //////////////////////////////////////////////////////UI Utility///////////////////////////////////////////////////
     fun showToast(s: String?) {
@@ -1136,6 +1142,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @UnstableDefault
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SELECT_FILE) {
@@ -1158,8 +1165,34 @@ class MainActivity : AppCompatActivity() {
                 val openAsProject = data.getBooleanExtra("openProject", false)
                 Log.v(TAG, "FileItem.text:" + fi.text)
                 Log.v(TAG, "Open as project$openAsProject")
+                if (fi.file?.isArchive() == true) {
+                }
+                onChoosePathNew(fi.file)
+//                val project = ProjectManager.newProject(fi.file!!, ProjectType.APK, if(openAsProject) fi.file?.name else null)
+//                initializeDrawer(project)
             }
         }
+    }
+
+    @UnstableDefault
+    private fun onChoosePathNew(file: File) {
+        showYesNoDialog(this, "Copy contents",
+                "Do you want to copy the target file to the app's project folder? It is recommended",
+                DialogInterface.OnClickListener { dlg, which ->
+                    val project = ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, true)
+                    initializeDrawer(project)
+                },
+                DialogInterface.OnClickListener { dlg, which ->
+                    val project = ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, false)
+                    initializeDrawer(project)
+                }
+        )
+    }
+
+    private fun initializeDrawer(project: ProjectModel) {
+        //project.sourceFilePath
+        val sourceFileOrFolder = File(project.sourceFilePath)
+
     }
 
     private fun onChoosePath(uri: Uri) {
@@ -1467,7 +1500,7 @@ class MainActivity : AppCompatActivity() {
         }
         //if(arch==CS_ARCH_X86){
         adapter!!.architecture = arch //wider operands
-        colorHelper!!.setArchitecture(arch)
+        ColorHelper.architecture = arch
         //}
         shouldSave = true
         val list = parsedFile!!.getSymbols()
@@ -1561,57 +1594,9 @@ class MainActivity : AppCompatActivity() {
 //            progress!!.progress = a[0]
 //            //Log.d(TAG + " onProgressUpdate", "You are in progress update ... " + a[0]);
 //        } /*
-//		 protected void onPostExecute(Void result) {
-//		 super.onPostExecute(result);
-//		 //Log.d(TAG + " onPostExecute", "" + result);
-//		 }
-//		 */
-//    }
-//
-//    internal inner class SaveDisasmAsync : AsyncTask<Void?, Int?, Void?>() {
-//        //String TAG = getClass().getSimpleName();
-//        var builder: AlertDialog.Builder? = null
-//        var progress: ProgressBar? = null
-//        override fun onPreExecute() {
-//            super.onPreExecute()
-//            Log.d("$TAG PreExceute", "On pre Exceute......")
-//            progress = ProgressBar(this@MainActivity)
-//            progress!!.isIndeterminate = false
-//            builder = AlertDialog.Builder(this@MainActivity)
-//            builder!!.setTitle("Saving..").setView(progress)
-//            builder!!.show()
-//        }
-//
-//        protected override fun doInBackground(vararg list: Void): Void? {
-//            Log.d("$TAG DoINBkGnd", "On doInBackground...")
-//            SaveDisasmRaw()
-//            return null
-//        }
-//
-//        protected override fun onProgressUpdate(vararg a: Int) {
-//            super.onProgressUpdate(*a)
-//            progress!!.progress = a[0]
-//            //Log.d(TAG + " onProgressUpdate", "You are in progress update ... " + a[0]);
-//        } /*
-//		 protected void onPostExecute(Void result) {
-//		 super.onPostExecute(result);
-//		 //Log.d(TAG + " onPostExecute", "" + result);
-//		 }
-//		 */
-//    }
-
-    private inner class DrawerItemClickListener : AdapterView.OnItemClickListener {
-        override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) { //selectItem(position);
-            if (view is TextView) {
-                val projname = view.text.toString()
-                projectManager!!.Open(projname)
-            }
-        }
-    }
-
-    init {
-        factoryList.add(textFactory)
-        factoryList.add(imageFactory)
-        factoryList.add(nativeDisasmFactory)
-    }
+//6
+    factoryList.add(textFactory)
+    factoryList.add(imageFactory)
+    factoryList.add(nativeDisasmFactory)
+}
 }

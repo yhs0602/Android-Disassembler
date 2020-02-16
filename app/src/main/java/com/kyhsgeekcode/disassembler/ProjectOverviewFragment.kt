@@ -1,14 +1,17 @@
 package com.kyhsgeekcode.disassembler
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
+import com.kyhsgeekcode.filechooser.model.FileItem
 import kotlinx.android.synthetic.main.fragment_project_overview.*
 
-class ProjectOverviewFragement : Fragment() {
+class ProjectOverviewFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater.inflate(R.layout.fragment_project_overview, container, false)!!
@@ -21,5 +24,16 @@ class ProjectOverviewFragement : Fragment() {
         }
         fileNameText.isFocusable = false
         fileNameText.isEnabled = false
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+    }
+
+    companion object {
+        fun newInstance(): ProjectOverviewFragment {
+            return ProjectOverviewFragment()
+        }
     }
 }

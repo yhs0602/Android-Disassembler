@@ -9,5 +9,5 @@ object ProjectType {
     val WIN64 = "win64"
     val IL = "il"
     val DEX = "dex"
-
+    val UNKNOWN = "unknown"
 }

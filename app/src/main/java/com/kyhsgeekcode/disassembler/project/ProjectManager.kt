@@ -10,7 +10,6 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
 import org.json.JSONException
 import splitties.init.appCtx
 import java.io.File
@@ -70,21 +69,37 @@ object ProjectManager {
     /**
      * Creates a ProjectModel and registers the project_info.json path.
      *
-     * @param file the target file to analyze
+     * @param targetFileOrFolder the target file or directory to analyze
      * @param projectType should be ProjectType
-     * @param projectName the name of project
+     * @param projectName the name of project. should be valid file name
      * @author KYHSGeekCode
      * @return the project model created
      */
-    fun newProject(file: File, projectType: String, projectName: String? = null): ProjectModel {
+    fun newProject(targetFileOrFolder: File, projectType: String, projectName: String, copy: Boolean = true): ProjectModel {
 //        require(if (useDefault) true else file.isDirectory)
         val projectModel: ProjectModel
-        val projectFolder = rootdir.resolve("default")
+        val projectFolder = rootdir.resolve(projectName.toValidFileName())
         projectFolder.delete()
         projectFolder.mkdirs()
         val projectInfoFile = projectFolder.resolve("project_info.json")
-        projectModel = ProjectModel(projectName
-                ?: "default", projectFolder.path, projectType, file.path)
+        val genFolder = projectFolder.resolve("generated")
+        val origFolder = projectFolder.resolve("original")
+        origFolder.mkdirs()
+        genFolder.mkdirs()
+        val determinedSourceFolder : File
+        if(copy) {
+            val copyTargetFileOrFolder = origFolder.resolve(targetFileOrFolder.name)
+            if(!targetFileOrFolder.isDirectory)
+                FileUtils.copyFile(targetFileOrFolder, copyTargetFileOrFolder)
+            else
+                FileUtils.copyDirectory(targetFileOrFolder, copyTargetFileOrFolder)
+            determinedSourceFolder = copyTargetFileOrFolder
+        } else {
+            determinedSourceFolder = targetFileOrFolder
+        }
+
+        projectModel = ProjectModel(projectName, genFolder.path, projectType, determinedSourceFolder.path)
+
         projectModels[projectInfoFile.path] = projectModel
         projectPaths.add(projectInfoFile.absolutePath)
         projectModelToPath[projectModel] = projectInfoFile.absolutePath
@@ -154,7 +169,7 @@ object ProjectManager {
         val outZipFile = outDir.resolve("DisassemblerProject_${projectModel.name.toValidFileName()}.zip")
         saveAsZip(outZipFile,
                 Pair(projectModel.sourceFilePath, "sourceFilePath"),
-                Pair(projectModel.baseFolder, "baseFolder"),
+                Pair(projectModel.generatedFolder, "baseFolder"),
                 Pair(projectModelToPath[projectModel]!!, "project_info.json"))
         return true
     }

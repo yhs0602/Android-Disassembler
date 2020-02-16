@@ -71,3 +71,14 @@ fun disableEnableControls(enable: Boolean, vg: ViewGroup?) {
         }
     }
 }
+
+fun showYesNoDialog(a: Activity?, title: String?, content: String?,
+                    pos: DialogInterface.OnClickListener?,
+                    neg: DialogInterface.OnClickListener?) {
+    val builder = AlertDialog.Builder(a)
+    builder.setTitle(title)
+    builder.setCancelable(false)
+    builder.setMessage(content)
+    builder.setPositiveButton(android.R.string.ok, pos).setNegativeButton(android.R.string.no, neg)
+    builder.show()
+}

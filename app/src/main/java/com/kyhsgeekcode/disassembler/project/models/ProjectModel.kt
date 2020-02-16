@@ -10,8 +10,8 @@ data class ProjectModel(
         /**
          * The folder for temp analysis files
          */
-        @SerialName("baseFolder")
-        var baseFolder: String,
+        @SerialName("generated")
+        var generatedFolder: String,
         @SerialName("projectType")
         var projectType: String,
         /**

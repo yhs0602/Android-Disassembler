@@ -1,0 +1,313 @@
+package com.kyhsgeekcode.disassembler
+
+import android.app.ActivityManager
+import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
+import android.os.Environment
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.TextView
+import android.widget.Toast
+import at.pollaknet.api.facile.Facile
+import at.pollaknet.api.facile.FacileReflector
+import at.pollaknet.api.facile.symtab.TypeKind
+import at.pollaknet.api.facile.symtab.symbols.Type
+import com.kyhsgeekcode.disassembler.FileDrawerListItem.DrawerItemType
+import org.jf.baksmali.Main
+import pl.openrnd.multilevellistview.ItemInfo
+import pl.openrnd.multilevellistview.MultiLevelListAdapter
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.util.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+
+class FileDrawerListAdapter(private val context: Context) : MultiLevelListAdapter() {
+    var mAlwaysExpandend = false
+    override fun isExpandable(anObject: Any): Boolean {
+        val item = anObject as FileDrawerListItem
+        return item.IsExpandable()
+    }
+
+    override fun getSubObjects(anObject: Any): List<*> {
+        val items: MutableList<FileDrawerListItem> = ArrayList()
+        val item = anObject as FileDrawerListItem
+        //Moved From MainActivity.java
+        Toast.makeText(context, item.caption, Toast.LENGTH_SHORT).show()
+        //
+        val initialLevel = item.level
+        val newLevel = initialLevel + 1
+        when (item.type) {
+            DrawerItemType.HEAD -> {
+                when (item.tag as Int) {
+                    MainActivity.TAG_INSTALLED -> {
+                        val pm = context.packageManager
+                        val ais = pm.getInstalledApplications(0)
+                        Collections.sort(ais) { o1, o2 ->
+                            val applabel1 = pm.getApplicationLabel(o1) as String
+                            val applabel2 = pm.getApplicationLabel(o2) as String
+                            applabel1.compareTo(applabel2)
+                        }
+                        for (ai in ais) {
+                            val applabel = pm.getApplicationLabel(ai) as String
+                            val caption = applabel + "(" + ai.packageName + ")"
+                            var drawable: Drawable?
+                            drawable = try {
+                                pm.getApplicationIcon(ai.packageName)
+                            } catch (e: PackageManager.NameNotFoundException) {
+                                Log.e("FileAdapter", "Fail icon", e)
+                                context.getDrawable(android.R.drawable.sym_def_app_icon)
+                            }
+                            val newitem = FileDrawerListItem(caption, drawable, newLevel)
+                            newitem.tag = ai.sourceDir
+                            newitem.type = DrawerItemType.APK
+                            items.add(newitem)
+                        }
+                    }
+                    MainActivity.TAG_STORAGE -> {
+                        items.add(FileDrawerListItem(File("/"), newLevel))
+                        items.add(FileDrawerListItem(Environment.getExternalStorageDirectory(), newLevel))
+                    }
+                    MainActivity.TAG_PROJECTS -> items.add(FileDrawerListItem("Not implemented :O", context.getDrawable(android.R.drawable.ic_secure), newLevel))
+                    MainActivity.TAG_PROCESSES -> items.add(FileDrawerListItem("Not implemented :0", context.getDrawable(android.R.drawable.ic_secure), newLevel))
+                    MainActivity.TAG_RUNNING_APPS -> {
+                        val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                        val runnings = am.runningAppProcesses
+                        for (info in runnings) {
+                            val caption = info.processName + " (pid " + info.pid + ", uid " + info.uid + ")"
+                            //info.pkgList
+                            items.add(FileDrawerListItem(caption, context.getDrawable(android.R.drawable.ic_secure), newLevel))
+                        }
+                    }
+                }
+            }
+            DrawerItemType.FOLDER -> {
+                val path = item.tag as String
+                val thisFolder = File(path)
+                if (thisFolder.isDirectory) {
+                    if (thisFolder.canRead()) {
+                        val files = thisFolder.listFiles()
+                        if (files.size > 0) {
+                            for (file in files) {
+                                items.add(FileDrawerListItem(file, newLevel))
+                            }
+                            Collections.sort(items, object : Comparator<FileDrawerListItem> {
+                                override fun compare(p1: FileDrawerListItem, p2: FileDrawerListItem): Int {
+                                    val cdir = compareDir(p1, p2)
+                                    return if (cdir == 0) {
+                                        if (p1.caption.endsWith("/")) {
+                                            if (p1.caption == "/") {
+                                                return -1
+                                            }
+                                            if (p2.caption == "/") {
+                                                return 1
+                                            }
+                                            if (p1.caption == "../") {
+                                                return -1
+                                            }
+                                            if (p2.caption == "../") {
+                                                1
+                                            } else p1.caption.compareTo(p2.caption)
+                                        } else {
+                                            p1.caption.compareTo(p2.caption)
+                                        }
+                                    } else {
+                                        cdir
+                                    }
+                                }
+
+                                fun compareDir(p1: FileDrawerListItem, p2: FileDrawerListItem): Int {
+                                    if (p1.caption.endsWith("/")) {
+                                        return if (p2.caption.endsWith("/")) {
+                                            0
+                                        } else {
+                                            -1
+                                        }
+                                    } else if (p2.caption.endsWith("/")) {
+                                        return 1
+                                    }
+                                    return p1.caption.compareTo(p2.caption)
+                                }
+                            })
+                        } else {
+                            items.add(FileDrawerListItem("The folder is empty", context.getDrawable(android.R.drawable.ic_secure), newLevel))
+                        }
+                    } else {
+                        items.add(FileDrawerListItem("Could not be read!", context.getDrawable(android.R.drawable.ic_secure), newLevel))
+                    }
+                }
+            }
+            DrawerItemType.ZIP, DrawerItemType.APK -> {
+                val path = item.tag as String
+                val targetDirectory = File(File(context.filesDir, "/extracted/"), File(path).name + "/")
+                targetDirectory.mkdirs()
+                try {
+                    val zi = ZipInputStream(FileInputStream(path))
+                    var entry: ZipEntry
+                    val buffer = ByteArray(2048)
+                    while (zi.nextEntry.also { entry = it } != null) {
+                        val outfile = File(targetDirectory, entry.name)
+                        val canonicalPath = outfile.canonicalPath
+                        if (!canonicalPath.startsWith(targetDirectory.canonicalPath)) {
+                            throw SecurityException("The file may have a Zip Path Traversal Vulnerability." +
+                                    "Is the file trusted?")
+                        }
+                        outfile.parentFile.mkdirs()
+                        var output: FileOutputStream? = null
+                        try {
+                            output = FileOutputStream(outfile)
+                            var len = 0
+                            while (zi.read(buffer).also { len = it } > 0) {
+                                output.write(buffer, 0, len)
+                            }
+                        } finally { // we must always close the output file
+                            output?.close()
+                        }
+                    }
+                    return getSubObjects(FileDrawerListItem(targetDirectory, initialLevel))
+                } catch (e: IOException) {
+                    Log.e("FileAdapter", "", e)
+                    items.add(FileDrawerListItem("NO", context.getDrawable(android.R.drawable.ic_secure), newLevel))
+                }
+            }
+            DrawerItemType.DEX -> {
+                val filename = item.tag as String
+                val targetDirectory = File(File(context.filesDir, "/dex-decompiled/"), File(filename).name + "/")
+                targetDirectory.mkdirs()
+                Main.main(arrayOf("d", "-o", targetDirectory.absolutePath, filename))
+                return getSubObjects(FileDrawerListItem(targetDirectory, initialLevel))
+            }
+            DrawerItemType.PE_IL -> try {
+                val facileReflector = Facile.load(item.tag as String)
+                //load the assembly
+                val assembly = facileReflector.loadAssembly()
+                val types = assembly.allTypes
+                for (type in types) {
+                    items.add(FileDrawerListItem(type.namespace + "." + type.name, DrawerItemType.PE_IL_TYPE, arrayOf(facileReflector, type), newLevel))
+                }
+            } catch (e: Exception) {
+                Logger.e("FileAdapter", "", e)
+            }
+            DrawerItemType.PE_IL_TYPE -> {
+                val cont = item.tag as Array<Any>
+                val fr = cont[0] as FacileReflector
+                val type = cont[1] as Type
+                val fields = type.fields
+                val methods = type.methods
+                for (field in fields) {
+                    val c = field.constant
+                    var fieldDesc: String? = field.name + ":" + field.typeRef.name
+                    if (c != null) {
+                        val kind = c.elementTypeKind
+                        val bytes = c.value
+                        val value = getValueFromTypeKindAndBytes(bytes, kind)
+                        fieldDesc += "(="
+                        fieldDesc += value
+                        fieldDesc += ")"
+                    }
+                    items.add(FileDrawerListItem(fieldDesc, DrawerItemType.FIELD, null, newLevel))
+                }
+                for (method in methods) {
+                    items.add(FileDrawerListItem(method.name + method.methodSignature, DrawerItemType.METHOD, arrayOf(fr, method), newLevel))
+                }
+            }
+        }
+        //if expandable yes.
+//if folder show subfolders
+//if zip/apk unzip and show
+        return items
+    }
+
+    private fun getValueFromTypeKindAndBytes(bytes: ByteArray, kind: Int): Any {
+        val bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+        return when (kind) {
+            TypeKind.ELEMENT_TYPE_BOOLEAN -> bytes[0] != 0
+            TypeKind.ELEMENT_TYPE_CHAR -> bytes[0].toChar()
+            TypeKind.ELEMENT_TYPE_I -> bb.int
+            TypeKind.ELEMENT_TYPE_I1 -> bb.get()
+            TypeKind.ELEMENT_TYPE_I2 -> bb.short
+            TypeKind.ELEMENT_TYPE_I4 -> bb.int
+            TypeKind.ELEMENT_TYPE_I8 -> bb.long
+            TypeKind.ELEMENT_TYPE_U -> bb.long
+            TypeKind.ELEMENT_TYPE_U1 -> bb.get() and 0xFF
+            TypeKind.ELEMENT_TYPE_U2 -> bb.short and 0xFFFF
+            TypeKind.ELEMENT_TYPE_U4 -> bb.int
+            TypeKind.ELEMENT_TYPE_U8 -> bb.long
+            TypeKind.ELEMENT_TYPE_R4 -> bb.float
+            TypeKind.ELEMENT_TYPE_R8 -> bb.double
+            TypeKind.ELEMENT_TYPE_STRING -> String(bytes)
+            else -> "Unknown!!!!"
+        }
+    }
+
+    private inner class ViewHolder {
+        var nameView: TextView? = null //ImageView arrowView;
+    }
+
+    override fun getViewForObject(anObject: Any, convertView: View, itemInfo: ItemInfo): View {
+        var convertView = convertView
+        val viewHolder: ViewHolder
+        if (convertView == null) {
+            viewHolder = ViewHolder()
+            convertView = LayoutInflater.from(context).inflate(R.layout.filedraweritem, null)
+            viewHolder.nameView = convertView.findViewById(R.id.fileDrawerTextView)
+            //viewHolder.levelBeamView = (LevelBeamView) convertView.findViewById(R.id.dataItemLevelBeam);
+            convertView.tag = viewHolder
+        } else {
+            viewHolder = convertView.tag as ViewHolder
+        }
+        val item = anObject as FileDrawerListItem
+        viewHolder.nameView!!.text = item.caption
+        val compounds = arrayOfNulls<Drawable>(4)
+        if (itemInfo.isExpandable && !mAlwaysExpandend) {
+            compounds[0] = context.getDrawable(if (itemInfo.isExpanded) android.R.drawable.arrow_up_float else android.R.drawable.arrow_down_float)
+        } else {
+            compounds[0] = null
+        }
+        compounds[3] = if (item.drawable == null) getDrawableFromType(item.type) else item.drawable
+        for (drawable in compounds) {
+            drawable?.setBounds(0, 0, 40, 40)
+        }
+        viewHolder.nameView!!.setCompoundDrawablesRelative(compounds[0], compounds[1], compounds[2], compounds[3])
+        //viewHolder.levelBeamView.setLevel(itemInfo.getLevel());
+//Log.d("FileAdapter", "Level:" + item.level);
+        viewHolder.nameView!!.setPaddingRelative(item.level * 30, 0, 0, 0)
+        return convertView
+    }
+
+    private fun getDrawableFromType(type: DrawerItemType): Drawable? {
+        Log.d(TAG, "type=" + type.name)
+        var i = iconTable[type]
+        if (i == null) i = android.R.drawable.ic_delete
+        return context.getDrawable(i)
+    }
+
+    companion object {
+        private const val TAG = "FileAdapter"
+        private val iconTable: MutableMap<DrawerItemType, Int> = HashMap()
+
+        init {
+            iconTable[DrawerItemType.APK] = R.drawable.apk
+            iconTable[DrawerItemType.BINARY] = R.drawable.ic_bin
+            iconTable[DrawerItemType.DEX] = R.drawable.ic_dex
+            iconTable[DrawerItemType.DISASSEMBLY] = R.drawable.doc
+            iconTable[DrawerItemType.FOLDER] = R.drawable.ic_folder_icon
+            iconTable[DrawerItemType.HEAD] = R.drawable.ic_folder_icon
+            iconTable[DrawerItemType.NORMAL] = R.drawable.ic_file
+            iconTable[DrawerItemType.PE] = R.drawable.ic_executable
+            iconTable[DrawerItemType.PE_IL] = R.drawable.ic_dotnet
+            iconTable[DrawerItemType.PROJECT] = R.drawable.ic_launcher
+            iconTable[DrawerItemType.ZIP] = R.drawable.zip
+            iconTable[DrawerItemType.PE_IL_TYPE] = R.drawable.ic_type
+            iconTable[DrawerItemType.FIELD] = R.drawable.ic_field
+            iconTable[DrawerItemType.METHOD] = R.drawable.ic_method
+        }
+    }
+
+}

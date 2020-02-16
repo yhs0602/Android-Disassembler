@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Environment
 import android.util.Log
+import androidx.core.content.ContextCompat
 import at.pollaknet.api.facile.Facile
 import com.kyhsgeekcode.*
 import com.kyhsgeekcode.disassembler.R
@@ -27,19 +28,20 @@ open class FileItem : Serializable {
     }
 
     private fun getAppropriateDrawable(): Drawable? {
+        var id: Int = R.drawable.ic_file
         if (file?.isDexFile() == true) {
-            return appCtx.getDrawable(R.drawable.ic_dex)
+            id = R.drawable.ic_dex
         }
         if (file?.isDirectory == true) {
-            return appCtx.getDrawable(R.drawable.ic_folder_icon)
+            id = R.drawable.ic_folder_icon
         }
         if (file?.isArchive() == true) {
-            return appCtx.getDrawable(R.drawable.zip)
+            id = R.drawable.zip
         }
         if (file?.isDotnetFile() == true) {
-            return appCtx.getDrawable(R.drawable.ic_dotnet)
+            id = R.drawable.ic_dotnet
         }
-        return appCtx.getDrawable(R.drawable.ic_file)
+        return ContextCompat.getDrawable(appCtx, id)
     }
 
     var text: String = ""
