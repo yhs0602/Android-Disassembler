@@ -1,25 +1,17 @@
-package com.kyhsgeekcode.disassembler;
+package com.kyhsgeekcode.disassembler
 
-import android.util.Log;
+import android.util.Log
+import nl.lxtreme.binutils.elf.Elf
+import nl.lxtreme.binutils.elf.ElfClass
+import nl.lxtreme.binutils.elf.SectionType
+import java.io.File
+import java.io.IOException
+import java.nio.ByteBuffer
+import java.util.*
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import nl.lxtreme.binutils.elf.Elf;
-import nl.lxtreme.binutils.elf.ElfClass;
-import nl.lxtreme.binutils.elf.Header;
-import nl.lxtreme.binutils.elf.ProgramHeader;
-import nl.lxtreme.binutils.elf.SectionHeader;
-import nl.lxtreme.binutils.elf.SectionType;
-
-public class ELFUtil extends AbstractFile {
-    Elf elf;
-    String info = "";
+class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
+    var elf: Elf
+    var info = ""
     /*
      public void ParseData() throws Exception
      {
@@ -34,88 +26,77 @@ public class ELFUtil extends AbstractFile {
      }
      entryPoint = getWord((byte)0, (byte)0, (byte)0, (byte)0);
      }*/
-    //private long entryPoint;
-    //private byte [] fileContents;
-    boolean bExecutable;
-    private String TAG = "Disassembler elfutil";
-
-    public ELFUtil(File file, byte[] filec) throws IOException {
-        elf = new Elf(file);
-        setPath(file.getPath());
-        fileContents = filec;
-        AfterConstructor();
+//private long entryPoint;
+//private byte [] fileContents;
+    var bExecutable = false
+    private val TAG = "Disassembler elfutil"
+    @Throws(IOException::class)
+    override fun close() {
+        elf.close()
     }
 
-    public static native String Demangle(String mangled);
-
-    public static native List<PLT> ParsePLT(String filepath);
-
-    @Override
-    public void close() throws IOException {
-        elf.close();
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder(super.toString());
-        sb.append(System.lineSeparator());
-        importSymbols = getImportSymbols();
-        for (PLT plt : importSymbols) {
-            sb.append(plt).append(System.lineSeparator());
+    override fun toString(): String {
+        val sb = StringBuilder(super.toString())
+        sb.append(System.lineSeparator())
+        importSymbols = getImportSymbols()
+        for (plt in importSymbols!!) {
+            sb.append(plt).append(System.lineSeparator())
         }
-
-        sb.append(elf.toString())
-                //.append(Arrays.toString(symstrings))
-                .append("\n").append(info);
-        return sb.toString();
+        sb.append(elf.toString()) //.append(Arrays.toString(symstrings))
+                .append("\n").append(info)
+        return sb.toString()
     }
 
-    @Override
-    public long getCodeSectionBase() {
-        if (codeSectionBase != 0) {
-            return codeSectionBase;
+    //Do some error
+    override var codeSectionBase: Long
+        get() {
+            if (field != 0L) {
+                return field
+            }
+            Log.e(TAG, "Code base 0?")
+            //Do some error
+            return 0L
         }
-        Log.e(TAG, "Code base 0?");
-        //Do some error
-        return 0L;
-    }
+        set(codeSectionBase) {
+            super.codeSectionBase = codeSectionBase
+        }
 
     //MEMO - Elf file format
-    // REL
-    // RELA has (Offset from sh_info) Info (index to symtab at sh_link, type) value
-    // SYMTAB
-    // DYNSYM
-    // STRTAB
-    public void AfterConstructor() throws IOException {
-        SectionHeader[] sections = elf.sectionHeaders;
+// REL
+// RELA has (Offset from sh_info) Info (index to symtab at sh_link, type) value
+// SYMTAB
+// DYNSYM
+// STRTAB
+    @Throws(IOException::class)
+    fun AfterConstructor() {
+        val sections = elf.sectionHeaders
         //assertNotNull( sections );
-        ProgramHeader[] programHeaders = elf.programHeaders;
+        val programHeaders = elf.programHeaders
         //assertNotNull( programHeaders );
-        machineType = elf.header.machineType;
-        Header header = elf.header;
+        machineType = elf.header.machineType
+        val header = elf.header
         //assertNotNull( header );
-        if (header.entryPoint == 0) {
-            //Log.i(TAG, "file " + file.getName() + "doesnt have entry point. currently set to 0x30");
-            //entryPoint = 0;
+        if (header.entryPoint == 0L) { //Log.i(TAG, "file " + file.getName() + "doesnt have entry point. currently set to 0x30");
+//entryPoint = 0;
         } else {
-            entryPoint = header.entryPoint;
+            entryPoint = header.entryPoint
         }
         //Analyze ExportAddressTable(DynSym)
         if (elf.dynamicTable != null) {
-            StringBuilder sb = new StringBuilder();
-            Log.v(TAG, "size of dynamic table=" + elf.dynamicTable.length);
-            long strtab = 0L;    //pointer to the string table
-            long hash = 0L;
-            int sym_cnt = 0;
-            int i = 0;
-            ByteBuffer dynsymbuffer = ByteBuffer.wrap(new byte[]{});
-            ByteBuffer symbuffer = ByteBuffer.wrap(new byte[]{});
-            byte[] strtable = elf.getDynamicStringTable();
+            val sb = StringBuilder()
+            Log.v(TAG, "size of dynamic table=" + elf.dynamicTable.size)
+            val strtab = 0L //pointer to the string table
+            val hash = 0L
+            val sym_cnt = 0
+            val i = 0
+            val dynsymbuffer = ByteBuffer.wrap(byteArrayOf())
+            val symbuffer = ByteBuffer.wrap(byteArrayOf())
+            val strtable = elf.dynamicStringTable
             //elf.getDynamicSymbolTable();
-            ArrayList<Symbol> dynsyms = new ArrayList<>();
+            val dynsyms = ArrayList<Symbol>()
             //byte[] symtabs=elf.getDynamicSymbolTable();
-            //Syms has DynSyms
-			/*try
+//Syms has DynSyms
+/*try
 			{
 				dynsymbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.DYNSYM));
 				ElfClass elfClass=elf.header.elfClass;
@@ -141,7 +122,7 @@ public class ELFUtil extends AbstractFile {
 						symbol.st_value = value;
 						symbol.analyze();
 						dynsyms.add(symbol);
-						/*sb.append(sym_name).append("=").append(Integer.toHexString(value))
+						/ *sb.append(sym_name).append("=").append(Integer.toHexString(value))
 						 .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
 						 *
 						sb.append(symbol.toString()).append(System.lineSeparator());
@@ -169,7 +150,7 @@ public class ELFUtil extends AbstractFile {
 						symbol.st_value = value;
 						symbol.analyze();
 						dynsyms.add(symbol);
-						/*sb.append(sym_name).append("=").append(Integer.toHexString(value))
+						/ *sb.append(sym_name).append("=").append(Integer.toHexString(value))
 						 .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
 						 *
 						sb.append(symbol.toString()).append(System.lineSeparator());
@@ -179,35 +160,26 @@ public class ELFUtil extends AbstractFile {
 			catch (IllegalArgumentException |IOException e)
 			{
 				Log.e(TAG, "", e);
-			}*/
-            sb.append(System.lineSeparator()).append("syms;").append(System.lineSeparator());
-            if (symbols == null)
-                symbols = new ArrayList<>();
+			}*/sb.append(System.lineSeparator()).append("syms;").append(System.lineSeparator())
+            if (symbols == null) symbols = ArrayList()
             //if (dynsyms != null)
-            //symbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
+//symbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
 //            //First, Analyze Symbol table
 //            ParseSymtab(sb, strtable);
 //            // Second, Analyze Rela table
 //            ArrayList<Rela> relas = new ArrayList<>();
 //            ParseRela(relas);
-            loadBinary(path);
+            loadBinary(path)
             //sort it? this should be after plt parse
-            Collections.sort(symbols, new Comparator<Symbol>() {
-                @Override
-                public int compare(Symbol p1, Symbol p2) {
-                    if (p1.type == p2.type)
-                        return 0;
-                    if (p1.type == Symbol.Type.STT_FUNC)
-                        return -1;
-                    if (p2.type == Symbol.Type.STT_FUNC)
-                        return 1;
-                    return 0;
-                }
-            });
-            for (Symbol sym : symbols) {
-                sb.append(sym.toString());
+            Collections.sort(symbols, Comparator { p1, p2 ->
+                if (p1.type == p2.type) return@Comparator 0
+                if (p1.type == Symbol.Type.STT_FUNC) return@Comparator -1
+                if (p2.type == Symbol.Type.STT_FUNC) 1 else 0
+            })
+            for (sym in symbols!!) {
+                sb.append(sym.toString())
             }
-			/*https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-35166
+            /*https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-35166
 			 Symbol Values
 			 Symbol table entries for different object file types have slightly different interpretations for the st_value member.
 			 In relocatable files, st_value holds alignment constraints for a symbol whose section index is SHN_COMMON.
@@ -215,14 +187,14 @@ public class ELFUtil extends AbstractFile {
 			 In executable and shared object files, st_value holds a virtual address. To make these files' symbols more useful for the runtime linker, the section offset (file interpretation) gives way to a virtual address (memory interpretation) for which the section number is irrelevant.
 			 Although the symbol table values have similar meanings for different object files, the data allow efficient access by the appropriate programs.
 			 */
-			/*https://github.com/torvalds/linux/blob/master/include/uapi/linux/elf.h
-			 /* 32-bit ELF base types.
+/*https://github.com/torvalds/linux/blob/master/include/uapi/linux/elf.h
+			 / * 32-bit ELF base types.
 			 typedef __u32	Elf32_Addr;
 			 typedef __u16	Elf32_Half;
 			 typedef __u32	Elf32_Off;
 			 typedef __s32	Elf32_Sword;
 			 typedef __u32	Elf32_Word;
-			 /* 64-bit ELF base types.
+			 / * 64-bit ELF base types.
 			 typedef __u64	Elf64_Addr;
 			 typedef __u16	Elf64_Half;
 			 typedef __s16	Elf64_SHalf;
@@ -232,7 +204,7 @@ public class ELFUtil extends AbstractFile {
 			 typedef __u64	Elf64_Xword;
 			 typedef __s64	Elf64_Sxword;
 			 */
-			/*https://docs.oracle.com/cd/E19683-01/816-1386/chapter6-79797/index.html
+/*https://docs.oracle.com/cd/E19683-01/816-1386/chapter6-79797/index.html
 			 typedef struct {
 			 Elf32_Word      st_name;
 			 Elf32_Addr      st_value;
@@ -263,7 +235,7 @@ public class ELFUtil extends AbstractFile {
 //            ElfClass elfClass = elf.header.elfClass;
 //            if (elfClass.equals(ElfClass.CLASS_32)) {
 //                while (relBuf.remaining() > 0) {
-					/*t y p e d e f s t r u c t {
+/*t y p e d e f s t r u c t {
 						E l f 3 2 _ A d d r r _ o f f s e t ;
 						E l f 3 2 _ W o r d r _ i n f o ;
 						} E l f 3 2 _ R e l ;
@@ -281,7 +253,7 @@ public class ELFUtil extends AbstractFile {
 //                    int symidx = info >> 8;
 //                    int type = info & 0x7F;
 //                    Log.v(TAG, "offset=" + Integer.toHexString(offset) + "symidx=" + symidx + "&type=" + type + "&info=" + info);
-					/*
+/*
 					Intel
 					 Name Value  Field  Calculation
 					 _ __________________________________________________
@@ -359,11 +331,11 @@ public class ELFUtil extends AbstractFile {
 					*/
 //                }
 //            }
-            //Now prepare IAT(PLT/GOT)
-            //get .got
+//Now prepare IAT(PLT/GOT)
+//get .got
 //            for (SectionHeader hdr : sections) {
 //                if (".plt".equalsIgnoreCase(hdr.getName())) {
-                    //plt is code
+//plt is code
 //					 000173ec __android_log_print@plt:
 //					 173ec:       e28fc600        add     ip, pc, #0, 12  ; ip!=pc?
 //					 173f0:       e28cca11        add     ip, ip, #69632  ; addr of got?
@@ -377,22 +349,22 @@ public class ELFUtil extends AbstractFile {
 //                }
 //            }
 //            dynsymbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.PROGBITS));
-            // importSymbols=ParsePLT(path);
-            info = sb.toString();
+// importSymbols=ParsePLT(path);
+            info = sb.toString()
             //Log.i(TAG, "info=" + info);
         }
-        Log.v(TAG, "Checking code section");
-        for (SectionHeader sh : elf.sectionHeaders) {
-            Log.v(TAG, "type=" + sh.type.toString() + "name=" + sh.getName());
-            if (sh.type.equals(SectionType.PROGBITS)) {
-                Log.v(TAG, "sh.type.equals Progbits");
-                String name = sh.getName();
+        Log.v(TAG, "Checking code section")
+        for (sh in elf.sectionHeaders) {
+            Log.v(TAG, "type=" + sh.type.toString() + "name=" + sh.name)
+            if (sh.type == SectionType.PROGBITS) {
+                Log.v(TAG, "sh.type.equals Progbits")
+                val name = sh.name
                 if (name != null) {
-                    Log.i(TAG, "name nonnull:name=" + name);
-                    if (name.equals(".text")) {
-                        codeSectionBase = sh.fileOffset;
-                        codeSectionLimit = codeSectionBase + sh.size;
-                        codeVirtAddr = sh.virtualAddress;
+                    Log.i(TAG, "name nonnull:name=$name")
+                    if (name == ".text") {
+                        codeSectionBase = sh.fileOffset
+                        codeSectionLimit = codeSectionBase + sh.size
+                        codeVirtAddr = sh.virtualAddress
                     }
                 }
             }
@@ -400,145 +372,116 @@ public class ELFUtil extends AbstractFile {
     }
 
     //private long codeOffset=0L;
-    //private long codeLimit=0L;
-    //private long codeVirtualAddress=0L;
-    //String[] symstrings;
-    private void ParseRela(ArrayList<Rela> relas) throws IOException {
-        SectionHeader relaSec = elf.getSectionHeaderByType(SectionType.RELA);
+//private long codeLimit=0L;
+//private long codeVirtualAddress=0L;
+//String[] symstrings;
+    @Throws(IOException::class)
+    private fun ParseRela(relas: ArrayList<Rela>) {
+        val relaSec = elf.getSectionHeaderByType(SectionType.RELA)
         if (relaSec != null) {
-            ByteBuffer relaBuf = elf.getSection(relaSec);
-            int targetSection = relaSec.info;
-            int sourceSymtab = relaSec.link;
+            val relaBuf = elf.getSection(relaSec)
+            val targetSection = relaSec.info
+            val sourceSymtab = relaSec.link
             while (relaBuf.hasRemaining()) {
-                long r_offset = relaBuf.getLong();      //unsigned, byte offset from targetSection
-                long r_info = relaBuf.getLong();        //unsigned, index to sourceSymtab
-                int index = (int) (long) (r_info >> 32 & 0xFFFFFFFF);
-                Symbol symbol = symbols.get(index);
-                long r_addend = relaBuf.getLong();     //signed, delta
-                Rela rela = new Rela();
-                rela.targetSection = targetSection;
-                rela.symsection = sourceSymtab;
-                rela.index = index;
-                rela.symbol = symbol;
-                rela.r_offset = r_offset;
-                rela.r_addend = r_addend;
-                rela.r_info = r_info;
-                rela.type = (int) (r_info & 0xFFFFFFFF);
-                relas.add(rela);
+                val r_offset = relaBuf.long //unsigned, byte offset from targetSection
+                val r_info = relaBuf.long //unsigned, index to sourceSymtab
+                val index = (r_info shr 32 and -0x1).toInt()
+                val symbol = symbols!![index]
+                val r_addend = relaBuf.long //signed, delta
+                val rela = Rela()
+                rela.targetSection = targetSection
+                rela.symsection = sourceSymtab
+                rela.index = index
+                rela.symbol = symbol
+                rela.r_offset = r_offset
+                rela.r_addend = r_addend
+                rela.r_info = r_info
+                rela.type = (r_info and -0x1).toInt()
+                relas.add(rela)
             }
         }
     }
 
-    private void ParseSymtab(StringBuilder sb, byte[] strtable) {
-        ByteBuffer symbuffer;
+    private fun ParseSymtab(sb: StringBuilder, strtable: ByteArray) {
+        val symbuffer: ByteBuffer
         try {
-            symbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.SYMTAB));
-            ElfClass elfClass = elf.header.elfClass;
-            symbols = new ArrayList<>();
-            if (elfClass.equals(ElfClass.CLASS_32)) {
+            symbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.SYMTAB))
+            val elfClass = elf.header.elfClass
+            symbols = ArrayList()
+            if (elfClass == ElfClass.CLASS_32) {
                 while (symbuffer.hasRemaining()) {
-                    int name = symbuffer.getInt();
-                    int value = symbuffer.getInt();
-                    int size = symbuffer.getInt();
-                    short stinfo = symbuffer.get();
-                    short stother = symbuffer.get();
-                    short stshndx = symbuffer.getShort();
-                    String sym_name = Elf.getZString(strtable, name);
-                    Symbol symbol = new Symbol();
-                    symbol.name = sym_name;
-                    symbol.is64 = false;
-                    symbol.st_info = stinfo;
-                    symbol.st_name = name;
-                    symbol.st_other = stother;
-                    symbol.st_shndx = stshndx;
-                    symbol.st_size = size;
-                    symbol.st_value = value;
-                    symbol.analyze();
-                    symbols.add(symbol);
+                    val name = symbuffer.int
+                    val value = symbuffer.int
+                    val size = symbuffer.int
+                    val stinfo = symbuffer.get().toShort()
+                    val stother = symbuffer.get().toShort()
+                    val stshndx = symbuffer.short
+                    val sym_name = Elf.getZString(strtable, name.toLong())
+                    val symbol = Symbol()
+                    symbol.name = sym_name
+                    symbol.is64 = false
+                    symbol.st_info = stinfo
+                    symbol.st_name = name.toLong()
+                    symbol.st_other = stother
+                    symbol.st_shndx = stshndx
+                    symbol.st_size = size.toLong()
+                    symbol.st_value = value.toLong()
+                    symbol.analyze()
+                    symbols.add(symbol)
                     /*sb.append(sym_name).append("=").append(Integer.toHexString(value))
                      .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
-                     */
-                    sb.append(symbol.toString()).append(System.lineSeparator());
+                     */sb.append(symbol.toString()).append(System.lineSeparator())
                 }
-            } else {// 64
+            } else { // 64
                 while (symbuffer.hasRemaining()) {
-                    int name = symbuffer.getInt();
-                    short stinfo = symbuffer.get();
-                    short stother = symbuffer.get();
-                    short stshndx = symbuffer.getShort();
-                    long value = symbuffer.getLong();
-                    long size = symbuffer.getLong();
-                    String sym_name = Elf.getZString(strtable, name);
-                    Symbol symbol = new Symbol();
-                    symbol.name = sym_name;
-                    symbol.is64 = true;
-                    symbol.st_info = stinfo;
-                    symbol.st_name = name;
-                    symbol.st_other = stother;
-                    symbol.st_shndx = stshndx;
-                    symbol.st_size = size;
-                    symbol.st_value = value;
-                    symbol.analyze();
-                    symbols.add(symbol);
+                    val name = symbuffer.int
+                    val stinfo = symbuffer.get().toShort()
+                    val stother = symbuffer.get().toShort()
+                    val stshndx = symbuffer.short
+                    val value = symbuffer.long
+                    val size = symbuffer.long
+                    val sym_name = Elf.getZString(strtable, name.toLong())
+                    val symbol = Symbol()
+                    symbol.name = sym_name
+                    symbol.is64 = true
+                    symbol.st_info = stinfo
+                    symbol.st_name = name.toLong()
+                    symbol.st_other = stother
+                    symbol.st_shndx = stshndx
+                    symbol.st_size = size
+                    symbol.st_value = value
+                    symbol.analyze()
+                    symbols.add(symbol)
                     /*	sb.append(sym_name).append("=").append(Integer.toHexString(value))
                      .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
-                     */
-                    sb.append(symbol.toString()).append(System.lineSeparator());
+                     */sb.append(symbol.toString()).append(System.lineSeparator())
                 }
             }
-        } catch (IllegalArgumentException | IOException | StringIndexOutOfBoundsException e) {
-            Log.e(TAG, "", e);
+        } catch (e: IllegalArgumentException) {
+            Log.e(TAG, "", e)
+        } catch (e: IOException) {
+            Log.e(TAG, "", e)
+        } catch (e: StringIndexOutOfBoundsException) {
+            Log.e(TAG, "", e)
         }
     }
 
-    native void loadBinary(String path);
+    external fun loadBinary(path: String?)
+    fun addSymbol(symbol: Symbol) {
+        symbol.analyze()
+        symbols.add(symbol)
+    }
 
-    public void addSymbol(Symbol symbol) {
-        symbol.analyze();
-        symbols.add(symbol);
+    companion object {
+        @JvmStatic
+        external fun Demangle(mangled: String?): String?
+        external fun ParsePLT(filepath: String?): List<PLT?>?
+    }
+
+    init {
+        elf = Elf(file)
+        setPath(file.path)
+        fileContents = filec
+        AfterConstructor()
     }
 }
-//	public static int getWord(byte a, byte b, byte c, byte d)
-//	{
-//		return ((int)a << 24) & ((int)b << 16) & ((int)c << 8) & d;
-//	}
-	/*
-	 public ELFUtil(File file) throws Exception
-	 {
-	 long fsize=file.length();
-	 int index=0;
-	 fileContents=new byte[(int)fsize];
-	 DataInputStream in = new DataInputStream(new FileInputStream(file.getPath()));
-	 int len,counter=0;
-	 byte[] b=new byte[1024];
-	 while ((len = in.read(b)) > 0)
-	 {
-	 for (int i = 0; i < len; i++)
-	 { // byte[] 버퍼 내용 출력
-	 //System.out.format("%02X ", b[i]);
-	 fileContents[index] = b[i];
-	 index++;
-	 counter++;
-	 }
-	 }
-	 ParseData();
-	 }
-	 public ELFUtil(byte[] bytes) throws Exception
-	 {
-	 fileContents=new byte[bytes.length];
-	 for(int s=0;s<bytes.length;++s)
-	 {
-	 fileContents[s]=bytes[s];
-	 }
-	 ParseData();
-	 }
-	 */
-	 
-	 /*
-	 public ELFUtil(FileChannel channel, byte[] filec) throws IOException
-	 {
-	 super(null);
-	 elf = new Elf(channel);
-	 fileContents = filec;
-	 AfterConstructor();
-	 }*/

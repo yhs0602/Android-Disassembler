@@ -1,6 +1,8 @@
 package com.kyhsgeekcode
 
 import android.content.ClipData
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -8,6 +10,7 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.ContextCompat
 import at.pollaknet.api.facile.Facile
+import com.kyhsgeekcode.disassembler.R
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveException
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
@@ -213,3 +216,25 @@ fun convertDpToPixel(dp: Float): Int {
 }
 
 fun getDrawable(id: Int) = ContextCompat.getDrawable(appCtx, id)
+
+fun sendErrorReport(error: Throwable) {
+    val emailIntent = Intent(Intent.ACTION_SEND)
+    emailIntent.type = "plain/text"
+    emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("1641832e@fire.fundersclub.com"))
+    var ver = ""
+    try {
+        val pInfo = appCtx.packageManager.getPackageInfo(appCtx.packageName, 0)
+        ver = pInfo.versionName
+    } catch (e: PackageManager.NameNotFoundException) {
+        e.printStackTrace()
+    }
+    emailIntent.putExtra(Intent.EXTRA_SUBJECT,
+            "Crash report - " + error.message + "(ver" + ver + ")")
+    val content = StringBuilder(Log.getStackTraceString(error))
+    emailIntent.putExtra(Intent.EXTRA_TEXT,
+            content.toString())
+    if (error is RuntimeException && parsedFile != null) {
+        emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(File(parsedFile!!.getPath())))
+    }
+    startActivity(Intent.createChooser(emailIntent, getString(R.string.send_crash_via_email)))
+}

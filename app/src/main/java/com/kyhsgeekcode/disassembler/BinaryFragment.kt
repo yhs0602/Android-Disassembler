@@ -78,9 +78,9 @@ class BinaryFragment: Fragment() {
                         //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
                     }
                 }
-                Log.d(MainActivity.TAG, "Executing")
+                Log.d(TAG, "Executing")
                 asyncTask.execute()
-                Log.d(MainActivity.TAG, "Executed")
+                Log.d(TAG, "Executed")
             }
             R.id.findString -> {
                 val asyncTask: AsyncTask<Int, Int, Void> = object : AsyncTask<Int, Int, Void>() {
@@ -90,7 +90,7 @@ class BinaryFragment: Fragment() {
                         super.onPreExecute()
                         Log.d(MainActivity.TAG, "Pre-execute")
                         // create dialog
-                        dialog = ProgressDialog(this@MainActivity)
+                        dialog = ProgressDialog(activity)
                         dialog!!.setTitle("Searching ...")
                         dialog!!.setMessage("Searching for string")
                         dialog!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
@@ -120,13 +120,13 @@ class BinaryFragment: Fragment() {
                         dialog!!.dismiss()
                         adapter!!.notifyDataSetChanged()
                         tabhost1!!.currentTab = MainActivity.TAB_STRINGS
-                        Log.d(MainActivity.TAG, "BG done")
+                        Log.d(TAG, "BG done")
                         //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
                     }
                 }
                 val et = EditText(this)
                 et.setText("5-100")
-                showEditDialog("Search String", "Set minimum and maximum length of result (min-max)", et, "OK", DialogInterface.OnClickListener { dialog, which ->
+                showEditDialog(activity,"Search String", "Set minimum and maximum length of result (min-max)", et, "OK", DialogInterface.OnClickListener { dialog, which ->
                     val s = et.text.toString()
                     val splitt = s.split("-").toTypedArray()
                     var min = splitt[0].toInt()

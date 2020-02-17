@@ -1,20 +1,22 @@
 package com.kyhsgeekcode.disassembler
 
-import android.app.*
+import android.app.Activity
+import android.app.Notification
+import android.app.NotificationManager
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.graphics.Rect
-import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Process
 import android.util.Log
 import android.util.LongSparseArray
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -42,6 +44,7 @@ import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.isArchive
 import com.kyhsgeekcode.rootpicker.FileSelectorActivity
+import com.kyhsgeekcode.sendErrorReport
 import com.stericson.RootTools.RootTools
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.serialization.UnstableDefault
@@ -139,81 +142,40 @@ class MainActivity : AppCompatActivity() {
     /////////////////////////////////////////////////Settings/////////////////////////////////////////////////////
 //    var settingPath: SharedPreferences? = null
     /////////////////////////////////////////////////Choose Column////////////////////////////////////
-    var isShowAddress = true
-    var isShowLabel = true
-    var isShowBytes = true
-    var isShowInstruction = true
-    var isShowCondition = true
-    var isShowOperands = true
-    var isShowComment = true
+
     ///////////////////////////////////////////////End Permission//////////////////////////////////////////////////////
 //////////////////////////////////////////////Column Picking/////////////////////////////////////////////////////
-    var columns = ColumnSetting()
-        private set
+
     /*ArrayList*/
-    var disasmResults: LongSparseArray<DisassemblyListItem>? = LongSparseArray()
-    var workerThread: Thread? = null
-    var db: DatabaseHelper? = null
-    var shouldSave = false
-    var rowClkListener = View.OnClickListener { view ->
-        val tablerow = view as TableRow
-        val lvi = tablerow.tag as DisassemblyListItem
-        //TextView sample = (TextView) tablerow.getChildAt(1);
-        tablerow.setBackgroundColor(Color.GREEN)
-    }
-    var jmpBackstack = Stack<Long>()
+
+
     private var autoSymAdapter: ArrayAdapter<String>? = null
     private var dataFragment: RetainedFragment? = null
     private var disasmManager: DisassemblyManager? = null
 
     //private SymbolTableAdapter symAdapter;
-//private TableView tvSymbols;
-    private val mNotifyManager: NotificationManager? = null
-    private val mBuilder: Notification.Builder? = null
+
     //DisasmIterator disasmIterator
-    private var mCustomDialog: ChooseColumnDialog? = null
-    private var adapter: DisasmListViewAdapter? = null
+
+
     //    val runnableRequestLayout = Runnable {
 //        //adapter.notifyDataSetChanged();
 //        listview!!.requestLayout()
 //    }
     //    private var mProjNames: Array<String>
 //    private var mDrawerLayout: DrawerLayout? = null
-    private var stringAdapter: FoundStringAdapter? = null
-//    private val instantEntry: Long = 0
 //    private var cs: Capstone? = null
 //    private val EXTRA_NOTIFICATION_ID: String? = null
 //    private val ACTION_SNOOZE: String? = null
     //    private var projectManager: ProjectManager? = null
 //    private var currentProject: ProjectManager.Project? = null
     //    private var lvSymbols: ListView? = null
-    private var symbolLvAdapter: SymbolListAdapter? = null
-    private val leftListener: View.OnClickListener = object : View.OnClickListener {
-        override fun onClick(v: View) {
-            val cs = v.tag as ColumnSetting
-            /*String hint=(String) ((Button)v).getHint();
-			hint=hint.substring(1,hint.length()-1);
-			Log.v(TAG,"Hint="+hint);
-			String [] parsed=hint.split(", ",0);
-			Log.v(TAG,Arrays.toString(parsed));*/columns = cs
-            isShowAddress = cs.showAddress ///*v.getTag(CustomDialog.TAGAddress)*/);
-            isShowLabel = cs.showLabel ///*v.getTag(CustomDialog.TAGLabel)*/);
-            isShowBytes = cs.showBytes ///*v.getTag(CustomDialog.TAGBytes)*/);
-            isShowInstruction = cs.showInstruction ///*v.getTag(CustomDialog.TAGInstruction)*/);
-            isShowComment = cs.showComments ///*v.getTag(CustomDialog.TAGComment)*/);
-            isShowOperands = cs.showOperands ///*v.getTag(CustomDialog.TAGOperands)*/);
-            isShowCondition = cs.showConditions ///*v.getTag(CustomDialog.TAGCondition)*/);
-            listview!!.requestLayout()
-        }
-    }
+
+
     private var mDrawerAdapter: FileDrawerListAdapter? = null
     /////////////////////////////////////////Activity Life Cycle///////////////////////////////////////////////////
     override fun onResume() {
         super.onResume()
-        if (ColorHelper.isUpdatedColor) {
-            listview!!.refreshDrawableState()
-            ColorHelper.isUpdatedColor = false
-        }
     }
 
     lateinit var pagerAdapter: ViewPagerAdapter
@@ -233,7 +195,6 @@ class MainActivity : AppCompatActivity() {
             if (disasmManager == null) {
                 disasmManager = DisassemblyManager()
             }
-            adapter = DisasmListViewAdapter(null)
 
             disasmManager!!.setData(adapter!!.itemList(), adapter!!.getAddress())
             handleDataFragment()
@@ -253,29 +214,28 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun handleDataFragment() {
-        // find the retained fragment on activity restarts
-        val fm = supportFragmentManager
-        dataFragment = fm.findFragmentByTag("data") as RetainedFragment?
-        if (dataFragment == null) { // add the fragment
-            dataFragment = RetainedFragment()
-            fm.beginTransaction().add(dataFragment!!, "data").commit()
-            // load the data from the web
-            dataFragment!!.disasmManager = disasmManager
-        } else { //It should be handled
-            disasmManager = dataFragment!!.disasmManager
-            filecontent = dataFragment!!.filecontent
-            parsedFile = dataFragment!!.parsedFile
-            fpath = dataFragment!!.path
-            if (parsedFile != null) {
-                symbolLvAdapter!!.itemList().clear()
-                symbolLvAdapter!!.addAll(parsedFile!!.getSymbols())
-                for (s in symbolLvAdapter!!.itemList()) {
-                    autoSymAdapter!!.add(s.name)
-                }
-            }
-        }
-    }
+//    private fun handleDataFragment() {
+//        // find the retained fragment on activity restarts
+//        val fm = supportFragmentManager
+//        dataFragment = fm.findFragmentByTag("data") as RetainedFragment?
+//        if (dataFragment == null) { // add the fragment
+//            dataFragment = RetainedFragment()
+//            fm.beginTransaction().add(dataFragment!!, "data").commit()
+//            // load the data from the web
+//            dataFragment!!.disasmManager = disasmManager
+//        } else { //It should be handled
+//            disasmManager = dataFragment!!.disasmManager
+//            parsedFile = dataFragment!!.parsedFile
+//            fpath = dataFragment!!.path
+//            if (parsedFile != null) {
+//                symbolLvAdapter!!.itemList().clear()
+//                symbolLvAdapter!!.addAll(parsedFile!!.getSymbols())
+//                for (s in symbolLvAdapter!!.itemList()) {
+//                    autoSymAdapter!!.add(s.name)
+//                }
+//            }
+//        }
+//    }
 
     private fun manageShowRational() {
         val showRationalSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
@@ -364,7 +324,7 @@ class MainActivity : AppCompatActivity() {
             }
             requestAppPermissions(this@MainActivity)
             //String [] accs=getAccounts();
-            SendErrorReport(p2)
+            sendErrorReport(p2)
             //	ori.uncaughtException(p1, p2);
             Log.wtf(TAG, "UncaughtException", p2)
             finish()
@@ -415,7 +375,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.calc -> {
                 val et = EditText(this)
-                showEditDialog(getString(R.string.calculator), "Enter an expression to measure", et, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 -> Toast.makeText(this@MainActivity, Calculator.Calc(et.text.toString()).toString(), Toast.LENGTH_SHORT).show() }, getString(R.string.cancel), null)
+                showEditDialog(this, getString(R.string.calculator), "Enter an expression to measure", et, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 -> Toast.makeText(this@MainActivity, Calculator.Calc(et.text.toString()).toString(), Toast.LENGTH_SHORT).show() }, getString(R.string.cancel), null)
             }
             R.id.donate -> {
                 val intent = Intent(this, DonateActivity::class.java)
@@ -425,17 +385,6 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun showEditDialog(title: String, message: String, edittext: EditText,
-                               positive: String, pos: DialogInterface.OnClickListener,
-                               negative: String, neg: DialogInterface.OnClickListener?): AlertDialog {
-        val builder = AlertDialog.Builder(this@MainActivity)
-        builder.setTitle(title)
-        builder.setMessage(message)
-        builder.setView(edittext)
-        builder.setPositiveButton(positive, pos)
-        builder.setNegativeButton(negative, neg)
-        return builder.show()
-    }
 
     fun showSelDialog(ListItems: List<String>?, title: String?, listener: DialogInterface.OnClickListener?) {
         showSelDialog(this, ListItems!!, title, listener)
@@ -466,56 +415,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun AdjustShow(tvAddr: TextView, tvLabel: TextView, tvBytes: TextView, tvInst: TextView, tvCondition: TextView, tvOperands: TextView, tvComments: TextView) {
-        tvAddr.visibility = if (isShowAddress) View.VISIBLE else View.GONE
-        tvLabel.visibility = if (isShowLabel) View.VISIBLE else View.GONE
-        tvBytes.visibility = if (isShowBytes) View.VISIBLE else View.GONE
-        tvInst.visibility = if (isShowInstruction) View.VISIBLE else View.GONE
-        tvCondition.visibility = if (isShowCondition) View.VISIBLE else View.GONE
-        tvOperands.visibility = if (isShowOperands) View.VISIBLE else View.GONE
-        tvComments.visibility = if (isShowComment) View.VISIBLE else View.GONE
-    }
-
-    //////////////////////////////////////////////End Column Picking///////////////////////////////////////////////////
-//////////////////////////////////////////////////////UI Utility///////////////////////////////////////////////////
-    fun showToast(s: String?) {
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
-    }
-
     fun showToast(resid: Int) {
         Toast.makeText(this, resid, Toast.LENGTH_SHORT).show()
     }
 
 
-    ///////////////////////////////////////////////////End UI Utility//////////////////////////////////////////////////
-///////////////////////////////////////////////////Target setter/getter////////////////////////////////////////////
-
-    fun setParsedFile(parsedFile: AbstractFile?) {
-        this.parsedFile = parsedFile
-        dataFragment!!.parsedFile = parsedFile
-        adapter!!.setFile(parsedFile)
-    }
-
-
-    ////////////////////////////////////////////////////////////End target setter/getter/////////////////////////////////////////
-    private fun parseAddress(toString: String?): Long {
-        if (toString == null) {
-            return parsedFile!!.entryPoint
-        }
-        if (toString == "") {
-            return parsedFile!!.entryPoint
-        }
-        try {
-            return java.lang.Long.decode(toString)
-        } catch (e: NumberFormatException) {
-            Toast.makeText(this, R.string.validaddress, Toast.LENGTH_SHORT).show()
-        }
-        return parsedFile!!.entryPoint
-    }
 
     private fun AlertSelFile() {
         Toast.makeText(this, R.string.selfilefirst, Toast.LENGTH_SHORT).show()
-        showChooser() /*File*/
+        showFileChooser() /*File*/
     }
 
     /////////////////////////////////////////////Export - Output//////////////////////////////////
@@ -542,7 +450,7 @@ class MainActivity : AppCompatActivity() {
 //        }
 //    }
 
-//    //FIXME, TODO
+//    //FIX ME, TO DO
 //    private fun ExportDisasmSub(mode: Int) {
 //        Log.v(TAG, "Saving disassembly")
 //        if (mode == 0) //Raw mode
@@ -812,101 +720,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun SendErrorReport(error: Throwable) {
-        val emailIntent = Intent(Intent.ACTION_SEND)
-        emailIntent.type = "plain/text"
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("1641832e@fire.fundersclub.com"))
-        var ver = ""
-        try {
-            val pInfo = packageManager.getPackageInfo(packageName, 0)
-            ver = pInfo.versionName
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        }
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT,
-                "Crash report - " + error.message + "(ver" + ver + ")")
-        val content = StringBuilder(Log.getStackTraceString(error))
-        emailIntent.putExtra(Intent.EXTRA_TEXT,
-                content.toString())
-        if (error is RuntimeException && parsedFile != null) {
-            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(File(parsedFile!!.getPath())))
-        }
-        startActivity(Intent.createChooser(emailIntent, getString(R.string.send_crash_via_email)))
-    }
-
-    private fun ShowErrorDialog(a: Activity, title: Int, err: Throwable, sendError: Boolean) {
-        val builder = AlertDialog.Builder(a)
-        builder.setTitle(title)
-        builder.setCancelable(false)
-        builder.setMessage(Log.getStackTraceString(err))
-        builder.setPositiveButton(R.string.ok, null)
-        if (sendError) {
-            builder.setNegativeButton("Send error report") { p1, p2 -> SendErrorReport(err) }
-        }
-        builder.show()
-    }
-
-    private fun ShowErrorDialog(a: Activity, title: String, err: Throwable, sendError: Boolean) {
-        val builder = AlertDialog.Builder(a)
-        builder.setTitle(title)
-        builder.setCancelable(false)
-        builder.setMessage(Log.getStackTraceString(err))
-        builder.setPositiveButton(R.string.ok, null)
-        if (sendError) {
-            builder.setNegativeButton("Send error report") { p1, p2 -> SendErrorReport(err) }
-        }
-        builder.show()
-    }
-
 
     private fun alertError(p0: Int, e: Exception, sendError: Boolean = true) {
         Log.e(TAG, "" + p0, e)
-        ShowErrorDialog(this, p0, e, sendError)
+        showErrorDialog(this, p0, e, sendError)
     }
 
     private fun alertError(p0: String, e: Exception, sendError: Boolean = true) {
         Log.e(TAG, "" + p0, e)
-        ShowErrorDialog(this, p0, e, sendError)
+        showErrorDialog(this, p0, e, sendError)
     }
 
-    private fun AlertSaveSuccess(file: File) {
-        Toast.makeText(this, "Successfully saved to file: " + file.path, Toast.LENGTH_LONG).show()
-    }
-
-    private fun showDetail() {
-
-    }
-
-    fun jumpto(address: Long) {
-        if (isValidAddress(address)) { //not found
-            tabhost1!!.currentTab = TAB_DISASM
-            jmpBackstack.push(java.lang.Long.valueOf(adapter!!.getCurrentAddress()))
-            adapter!!.OnJumpTo(address)
-            listview!!.setSelection(0)
-        } else {
-            Toast.makeText(this, R.string.validaddress, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun isValidAddress(address: Long): Boolean {
-        return if (address > parsedFile!!.fileContents.size + parsedFile!!.codeVirtAddr) false else address >= 0
-    }
-
-    //////////////////////////////////////////////Input////////////////////////////////////////
-    private fun showChooser() {
-
-        showSelDialog(lst, "", DialogInterface.OnClickListener { dialog, which ->
-            when (which) {
-                0 -> showFileChooser()
-                1 -> showAPKChooser()
-            }
-        })
-    }
-
-    //https://stackoverflow.com/a/16149831/8614565
-    private fun showAPKChooser() {
-        GetAPKAsyncTask(this).execute()
-    }
 
     val PATHPREF = "path"
     private fun showFileChooser() {
@@ -1022,10 +846,10 @@ class MainActivity : AppCompatActivity() {
                 handleEmptyFile(uri.toString())
                 return
             }
-            if (HandleZipFIle(getRealPathFromURI(uri), inputStream)) {
+            if (getRealPathFromURI(uri)?.let { HandleZipFIle(it, inputStream) }==true) {
                 return
             }
-            if (handleUDDFile(getRealPathFromURI(uri), inputStream)) {
+            if (getRealPathFromURI(uri)?.let { handleUDDFile(it, inputStream) }==true) {
                 return
             }
             //ByteArrayOutputStream bis=new ByteArrayOutputStream();
@@ -1166,12 +990,12 @@ class MainActivity : AppCompatActivity() {
         tabhost1.tabWidget.removeView(tabhost1.tabWidget.getChildTabViewAt(index))
     }
 
-    private fun HandleZipFIle(path: String, `is`: InputStream): Boolean {
+    private fun HandleZipFIle(path: String, inputStream: InputStream): Boolean {
         var lowname: String
         val candfolder = File(filesDir, "candidates/")
         val candidates: MutableList<String> = ArrayList()
         try {
-            val zi = ZipInputStream(`is`)
+            val zi = ZipInputStream(inputStream)
             var entry: ZipEntry?
             val buffer = ByteArray(2048)
             while (zi.nextEntry.also { entry = it } != null) {

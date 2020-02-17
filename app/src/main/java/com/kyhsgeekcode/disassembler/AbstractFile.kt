@@ -76,15 +76,11 @@ abstract class AbstractFile : Closeable {
     open var codeSectionLimit: Long = 0
     @JvmField
     var symbols: List<Symbol>? = null
-    @JvmField
     var importSymbols: List<PLT>? = null
-    @JvmField
     var fileContents: ByteArray?
-    @JvmField
     open var entryPoint: Long = 0
     open var codeVirtAddr: Long = 0
-    @JvmField
-    open var machineType: MachineType? = null
+    open var machineType: MachineType = MachineType.AARCH64
     @JvmField
     var path = ""
 

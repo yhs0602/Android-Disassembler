@@ -1,40 +1,59 @@
 package com.kyhsgeekcode.disassembler
 
 import android.content.DialogInterface
+import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.Toast
+import android.util.LongSparseArray
+import android.view.*
+import android.widget.*
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_binary_disasm.*
+import java.util.*
 
 class BinaryDisasmFragment : Fragment(), IOnBackPressed {
+    var isShowAddress = true
+    var isShowLabel = true
+    var isShowBytes = true
+    var isShowInstruction = true
+    var isShowCondition = true
+    var isShowOperands = true
+    var isShowComment = true
+    var disasmResults: LongSparseArray<DisassemblyListItem>? = LongSparseArray()
+    var workerThread: Thread? = null
+    var rowClkListener = View.OnClickListener { view ->
+        val tablerow = view as TableRow
+        val lvi = tablerow.tag as DisassemblyListItem
+        //TextView sample = (TextView) tablerow.getChildAt(1);
+        tablerow.setBackgroundColor(Color.GREEN)
+    }
+    var jmpBackstack = Stack<Long>()
+    private var mCustomDialog: ChooseColumnDialog? = null
+    private var adapter: DisasmListViewAdapter? = null
+    var columns = ColumnSetting()
+        private set
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater.inflate(R.layout.fragment_binary_disasm, container, false)!!
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupListView()
+        adapter = DisasmListViewAdapter(null)
         setHasOptionsMenu(true)
     }
 
     private fun setupListView() { //moved to onCreate for avoiding NPE
-        val adapter =  DisasmListViewAdapter()
+        val adapter = DisasmListViewAdapter()
         disasmTabListview.adapter = adapter
         disasmTabListview.onItemClickListener = DisasmClickListener(this)
-        adapter!!.addAll(disasmManager!!.getItems(), disasmManager!!.address)
+        adapter.addAll(disasmManager!!.getItems(), disasmManager!!.address)
         disasmTabListview.setOnScrollListener(adapter)
     }
 
     fun disassemble() {
         Log.v(TAG, "Strted disasm")
-        btnSaveDisasm.isEnabled = false
         //NOW there's no notion of pause or resume
         workerThread = Thread(Runnable {
             val codesection = parsedFile!!.codeSectionBase
@@ -61,12 +80,11 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 //final int len=disasmResults.size();
 //add xrefs
             runOnUiThread {
-                listview!!.requestLayout()
+                disasmTabListview.requestLayout()
                 tab2!!.invalidate()
-                btnSaveDisasm!!.isEnabled = true
-                Toast.makeText(this@MainActivity, "done", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "done", Toast.LENGTH_SHORT).show()
             }
-            Log.v(MainActivity.TAG, "disassembly done")
+            Log.v(TAG, "disassembly done")
         })
         workerThread!!.start()
     }
@@ -84,7 +102,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.chooserow -> {
                 mCustomDialog = ChooseColumnDialog(this,
                         "Select columns to view",  // Title
@@ -98,7 +116,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                     AlertSelFile()
                     return@run
                 }
-                val autocomplete = object : AutoCompleteTextView(this) {
+                val autocomplete = object : AutoCompleteTextView(activity) {
                     override fun enoughToFilter(): Boolean {
                         return true
                     }
@@ -111,7 +129,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                     }
                 }
                 autocomplete.setAdapter<ArrayAdapter<String>>(autoSymAdapter)
-                val ab = showEditDialog("Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
+                val ab = showEditDialog(activity, "Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
                         "Go", DialogInterface.OnClickListener { p1, p2 ->
                     val dest = autocomplete.text.toString()
                     try {
@@ -122,7 +140,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                         for (sym in syms) {
                             if (sym.name != null && sym.name == dest) {
                                 if (sym.type != Symbol.Type.STT_FUNC) {
-                                    Toast.makeText(this@MainActivity, "This is not a function.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(activity, "This is not a function.", Toast.LENGTH_SHORT).show()
                                     return@OnClickListener
                                 }
                                 jumpto(sym.st_value)
@@ -137,5 +155,72 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun AdjustShow(tvAddr: TextView, tvLabel: TextView, tvBytes: TextView, tvInst: TextView, tvCondition: TextView, tvOperands: TextView, tvComments: TextView) {
+        tvAddr.visibility = if (isShowAddress) View.VISIBLE else View.GONE
+        tvLabel.visibility = if (isShowLabel) View.VISIBLE else View.GONE
+        tvBytes.visibility = if (isShowBytes) View.VISIBLE else View.GONE
+        tvInst.visibility = if (isShowInstruction) View.VISIBLE else View.GONE
+        tvCondition.visibility = if (isShowCondition) View.VISIBLE else View.GONE
+        tvOperands.visibility = if (isShowOperands) View.VISIBLE else View.GONE
+        tvComments.visibility = if (isShowComment) View.VISIBLE else View.GONE
+    }
+
+    private fun parseAddress(toString: String?): Long {
+        if (toString == null) {
+            return parsedFile!!.entryPoint
+        }
+        if (toString == "") {
+            return parsedFile!!.entryPoint
+        }
+        try {
+            return java.lang.Long.decode(toString)
+        } catch (e: NumberFormatException) {
+            Toast.makeText(activity, R.string.validaddress, Toast.LENGTH_SHORT).show()
+        }
+        return parsedFile!!.entryPoint
+    }
+
+    fun jumpto(address: Long) {
+        if (isValidAddress(address)) { //not found
+            tabhost1!!.currentTab = MainActivity.TAB_DISASM
+            jmpBackstack.push(java.lang.Long.valueOf(adapter!!.getCurrentAddress()))
+            adapter!!.OnJumpTo(address)
+            listview!!.setSelection(0)
+        } else {
+            Toast.makeText(activity, R.string.validaddress, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun isValidAddress(address: Long): Boolean {
+        return if (address > parsedFile!!.fileContents.size + parsedFile!!.codeVirtAddr) false else address >= 0
+    }
+
+    private val leftListener: View.OnClickListener = object : View.OnClickListener {
+        override fun onClick(v: View) {
+            val cs = v.tag as ColumnSetting
+            /*String hint=(String) ((Button)v).getHint();
+			hint=hint.substring(1,hint.length()-1);
+			Log.v(TAG,"Hint="+hint);
+			String [] parsed=hint.split(", ",0);
+			Log.v(TAG,Arrays.toString(parsed));*/columns = cs
+            isShowAddress = cs.showAddress ///*v.getTag(CustomDialog.TAGAddress)*/);
+            isShowLabel = cs.showLabel ///*v.getTag(CustomDialog.TAGLabel)*/);
+            isShowBytes = cs.showBytes ///*v.getTag(CustomDialog.TAGBytes)*/);
+            isShowInstruction = cs.showInstruction ///*v.getTag(CustomDialog.TAGInstruction)*/);
+            isShowComment = cs.showComments ///*v.getTag(CustomDialog.TAGComment)*/);
+            isShowOperands = cs.showOperands ///*v.getTag(CustomDialog.TAGOperands)*/);
+            isShowCondition = cs.showConditions ///*v.getTag(CustomDialog.TAGCondition)*/);
+            disasmTabListview.requestLayout()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (ColorHelper.isUpdatedColor) {
+            disasmTabListview.refreshDrawableState()
+            ColorHelper.isUpdatedColor = false
+        }
     }
 }

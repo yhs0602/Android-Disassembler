@@ -9,6 +9,7 @@ import android.widget.EditText;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.kyhsgeekcode.UtilKt.setClipBoard;
 import static com.kyhsgeekcode.disassembler.UIUtilsKt.showEditDialog;
 import static com.kyhsgeekcode.disassembler.UIUtilsKt.showSelDialog;
 
@@ -53,7 +54,7 @@ public class DisasmClickListener implements AdapterView.OnItemClickListener {
                         //context,title msg et, y yc n nc
                     } else if (COPY.equals(item)) {
                         //List<String> its=new ArrayList<>();
-                        activity.setClipBoard(lvi.toCodeString(activity.getColumns()));//toString());
+                        setClipBoard(lvi.toCodeString(activity.getColumns()));//toString());
                         activity.showToast(R.string.copied);
                     } else if (JUMP.equals(item)) {
                         long target = dar.address + dar.jumpOffset;//NOT an offset?? FIXME

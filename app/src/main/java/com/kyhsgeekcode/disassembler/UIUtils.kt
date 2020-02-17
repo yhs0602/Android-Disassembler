@@ -4,8 +4,10 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.res.Resources
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.EditText
+import com.kyhsgeekcode.sendErrorReport
 
 fun getScreenHeight(): Int {
     return Resources.getSystem().displayMetrics.heightPixels
@@ -82,3 +84,40 @@ fun showYesNoDialog(a: Activity?, title: String?, content: String?,
     builder.setPositiveButton(android.R.string.ok, pos).setNegativeButton(android.R.string.no, neg)
     builder.show()
 }
+
+private fun showEditDialog(a: Activity?, title: String, message: String, edittext: EditText,
+                           positive: String, pos: DialogInterface.OnClickListener,
+                           negative: String, neg: DialogInterface.OnClickListener?): AlertDialog {
+    val builder = AlertDialog.Builder(a)
+    builder.setTitle(title)
+    builder.setMessage(message)
+    builder.setView(edittext)
+    builder.setPositiveButton(positive, pos)
+    builder.setNegativeButton(negative, neg)
+    return builder.show()
+}
+
+fun showErrorDialog(a: Activity, title: Int, err: Throwable, sendError: Boolean) {
+    val builder = AlertDialog.Builder(a)
+    builder.setTitle(title)
+    builder.setCancelable(false)
+    builder.setMessage(Log.getStackTraceString(err))
+    builder.setPositiveButton(R.string.ok, null)
+    if (sendError) {
+        builder.setNegativeButton("Send error report") { p1, p2 -> sendErrorReport(err) }
+    }
+    builder.show()
+}
+
+fun showErrorDialog(a: Activity, title: String, err: Throwable, sendError: Boolean) {
+    val builder = AlertDialog.Builder(a)
+    builder.setTitle(title)
+    builder.setCancelable(false)
+    builder.setMessage(Log.getStackTraceString(err))
+    builder.setPositiveButton(R.string.ok, null)
+    if (sendError) {
+        builder.setNegativeButton("Send error report") { p1, p2 -> sendErrorReport(err) }
+    }
+    builder.show()
+}
+
