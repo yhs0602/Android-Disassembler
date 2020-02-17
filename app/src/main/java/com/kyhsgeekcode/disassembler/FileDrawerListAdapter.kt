@@ -178,7 +178,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                 val methods = type.methods
                 for (field in fields) {
                     val c = field.constant
-                    var fieldDesc: String? = field.name + ":" + field.typeRef.name
+                    var fieldDesc: String = field.name + ":" + field.typeRef.name
                     if (c != null) {
                         val kind = c.elementTypeKind
                         val bytes = c.value

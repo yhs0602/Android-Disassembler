@@ -100,9 +100,9 @@ class FileDrawerListItem {
         FOLDER, ARCHIVE, APK, NORMAL, BINARY, PE, PE_IL, PE_IL_TYPE, FIELD, METHOD, DEX, PROJECT, DISASSEMBLY, HEAD, NONE
     }
 
-    var type: DrawerItemType? = null
+    var type: DrawerItemType
 
-    constructor(caption: String, type: DrawerItemType?, tag: Int, level: Int) {
+    constructor(caption: String, type: DrawerItemType, tag: Int, level: Int) {
         this.caption = caption
         this.type = type
         this.tag = tag
@@ -116,7 +116,7 @@ class FileDrawerListItem {
         this.level = level
     }
 
-    constructor(caption: String, type: DrawerItemType?, tag: Any?, level: Int) {
+    constructor(caption: String, type: DrawerItemType, tag: Any?, level: Int) {
         this.caption = caption
         this.type = type
         this.tag = tag

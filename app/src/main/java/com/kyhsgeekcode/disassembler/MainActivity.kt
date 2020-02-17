@@ -50,7 +50,6 @@ import org.apache.commons.io.FilenameUtils
 import pl.openrnd.multilevellistview.ItemInfo
 import pl.openrnd.multilevellistview.MultiLevelListView
 import pl.openrnd.multilevellistview.OnItemClickListener
-import splitties.init.appCtx
 import java.io.*
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
@@ -180,12 +179,11 @@ class MainActivity : AppCompatActivity() {
 //    }
     //    private var mProjNames: Array<String>
 //    private var mDrawerLayout: DrawerLayout? = null
-    private var logAdapter: LogAdapter? = null
     private var stringAdapter: FoundStringAdapter? = null
-    private val instantEntry: Long = 0
-    private var cs: Capstone? = null
-    private val EXTRA_NOTIFICATION_ID: String? = null
-    private val ACTION_SNOOZE: String? = null
+//    private val instantEntry: Long = 0
+//    private var cs: Capstone? = null
+//    private val EXTRA_NOTIFICATION_ID: String? = null
+//    private val ACTION_SNOOZE: String? = null
     //    private var projectManager: ProjectManager? = null
 //    private var currentProject: ProjectManager.Project? = null
     //    private var lvSymbols: ListView? = null
@@ -218,12 +216,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    lateinit var pagerAdapter: ViewPagerAdapter
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupUncaughtException()
         initNative()
         setContentView(R.layout.main)
-        val pagerAdapter = ViewPagerAdapter(supportFragmentManager)
+        pagerAdapter = ViewPagerAdapter(supportFragmentManager)
         pagerMain.adapter = pagerAdapter
         tablayout.setupWithViewPager(pagerMain)
 
@@ -341,7 +340,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, fitem.caption, Toast.LENGTH_SHORT).show()
                 if (!fitem.isOpenable) return
                 showYesNoCancelDialog(this@MainActivity, "Open file", "Open " + fitem.caption + "?", DialogInterface.OnClickListener { dialog, which ->
-//                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
+                    //                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
 //                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
 //                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
 //                    }
@@ -384,39 +383,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (tabhost1!!.currentTab == TAB_DISASM) {
-            if (!jmpBackstack.empty()) {
-                jumpto(jmpBackstack.pop())
-                jmpBackstack.pop()
-                return
-            } else {
-                tabhost1!!.currentTab = TAB_EXPORT
-                return
-            }
+        val fragment = pagerAdapter.getItem(pagerMain.currentItem)
+        (fragment as? IOnBackPressed)?.onBackPressed()?.not()?.let {
+            super.onBackPressed()
         }
-        if (shouldSave && currentProject == null) {
-            showYesNoCancelDialog(this, "Save project?", "",
-                    DialogInterface.OnClickListener { p1: DialogInterface?, p2: Int ->
-                        ExportDisasm(Runnable {
-                            SaveDetail()
-                            super@MainActivity.onBackPressed()
-                        })
-                    },
-                    DialogInterface.OnClickListener { p1: DialogInterface?, p2: Int -> super@MainActivity.onBackPressed() },
-                    DialogInterface.OnClickListener { p1: DialogInterface?, p2: Int -> })
-        } else super.onBackPressed()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        /*try
-		 {
-		 elfUtil.close();
-		 }
-		 catch (Exception e)
-		 {}*/Finalize()
-        if (cs != null);
-        cs = null
+        Finalize()
+//        if (cs != null)
+//            cs = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -435,161 +412,6 @@ class MainActivity : AppCompatActivity() {
             R.id.online_help -> {
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/KYHSGeekCode/Android-Disassembler/blob/master/README.md"))
                 startActivity(browserIntent)
-            }
-            R.id.analyze -> {
-                val asyncTask: AsyncTask<Void, Int, Void> = object : AsyncTask<Void, Int, Void>() {
-                    var dialog: ProgressDialog? = null
-                    var progress: ProgressBar? = null
-                    var result: String? = null
-                    var drawable: Drawable? = null
-                    override fun onPreExecute() {
-                        super.onPreExecute()
-                        Log.d(TAG, "Preexecute")
-                        // create dialog
-                        dialog = ProgressDialog(this@MainActivity)
-                        dialog!!.setTitle("Analyzing ...")
-                        dialog!!.setMessage("Counting bytes ...")
-                        dialog!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-                        dialog!!.progress = 0
-                        dialog!!.max = 7
-                        dialog!!.setCancelable(false)
-                        dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                        dialog!!.show()
-                    }
-
-                    override fun doInBackground(vararg voids: Void): Void? {
-                        Log.d(TAG, "BG")
-                        val analyzer = Analyzer(filecontent)
-                        analyzer.Analyze(dialog)
-                        result = analyzer.result
-                        drawable = analyzer.getImage(this@MainActivity)
-                        return null
-                    }
-
-                    override fun onProgressUpdate(vararg values: Int?) {
-                        super.onProgressUpdate(values[0]!!)
-                        progress!!.progress = values[0]!!
-                    }
-
-                    override fun onPostExecute(result: Void?) {
-                        super.onPostExecute(result)
-                        dialog!!.dismiss()
-                        tvAnalRes!!.text = this.result
-                        imageViewCount!!.setImageDrawable(drawable)
-                        tabhost1!!.currentTab = TAB_ANALYSIS
-                        Log.d(TAG, "BG done")
-                        //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
-                    }
-                }
-                Log.d(TAG, "Executing")
-                asyncTask.execute()
-                Log.d(TAG, "Executed")
-            }
-            R.id.findString -> {
-                val asyncTask: AsyncTask<Int, Int, Void> = object : AsyncTask<Int, Int, Void>() {
-                    var dialog: ProgressDialog? = null
-                    var progress: ProgressBar? = null
-                    override fun onPreExecute() {
-                        super.onPreExecute()
-                        Log.d(TAG, "Pre-execute")
-                        // create dialog
-                        dialog = ProgressDialog(this@MainActivity)
-                        dialog!!.setTitle("Searching ...")
-                        dialog!!.setMessage("Searching for string")
-                        dialog!!.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-                        dialog!!.progress = 0
-                        dialog!!.max = filecontent!!.size
-                        dialog!!.setCancelable(false)
-                        dialog!!.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                        dialog!!.show()
-                    }
-
-                    override fun doInBackground(vararg ints: Int?): Void? {
-                        Log.d(TAG, "BG")
-                        val min = ints[0]!!
-                        val max = ints[1]!!
-                        val analyzer = Analyzer(filecontent)
-                        analyzer.searchStrings(stringAdapter, dialog, min, max)
-                        return null
-                    }
-
-                    override fun onProgressUpdate(vararg values: Int?) {
-                        super.onProgressUpdate(values[0]!!)
-                        progress!!.progress = values[0]!!
-                    }
-
-                    override fun onPostExecute(result: Void?) {
-                        super.onPostExecute(result)
-                        dialog!!.dismiss()
-                        adapter!!.notifyDataSetChanged()
-                        tabhost1!!.currentTab = TAB_STRINGS
-                        Log.d(TAG, "BG done")
-                        //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
-                    }
-                }
-                val et = EditText(this)
-                et.setText("5-100")
-                showEditDialog("Search String", "Set minimum and maximum length of result (min-max)", et, "OK", DialogInterface.OnClickListener { dialog, which ->
-                    val s = et.text.toString()
-                    val splitt = s.split("-").toTypedArray()
-                    var min = splitt[0].toInt()
-                    var max = splitt[1].toInt()
-                    if (min < 1) min = 1
-                    if (max < min) max = min
-                    asyncTask.execute(min, max)
-                }, "Cancel", null)
-            }
-            R.id.chooserow -> {
-                mCustomDialog = ChooseColumnDialog(this,
-                        "Select columns to view",  // Title
-                        "Choose columns",  // Content
-                        leftListener,  // left
-                        null) // right
-                mCustomDialog!!.show()
-            }
-            R.id.jumpto -> run {
-                if (parsedFile == null) {
-                    AlertSelFile()
-                    return@run
-                }
-                val autocomplete = object : AutoCompleteTextView(this) {
-                    override fun enoughToFilter(): Boolean {
-                        return true
-                    }
-
-                    override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
-                        super.onFocusChanged(focused, direction, previouslyFocusedRect)
-                        if (focused && adapter != null) {
-                            performFiltering(text, 0)
-                        }
-                    }
-                }
-                autocomplete.setAdapter<ArrayAdapter<String>>(autoSymAdapter)
-                val ab = showEditDialog("Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
-                        "Go", DialogInterface.OnClickListener { p1, p2 ->
-                    val dest = autocomplete.text.toString()
-                    try {
-                        val address = dest.toLong(16)
-                        jumpto(address)
-                    } catch (nfe: NumberFormatException) { //not a number, lookup symbol table
-                        val syms = parsedFile!!.getSymbols()
-                        for (sym in syms) {
-                            if (sym.name != null && sym.name == dest) {
-                                if (sym.type != Symbol.Type.STT_FUNC) {
-                                    Toast.makeText(this@MainActivity, "This is not a function.", Toast.LENGTH_SHORT).show()
-                                    return@OnClickListener
-                                }
-                                jumpto(sym.st_value)
-                                return@OnClickListener
-                            }
-                        }
-                        showToast("No such symbol available")
-                    }
-                },
-                        getString(R.string.cancel) /*R.string.symbol*/, null)
-                ab.window?.setGravity(Gravity.TOP)
-            }
-            R.id.find -> {
             }
             R.id.calc -> {
                 val et = EditText(this)
