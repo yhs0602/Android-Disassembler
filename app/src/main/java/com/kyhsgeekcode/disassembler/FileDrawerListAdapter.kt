@@ -69,7 +69,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                 if (thisFolder.isDirectory) {
                     if (thisFolder.canRead()) {
                         val files = thisFolder.listFiles()
-                        if (files.size > 0) {
+                        if (files.isNotEmpty()) {
                             for (file in files) {
                                 items.add(FileDrawerListItem(file, newLevel))
                             }
@@ -119,7 +119,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                     }
                 }
             }
-            DrawerItemType.ZIP, DrawerItemType.APK -> {
+            DrawerItemType.ARCHIVE, DrawerItemType.APK -> {
                 val path = item.tag as String
                 val targetDirectory = File(File(appCtx.filesDir, "/extracted/"), File(path).name + "/")
                 targetDirectory.mkdirs()
@@ -279,7 +279,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
             iconTable[DrawerItemType.PE] = R.drawable.ic_executable
             iconTable[DrawerItemType.PE_IL] = R.drawable.ic_dotnet
             iconTable[DrawerItemType.PROJECT] = R.drawable.ic_launcher
-            iconTable[DrawerItemType.ZIP] = R.drawable.zip
+            iconTable[DrawerItemType.ARCHIVE] = R.drawable.zip
             iconTable[DrawerItemType.PE_IL_TYPE] = R.drawable.ic_type
             iconTable[DrawerItemType.FIELD] = R.drawable.ic_field
             iconTable[DrawerItemType.METHOD] = R.drawable.ic_method
