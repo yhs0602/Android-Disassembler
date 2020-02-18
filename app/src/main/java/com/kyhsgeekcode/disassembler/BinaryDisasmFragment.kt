@@ -85,9 +85,9 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             //mNotifyManager.cancel(0);
 //final int len=disasmResults.size();
 //add xrefs
-            runOnUiThread {
+            activity?.runOnUiThread {
                 disasmTabListview.requestLayout()
-                tab2!!.invalidate()
+    //                tab2!!.invalidate()
                 Toast.makeText(activity, "done", Toast.LENGTH_SHORT).show()
             }
             Log.v(TAG, "disassembly done")
@@ -190,10 +190,10 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 
     fun jumpto(address: Long) {
         if (isValidAddress(address)) { //not found
-            tabhost1!!.currentTab = MainActivity.TAB_DISASM
+            (parentFragment as TabController).setCurrentTabByTag(TabTags.TAB_DISASM)
             jmpBackstack.push(java.lang.Long.valueOf(adapter!!.getCurrentAddress()))
             adapter!!.OnJumpTo(address)
-            listview!!.setSelection(0)
+            disasmTabListview!!.setSelection(0)
         } else {
             Toast.makeText(activity, R.string.validaddress, Toast.LENGTH_SHORT).show()
         }

@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.fragment_binary.*
 import kotlinx.android.synthetic.main.fragment_binary_detail.*
 import kotlinx.android.synthetic.main.main.*
 
-class BinaryFragment: Fragment() {
+class BinaryFragment: Fragment(), TabController {
     val ARG_PARAM1 = "RELPATH"
     lateinit var relPath : String
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -164,6 +164,18 @@ class BinaryFragment: Fragment() {
                         putString(ARG_PARAM1, relPath)
                     }
                 }
+    }
+
+    override fun setCurrentTab(index: Int): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getCurrentTab(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun setCurrentTabByTag(tag: String): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }

@@ -47,12 +47,12 @@ import java.util.regex.Pattern
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), TabController {
     companion object {
         const val SETTINGKEY = "setting"
         const val REQUEST_WRITE_STORAGE_REQUEST_CODE = 1
 
-//        private const val TAB_EXPORT = 3
+        //        private const val TAB_EXPORT = 3
 //        private const val TAB_DISASM = 4
 //        private const val TAB_LOG = 5
 //        private const val TAB_STRINGS = 6
@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity() {
 
         setupSymCompleteAdapter()
         toDoAfterPermQueue.add(Runnable {
-//            if (disasmManager == null) {
+            //            if (disasmManager == null) {
 //                disasmManager = DisassemblyManager()
 //
 
@@ -1223,6 +1223,21 @@ class MainActivity : AppCompatActivity() {
 //            inputStream.close()
 //            return buf
 //        }
+    }
+
+    override fun setCurrentTab(index: Int): Boolean {
+        val tab = tablayout.getTabAt(index) ?: return false
+        tab.select()
+        pagerMain.setCurrentItem(index,true)
+        return true
+    }
+
+    override fun getCurrentTab(): Int {
+        return tablayout.selectedTabPosition
+    }
+
+    override fun setCurrentTabByTag(tag: String): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 //    internal inner class SaveDBAsync : AsyncTask<DatabaseHelper?, Int?, Void?>() {
