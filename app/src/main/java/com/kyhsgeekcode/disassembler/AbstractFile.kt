@@ -1,7 +1,6 @@
 package com.kyhsgeekcode.disassembler
 
 import android.util.Log
-import android.widget.Toast
 import at.pollaknet.api.facile.Facile
 import at.pollaknet.api.facile.exception.CoffPeDataNotFoundException
 import at.pollaknet.api.facile.exception.SizeMismatchException
@@ -13,31 +12,13 @@ import java.io.Closeable
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import java.util.*
 
 //represents a raw file and interface
 abstract class AbstractFile : Closeable {
-    open fun setPath(path: String) {
-        this.path = path
-    }
-
-    open fun getPath(): String? {
-        return path
-    }
 
     @Throws(IOException::class)
     override fun close() {
         return
-    }
-
-    open fun getSymbols(): List<Symbol>? {
-        if (symbols == null) symbols = ArrayList()
-        return symbols
-    }
-
-    open fun getImportSymbols(): List<PLT>? {
-        if (importSymbols == null) importSymbols = ArrayList()
-        return importSymbols
     }
 
     override fun toString(): String {
@@ -74,10 +55,10 @@ abstract class AbstractFile : Closeable {
     var ls = System.lineSeparator()
     open var codeSectionBase: Long = 0
     open var codeSectionLimit: Long = 0
-    @JvmField
-    var symbols: List<Symbol>? = null
-    var importSymbols: List<PLT>? = null
-    var fileContents: ByteArray?
+
+    val symbols: MutableList<Symbol> = ArrayList()
+    val importSymbols: List<PLT> = ArrayList()
+    var fileContents: ByteArray? = null
     open var entryPoint: Long = 0
     open var codeVirtAddr: Long = 0
     open var machineType: MachineType = MachineType.AARCH64
@@ -91,14 +72,14 @@ abstract class AbstractFile : Closeable {
         fun createInstance(tag: String?): AbstractFile? {
             val file = File(tag)
             //file을 읽던가 mainactivity의 코드를 잘 가져와서 AbstractFile을 만든다.
-// FacileAPI거만 아니면 파일 객체와 내용만 주면 된다.
-//다시 읽는건 비효율적으로 보일 수 있지만 어쨌든 다시 읽어서 넘겨준다.
-//AfterReadFully() 참고하기!
-//다 읽고
-//AfterReadFully 로직으로 AbstractFile을 만들어 리턴한다.
-//그리고 AfterReadFully 함수는 없어질지도 모른다!
-//그러면 중복코드도 사라짐
-//행복회로
+            // FacileAPI거만 아니면 파일 객체와 내용만 주면 된다.
+            //다시 읽는건 비효율적으로 보일 수 있지만 어쨌든 다시 읽어서 넘겨준다.
+            //AfterReadFully() 참고하기!
+            //다 읽고
+            //AfterReadFully 로직으로 AbstractFile을 만들어 리턴한다.
+            //그리고 AfterReadFully 함수는 없어질지도 모른다!
+            //그러면 중복코드도 사라짐
+            //행복회로
             val content = getBytes(FileInputStream(file))
             if (file.path.endsWith("assets/bin/Data/Managed/Assembly-CSharp.dll")) { //Unity C# dll file
                 Logger.v(TAG, "Found C# unity dll")

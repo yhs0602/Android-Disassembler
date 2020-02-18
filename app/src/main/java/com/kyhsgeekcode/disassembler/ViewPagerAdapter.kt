@@ -25,4 +25,10 @@ class ViewPagerAdapter(supportFragmentManager: FragmentManager) : FragmentStateP
         mFragmentList.add(fragment)
         mFragmentTitleList.add(title)
     }
+
+    fun removeTab(index:Int) {
+        mFragmentList.removeAt(index)
+        mFragmentTitleList.removeAt(index)
+        notifyDataSetChanged()
+    }
 }

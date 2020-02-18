@@ -38,7 +38,6 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
     override fun toString(): String {
         val sb = StringBuilder(super.toString())
         sb.append(System.lineSeparator())
-        importSymbols = getImportSymbols()
         for (plt in importSymbols!!) {
             sb.append(plt).append(System.lineSeparator())
         }
@@ -48,7 +47,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
     }
 
     //Do some error
-    override var codeSectionBase: Long
+    override var codeSectionBase: Long = 0
         get() {
             if (field != 0L) {
                 return field
@@ -161,7 +160,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
 			{
 				Log.e(TAG, "", e);
 			}*/sb.append(System.lineSeparator()).append("syms;").append(System.lineSeparator())
-            if (symbols == null) symbols = ArrayList()
+            symbols.clear()
             //if (dynsyms != null)
 //symbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
 //            //First, Analyze Symbol table
@@ -407,7 +406,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
         try {
             symbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.SYMTAB))
             val elfClass = elf.header.elfClass
-            symbols = ArrayList()
+            symbols.clear()
             if (elfClass == ElfClass.CLASS_32) {
                 while (symbuffer.hasRemaining()) {
                     val name = symbuffer.int
@@ -475,12 +474,13 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
     companion object {
         @JvmStatic
         external fun Demangle(mangled: String?): String?
+
         external fun ParsePLT(filepath: String?): List<PLT?>?
     }
 
     init {
         elf = Elf(file)
-        setPath(file.path)
+        path = file.path
         fileContents = filec
         AfterConstructor()
     }

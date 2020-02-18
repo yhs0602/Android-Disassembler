@@ -15,6 +15,15 @@ import kotlinx.android.synthetic.main.fragment_binary_detail.*
 import kotlinx.android.synthetic.main.main.*
 
 class BinaryFragment: Fragment() {
+    val ARG_PARAM1 = "RELPATH"
+    lateinit var relPath : String
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            relPath = it.getString(ARG_PARAM1)!!
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater.inflate(R.layout.fragment_binary, container, false)!!
 
@@ -139,4 +148,22 @@ class BinaryFragment: Fragment() {
         }
         return super.onOptionsItemSelected(item)
     }
+    companion object {
+        /**
+         * Use this factory method to create a new instance of
+         * this fragment using the provided parameters.
+         *
+         * @param relPath Parameter 1.
+         * @return A new instance of fragment StringFragment.
+         */
+        // TODO: Rename and change types and number of parameters
+        @JvmStatic
+        fun newInstance(relPath: String) =
+                BinaryFragment().apply {
+                    arguments = Bundle().apply {
+                        putString(ARG_PARAM1, relPath)
+                    }
+                }
+    }
+
 }

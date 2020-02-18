@@ -12,6 +12,7 @@ import splitties.init.appCtx
 import java.io.File
 import java.io.Serializable
 
+
 //A item of base, or a file
 open class FileItem : Serializable {
     val TAG = "FileItem"
@@ -139,7 +140,7 @@ open class FileItem : Serializable {
 
         val fileSdcard = FileItem(file = Environment.getExternalStorageDirectory())
 
-        val apps = object : FileItem("Apps", appCtx.getDrawable(android.R.drawable.sym_def_app_icon)) {
+        val apps = object : FileItem("Apps", getDrawable(android.R.drawable.sym_def_app_icon)) {
             override fun canExpand(): Boolean = true
             override fun isRawAvailable(): Boolean = false
             override fun isProjectAble(): Boolean = false
@@ -156,7 +157,7 @@ open class FileItem : Serializable {
                 }
                 publisher(numpkg * 2, numpkg)
                 var i = 0
-                val defaultD: Drawable? = appCtx.getDrawable(android.R.drawable.gallery_thumb)
+                val defaultD: Drawable? = getDrawable(android.R.drawable.gallery_thumb)
                 for (packageInfo in packages) { //Log.d(TAG, "Installed package :" + packageInfo.packageName);
 //Log.d(TAG, "Apk file path:" + packageInfo.sourceDir);
                     val applabel = pm.getApplicationLabel(packageInfo) as String
@@ -183,5 +184,6 @@ open class FileItem : Serializable {
             }
         }
     }
+
 }
 

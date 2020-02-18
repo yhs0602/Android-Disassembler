@@ -1,25 +1,25 @@
 package com.kyhsgeekcode.disassembler
 
 import android.app.Activity
-import android.app.Notification
-import android.app.NotificationManager
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Process
 import android.util.Log
-import android.util.LongSparseArray
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import at.pollaknet.api.facile.Facile
 import at.pollaknet.api.facile.exception.CoffPeDataNotFoundException
 import at.pollaknet.api.facile.exception.SizeMismatchException
@@ -172,7 +172,7 @@ class MainActivity : AppCompatActivity() {
     //    private var lvSymbols: ListView? = null
 
 
-    private var mDrawerAdapter: FileDrawerListAdapter? = null
+    private lateinit var mDrawerAdapter: FileDrawerListAdapter
     /////////////////////////////////////////Activity Life Cycle///////////////////////////////////////////////////
     override fun onResume() {
         super.onResume()
@@ -291,25 +291,54 @@ class MainActivity : AppCompatActivity() {
         left_drawer.setAdapter(FileDrawerListAdapter().also { mDrawerAdapter = it }) //new ArrayAdapter<String>(MainActivity.this,
         //R.layout.row, mProjNames));
         val initialDrawers: MutableList<FileDrawerListItem> = ArrayList()
-        initialDrawers.add(FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD, TAG_INSTALLED, 0))
-        mDrawerAdapter!!.setDataItems(initialDrawers)
-        mDrawerAdapter!!.notifyDataSetChanged()
+        initialDrawers.add(FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROJECTS, 0))
+        mDrawerAdapter.setDataItems(initialDrawers)
+        mDrawerAdapter.notifyDataSetChanged()
         left_drawer.setOnItemClickListener(object : OnItemClickListener {
             override fun onItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) {
                 val fitem = item as FileDrawerListItem
                 Toast.makeText(this@MainActivity, fitem.caption, Toast.LENGTH_SHORT).show()
-                if (!fitem.isOpenable) return
+                if (!fitem.isOpenable)
+                    return
                 showYesNoCancelDialog(this@MainActivity, "Open file", "Open " + fitem.caption + "?", DialogInterface.OnClickListener { dialog, which ->
                     //                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
 //                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
 //                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
 //                    }
+                    val fragmentDataToOpen = determineFragmentToOpen(fitem)
+                    pagerAdapter.addFragment(fragmentDataToOpen.first, fragmentDataToOpen.second)
                 }, null, null)
             }
 
             override fun onGroupItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) { //Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
             }
         })
+    }
+
+    @UnstableDefault
+    fun determineFragmentToOpen(item: FileDrawerListItem): Pair<Fragment, String> {
+        val title = item.caption
+        val rootPath = ProjectManager.currentProject!!.sourceFilePath
+        val abspath = (item.tag as String)
+        val relPath = abspath.substring(rootPath.length)
+        val fragment = when (item.type) {
+            FileDrawerListItem.DrawerItemType.ARCHIVE -> ArchiveFragemnt.newInstance(relPath)
+            FileDrawerListItem.DrawerItemType.APK -> TODO()
+            FileDrawerListItem.DrawerItemType.NORMAL -> TODO()
+            FileDrawerListItem.DrawerItemType.BINARY -> BinaryFragment.newInstance(relPath)
+            FileDrawerListItem.DrawerItemType.PE -> TODO()
+            FileDrawerListItem.DrawerItemType.PE_IL -> TODO()
+            FileDrawerListItem.DrawerItemType.PE_IL_TYPE -> TODO()
+            FileDrawerListItem.DrawerItemType.FIELD -> TODO()
+            FileDrawerListItem.DrawerItemType.METHOD -> TODO()
+            FileDrawerListItem.DrawerItemType.DEX -> TODO()
+            FileDrawerListItem.DrawerItemType.PROJECT -> TODO()
+            FileDrawerListItem.DrawerItemType.DISASSEMBLY -> TODO()
+            FileDrawerListItem.DrawerItemType.HEAD -> TODO()
+            FileDrawerListItem.DrawerItemType.NONE -> TODO()
+            else -> throw Exception()
+        }
+        return Pair(fragment,title)
     }
 
     private fun setupUncaughtException() {
@@ -418,7 +447,6 @@ class MainActivity : AppCompatActivity() {
     fun showToast(resid: Int) {
         Toast.makeText(this, resid, Toast.LENGTH_SHORT).show()
     }
-
 
 
     private fun AlertSelFile() {
@@ -834,7 +862,7 @@ class MainActivity : AppCompatActivity() {
     private fun initializeDrawer(project: ProjectModel) {
         //project.sourceFilePath
         val sourceFileOrFolder = File(project.sourceFilePath)
-
+        setupLeftDrawer()
     }
 
     private fun onChoosePath(uri: Uri) {
@@ -846,10 +874,10 @@ class MainActivity : AppCompatActivity() {
                 handleEmptyFile(uri.toString())
                 return
             }
-            if (getRealPathFromURI(uri)?.let { HandleZipFIle(it, inputStream) }==true) {
+            if (getRealPathFromURI(uri)?.let { HandleZipFIle(it, inputStream) } == true) {
                 return
             }
-            if (getRealPathFromURI(uri)?.let { handleUDDFile(it, inputStream) }==true) {
+            if (getRealPathFromURI(uri)?.let { handleUDDFile(it, inputStream) } == true) {
                 return
             }
             //ByteArrayOutputStream bis=new ByteArrayOutputStream();
@@ -986,8 +1014,8 @@ class MainActivity : AppCompatActivity() {
         tabhost1.addTab(tabhost1.newTabSpec(file.absolutePath).setContent(factory).setIndicator(file.name))
     }
 
-    fun CloseTab(index: Int) {
-        tabhost1.tabWidget.removeView(tabhost1.tabWidget.getChildTabViewAt(index))
+    fun closeTab(index: Int) {
+        pagerAdapter.removeTab(index)
     }
 
     private fun HandleZipFIle(path: String, inputStream: InputStream): Boolean {
