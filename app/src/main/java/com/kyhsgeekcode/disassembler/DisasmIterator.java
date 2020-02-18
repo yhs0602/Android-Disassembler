@@ -3,13 +3,13 @@ package com.kyhsgeekcode.disassembler;
 public class DisasmIterator extends AssemblyProvider {
     //<<<<<<< HEAD
 //<<<<<<< HEAD
-    //public DisasmIterator(MainActivity activity,
+    //public DisasmIterator(MainActivity binaryDisasmFragment,
     //						//NotificationManager mNotifyManager,
     //						//Notification.Builder mBuilder,
     //						DisasmListViewAdapter adapter,
     //						long total)
 //=======
-    //public DisasmIterator(MainActivity activity, NotificationManager mNotifyManager, Notification.Builder mBuilder, DisasmListViewAdapter adapter,  long total)
+    //public DisasmIterator(MainActivity binaryDisasmFragment, NotificationManager mNotifyManager, Notification.Builder mBuilder, DisasmListViewAdapter adapter,  long total)
 //>>>>>>> parent of 2644076... Update readme with assembly materials links
 //=======
     public DisasmIterator(/* NotificationManager mNotifyManager, Notification.Builder mBuilder, */DisasmListViewAdapter adapter, long total)
@@ -26,7 +26,7 @@ public class DisasmIterator extends AssemblyProvider {
         //mBuilder.setProgress((int)total,progress, false);
         // Displays the progress bar for the first time.
         //mNotifyManager.notify(0, mBuilder.b uild());
-        //activity.runOnUiThread(activity.runnableRequestLayout);
+        //binaryDisasmFragment.runOnUiThread(binaryDisasmFragment.runnableRequestLayout);
         if (Thread.interrupted()) {
             return -1;
         }

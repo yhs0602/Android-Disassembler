@@ -10,6 +10,7 @@ import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_binary_disasm.*
+import kotlinx.serialization.UnstableDefault
 import java.util.*
 
 class BinaryDisasmFragment : Fragment(), IOnBackPressed {
@@ -19,13 +20,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         Text
     }
 
-    var isShowAddress = true
-    var isShowLabel = true
-    var isShowBytes = true
-    var isShowInstruction = true
-    var isShowCondition = true
-    var isShowOperands = true
-    var isShowComment = true
+
     var disasmResults: LongSparseArray<DisassemblyListItem>? = LongSparseArray()
     var workerThread: Thread? = null
     var rowClkListener = View.OnClickListener { view ->
@@ -36,24 +31,40 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     }
     var jmpBackstack = Stack<Long>()
     private var mCustomDialog: ChooseColumnDialog? = null
-    private var adapter: DisasmListViewAdapter? = null
+    private lateinit var adapter: DisasmListViewAdapter
+    private lateinit var relPath: String
+    private lateinit var parsedFile: AbstractFile
+    private var autoSymAdapter: ArrayAdapter<String>? = null
+
     var columns = ColumnSetting()
         private set
+
+    @UnstableDefault
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            relPath = it.getString(ARG_PARAM)!!
+        }
+        parsedFile = AbstractFile.createInstance(com.kyhsgeekcode.disassembler.project.ProjectManager.getOriginal(relPath))
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater.inflate(R.layout.fragment_binary_disasm, container, false)!!
 
+    @UnstableDefault
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         setupListView()
-        adapter = DisasmListViewAdapter(null)
+        setupSymCompleteAdapter()
+//        adapter = DisasmListViewAdapter(null)
         setHasOptionsMenu(true)
     }
 
+    @UnstableDefault
     private fun setupListView() { //moved to onCreate for avoiding NPE
-        val adapter = DisasmListViewAdapter()
+        adapter = DisasmListViewAdapter(parsedFile)
         disasmTabListview.adapter = adapter
-        disasmTabListview.onItemClickListener = DisasmClickListener(activity)
+        disasmTabListview.onItemClickListener = DisasmClickListener(this)
 //        adapter.addAll(disasmManager!!.getItems(), disasmManager!!.address)
         disasmTabListview.setOnScrollListener(adapter)
     }
@@ -63,9 +74,9 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         //NOW there's no notion of pause or resume
         workerThread = Thread(Runnable {
             val codesection = parsedFile!!.codeSectionBase
-            val start = codesection + offset //elfUtil.getCodeSectionOffset();
+            val start = codesection  //elfUtil.getCodeSectionOffset();
             val limit = parsedFile!!.codeSectionLimit
-            val addr = parsedFile!!.codeVirtAddr + offset
+            val addr = parsedFile!!.codeVirtAddr //+ offset
             Log.v(TAG, "code section point :" + java.lang.Long.toHexString(start))
             //ListViewItem lvi;
 //	getFunctionNames();
@@ -87,7 +98,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 //add xrefs
             activity?.runOnUiThread {
                 disasmTabListview.requestLayout()
-    //                tab2!!.invalidate()
+                //                tab2!!.invalidate()
                 Toast.makeText(activity, "done", Toast.LENGTH_SHORT).show()
             }
             Log.v(TAG, "disassembly done")
@@ -101,7 +112,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             jmpBackstack.pop()
             return true
         } else {
-            tabhost1!!.currentTab = MainActivity.TAB_EXPORT
+            (parentFragment as TabController).setCurrentTabByTag(TabTags.TAB_EXPORT)
             return true
         }
 //        return false
@@ -110,7 +121,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.chooserow -> {
-                mCustomDialog = ChooseColumnDialog(this,
+                mCustomDialog = ChooseColumnDialog(activity,
                         "Select columns to view",  // Title
                         "Choose columns",  // Content
                         leftListener,  // left
@@ -118,10 +129,6 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                 mCustomDialog!!.show()
             }
             R.id.jumpto -> run {
-                if (parsedFile == null) {
-                    AlertSelFile()
-                    return@run
-                }
                 val autocomplete = object : AutoCompleteTextView(activity) {
                     override fun enoughToFilter(): Boolean {
                         return true
@@ -135,14 +142,14 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                     }
                 }
                 autocomplete.setAdapter<ArrayAdapter<String>>(autoSymAdapter)
-                val ab = showEditDialog(activity, "Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
+                val ab = showEditDialog(activity!!, "Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
                         "Go", DialogInterface.OnClickListener { p1, p2 ->
                     val dest = autocomplete.text.toString()
                     try {
                         val address = dest.toLong(16)
                         jumpto(address)
                     } catch (nfe: NumberFormatException) { //not a number, lookup symbol table
-                        val syms = parsedFile!!.getSymbols()
+                        val syms = parsedFile.symbols
                         for (sym in syms) {
                             if (sym.name != null && sym.name == dest) {
                                 if (sym.type != Symbol.Type.STT_FUNC) {
@@ -153,7 +160,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                                 return@OnClickListener
                             }
                         }
-                        showToast("No such symbol available")
+                        showToast(activity!!, "No such symbol available")
                     }
                 },
                         getString(R.string.cancel) /*R.string.symbol*/, null)
@@ -163,15 +170,6 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         return super.onOptionsItemSelected(item)
     }
 
-    fun AdjustShow(tvAddr: TextView, tvLabel: TextView, tvBytes: TextView, tvInst: TextView, tvCondition: TextView, tvOperands: TextView, tvComments: TextView) {
-        tvAddr.visibility = if (isShowAddress) View.VISIBLE else View.GONE
-        tvLabel.visibility = if (isShowLabel) View.VISIBLE else View.GONE
-        tvBytes.visibility = if (isShowBytes) View.VISIBLE else View.GONE
-        tvInst.visibility = if (isShowInstruction) View.VISIBLE else View.GONE
-        tvCondition.visibility = if (isShowCondition) View.VISIBLE else View.GONE
-        tvOperands.visibility = if (isShowOperands) View.VISIBLE else View.GONE
-        tvComments.visibility = if (isShowComment) View.VISIBLE else View.GONE
-    }
 
     private fun parseAddress(toString: String?): Long {
         if (toString == null) {
@@ -191,7 +189,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     fun jumpto(address: Long) {
         if (isValidAddress(address)) { //not found
             (parentFragment as TabController).setCurrentTabByTag(TabTags.TAB_DISASM)
-            jmpBackstack.push(java.lang.Long.valueOf(adapter!!.getCurrentAddress()))
+            jmpBackstack.push(java.lang.Long.valueOf(adapter!!.currentAddress))
             adapter!!.OnJumpTo(address)
             disasmTabListview!!.setSelection(0)
         } else {
@@ -211,13 +209,13 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 			Log.v(TAG,"Hint="+hint);
 			String [] parsed=hint.split(", ",0);
 			Log.v(TAG,Arrays.toString(parsed));*/columns = cs
-            isShowAddress = cs.showAddress ///*v.getTag(CustomDialog.TAGAddress)*/);
-            isShowLabel = cs.showLabel ///*v.getTag(CustomDialog.TAGLabel)*/);
-            isShowBytes = cs.showBytes ///*v.getTag(CustomDialog.TAGBytes)*/);
-            isShowInstruction = cs.showInstruction ///*v.getTag(CustomDialog.TAGInstruction)*/);
-            isShowComment = cs.showComments ///*v.getTag(CustomDialog.TAGComment)*/);
-            isShowOperands = cs.showOperands ///*v.getTag(CustomDialog.TAGOperands)*/);
-            isShowCondition = cs.showConditions ///*v.getTag(CustomDialog.TAGCondition)*/);
+            adapter.isShowAddress = cs.showAddress ///*v.getTag(CustomDialog.TAGAddress)*/);
+            adapter.isShowLabel = cs.showLabel ///*v.getTag(CustomDialog.TAGLabel)*/);
+            adapter.isShowBytes = cs.showBytes ///*v.getTag(CustomDialog.TAGBytes)*/);
+            adapter.isShowInstruction = cs.showInstruction ///*v.getTag(CustomDialog.TAGInstruction)*/);
+            adapter.isShowComment = cs.showComments ///*v.getTag(CustomDialog.TAGComment)*/);
+            adapter.isShowOperands = cs.showOperands ///*v.getTag(CustomDialog.TAGOperands)*/);
+            adapter.isShowCondition = cs.showConditions ///*v.getTag(CustomDialog.TAGCondition)*/);
             disasmTabListview.requestLayout()
         }
     }
@@ -230,11 +228,21 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         }
     }
 
-    companion object {
-        private val PARAM1 :String = "relpath"
-        private val PARAM2 :String = "mode"
-        fun newInstance(relPath:String, mode:ViewMode) : BinaryDisasmFragment {
+    private fun setupSymCompleteAdapter() {
+        autoSymAdapter = ArrayAdapter(activity!!, android.R.layout.select_dialog_item)
+        //autocomplete.setThreshold(2);
+        //autocomplete.setAdapter(autoSymAdapter);
 
+    }
+
+    companion object {
+        private val ARG_PARAM: String = "relpath"
+        fun newInstance(relPath: String, mode: ViewMode): BinaryDisasmFragment {
+            return BinaryDisasmFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM, relPath)
+                }
+            }
         }
 
     }

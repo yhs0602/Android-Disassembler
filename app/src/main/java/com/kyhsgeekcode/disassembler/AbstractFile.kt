@@ -58,7 +58,7 @@ abstract class AbstractFile : Closeable {
 
     val symbols: MutableList<Symbol> = ArrayList()
     val importSymbols: List<PLT> = ArrayList()
-    var fileContents: ByteArray? = null
+    lateinit var fileContents: ByteArray
     open var entryPoint: Long = 0
     open var codeVirtAddr: Long = 0
     open var machineType: MachineType = MachineType.AARCH64
@@ -69,8 +69,7 @@ abstract class AbstractFile : Closeable {
         private const val TAG = "AbstractFile"
         @JvmStatic
         @Throws(IOException::class)
-        fun createInstance(tag: String?): AbstractFile? {
-            val file = File(tag)
+        fun createInstance(file: File): AbstractFile {
             //file을 읽던가 mainactivity의 코드를 잘 가져와서 AbstractFile을 만든다.
             // FacileAPI거만 아니면 파일 객체와 내용만 주면 된다.
             //다시 읽는건 비효율적으로 보일 수 있지만 어쨌든 다시 읽어서 넘겨준다.
@@ -120,7 +119,8 @@ abstract class AbstractFile : Closeable {
                     }
                 }
             }
-            return null
+            return RawFile(file, content)
+//            return null
         }
     }
 }

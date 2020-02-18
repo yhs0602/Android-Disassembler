@@ -20,7 +20,7 @@ class ProjectOverviewFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         selFile.setOnClickListener {
             val j = Intent(activity, NewFileChooserActivity::class.java)
-            startActivityForResult(j, MainActivity.REQUEST_SELECT_FILE_NEW) //Control goes to activity
+            startActivityForResult(j, MainActivity.REQUEST_SELECT_FILE_NEW) //Control goes to binaryDisasmFragment
         }
         fileNameText.isFocusable = false
         fileNameText.isEnabled = false

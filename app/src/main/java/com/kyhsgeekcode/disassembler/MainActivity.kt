@@ -135,7 +135,6 @@ class MainActivity : AppCompatActivity(), TabController {
     /*ArrayList*/
 
 
-    private var autoSymAdapter: ArrayAdapter<String>? = null
     private var dataFragment: RetainedFragment? = null
     private var disasmManager: DisassemblyManager? = null
 
@@ -176,7 +175,7 @@ class MainActivity : AppCompatActivity(), TabController {
 
         pagerAdapter.addFragment(ProjectOverviewFragment.newInstance(), "Overview")
 
-        setupSymCompleteAdapter()
+//        setupSymCompleteAdapter()
         toDoAfterPermQueue.add(Runnable {
             //            if (disasmManager == null) {
 //                disasmManager = DisassemblyManager()
@@ -193,15 +192,10 @@ class MainActivity : AppCompatActivity(), TabController {
         clearCache()
     }
 
-    private fun setupSymCompleteAdapter() {
-        autoSymAdapter = ArrayAdapter(this, android.R.layout.select_dialog_item)
-        //autocomplete.setThreshold(2);
-        //autocomplete.setAdapter(autoSymAdapter);
 
-    }
 
 //    private fun handleDataFragment() {
-//        // find the retained fragment on activity restarts
+//        // find the retained fragment on binaryDisasmFragment restarts
 //        val fm = supportFragmentManager
 //        dataFragment = fm.findFragmentByTag("data") as RetainedFragment?
 //        if (dataFragment == null) { // add the fragment

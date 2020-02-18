@@ -22,7 +22,7 @@ public class DonateActivity extends Activity implements RewardedVideoAdListener 
 
         //MobileAds.initialize(this,
         //        "ca-app-pub-3940256099942544~3347511713");
-        // Use an activity context to get the rewarded video instance.
+        // Use an binaryDisasmFragment context to get the rewarded video instance.
         //mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this);
         //mRewardedVideoAd.setRewardedVideoAdListener(this);
 

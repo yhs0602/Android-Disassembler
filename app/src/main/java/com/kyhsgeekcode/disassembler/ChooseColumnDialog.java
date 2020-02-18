@@ -87,10 +87,10 @@ public class ChooseColumnDialog extends Dialog {
                 editor.putBoolean("address", mCKAddress.isChecked());
                 editor.apply();
                 //Context c=getContext();
-                //	Activity activity=	getOwnerActivity();
-                //if (activity instanceof MainActivity)
+                //	Activity binaryDisasmFragment=	getOwnerActivity();
+                //if (binaryDisasmFragment instanceof MainActivity)
                 {
-                    //ma = (MainActivity) activity;
+                    //ma = (MainActivity) binaryDisasmFragment;
                     Log.v(TAG, "Activity is MA");
                     ColumnSetting cs = new ColumnSetting();
                     cs.showAddress = mCKAddress.isChecked();
