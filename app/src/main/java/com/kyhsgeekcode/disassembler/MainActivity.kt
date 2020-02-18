@@ -1,7 +1,6 @@
 package com.kyhsgeekcode.disassembler
 
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -20,11 +19,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import at.pollaknet.api.facile.Facile
-import at.pollaknet.api.facile.exception.CoffPeDataNotFoundException
-import at.pollaknet.api.facile.exception.SizeMismatchException
-import at.pollaknet.api.facile.exception.UnexpectedHeaderDataException
-import capstone.Capstone
 import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
 import com.kyhsgeekcode.deleteRecursive
@@ -33,10 +27,6 @@ import com.kyhsgeekcode.disassembler.FileTabFactory.FileTabContentFactory
 import com.kyhsgeekcode.disassembler.FileTabFactory.ImageFileTabFactory
 import com.kyhsgeekcode.disassembler.FileTabFactory.NativeDisassemblyFactory
 import com.kyhsgeekcode.disassembler.FileTabFactory.TextFileTabFactory
-import com.kyhsgeekcode.disassembler.RealPathUtils.getRealPathFromURI
-import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_ALL
-import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_MAX
-import com.kyhsgeekcode.disassembler.models.Architecture.getArchitecture
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
@@ -45,11 +35,8 @@ import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.isArchive
 import com.kyhsgeekcode.rootpicker.FileSelectorActivity
 import com.kyhsgeekcode.sendErrorReport
-import com.stericson.RootTools.RootTools
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.serialization.UnstableDefault
-import nl.lxtreme.binutils.elf.MachineType
-import org.apache.commons.io.FilenameUtils
 import pl.openrnd.multilevellistview.ItemInfo
 import pl.openrnd.multilevellistview.MultiLevelListView
 import pl.openrnd.multilevellistview.OnItemClickListener
@@ -65,14 +52,13 @@ class MainActivity : AppCompatActivity() {
         const val SETTINGKEY = "setting"
         const val REQUEST_WRITE_STORAGE_REQUEST_CODE = 1
 
-        private const val TAB_EXPORT = 3
-        private const val TAB_DISASM = 4
-        private const val TAB_LOG = 5
-        private const val TAB_STRINGS = 6
-        private const val TAB_ANALYSIS = 7
+//        private const val TAB_EXPORT = 3
+//        private const val TAB_DISASM = 4
+//        private const val TAB_LOG = 5
+//        private const val TAB_STRINGS = 6
+//        private const val TAB_ANALYSIS = 7
         private const val REQUEST_SELECT_FILE = 123
         const val REQUEST_SELECT_FILE_NEW = 124
-        private const val BULK_SIZE = 1024
         //https://medium.com/@gurpreetsk/memory-management-on-android-using-ontrimmemory-f500d364bc1a
         private const val LASTPROJKEY = "lastProject"
         private const val TAG = "Disassembler"
@@ -116,26 +102,26 @@ class MainActivity : AppCompatActivity() {
     var llmainLinearLayoutSetupRaw: ConstraintLayout? = null
 
     //    var tab1: LinearLayout? = null
-    var tab2: LinearLayout? = null
+//    var tab2: LinearLayout? = null
     //FileTabContentFactory factory = new FileTabContentFactory(this);
-    val textFactory: FileTabContentFactory = TextFileTabFactory(this)
-    val imageFactory: FileTabContentFactory = ImageFileTabFactory(this)
-    val nativeDisasmFactory: FileTabContentFactory = NativeDisassemblyFactory(this)
-    val factoryList: MutableList<FileTabContentFactory> = ArrayList()
+//    val textFactory: FileTabContentFactory = TextFileTabFactory(this)
+//    val imageFactory: FileTabContentFactory = ImageFileTabFactory(this)
+//    val nativeDisasmFactory: FileTabContentFactory = NativeDisassemblyFactory(this)
+//    val factoryList: MutableList<FileTabContentFactory> = ArrayList()
     ///////////////////////////////////////////////////UI manager////////////////////////////////////////////
-    var hexManager = HexManager()
+//    var hexManager = HexManager()
     var toDoAfterPermQueue: Queue<Runnable> = LinkedBlockingQueue()
     /////////////////////////////////////////////////Current working data///////////////////////////////////////
-    var fpath: String? = null
-        set(fpath) {
-            field = fpath
-            dataFragment!!.path = fpath
-        }
-    var filecontent: ByteArray? = null
-        set(filecontent) {
-            field = filecontent
-            dataFragment!!.filecontent = filecontent
-        }
+//    var fpath: String? = null
+//        set(fpath) {
+//            field = fpath
+//            dataFragment!!.path = fpath
+//        }
+//    var filecontent: ByteArray? = null
+//        set(filecontent) {
+//            field = filecontent
+//            dataFragment!!.filecontent = filecontent
+//        }
     @JvmField
     var parsedFile //Parsed file info
             : AbstractFile? = null
@@ -192,12 +178,12 @@ class MainActivity : AppCompatActivity() {
 
         setupSymCompleteAdapter()
         toDoAfterPermQueue.add(Runnable {
-            if (disasmManager == null) {
-                disasmManager = DisassemblyManager()
-            }
+//            if (disasmManager == null) {
+//                disasmManager = DisassemblyManager()
+//
 
-            disasmManager!!.setData(adapter!!.itemList(), adapter!!.getAddress())
-            handleDataFragment()
+//            disasmManager!!.setData(adapter!!.itemList(), adapter!!.getAddress())
+            //handleDataFragment()
             //LoadProjects
             setupLeftDrawer()
             handleViewActionIntent()
@@ -265,18 +251,18 @@ class MainActivity : AppCompatActivity() {
             val last = toks.size - 1
             val ext: String?
             if (last >= 1) {
-                ext = toks[last]
-                if ("adp".equals(ext, ignoreCase = true)) { //User opened the project file
-                    //now get the project name
-                    val file = File(filePath)
-                    val pname = file.name
-                    toks = pname.split(Pattern.quote(".")).toTypedArray()
-                    //                        projectManager!!.Open(toks[toks.size - 2])
-                } else { //User opened pther files
-                    onChoosePath(intent!!.data!!)
-                }
+//                ext = toks[last]
+//                if ("adp".equals(ext, ignoreCase = true)) { //User opened the project file
+//                    //now get the project name
+//                    val file = File(filePath)
+//                    val pname = file.name
+//                    toks = pname.split(Pattern.quote(".")).toTypedArray()
+//                    //                        projectManager!!.Open(toks[toks.size - 2])
+//                } else { //User opened pther files
+                onChoosePathNew(intent!!.data!!)
+//                }
             } else { //User opened other files
-                onChoosePath(intent!!.data!!)
+                onChoosePathNew(intent!!.data!!)
             }
         } else { // android.intent.action.MAIN
             val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
@@ -333,13 +319,13 @@ class MainActivity : AppCompatActivity() {
             FileDrawerListItem.DrawerItemType.DEX -> DexFragment.newInstance(relPath)
 //            FileDrawerListItem.DrawerItemType.PROJECT -> TODO()
             FileDrawerListItem.DrawerItemType.DISASSEMBLY ->
-                BinaryDisasmFragment.newInstance(relPath,BinaryDisasmFragment.ViewMode.Text)
+                BinaryDisasmFragment.newInstance(relPath, BinaryDisasmFragment.ViewMode.Text)
 //            FileDrawerListItem.DrawerItemType.HEAD -> TODO()
 //            FileDrawerListItem.DrawerItemType.NONE -> TODO()
             else -> throw Exception()
         }
         val title = "${item.caption} as ${item.type}"
-        return Pair(fragment,title)
+        return Pair(fragment, title)
     }
 
     private fun setupUncaughtException() {
@@ -845,6 +831,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun onChoosePathNew(uri: Uri) {
+
+    }
+
+
     @UnstableDefault
     private fun onChoosePathNew(file: File) {
         showYesNoDialog(this, "Copy contents",
@@ -860,145 +851,147 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    //Actually, currentProject is set and automatically figured out
     private fun initializeDrawer(project: ProjectModel) {
         //project.sourceFilePath
         val sourceFileOrFolder = File(project.sourceFilePath)
-        setupLeftDrawer()
+        mDrawerAdapter.notifyDataSetChanged()
+//        mDrawerAdapter.
     }
 
-    private fun onChoosePath(uri: Uri) {
-        val tmpfile = File(filesDir, "tmp.so")
-
-        try {
-            val inputStream = contentResolver.openInputStream(uri) ?: return
-            if (inputStream.available() == 0) {
-                handleEmptyFile(uri.toString())
-                return
-            }
-            if (getRealPathFromURI(uri)?.let { HandleZipFIle(it, inputStream) } == true) {
-                return
-            }
-            if (getRealPathFromURI(uri)?.let { handleUDDFile(it, inputStream) } == true) {
-                return
-            }
-            //ByteArrayOutputStream bis=new ByteArrayOutputStream();
-            filecontent = Utils.getBytes(inputStream)
-            tmpfile.createNewFile()
-            val fos = FileOutputStream(tmpfile)
-            fos.write(filecontent)
-            //elfUtil=new ELFUtil(new FileChannel().transferFrom(Channels.newChannel(is),0,0),filecontent);
-            fpath = tmpfile.absolutePath //uri.getPath();
-            afterReadFully(tmpfile)
-        } catch (e: IOException) {
-            if (e.message!!.contains("Permission denied")) {
-                if (RootTools.isRootAvailable()) {
-                    while (!RootTools.isAccessGiven()) {
-                        Toast.makeText(this, "This file requires root to read.", Toast.LENGTH_SHORT).show()
-                        RootTools.offerSuperUser(this)
-                    }
-                    try {
-                        RootTools.copyFile(uri.path, tmpfile.path, false, false)
-                        filecontent = Utils.getBytes(FileInputStream(tmpfile))
-                        fpath = tmpfile.absolutePath //uri.getPath();
-                        afterReadFully(tmpfile)
-                        return
-                    } catch (f: IOException) {
-                        Log.e(TAG, "", f)
-                        //?
-                    }
-                } else {
-                    Toast.makeText(this, "This file requires root permission to read.", Toast.LENGTH_SHORT).show()
-                    alertError(R.string.fail_readfile_root, e, false)
-                    return
-                }
-            } else {
-                Log.e(TAG, "", e)
-                //Toast.makeText(this,"Not needed",Toast.LENGTH_SHORT).show();
-            }
-            alertError(R.string.fail_readfile, e)
-        }
-
-    }
-
-    fun onChoosePath(path: String) //Intent data)
-    {
-        val file = File(path)
-        if (file.length() == 0L) {
-            handleEmptyFile(path)
-            return
-        }
-        try {
-
-            val dataInputStream = DataInputStream(FileInputStream(file))
-            //Check if it is an apk file
-            val lowname = file.name.toLowerCase()
-            val ext = FilenameUtils.getExtension(lowname)
-            if (textFileExts.contains(ext)) {
-                OpenNewTab(file, TabType.TEXT)
-                return
-            }
-            if (lowname.endsWith(".apk") || lowname.endsWith(".zip")) {
-                if (HandleZipFIle(path, dataInputStream)) return
-            }
-            if (lowname.endsWith(".udd")) {
-                if (handleUDDFile(path, dataInputStream)) {
-                    return
-                }
-            }
-            fpath = path
-            //int index = 0;
-            filecontent = Utils.getBytes(dataInputStream /*new byte[(int) fsize]*/)
-            /*
-        int len= 0;
-        byte[] b = new byte[1024];
-        while ((len = in.read(b)) > 0) {
-            for (int i = 0; i < len; i++) {
-                filecontent[index] = b[i];
-                index++;
-            }
-        }
-        in.close();
-        */OpenNewTab(file, TabType.NATIVE_DISASM)
-            //AfterReadFully(file);
-//Toast.makeText(this, "success size=" + index /*+ type.name()*/, Toast.LENGTH_SHORT).show();
-//OnOpenStream(fsize, path, index, file);
-        } catch (e: IOException) {
-            if (e.message!!.contains("Permission denied")) {
-                val tmpfile = File(getExternalFilesDir(null), "tmp.so")
-                if (RootTools.isRootAvailable()) {
-                    while (!RootTools.isAccessGiven()) {
-                        Toast.makeText(this, "This file requires root to read.", Toast.LENGTH_SHORT).show()
-                        RootTools.offerSuperUser(this)
-                    }
-                    try {
-                        RootTools.copyFile(path, tmpfile.path, false, false)
-                        filecontent = Utils.getBytes(FileInputStream(tmpfile))
-                        fpath = tmpfile.absolutePath //uri.getPath();
-                        afterReadFully(tmpfile)
-                        return
-                    } catch (f: IOException) {
-                        Log.e(TAG, "", f)
-                        //?
-                        alertError(R.string.fail_readfile, e)
-                        return
-                    }
-                } else {
-                    Toast.makeText(this, "This file requires root permission to read.", Toast.LENGTH_SHORT).show()
-                    alertError(R.string.fail_readfile_root, e, false)
-                    return
-                }
-            } else {
-                Log.e(TAG, "", e)
-                //Toast.makeText(this,"Not needed",Toast.LENGTH_SHORT).show();
-                alertError(R.string.fail_readfile, e)
-            }
-
-            //Log.e(TAG, "", e);
-//AlertError("Failed to open and parse the file",e);
-//Toast.makeText(this, Log.getStackTraceString(e), 30).show();
-        }
-
-    }
+//    private fun onChoosePath(uri: Uri) {
+//        val tmpfile = File(filesDir, "tmp.so")
+//
+//        try {
+//            val inputStream = contentResolver.openInputStream(uri) ?: return
+//            if (inputStream.available() == 0) {
+//                handleEmptyFile(uri.toString())
+//                return
+//            }
+//            if (getRealPathFromURI(uri)?.let { HandleZipFIle(it, inputStream) } == true) {
+//                return
+//            }
+//            if (getRealPathFromURI(uri)?.let { handleUDDFile(it, inputStream) } == true) {
+//                return
+//            }
+//            //ByteArrayOutputStream bis=new ByteArrayOutputStream();
+//            filecontent = Utils.getBytes(inputStream)
+//            tmpfile.createNewFile()
+//            val fos = FileOutputStream(tmpfile)
+//            fos.write(filecontent)
+//            //elfUtil=new ELFUtil(new FileChannel().transferFrom(Channels.newChannel(is),0,0),filecontent);
+//            fpath = tmpfile.absolutePath //uri.getPath();
+//            afterReadFully(tmpfile)
+//        } catch (e: IOException) {
+//            if (e.message!!.contains("Permission denied")) {
+//                if (RootTools.isRootAvailable()) {
+//                    while (!RootTools.isAccessGiven()) {
+//                        Toast.makeText(this, "This file requires root to read.", Toast.LENGTH_SHORT).show()
+//                        RootTools.offerSuperUser(this)
+//                    }
+//                    try {
+//                        RootTools.copyFile(uri.path, tmpfile.path, false, false)
+//                        filecontent = Utils.getBytes(FileInputStream(tmpfile))
+//                        fpath = tmpfile.absolutePath //uri.getPath();
+//                        afterReadFully(tmpfile)
+//                        return
+//                    } catch (f: IOException) {
+//                        Log.e(TAG, "", f)
+//                        //?
+//                    }
+//                } else {
+//                    Toast.makeText(this, "This file requires root permission to read.", Toast.LENGTH_SHORT).show()
+//                    alertError(R.string.fail_readfile_root, e, false)
+//                    return
+//                }
+//            } else {
+//                Log.e(TAG, "", e)
+//                //Toast.makeText(this,"Not needed",Toast.LENGTH_SHORT).show();
+//            }
+//            alertError(R.string.fail_readfile, e)
+//        }
+//
+//    }
+//
+//    fun onChoosePath(path: String) //Intent data)
+//    {
+//        val file = File(path)
+//        if (file.length() == 0L) {
+//            handleEmptyFile(path)
+//            return
+//        }
+//        try {
+//
+//            val dataInputStream = DataInputStream(FileInputStream(file))
+//            //Check if it is an apk file
+//            val lowname = file.name.toLowerCase()
+//            val ext = FilenameUtils.getExtension(lowname)
+//            if (textFileExts.contains(ext)) {
+//                OpenNewTab(file, TabType.TEXT)
+//                return
+//            }
+//            if (lowname.endsWith(".apk") || lowname.endsWith(".zip")) {
+//                if (HandleZipFIle(path, dataInputStream)) return
+//            }
+//            if (lowname.endsWith(".udd")) {
+//                if (handleUDDFile(path, dataInputStream)) {
+//                    return
+//                }
+//            }
+//            fpath = path
+//            //int index = 0;
+//            filecontent = Utils.getBytes(dataInputStream /*new byte[(int) fsize]*/)
+//            /*
+//        int len= 0;
+//        byte[] b = new byte[1024];
+//        while ((len = in.read(b)) > 0) {
+//            for (int i = 0; i < len; i++) {
+//                filecontent[index] = b[i];
+//                index++;
+//            }
+//        }
+//        in.close();
+//        */OpenNewTab(file, TabType.NATIVE_DISASM)
+//            //AfterReadFully(file);
+////Toast.makeText(this, "success size=" + index /*+ type.name()*/, Toast.LENGTH_SHORT).show();
+////OnOpenStream(fsize, path, index, file);
+//        } catch (e: IOException) {
+//            if (e.message!!.contains("Permission denied")) {
+//                val tmpfile = File(getExternalFilesDir(null), "tmp.so")
+//                if (RootTools.isRootAvailable()) {
+//                    while (!RootTools.isAccessGiven()) {
+//                        Toast.makeText(this, "This file requires root to read.", Toast.LENGTH_SHORT).show()
+//                        RootTools.offerSuperUser(this)
+//                    }
+//                    try {
+//                        RootTools.copyFile(path, tmpfile.path, false, false)
+//                        filecontent = Utils.getBytes(FileInputStream(tmpfile))
+//                        fpath = tmpfile.absolutePath //uri.getPath();
+//                        afterReadFully(tmpfile)
+//                        return
+//                    } catch (f: IOException) {
+//                        Log.e(TAG, "", f)
+//                        //?
+//                        alertError(R.string.fail_readfile, e)
+//                        return
+//                    }
+//                } else {
+//                    Toast.makeText(this, "This file requires root permission to read.", Toast.LENGTH_SHORT).show()
+//                    alertError(R.string.fail_readfile_root, e, false)
+//                    return
+//                }
+//            } else {
+//                Log.e(TAG, "", e)
+//                //Toast.makeText(this,"Not needed",Toast.LENGTH_SHORT).show();
+//                alertError(R.string.fail_readfile, e)
+//            }
+//
+//            //Log.e(TAG, "", e);
+////AlertError("Failed to open and parse the file",e);
+////Toast.makeText(this, Log.getStackTraceString(e), 30).show();
+//        }
+//
+//    }
 
     private fun handleEmptyFile(path: String) {
         Log.d(TAG, "File $path has zero length")
@@ -1007,10 +1000,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     //TabType Ignored
-    fun OpenNewTab(file: File, type: TabType) {
-        val factory = factoryList[type.ordinal]
-        factory.setType(file.absolutePath, type)
-        tabhost1.addTab(tabhost1.newTabSpec(file.absolutePath).setContent(factory).setIndicator(file.name))
+    fun openNewTab(file: File, type: TabType) {
+//        val factory = factoryList[type.ordinal]
+//        factory.setType(file.absolutePath, type)
+//        tabhost1.addTab(tabhost1.newTabSpec(file.absolutePath).setContent(factory).setIndicator(file.name))
     }
 
     fun closeTab(index: Int) {
@@ -1076,127 +1069,127 @@ class MainActivity : AppCompatActivity() {
         //return false;
     }
 
-    @Throws(IOException::class)
-    private fun afterReadFully(file: File) { //	symAdapter.setCellItems(list);
-        supportActionBar!!.title = "Disassembler(" + file.name + ")"
+//    @Throws(IOException::class)
+//    private fun afterReadFully(file: File) { //	symAdapter.setCellItems(list);
+//        supportActionBar!!.title = "Disassembler(" + file.name + ")"
+//
+//        //hexManager.setBytes(filecontent);
+////hexManager.Show(tvHex,0);
+//
+//        //new Analyzer(filecontent).searchStrings();
+//        if (file.path.endsWith("assets/bin/Data/Managed/Assembly-CSharp.dll")) { //Unity C# dll file
+//            Logger.v(TAG, "Found C# unity dll")
+//            try {
+//                val facileReflector = Facile.load(file.path)
+//                //load the assembly
+//                val assembly = facileReflector.loadAssembly()
+//                if (assembly != null) { //output some useful information
+//                    Logger.v(TAG, assembly.toExtendedString())
+//                    //assembly.getAllTypes()[0].getMethods()[0].getMethodBody().
+////generate output
+////ILAsmRenderer renderer = new ILAsmRenderer(facileReflector);
+////renderer.renderSourceFilesToDirectory(
+////        assembly,
+////        System.getProperty("user.dir"));
+////print out the location of the files
+////System.out.println("Generated decompiled files in: " +
+////        System.getProperty("user.dir"));
+//                    setParsedFile(ILAssmebly(facileReflector))
+//                } else {
+//                    println("File maybe contains only resources...")
+//                }
+//            } catch (e: CoffPeDataNotFoundException) {
+//                Logger.e(TAG, "", e)
+//            } catch (e: UnexpectedHeaderDataException) {
+//                e.printStackTrace()
+//            } catch (e: SizeMismatchException) {
+//                e.printStackTrace()
+//            }
+//        } else {
+//            try {
+//                setParsedFile(ELFUtil(file, filecontent))
+//                afterParse()
+//            } catch (e: Exception) { //not an elf file. try PE parser
+//                try {
+//                    setParsedFile(PEFile(file, filecontent))
+//                    afterParse()
+//                } catch (f: NotThisFormatException) {
+//                    showAlertDialog(this, "Failed to parse the file(Unknown format). Please setup manually.", "")
+//                    setParsedFile(RawFile(file, filecontent))
+//                    AllowRawSetup()
+//                    //failed to parse the file. please setup manually.
+//                } catch (f: RuntimeException) {
+//                    alertError("Failed to parse the file. Please setup manually. Sending an error report, the file being analyzed can be attached.", f)
+//                    setParsedFile(RawFile(file, filecontent))
+//                    AllowRawSetup()
+//                } catch (g: Exception) {
+//                    alertError("Unexpected exception: failed to parse the file. please setup manually.", g)
+//                    setParsedFile(RawFile(file, filecontent))
+//                    AllowRawSetup()
+//                }
+//            }
+//        }
+//    }
 
-        //hexManager.setBytes(filecontent);
-//hexManager.Show(tvHex,0);
+//    private fun afterParse() {
+//        val type = parsedFile!!.machineType //elf.header.machineType;
+//        val archs = getArchitecture(type)
+//        val arch = archs[0]
+//        var mode = 0
+//        if (archs.size == 2) mode = archs[1]
+//        if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL) {
+//            Toast.makeText(this, "Maybe this program don't support this machine:" + type.name, Toast.LENGTH_SHORT).show()
+//        } else {
+//            var err: Int
+//            if (Open(arch,  /*CS_MODE_LITTLE_ENDIAN =*/mode).also { err = it } != Capstone.CS_ERR_OK) /*new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))*/ {
+//                Log.e(TAG, "setmode type=" + type.name + " err=" + err + "arch" + arch + "mode=" + mode)
+//                Toast.makeText(this, "failed to set architecture" + err + "arch=" + arch, Toast.LENGTH_SHORT).show()
+//            } else {
+//                Toast.makeText(this, "MachineType=" + type.name + " arch=" + arch, Toast.LENGTH_SHORT).show()
+//            }
+//        }
+//        if (parsedFile !is RawFile) {
+//            mainETcodeOffset.setText(java.lang.Long.toHexString(parsedFile!!.codeSectionBase))
+//            mainETcodeLimit.setText(java.lang.Long.toHexString(parsedFile!!.codeSectionLimit))
+//            mainETentry.setText(java.lang.Long.toHexString(parsedFile!!.entryPoint))
+//            mainETvirtaddr.setText(java.lang.Long.toHexString(parsedFile!!.codeVirtAddr))
+//            val mcts = MachineType.values()
+//            for (i in mcts.indices) {
+//                if (mcts[i] == parsedFile!!.machineType) {
+//                    mainSpinnerArch.setSelection(i)
+//                }
+//            }
+//        }
+//        //if(arch==CS_ARCH_X86){
+//        adapter!!.architecture = arch //wider operands
+//        ColorHelper.architecture = arch
+//        //}
+//        shouldSave = true
+//        val list = parsedFile!!.getSymbols()
+//        //		for(int i=0;i<list.size();++i){
+////			symbolLvAdapter.addItem(list.get(i));
+////			symbolLvAdapter.notifyDataSetChanged();
+////		}
+//        symbolLvAdapter!!.itemList().clear()
+//        symbolLvAdapter!!.addAll(list)
+//        for (s in symbolLvAdapter!!.itemList()) {
+//            autoSymAdapter!!.add(s.name)
+//        }
+//        adapter!!.Clear()
+//        showDetail()
+//        disassemble()
+//        //DisassembleFile(0/*parsedFile.getEntryPoint()*/);
+//    }
 
-        //new Analyzer(filecontent).searchStrings();
-        if (file.path.endsWith("assets/bin/Data/Managed/Assembly-CSharp.dll")) { //Unity C# dll file
-            Logger.v(TAG, "Found C# unity dll")
-            try {
-                val facileReflector = Facile.load(file.path)
-                //load the assembly
-                val assembly = facileReflector.loadAssembly()
-                if (assembly != null) { //output some useful information
-                    Logger.v(TAG, assembly.toExtendedString())
-                    //assembly.getAllTypes()[0].getMethods()[0].getMethodBody().
-//generate output
-//ILAsmRenderer renderer = new ILAsmRenderer(facileReflector);
-//renderer.renderSourceFilesToDirectory(
-//        assembly,
-//        System.getProperty("user.dir"));
-//print out the location of the files
-//System.out.println("Generated decompiled files in: " +
-//        System.getProperty("user.dir"));
-                    setParsedFile(ILAssmebly(facileReflector))
-                } else {
-                    println("File maybe contains only resources...")
-                }
-            } catch (e: CoffPeDataNotFoundException) {
-                Logger.e(TAG, "", e)
-            } catch (e: UnexpectedHeaderDataException) {
-                e.printStackTrace()
-            } catch (e: SizeMismatchException) {
-                e.printStackTrace()
-            }
-        } else {
-            try {
-                setParsedFile(ELFUtil(file, filecontent))
-                afterParse()
-            } catch (e: Exception) { //not an elf file. try PE parser
-                try {
-                    setParsedFile(PEFile(file, filecontent))
-                    afterParse()
-                } catch (f: NotThisFormatException) {
-                    showAlertDialog(this, "Failed to parse the file(Unknown format). Please setup manually.", "")
-                    setParsedFile(RawFile(file, filecontent))
-                    AllowRawSetup()
-                    //failed to parse the file. please setup manually.
-                } catch (f: RuntimeException) {
-                    alertError("Failed to parse the file. Please setup manually. Sending an error report, the file being analyzed can be attached.", f)
-                    setParsedFile(RawFile(file, filecontent))
-                    AllowRawSetup()
-                } catch (g: Exception) {
-                    alertError("Unexpected exception: failed to parse the file. please setup manually.", g)
-                    setParsedFile(RawFile(file, filecontent))
-                    AllowRawSetup()
-                }
-            }
-        }
-    }
-
-    private fun afterParse() {
-        val type = parsedFile!!.machineType //elf.header.machineType;
-        val archs = getArchitecture(type)
-        val arch = archs[0]
-        var mode = 0
-        if (archs.size == 2) mode = archs[1]
-        if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL) {
-            Toast.makeText(this, "Maybe this program don't support this machine:" + type.name, Toast.LENGTH_SHORT).show()
-        } else {
-            var err: Int
-            if (Open(arch,  /*CS_MODE_LITTLE_ENDIAN =*/mode).also { err = it } != Capstone.CS_ERR_OK) /*new DisasmIterator(null, null, null, null, 0).CSoption(cs.CS_OPT_MODE, arch))*/ {
-                Log.e(TAG, "setmode type=" + type.name + " err=" + err + "arch" + arch + "mode=" + mode)
-                Toast.makeText(this, "failed to set architecture" + err + "arch=" + arch, Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "MachineType=" + type.name + " arch=" + arch, Toast.LENGTH_SHORT).show()
-            }
-        }
-        if (parsedFile !is RawFile) {
-            mainETcodeOffset.setText(java.lang.Long.toHexString(parsedFile!!.codeSectionBase))
-            mainETcodeLimit.setText(java.lang.Long.toHexString(parsedFile!!.codeSectionLimit))
-            mainETentry.setText(java.lang.Long.toHexString(parsedFile!!.entryPoint))
-            mainETvirtaddr.setText(java.lang.Long.toHexString(parsedFile!!.codeVirtAddr))
-            val mcts = MachineType.values()
-            for (i in mcts.indices) {
-                if (mcts[i] == parsedFile!!.machineType) {
-                    mainSpinnerArch.setSelection(i)
-                }
-            }
-        }
-        //if(arch==CS_ARCH_X86){
-        adapter!!.architecture = arch //wider operands
-        ColorHelper.architecture = arch
-        //}
-        shouldSave = true
-        val list = parsedFile!!.getSymbols()
-        //		for(int i=0;i<list.size();++i){
-//			symbolLvAdapter.addItem(list.get(i));
-//			symbolLvAdapter.notifyDataSetChanged();
-//		}
-        symbolLvAdapter!!.itemList().clear()
-        symbolLvAdapter!!.addAll(list)
-        for (s in symbolLvAdapter!!.itemList()) {
-            autoSymAdapter!!.add(s.name)
-        }
-        adapter!!.Clear()
-        showDetail()
-        disassemble()
-        //DisassembleFile(0/*parsedFile.getEntryPoint()*/);
-    }
-
-
-    private fun showProgressDialog(s: String): ProgressDialog {
-        val dialog = ProgressDialog(this)
-        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-        dialog.setMessage(s)
-        dialog.setCancelable(false)
-        dialog.show()
-        return dialog
-    }
+//
+//    private fun showProgressDialog(s: String): ProgressDialog {
+//        val dialog = ProgressDialog(this)
+//        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
+//        dialog.setMessage(s)
+//        dialog.setCancelable(false)
+//        dialog.show()
+//        return dialog
+//    }
 
     //////////////////////////////////////////////////////End Choose Column/////////////////////////////////////////
 /* A native method that is implemented by the
@@ -1264,8 +1257,7 @@ class MainActivity : AppCompatActivity() {
 //            //Log.d(TAG + " onProgressUpdate", "You are in progress update ... " + a[0]);
 //        } /*
 //6
-    factoryList.add(textFactory)
-    factoryList.add(imageFactory)
-    factoryList.add(nativeDisasmFactory)
-}
+//    factoryList.add(textFactory)
+//    factoryList.add(imageFactory)
+//    factoryList.add(nativeDisasmFactory)
 }

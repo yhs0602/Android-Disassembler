@@ -66,7 +66,7 @@ public class NativeDisassemblyFactory extends FileTabContentFactory {
         } catch (IOException e) {
             Log.e(TAG,"Error creating adapter",e);
             Toast.makeText(context, "Failed to parse a file. Opening a tab as a text", Toast.LENGTH_SHORT).show();
-            ((MainActivity) context).OpenNewTab(new File(tag), TabType.IMAGE);
+            ((MainActivity) context).openNewTab(new File(tag), TabType.IMAGE);
             return root;
         }
         listview.setAdapter(adapter);

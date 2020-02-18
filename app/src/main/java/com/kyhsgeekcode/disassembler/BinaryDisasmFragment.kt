@@ -53,8 +53,8 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     private fun setupListView() { //moved to onCreate for avoiding NPE
         val adapter = DisasmListViewAdapter()
         disasmTabListview.adapter = adapter
-        disasmTabListview.onItemClickListener = DisasmClickListener(this)
-        adapter.addAll(disasmManager!!.getItems(), disasmManager!!.address)
+        disasmTabListview.onItemClickListener = DisasmClickListener(activity)
+//        adapter.addAll(disasmManager!!.getItems(), disasmManager!!.address)
         disasmTabListview.setOnScrollListener(adapter)
     }
 
