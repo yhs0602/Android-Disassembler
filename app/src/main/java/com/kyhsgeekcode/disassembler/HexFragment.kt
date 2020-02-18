@@ -12,11 +12,15 @@ import kotlinx.android.synthetic.main.fragment_hexview.*
 class HexFragment : Fragment() {
     val ARG_PARAM = "param"
     private lateinit var fileContent : ByteArray
+    private lateinit var relPath : String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let{
-            fileContent = it.getByteArray(ARG_PARAM)!!
+            relPath = it.getString(ARG_PARAM)!!
         }
+        //TODO: Initialize filecontent
+
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
@@ -93,10 +97,10 @@ class HexFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(fileContent: ByteArray) =
+        fun newInstance(relPath: String) =
                 HexFragment().apply {
                     arguments = Bundle().apply {
-                        putByteArray(ARG_PARAM, fileContent)
+                        putString(ARG_PARAM, relPath)
                     }
                 }
     }

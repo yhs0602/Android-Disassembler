@@ -317,27 +317,28 @@ class MainActivity : AppCompatActivity() {
 
     @UnstableDefault
     fun determineFragmentToOpen(item: FileDrawerListItem): Pair<Fragment, String> {
-        val title = item.caption
         val rootPath = ProjectManager.currentProject!!.sourceFilePath
         val abspath = (item.tag as String)
         val relPath = abspath.substring(rootPath.length)
         val fragment = when (item.type) {
-            FileDrawerListItem.DrawerItemType.ARCHIVE -> ArchiveFragemnt.newInstance(relPath)
-            FileDrawerListItem.DrawerItemType.APK -> TODO()
-            FileDrawerListItem.DrawerItemType.NORMAL -> TODO()
+            FileDrawerListItem.DrawerItemType.ARCHIVE -> ArchiveFragment.newInstance(relPath)
+            FileDrawerListItem.DrawerItemType.APK -> APKFragment.newInstance(relPath)
+            FileDrawerListItem.DrawerItemType.NORMAL -> HexFragment.newInstance(relPath)
             FileDrawerListItem.DrawerItemType.BINARY -> BinaryFragment.newInstance(relPath)
-            FileDrawerListItem.DrawerItemType.PE -> TODO()
-            FileDrawerListItem.DrawerItemType.PE_IL -> TODO()
-            FileDrawerListItem.DrawerItemType.PE_IL_TYPE -> TODO()
-            FileDrawerListItem.DrawerItemType.FIELD -> TODO()
-            FileDrawerListItem.DrawerItemType.METHOD -> TODO()
-            FileDrawerListItem.DrawerItemType.DEX -> TODO()
-            FileDrawerListItem.DrawerItemType.PROJECT -> TODO()
-            FileDrawerListItem.DrawerItemType.DISASSEMBLY -> TODO()
-            FileDrawerListItem.DrawerItemType.HEAD -> TODO()
-            FileDrawerListItem.DrawerItemType.NONE -> TODO()
+            FileDrawerListItem.DrawerItemType.PE -> BinaryFragment.newInstance(relPath)
+            FileDrawerListItem.DrawerItemType.PE_IL -> DotNetFragment.newInstance(relPath)
+//            FileDrawerListItem.DrawerItemType.PE_IL_TYPE -> TODO()
+//            FileDrawerListItem.DrawerItemType.FIELD -> TODO()
+//            FileDrawerListItem.DrawerItemType.METHOD -> TODO()
+            FileDrawerListItem.DrawerItemType.DEX -> DexFragment.newInstance(relPath)
+//            FileDrawerListItem.DrawerItemType.PROJECT -> TODO()
+            FileDrawerListItem.DrawerItemType.DISASSEMBLY ->
+                BinaryDisasmFragment.newInstance(relPath,BinaryDisasmFragment.ViewMode.Text)
+//            FileDrawerListItem.DrawerItemType.HEAD -> TODO()
+//            FileDrawerListItem.DrawerItemType.NONE -> TODO()
             else -> throw Exception()
         }
+        val title = "${item.caption} as ${item.type}"
         return Pair(fragment,title)
     }
 
@@ -795,7 +796,7 @@ class MainActivity : AppCompatActivity() {
                     edi.putString(DiskUtil.SC_PREFERENCE_KEY, path)
                     edi.apply()
                     disableEnableControls(false, llmainLinearLayoutSetupRaw)
-                    onChoosePath(path)
+//                    onChoosePath(path)
                     //Log.e("SELECTED_PATH", path);
                 }
             } catch (e: Exception) {
@@ -827,7 +828,7 @@ class MainActivity : AppCompatActivity() {
                 edi.apply()
                 disableEnableControls(false, llmainLinearLayoutSetupRaw)
                 Log.d(TAG, "OnActivityResult4")
-                onChoosePath(path)
+//                onChoosePath(path)
             }
         } else if (requestCode == REQUEST_SELECT_FILE_NEW) {
             if (resultCode == Activity.RESULT_OK) {
@@ -837,7 +838,7 @@ class MainActivity : AppCompatActivity() {
                 Log.v(TAG, "Open as project$openAsProject")
                 if (fi.file?.isArchive() == true) {
                 }
-                onChoosePathNew(fi.file)
+                onChoosePathNew(fi.file!!)
 //                val project = ProjectManager.newProject(fi.file!!, ProjectType.APK, if(openAsProject) fi.file?.name else null)
 //                initializeDrawer(project)
             }
@@ -945,8 +946,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             fpath = path
-            fileNameText.setText(file.absolutePath)
-            val fsize = file.length()
             //int index = 0;
             filecontent = Utils.getBytes(dataInputStream /*new byte[(int) fsize]*/)
             /*
@@ -1057,7 +1056,7 @@ class MainActivity : AppCompatActivity() {
                 val targetname = candidates[which]
                 val targetPath = File(candfolder, targetname).path
                 Log.d(TAG, "USER choosed :$targetPath")
-                onChoosePath(targetPath)
+//                onChoosePath(targetPath)
             })
             return true
         } catch (e: IOException) {

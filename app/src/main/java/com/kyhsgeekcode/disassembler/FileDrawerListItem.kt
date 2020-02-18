@@ -97,7 +97,21 @@ class FileDrawerListItem {
     }
 
     enum class DrawerItemType {
-        FOLDER, ARCHIVE, APK, NORMAL, BINARY, PE, PE_IL, PE_IL_TYPE, FIELD, METHOD, DEX, PROJECT, DISASSEMBLY, HEAD, NONE
+        FOLDER,
+        ARCHIVE,
+        APK,
+        NORMAL,
+        BINARY,
+        PE,
+        PE_IL,
+        PE_IL_TYPE,
+        FIELD,
+        METHOD,
+        DEX,
+        PROJECT,
+        DISASSEMBLY,
+        HEAD,
+        NONE
     }
 
     var type: DrawerItemType

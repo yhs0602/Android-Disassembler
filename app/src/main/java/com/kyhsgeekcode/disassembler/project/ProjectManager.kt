@@ -33,6 +33,8 @@ object ProjectManager {
     val projectPaths: MutableSet<String> = HashSet()
     val rootdir = appCtx.getExternalFilesDir(null)!!.resolve("projects/")
     var currentProject: ProjectModel? = null
+        private set
+
     init {
         val sharedPreference = appCtx.getSharedPreferences("ProjectManager", Context.MODE_PRIVATE)
         val paths = sharedPreference.getStringSet("projectsPaths", setOf(""))!!
@@ -86,10 +88,10 @@ object ProjectManager {
         val origFolder = projectFolder.resolve("original")
         origFolder.mkdirs()
         genFolder.mkdirs()
-        val determinedSourceFolder : File
-        if(copy) {
+        val determinedSourceFolder: File
+        if (copy) {
             val copyTargetFileOrFolder = origFolder.resolve(targetFileOrFolder.name)
-            if(!targetFileOrFolder.isDirectory)
+            if (!targetFileOrFolder.isDirectory)
                 FileUtils.copyFile(targetFileOrFolder, copyTargetFileOrFolder)
             else
                 FileUtils.copyDirectory(targetFileOrFolder, copyTargetFileOrFolder)
@@ -103,6 +105,7 @@ object ProjectManager {
         projectModels[projectInfoFile.path] = projectModel
         projectPaths.add(projectInfoFile.absolutePath)
         projectModelToPath[projectModel] = projectInfoFile.absolutePath
+        currentProject = projectModel
         return projectModel
     }
 
@@ -113,6 +116,7 @@ object ProjectManager {
      * @param projectModel the model to load.
      */
     fun openProject(projectModel: ProjectModel): ProjectModel {
+        currentProject = projectModel
         return projectModel
     }
 
@@ -192,4 +196,16 @@ object ProjectManager {
         //        FileUtils.moveDirectory(dest.resolve("baseFolder"), projectDir.resolve("baseFolder"))
         //        FileUtils.moveDirectory(dest.resolve("sourceFilePath"), projectDir.resolve())
     }
+
+    fun getGenerated(relPath: String): File {
+        requireNotNull(currentProject)
+        requireNotNull(projectModelToPath[currentProject!!])
+        return File(currentProject!!.generatedFolder).resolve(relPath)
+    }
+
+    fun getOriginal(relPath: String): File {
+        requireNotNull(currentProject)
+        return File(currentProject!!.sourceFilePath).resolve(relPath)
+    }
+
 }

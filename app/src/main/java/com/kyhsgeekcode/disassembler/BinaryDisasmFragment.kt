@@ -13,6 +13,12 @@ import kotlinx.android.synthetic.main.fragment_binary_disasm.*
 import java.util.*
 
 class BinaryDisasmFragment : Fragment(), IOnBackPressed {
+
+    enum class ViewMode {
+        Binary,
+        Text
+    }
+
     var isShowAddress = true
     var isShowLabel = true
     var isShowBytes = true
@@ -222,5 +228,14 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             disasmTabListview.refreshDrawableState()
             ColorHelper.isUpdatedColor = false
         }
+    }
+
+    companion object {
+        private val PARAM1 :String = "relpath"
+        private val PARAM2 :String = "mode"
+        fun newInstance(relPath:String, mode:ViewMode) : BinaryDisasmFragment {
+
+        }
+
     }
 }
