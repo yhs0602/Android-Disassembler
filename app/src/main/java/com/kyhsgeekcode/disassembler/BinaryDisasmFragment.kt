@@ -44,8 +44,9 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         super.onCreate(savedInstanceState)
         arguments?.let {
             relPath = it.getString(ARG_PARAM)!!
+            parsedFile = (parentFragment as IParsedFileProvider).parsedFile
         }
-        parsedFile = AbstractFile.createInstance(com.kyhsgeekcode.disassembler.project.ProjectManager.getOriginal(relPath))
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
@@ -112,7 +113,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             jmpBackstack.pop()
             return true
         } else {
-            (parentFragment as TabController).setCurrentTabByTag(TabTags.TAB_EXPORT)
+            (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_EXPORT)
             return true
         }
 //        return false
@@ -188,7 +189,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 
     fun jumpto(address: Long) {
         if (isValidAddress(address)) { //not found
-            (parentFragment as TabController).setCurrentTabByTag(TabTags.TAB_DISASM)
+            (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_DISASM)
             jmpBackstack.push(java.lang.Long.valueOf(adapter!!.currentAddress))
             adapter!!.OnJumpTo(address)
             disasmTabListview!!.setSelection(0)

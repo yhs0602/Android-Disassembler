@@ -1,6 +1,6 @@
 package com.kyhsgeekcode.disassembler
 
-interface TabController {
+interface ITabController {
     fun setCurrentTab(index: Int): Boolean
 
     fun setCurrentTabByTag(tag: String): Boolean

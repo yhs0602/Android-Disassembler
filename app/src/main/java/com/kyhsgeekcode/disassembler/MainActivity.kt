@@ -12,9 +12,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -23,10 +21,6 @@ import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
 import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
-import com.kyhsgeekcode.disassembler.FileTabFactory.FileTabContentFactory
-import com.kyhsgeekcode.disassembler.FileTabFactory.ImageFileTabFactory
-import com.kyhsgeekcode.disassembler.FileTabFactory.NativeDisassemblyFactory
-import com.kyhsgeekcode.disassembler.FileTabFactory.TextFileTabFactory
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
@@ -47,7 +41,7 @@ import java.util.regex.Pattern
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-class MainActivity : AppCompatActivity(), TabController {
+class MainActivity : AppCompatActivity(), ITabController {
     companion object {
         const val SETTINGKEY = "setting"
         const val REQUEST_WRITE_STORAGE_REQUEST_CODE = 1
