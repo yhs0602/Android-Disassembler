@@ -1,26 +1,17 @@
 package com.kyhsgeekcode.disassembler
 
 //import kotlinx.android.synthetic.main.fragment_analysis_result.*
-import android.app.ProgressDialog
-import android.content.DialogInterface
-import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.widget.EditText
-import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import androidx.viewpager.widget.PagerAdapter
 import kotlinx.android.synthetic.main.fragment_binary.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     val ARG_PARAM1 = "RELPATH"
     lateinit var relPath: String
     override lateinit var parsedFile: AbstractFile
 
-    private lateinit var pagerAdapter : ViewPagerAdapter
+    private lateinit var pagerAdapter: ViewPagerAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -56,7 +47,6 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
         }
         return super.onOptionsItemSelected(item)
     }
-
 
 
     companion object {

@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import at.pollaknet.api.facile.Facile
 import com.kyhsgeekcode.disassembler.R
+import com.kyhsgeekcode.disassembler.project.ProjectManager
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveException
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
@@ -233,8 +234,11 @@ fun sendErrorReport(error: Throwable) {
     val content = StringBuilder(Log.getStackTraceString(error))
     emailIntent.putExtra(Intent.EXTRA_TEXT,
             content.toString())
-    if (error is RuntimeException && parsedFile != null) {
+    if (error is RuntimeException) {
+
         emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(File(parsedFile!!.getPath())))
     }
-    startActivity(Intent.createChooser(emailIntent, getString(R.string.send_crash_via_email)))
+    appCtx.startActivity(Intent.createChooser(emailIntent, appCtx.getString(R.string.send_crash_via_email)))
 }
+
+fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }

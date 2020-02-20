@@ -46,7 +46,7 @@ class AnalysisResultFragment : Fragment() {
             dialog.dismiss()
             tvAnalRes!!.text = result
             imageViewCount!!.setImageDrawable(drawable)
-            setCurrentTabByTag(TabTags.TAB_ANALYSIS)
+//            setCurrentTabByTag(TabTags.TAB_ANALYSIS)
             Log.d(TAG, "BG done")
             //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
         }

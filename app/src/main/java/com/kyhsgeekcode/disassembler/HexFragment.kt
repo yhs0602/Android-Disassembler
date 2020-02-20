@@ -7,20 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
+import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import kotlinx.android.synthetic.main.fragment_hexview.*
+import kotlinx.serialization.UnstableDefault
+
 //TODO: Add a cusom HEX view
 class HexFragment : Fragment() {
     val ARG_PARAM = "param"
     private lateinit var fileContent : ByteArray
     private lateinit var relPath : String
+    @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let{
             relPath = it.getString(ARG_PARAM)!!
         }
-        //TODO: Initialize filecontent
-
-
+        fileContent = ProjectDataStorage.getFileContent(relPath)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =

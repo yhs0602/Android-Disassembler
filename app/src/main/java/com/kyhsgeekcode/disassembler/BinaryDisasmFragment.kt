@@ -86,14 +86,14 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             //DisasmIterator dai = new DisasmIterator(MainActivity.this,/*mNotifyManager,mBuilder,*/adapter, size);
 //IMPORTANT: un-outcomment here if it causes a bug
 //adapter.setDit(dai);
-            adapter!!.LoadMore(0, addr)
+            adapter.LoadMore(0, addr)
             //long toresume=dai.getSome(filecontent,start,size,addr,1000000/*, disasmResults*/);
 /*if(toresume<0)
 					 {
 					 AlertError("Failed to disassemble:"+toresume,new Exception());
 					 }else{
 					 disasmManager.setResumeOffsetFromCode(toresume);
-					 }*/disasmResults = adapter!!.itemList()
+					 }*/disasmResults = adapter.itemList()
             //mNotifyManager.cancel(0);
 //final int len=disasmResults.size();
 //add xrefs
@@ -174,24 +174,24 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 
     private fun parseAddress(toString: String?): Long {
         if (toString == null) {
-            return parsedFile!!.entryPoint
+            return parsedFile.entryPoint
         }
         if (toString == "") {
-            return parsedFile!!.entryPoint
+            return parsedFile.entryPoint
         }
         try {
             return java.lang.Long.decode(toString)
         } catch (e: NumberFormatException) {
             Toast.makeText(activity, R.string.validaddress, Toast.LENGTH_SHORT).show()
         }
-        return parsedFile!!.entryPoint
+        return parsedFile.entryPoint
     }
 
     fun jumpto(address: Long) {
         if (isValidAddress(address)) { //not found
             (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_DISASM)
-            jmpBackstack.push(java.lang.Long.valueOf(adapter!!.currentAddress))
-            adapter!!.OnJumpTo(address)
+            jmpBackstack.push(java.lang.Long.valueOf(adapter.currentAddress))
+            adapter.OnJumpTo(address)
             disasmTabListview!!.setSelection(0)
         } else {
             Toast.makeText(activity, R.string.validaddress, Toast.LENGTH_SHORT).show()
@@ -199,7 +199,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     }
 
     private fun isValidAddress(address: Long): Boolean {
-        return if (address > parsedFile!!.fileContents.size + parsedFile!!.codeVirtAddr) false else address >= 0
+        return if (address > parsedFile.fileContents.size + parsedFile.codeVirtAddr) false else address >= 0
     }
 
     private val leftListener: View.OnClickListener = object : View.OnClickListener {
