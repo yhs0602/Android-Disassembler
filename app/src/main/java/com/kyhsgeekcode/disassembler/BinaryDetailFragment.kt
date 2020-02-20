@@ -12,6 +12,6 @@ class BinaryDetailFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        detailText.setText(parsedFile.toString())
+        detailText.setText((parentFragment as IParsedFileProvider).parsedFile.toString())
     }
 }

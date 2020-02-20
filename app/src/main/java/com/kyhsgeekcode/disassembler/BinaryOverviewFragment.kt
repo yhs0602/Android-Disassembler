@@ -8,14 +8,29 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_binary_overview.*
+import kotlinx.serialization.UnstableDefault
 import nl.lxtreme.binutils.elf.MachineType
 import java.util.*
 
 class BinaryOverviewFragment : Fragment() {
+    val TAG = "BinaryOverviewFragment"
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater.inflate(R.layout.fragment_binary_overview, container, false)!!
 
-    val TAG = "BinaryOverviewFragment"
+
+    private lateinit var relPath: String
+    private lateinit var parsedFile: AbstractFile
+    @UnstableDefault
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            relPath = it.getString(ARG_PARAM)!!
+            parsedFile = (parentFragment as IParsedFileProvider).parsedFile
+        }
+
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         disableEnableControls(false, mainLinearLayoutSetupRaw)
@@ -23,10 +38,6 @@ class BinaryOverviewFragment : Fragment() {
             allowRawSetup()
         }
         mainBTOverrideAuto.setOnClickListener {
-            if (parsedFile == null) {
-                AlertSelFile()
-                return@setOnClickListener
-            }
             if (parsedFile !is RawFile) { //AlertError("Not a raw file, but enabled?",new Exception());
 //return;
             }
@@ -65,12 +76,12 @@ class BinaryOverviewFragment : Fragment() {
                 if (llimit <= 0) throw Exception("CS limit<0")
                 if (lentry > llimit - lbase || lentry < 0) throw Exception("Entry point out of code section!")
                 if (lvirt < 0) throw Exception("Virtual address<0")
-                parsedFile!!.codeBase = lbase
-                parsedFile!!.codeLimit = llimit
-                parsedFile!!.codeVirtualAddress = lvirt
-                parsedFile!!.entryPoint = lentry
-                parsedFile!!.machineType = mct
-                AfterParse()
+                parsedFile.codeSectionBase = lbase
+                parsedFile.codeSectionLimit = llimit
+                parsedFile.codeVirtAddr = lvirt
+                parsedFile.entryPoint = lentry
+                parsedFile.machineType = mct
+//                AfterParse()
             } catch (e: Exception) {
                 Log.e(TAG, "", e)
                 Toast.makeText(context, getString(R.string.err_invalid_value) + e.message, Toast.LENGTH_SHORT).show()
@@ -85,5 +96,16 @@ class BinaryOverviewFragment : Fragment() {
 
     private fun allowRawSetup() {
         disableEnableControls(true, mainLinearLayoutSetupRaw)
+    }
+
+    companion object {
+        val ARG_PARAM: String = "relpath"
+        fun newInstance(relPath: String): BinaryOverviewFragment {
+            return BinaryOverviewFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM, relPath)
+                }
+            }
+        }
     }
 }

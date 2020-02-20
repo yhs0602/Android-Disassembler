@@ -1,7 +1,6 @@
 package com.kyhsgeekcode.disassembler;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -37,32 +36,26 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                 //Add new
                 final EditText et = new EditText(this);
                 showEditDialog(this, "New theme", "Set name for the theme..", et,
-                        "Create", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface p1, int p2) {
-                                String nam = et.getText().toString();
-                                final Palette palette = new Palette(nam, colorhelper.getPaletteFile(nam));
-                                ColorPrefDialog cpd = new ColorPrefDialog(SettingsActivity.this, "New theme", new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View p1) {
-                                        palette.Save();
-                                        colorhelper.addPalette(palette);
-                                        SharedPreferences sp = getSharedPreferences(MainActivity.SETTINGKEY, MODE_PRIVATE);
-                                        SharedPreferences.Editor ed = sp.edit();
-                                        ed.putString("PaletteName", palette.name).apply();
-                                        colorhelper.setPalette(palette.name);
-                                        return;
-                                    }
-                                }, palette);
-                                cpd.show();
-                                return;
-                            }
+                        "Create", (p11, p21) -> {
+                            String nam = et.getText().toString();
+                            final Palette palette = new Palette(nam, colorhelper.getPaletteFile(nam));
+                            ColorPrefDialog cpd = new ColorPrefDialog(SettingsActivity.this, "New theme", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View p11) {
+                                    palette.Save();
+                                    colorhelper.addPalette(palette);
+                                    SharedPreferences sp = getSharedPreferences(MainActivity.SETTINGKEY, MODE_PRIVATE);
+                                    SharedPreferences.Editor ed = sp.edit();
+                                    ed.putString("PaletteName", palette.name).apply();
+                                    colorhelper.setPalette(palette.name);
+                                    return;
+                                }
+                            }, palette);
+                            cpd.show();
+                            return;
                         },
-                        "Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface p1, int p2) {
-                                return;
-                            }
+                        "Cancel", (p112, p212) -> {
+                            return;
                         });
 
 
@@ -116,10 +109,8 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(key);
         builder.setMessage(buf.toString());
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //action on dialog close
-            }
+        builder.setPositiveButton("OK", (dialog, id) -> {
+            //action on dialog close
         });
         builder.show();
         return true;
@@ -139,10 +130,10 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Intent intent=getIntent();
-        ColorHelper ch = ColorHelper.getInstance();//intent.getParcelableExtra("ColorHelper");
+        ColorHelper ch = ColorHelper.INSTANCE;//intent.getParcelableExtra("ColorHelper");
         //prefnames=ch.names;
         colorhelper = ch;
-        Set<String> ks = ch.palettes.keySet();
+        Set<String> ks = ColorHelper.palettes.keySet();
         prefnames = new String[ks.size() + 1];
         ks.toArray(prefnames);
         prefnames[prefnames.length - 1] = "Add new";
@@ -150,12 +141,9 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         //colorValues=getResources().getIntArray(R.array.predefinedcolor_values);
         final ListPreference lp = (ListPreference) findPreference("predefinedcolor");
         setListPreferenceData(lp);
-        lp.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                setListPreferenceData(lp);
-                return false;
-            }
+        lp.setOnPreferenceClickListener(preference -> {
+            setListPreferenceData(lp);
+            return false;
         });
         lp.setOnPreferenceChangeListener(this);
 

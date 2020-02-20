@@ -9,7 +9,7 @@ import at.pollaknet.api.facile.symtab.symbols.scopes.Assembly;
 //
 public class DotNetAssemblyProvider extends AssemblyProvider {
     public DotNetAssemblyProvider(MainActivity activity, DisasmListViewAdapter adapter, long total, Assembly assembly) {
-        super(activity, adapter, total);
+        super(adapter, total);
         this.assembly = assembly;
         Type[] types = assembly.getAllTypes();
         for (Type t : types) {

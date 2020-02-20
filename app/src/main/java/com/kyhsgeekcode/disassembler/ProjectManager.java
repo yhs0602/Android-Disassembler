@@ -185,8 +185,8 @@ public class ProjectManager {
 					err.addSuppressed(e);
 				}
 			}*/
-            if (notify)
-                listener.onOpen(this);
+//            if (notify)
+//                listener.onOpen(this);
             Throwable[] errs = err.getSuppressed();
             if (errs != null && errs.length > 0)
                 throw err;

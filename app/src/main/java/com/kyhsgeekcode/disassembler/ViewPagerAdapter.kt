@@ -24,6 +24,7 @@ class ViewPagerAdapter(supportFragmentManager: FragmentManager) : FragmentStateP
     fun addFragment(fragment: Fragment, title: String) {
         mFragmentList.add(fragment)
         mFragmentTitleList.add(title)
+        notifyDataSetChanged()
     }
 
     fun removeTab(index:Int) {
