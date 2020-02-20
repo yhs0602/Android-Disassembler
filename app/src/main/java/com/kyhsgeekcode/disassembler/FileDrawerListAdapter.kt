@@ -226,17 +226,17 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
         var nameView: TextView? = null //ImageView arrowView;
     }
 
-    override fun getViewForObject(anObject: Any, convertView: View, itemInfo: ItemInfo): View {
-        var convertView = convertView
+    override fun getViewForObject(anObject: Any, convertView: View?, itemInfo: ItemInfo): View {
+        var convertView2 = convertView
         val viewHolder: ViewHolder
-        if (convertView == null) {
+        if (convertView2 == null) {
             viewHolder = ViewHolder()
-            convertView = LayoutInflater.from(appCtx).inflate(R.layout.filedraweritem, null)
-            viewHolder.nameView = convertView.findViewById(R.id.fileDrawerTextView)
+            convertView2 = LayoutInflater.from(appCtx).inflate(R.layout.filedraweritem, null)
+            viewHolder.nameView = convertView2.findViewById(R.id.fileDrawerTextView)
             //viewHolder.levelBeamView = (LevelBeamView) convertView.findViewById(R.id.dataItemLevelBeam);
-            convertView.tag = viewHolder
+            convertView2.tag = viewHolder
         } else {
-            viewHolder = convertView.tag as ViewHolder
+            viewHolder = convertView2.tag as ViewHolder
         }
         val item = anObject as FileDrawerListItem
         viewHolder.nameView!!.text = item.caption
@@ -254,7 +254,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
         //viewHolder.levelBeamView.setLevel(itemInfo.getLevel());
 //Log.d("FileAdapter", "Level:" + item.level);
         viewHolder.nameView!!.setPaddingRelative(item.level * 30, 0, 0, 0)
-        return convertView
+        return convertView2 as View
     }
 
     private fun getDrawableFromType(type: DrawerItemType): Drawable? {
