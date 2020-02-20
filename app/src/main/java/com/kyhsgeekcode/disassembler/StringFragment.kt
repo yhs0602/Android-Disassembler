@@ -97,12 +97,6 @@ class StringFragment : Fragment() {
 
         stringAdapter = FoundStringAdapter()
         stringListVIew.adapter = stringAdapter
-
-        CoroutineScope(Dispatchers.Main).launch {
-            withContext(Dispatchers.Default) {
-
-            }
-        }
     }
 
     override fun onDetach() {

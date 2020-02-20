@@ -41,7 +41,7 @@ import java.util.regex.Pattern
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-class MainActivity : AppCompatActivity(), ITabController {
+class MainActivity : AppCompatActivity(), ITabController, StringFragment.OnFragmentInteractionListener {
     companion object {
         const val SETTINGKEY = "setting"
         const val REQUEST_WRITE_STORAGE_REQUEST_CODE = 1
@@ -1225,6 +1225,10 @@ class MainActivity : AppCompatActivity(), ITabController {
     }
 
     override fun setCurrentTabByTag(tag: String): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onFragmentInteraction(uri: Uri) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

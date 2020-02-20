@@ -13,52 +13,55 @@ import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.github.chrisbanes.photoview.PhotoView
+import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
+import com.tingyik90.snackprogressbar.SnackProgressBar
+import com.tingyik90.snackprogressbar.SnackProgressBarManager
 import kotlinx.android.synthetic.main.fragment_analysis_result.*
+import kotlinx.android.synthetic.main.fragment_string.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.UnstableDefault
 
 class AnalysisResultFragment : Fragment() {
     val ARG_PARAM = "RELPATH"
     private lateinit var relPath: String
+    private lateinit var fileContent: ByteArray
+
+    private val snackProgressBarManager by lazy { SnackProgressBarManager(stringMain, lifecycleOwner = this) }
+    val circularType =
+            SnackProgressBar(SnackProgressBar.TYPE_CIRCULAR, "Loading...")
+                    .setIsIndeterminate(false)
+                    .setAllowUserInput(false)
+
+    @UnstableDefault
+    @ExperimentalUnsignedTypes
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             relPath = it.getString(ARG_PARAM)!!
         }
+        fileContent = ProjectDataStorage.getFileContent(relPath)
         CoroutineScope(Dispatchers.Main).launch {
-            var progress: ProgressBar? = null
-            var result: String? = null
-            var drawable: Drawable? = null
-            Log.d(TAG, "Preexecute")
-            // create dialog
-            val dialog = ProgressDialog(activity)
-            dialog.setTitle("Analyzing ...")
-            dialog.setMessage("Counting bytes ...")
-            dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-            dialog.progress = 0
-            dialog.max = 7
-            dialog.setCancelable(false)
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.show()
-            analyze(dialog)
-            dialog.dismiss()
-            tvAnalRes!!.text = result
-            imageViewCount!!.setImageDrawable(drawable)
-//            setCurrentTabByTag(TabTags.TAB_ANALYSIS)
+            circularType.setMessage("Counting bytes ...")
+            circularType.setProgressMax(7)
+            val analyzer = Analyzer(fileContent)
+            withContext(Dispatchers.Default) {
+                analyzer.analyze {i, total, caption ->
+                    circularType.setMessage(caption)
+                    snackProgressBarManager.setProgress(i)
+                    snackProgressBarManager.show(circularType, SnackProgressBarManager.LENGTH_INDEFINITE)
+                    true
+                }
+            }
+            val drawable = analyzer.getImage()
+            tvAnalRes.text = analyzer.result
+            imageViewCount.setImageDrawable(drawable)
             Log.d(TAG, "BG done")
-            //Toast.makeText(context, "Finished", Toast.LENGTH_LONG).show();
         }
     }
-    suspend fun analyze(dialog: ProgressDialog) {
-        withContext(Dispatchers.Default) {
-            val analyzer = Analyzer(parsedFile.fileContents)
-            analyzer.Analyze(dialog)
-            result = analyzer.result
-            drawable = analyzer.getImage(activity)
-        }
-    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater.inflate(R.layout.fragment_analysis_result, container, false)!!
 

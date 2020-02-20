@@ -9,6 +9,7 @@ import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
+import splitties.init.appCtx
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
@@ -63,7 +64,7 @@ class Analyzer(private val bytes: ByteArray) {
         return
     }
 
-    fun getImage(context: Context): Drawable {
+    fun getImage(): Drawable {
         val sizeX = 1064
         val sizeY = 576
         val graphY = sizeY - 64
@@ -100,7 +101,7 @@ class Analyzer(private val bytes: ByteArray) {
             mCanvas.drawLine(4 * i + 20.toFloat(), prevy, 4 * (i + 1) + 20.toFloat(), y, paintCount)
             prevy = y
         }
-        return BitmapDrawable(context.resources, bitmap)
+        return BitmapDrawable(appCtx.resources, bitmap)
     }
 
     val result: String
@@ -125,7 +126,7 @@ class Analyzer(private val bytes: ByteArray) {
             sb.append(SHA256Hash)
             sb.append(ls)
             sb.append("Data counts: ")
-            sb.append(Arrays.toString(nums))
+            sb.append(nums.contentToString())
             sb.append(ls)
             sb.append("Data mean: ")
             sb.append(mean)
@@ -153,15 +154,14 @@ class Analyzer(private val bytes: ByteArray) {
             return sb.toString()
         }
 
-    fun Analyze(runnable: ProgressDialog) { //Count shorts, calculate average, ...
+    fun analyze(progress: (Int, Int, String) -> Boolean) { //Count shorts, calculate average, ...
         Logger.v(TAG, "Counting numbers")
         Arrays.fill(nums, 0)
         for (i in uBytes.indices) {
             nums[uBytes[i].toInt()]++
         }
-        Logger.v(TAG, "Count:" + Arrays.toString(nums))
-        runnable.setMessage("Measuring average...")
-        runnable.progress = 1
+        Logger.v(TAG, "Count:" + nums.contentToString())
+        progress(7, 1, "Measuring average...")
         Logger.v(TAG, "Averaging")
         var div: Double
         //double[] divs = new double[256];
@@ -172,8 +172,8 @@ class Analyzer(private val bytes: ByteArray) {
             avg += div
         }
         Logger.v(TAG, "Avg:$avg")
-        runnable.setMessage("Measuring Entropy...")
-        runnable.progress = 2
+
+        progress(7, 2, "Measuring Entropy...")
         //Calculate Entropy (bits/symbol)
 //https://rosettacode.org/wiki/Entropy
         Logger.v(TAG, "Measuring entropy")
@@ -183,8 +183,8 @@ class Analyzer(private val bytes: ByteArray) {
             entropy -= p * log2(p)
         }
         Logger.v(TAG, "Entropy:$entropy")
-        runnable.setMessage("Performing G-test...")
-        runnable.progress = 3
+
+        progress(7, 3, "Performing G-test...")
         G = 0.0
         val expected = uBytes.size.toDouble() / 256.0
         for (i in 0..255) {
@@ -192,8 +192,8 @@ class Analyzer(private val bytes: ByteArray) {
             G += term
         }
         G *= 2.0
-        runnable.setMessage("Performing Chi-Square test...")
-        runnable.progress = 4
+
+        progress(7, 4, "Performing Chi-Square test...")
         //Do Chi-square test
 //https://rosettacode.org/wiki/Verify_distribution_uniformity/Chi-squared_test
 //https://rosettacode.org/wiki/Verify_distribution_uniformity/Chi-squared_test#C
@@ -206,8 +206,8 @@ class Analyzer(private val bytes: ByteArray) {
         Logger.v(TAG, "chiProb:$chiProb")
         chiIsUniform = chiIsUniform(uBytes, uBytes.size, 0.05)
         Logger.v(TAG, "chiIsUniform:$chiIsUniform")
-        runnable.setMessage("Performing monte-carlo analysis...")
-        runnable.progress = 5
+
+        progress(7, 5, "Performing monte-carlo analysis...")
         //Monte Carlo PI calc
         Logger.v(TAG, "Performing Monte Carlo")
         var inCircle = 0
@@ -224,8 +224,8 @@ class Analyzer(private val bytes: ByteArray) {
         }
         monteCarloPI = 4.0 * inCircle / (uBytes.size - 1)
         Logger.v(TAG, "Monte Carlo PI:$monteCarloPI")
-        runnable.setMessage("Measuring auto correlation...")
-        runnable.progress = 6
+
+        progress(7, 6, "Measuring auto correlation...")
         //Serial correlation coefficient
 //compute sum of squared
         Logger.v(TAG, "Measuring correlation coeffs")
@@ -238,8 +238,8 @@ class Analyzer(private val bytes: ByteArray) {
             corel += (uBytes[i] * uBytes[i + 1]).toDouble()
         }
         corel /= sumsq
-        runnable.progress = 7 //save results
-        runnable.setMessage("Hashing")
+
+        progress(7, 7, "Hashing")
         MD4Hash = Hash("MD4", bytes)
         MD5Hash = Hash("MD5", bytes)
         SHA1Hash = Hash("SHA-1", bytes)
