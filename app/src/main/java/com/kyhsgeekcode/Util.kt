@@ -12,10 +12,14 @@ import androidx.core.content.ContextCompat
 import at.pollaknet.api.facile.Facile
 import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.disassembler.project.ProjectManager
+import kotlinx.serialization.UnstableDefault
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveException
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
 import org.apache.commons.compress.utils.IOUtils
 import org.apache.commons.io.FileUtils
 import splitties.init.appCtx
@@ -218,6 +222,7 @@ fun convertDpToPixel(dp: Float): Int {
 
 fun getDrawable(id: Int) = ContextCompat.getDrawable(appCtx, id)
 
+@UnstableDefault
 fun sendErrorReport(error: Throwable) {
     val emailIntent = Intent(Intent.ACTION_SEND)
     emailIntent.type = "plain/text"
@@ -234,11 +239,65 @@ fun sendErrorReport(error: Throwable) {
     val content = StringBuilder(Log.getStackTraceString(error))
     emailIntent.putExtra(Intent.EXTRA_TEXT,
             content.toString())
+    val resultPath: String?
     if (error is RuntimeException) {
-
-        emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(File(parsedFile!!.getPath())))
+        val path = ProjectManager.currentProject?.sourceFilePath
+        if (path != null) {
+            val file = File(path)
+            if (file.isDirectory) {
+                resultPath = appCtx.externalCacheDir!!.resolve("archive.tar.gz").path
+                createTarGZ(path ,resultPath)
+            } else {
+                resultPath = path
+            }
+        } else {
+            resultPath = path
+        }
+        if (resultPath != null)
+            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(File(resultPath)))
     }
     appCtx.startActivity(Intent.createChooser(emailIntent, appCtx.getString(R.string.send_crash_via_email)))
 }
 
 fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
+
+@Throws(FileNotFoundException::class, IOException::class)
+fun createTarGZ(dirPath: String, outPath: String) {
+    var fOut: FileOutputStream? = null
+    var bOut: BufferedOutputStream? = null
+    var gzOut: GzipCompressorOutputStream? = null
+    var tOut: TarArchiveOutputStream? = null
+    try {
+        fOut = FileOutputStream(File(outPath))
+        bOut = BufferedOutputStream(fOut)
+        gzOut = GzipCompressorOutputStream(bOut)
+        tOut = TarArchiveOutputStream(gzOut)
+        addFileToTarGz(tOut, dirPath, "")
+    } finally {
+        tOut?.finish()
+        tOut?.close()
+        gzOut?.close()
+        bOut?.close()
+        fOut?.close()
+    }
+}
+
+@Throws(IOException::class)
+fun addFileToTarGz(tOut: TarArchiveOutputStream, path: String, base: String) {
+    val f = File(path)
+    val entryName = base + f.name
+    val tarEntry = TarArchiveEntry(f, entryName)
+    tOut.putArchiveEntry(tarEntry)
+    if (f.isFile) {
+        IOUtils.copy(FileInputStream(f), tOut)
+        tOut.closeArchiveEntry()
+    } else {
+        tOut.closeArchiveEntry()
+        val children = f.listFiles()
+        if (children != null) {
+            for (child in children) {
+                addFileToTarGz(tOut, child.absolutePath, "$entryName/")
+            }
+        }
+    }
+}
