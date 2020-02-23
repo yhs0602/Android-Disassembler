@@ -43,6 +43,10 @@ import java.util.zip.ZipInputStream
 
 class MainActivity : AppCompatActivity(),
         ITabController,
+        ArchiveFragment.OnFragmentInteractionListener,
+        APKFragment.OnFragmentInteractionListener,
+        DexFragment.OnFragmentInteractionListener,
+        DotNetFragment.OnFragmentInteractionListener,
         StringFragment.OnFragmentInteractionListener,
         IDrawerManager {
     companion object {
@@ -287,6 +291,8 @@ class MainActivity : AppCompatActivity(),
             }
 
             override fun onGroupItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) { //Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
+                if((item as FileDrawerListItem).isOpenable)
+                    onItemClicked(parent, view, item, itemInfo)
             }
         })
     }
@@ -295,6 +301,8 @@ class MainActivity : AppCompatActivity(),
     fun determineFragmentToOpen(item: FileDrawerListItem): Pair<Fragment, String> {
         val rootPath = ProjectManager.currentProject!!.sourceFilePath
         val abspath = (item.tag as String)
+        Log.d(TAG, "rootPath:${rootPath}")
+        Log.d(TAG, "absPath:${abspath}")
         val relPath = abspath.substring(rootPath.length)
         val fragment = when (item.type) {
             FileDrawerListItem.DrawerItemType.ARCHIVE -> ArchiveFragment.newInstance(relPath)

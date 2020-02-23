@@ -133,7 +133,7 @@ class FileDrawerListItem {
         Log.d(TAG, "drawerlistitem" + file.path)
         caption = file.name
         if (file.isDirectory && !caption.endsWith("/")) caption += "/"
-        tag = file.path
+        tag = file.absolutePath
         if (file.isDirectory) {
             type = DrawerItemType.FOLDER
         } else {
@@ -208,6 +208,8 @@ class FileDrawerListItem {
         init {
             inopenables.add(DrawerItemType.FIELD)
             inopenables.add(DrawerItemType.NONE)
+            inopenables.add(DrawerItemType.PROJECTS)
+            inopenables.add(DrawerItemType.PROJECT)
         }
     }
 }

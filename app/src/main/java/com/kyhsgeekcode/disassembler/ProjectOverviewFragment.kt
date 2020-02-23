@@ -73,6 +73,7 @@ class ProjectOverviewFragment : Fragment() {
     private fun initializeDrawer(project: ProjectModel) {
         //project.sourceFilePath
         val sourceFileOrFolder = File(project.sourceFilePath)
+        fileNameText.setText(sourceFileOrFolder.absolutePath)
         (activity as IDrawerManager).notifyDataSetChanged()
 //        mDrawerAdapter.
     }
