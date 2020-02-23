@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_span="5"
-        android:text="@string/select_any_file_to_disassemble_or_project_from_the_drawer_left"
+        android:text="@string/main_select_source_guide"
         android:textAppearance="?android:attr/textAppearanceMedium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/apptitleTv" />
@@ -32,14 +32,14 @@
         android:layout_height="wrap_content"
         android:layout_span="2"
         android:ems="10"
-        android:inputType="text"
+        android:inputType="textMultiLine|text|textImeMultiLine"
         app:layout_constraintEnd_toStartOf="@id/selFile"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvDesc" />
 
     <Button
         android:id="@+id/selFile"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_span="1"
         android:layout_weight="1.0"
