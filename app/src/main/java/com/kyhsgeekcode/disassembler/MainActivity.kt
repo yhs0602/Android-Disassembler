@@ -41,7 +41,10 @@ import java.util.regex.Pattern
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-class MainActivity : AppCompatActivity(), ITabController, StringFragment.OnFragmentInteractionListener {
+class MainActivity : AppCompatActivity(),
+        ITabController,
+        StringFragment.OnFragmentInteractionListener,
+        IDrawerManager {
     companion object {
         const val SETTINGKEY = "setting"
         const val REQUEST_WRITE_STORAGE_REQUEST_CODE = 1
@@ -185,7 +188,6 @@ class MainActivity : AppCompatActivity(), ITabController, StringFragment.OnFragm
         manageShowRational()
         clearCache()
     }
-
 
 
 //    private fun handleDataFragment() {
@@ -424,10 +426,10 @@ class MainActivity : AppCompatActivity(), ITabController, StringFragment.OnFragm
     }
 
 
-    private fun AlertSelFile() {
-        Toast.makeText(this, R.string.selfilefirst, Toast.LENGTH_SHORT).show()
-        showFileChooser() /*File*/
-    }
+//    private fun AlertSelFile() {
+//        Toast.makeText(this, R.string.selfilefirst, Toast.LENGTH_SHORT).show()
+////        showFileChooser() /*File*/
+//    }
 
     /////////////////////////////////////////////Export - Output//////////////////////////////////
 //    fun ExportDisasm() {
@@ -790,6 +792,7 @@ class MainActivity : AppCompatActivity(), ITabController, StringFragment.OnFragm
     @UnstableDefault
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "onActivityResult")
         if (requestCode == REQUEST_SELECT_FILE) {
             Log.d(TAG, "OnActivityResult1")
             if (resultCode == Activity.RESULT_OK) {
@@ -805,14 +808,17 @@ class MainActivity : AppCompatActivity(), ITabController, StringFragment.OnFragm
 //                onChoosePath(path)
             }
         } else if (requestCode == REQUEST_SELECT_FILE_NEW) {
+            Log.d(TAG, "onActivityResultNew")
             if (resultCode == Activity.RESULT_OK) {
+                Log.d(TAG, "onActivityResultOk")
+
                 val fi = data!!.getSerializableExtra("fileItem") as FileItem
                 val openAsProject = data.getBooleanExtra("openProject", false)
                 Log.v(TAG, "FileItem.text:" + fi.text)
                 Log.v(TAG, "Open as project$openAsProject")
                 if (fi.file?.isArchive() == true) {
                 }
-                onChoosePathNew(fi.file!!)
+//                onChoosePathNew(fi.file!!)
 //                val project = ProjectManager.newProject(fi.file!!, ProjectType.APK, if(openAsProject) fi.file?.name else null)
 //                initializeDrawer(project)
             }
@@ -821,30 +827,6 @@ class MainActivity : AppCompatActivity(), ITabController, StringFragment.OnFragm
 
     private fun onChoosePathNew(uri: Uri) {
 
-    }
-
-
-    @UnstableDefault
-    private fun onChoosePathNew(file: File) {
-        showYesNoDialog(this, "Copy contents",
-                "Do you want to copy the target file to the app's project folder? It is recommended",
-                DialogInterface.OnClickListener { dlg, which ->
-                    val project = ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, true)
-                    initializeDrawer(project)
-                },
-                DialogInterface.OnClickListener { dlg, which ->
-                    val project = ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, false)
-                    initializeDrawer(project)
-                }
-        )
-    }
-
-    //Actually, currentProject is set and automatically figured out
-    private fun initializeDrawer(project: ProjectModel) {
-        //project.sourceFilePath
-        val sourceFileOrFolder = File(project.sourceFilePath)
-        mDrawerAdapter.notifyDataSetChanged()
-//        mDrawerAdapter.
     }
 
 //    private fun onChoosePath(uri: Uri) {
@@ -1216,7 +1198,7 @@ class MainActivity : AppCompatActivity(), ITabController, StringFragment.OnFragm
     override fun setCurrentTab(index: Int): Boolean {
         val tab = tablayout.getTabAt(index) ?: return false
         tab.select()
-        pagerMain.setCurrentItem(index,true)
+        pagerMain.setCurrentItem(index, true)
         return true
     }
 
@@ -1230,6 +1212,10 @@ class MainActivity : AppCompatActivity(), ITabController, StringFragment.OnFragm
 
     override fun onFragmentInteraction(uri: Uri) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun notifyDataSetChanged() {
+        mDrawerAdapter.notifyDataSetChanged()
     }
 
 //    internal inner class SaveDBAsync : AsyncTask<DatabaseHelper?, Int?, Void?>() {
