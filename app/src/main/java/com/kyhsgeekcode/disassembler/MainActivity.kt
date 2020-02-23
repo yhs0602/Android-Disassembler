@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity(),
         }
 
         init {
+            textFileExts.add("xml")
             textFileExts.add("txt")
             textFileExts.add("smali")
             textFileExts.add("java")
@@ -314,6 +315,7 @@ class MainActivity : AppCompatActivity(),
             FileDrawerListItem.DrawerItemType.APK -> APKFragment.newInstance(relPath)
             FileDrawerListItem.DrawerItemType.NORMAL -> {
                 val ext =  File(relPath).extension.toLowerCase()
+                Log.d(TAG,"ext:$ext")
                 if(textFileExts.contains(ext)) {
                     TextFragment.newInstance(relPath)
                 } else {
