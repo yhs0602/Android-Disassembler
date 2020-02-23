@@ -118,7 +118,9 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
             }
             DrawerItemType.ARCHIVE, DrawerItemType.APK -> {
                 val path = item.tag as String
-                val targetDirectory = File(File(appCtx.filesDir, "/extracted/"), File(path).name + "/")
+                val targetDirectory = ProjectManager.getGenerated(ProjectManager.getRelPathFromOrig(path))
+//                        File(File(appCtx.filesDir, "/extracted/"), File(path).name + "/")
+//                appCtx.filesDir.resolve("extracted").resolve()
                 targetDirectory.mkdirs()
                 try {
                     val zi = ZipInputStream(FileInputStream(path))
@@ -193,7 +195,8 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                             arrayOf(fr, method)))
                 }
             }
-            else -> {}
+            else -> {
+            }
         }
         //if expandable yes.
 //if folder show subfolders

@@ -1,6 +1,7 @@
 package com.kyhsgeekcode.disassembler.project
 
 import kotlinx.serialization.UnstableDefault
+import java.io.File
 
 object ProjectDataStorage {
     //Pair of relPath and dataType
@@ -9,10 +10,17 @@ object ProjectDataStorage {
     @UnstableDefault
     fun getFileContent(relPath: String): ByteArray {
         val key = Pair(relPath, DataType.FileContent)
-        if (data.containsKey(key)) {
-            data[key] = ProjectManager.getOriginal(relPath).readBytes()
+        if (!data.containsKey(key)) {
+            data[key] = getOriginalOrGen(relPath).readBytes()
         }
         return data[key] as ByteArray
+    }
+
+    private fun getOriginalOrGen(relPath: String): File {
+        val orig = ProjectManager.getOriginal(relPath)
+        if (!orig.exists())
+            return ProjectManager.getGenerated(relPath)
+        return orig
     }
 }
 

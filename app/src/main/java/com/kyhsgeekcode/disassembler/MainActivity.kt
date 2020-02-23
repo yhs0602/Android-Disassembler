@@ -271,7 +271,7 @@ class MainActivity : AppCompatActivity(),
         left_drawer.setAdapter(FileDrawerListAdapter().also { mDrawerAdapter = it }) //new ArrayAdapter<String>(MainActivity.this,
         //R.layout.row, mProjNames));
         val initialDrawers: MutableList<FileDrawerListItem> = ArrayList()
-        initialDrawers.add(FileDrawerListItem("Projects", 0,  FileDrawerListItem.DrawerItemType.PROJECTS))
+        initialDrawers.add(FileDrawerListItem("Projects", 0, FileDrawerListItem.DrawerItemType.PROJECTS))
         mDrawerAdapter.setDataItems(initialDrawers)
         mDrawerAdapter.notifyDataSetChanged()
         left_drawer.setOnItemClickListener(object : OnItemClickListener {
@@ -291,7 +291,7 @@ class MainActivity : AppCompatActivity(),
             }
 
             override fun onGroupItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) { //Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
-                if((item as FileDrawerListItem).isOpenable)
+                if ((item as FileDrawerListItem).isOpenable)
                     onItemClicked(parent, view, item, itemInfo)
             }
         })
@@ -299,11 +299,16 @@ class MainActivity : AppCompatActivity(),
 
     @UnstableDefault
     fun determineFragmentToOpen(item: FileDrawerListItem): Pair<Fragment, String> {
-        val rootPath = ProjectManager.currentProject!!.sourceFilePath
+        val rootPath = ProjectManager.getOriginal("").absolutePath
         val abspath = (item.tag as String)
         Log.d(TAG, "rootPath:${rootPath}")
         Log.d(TAG, "absPath:${abspath}")
-        val relPath = abspath.substring(rootPath.length)
+        val relPath: String = ProjectManager.getRelPathFromGen(abspath)
+//        if (abspath.length > rootPath.length)
+//            relPath = abspath.substring(rootPath.length+2)
+//        else
+//            relPath = ""
+        Log.d(TAG, "relPath:${relPath}")
         val fragment = when (item.type) {
             FileDrawerListItem.DrawerItemType.ARCHIVE -> ArchiveFragment.newInstance(relPath)
             FileDrawerListItem.DrawerItemType.APK -> APKFragment.newInstance(relPath)

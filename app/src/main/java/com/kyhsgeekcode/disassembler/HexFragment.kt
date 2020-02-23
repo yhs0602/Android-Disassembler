@@ -1,6 +1,7 @@
 package com.kyhsgeekcode.disassembler
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -14,22 +15,23 @@ import kotlinx.serialization.UnstableDefault
 //TODO: Add a cusom HEX view
 class HexFragment : Fragment() {
     val ARG_PARAM = "param"
-    private lateinit var fileContent : ByteArray
-    private lateinit var relPath : String
+    private lateinit var fileContent: ByteArray
+    private lateinit var relPath: String
     @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let{
+        arguments?.let {
             relPath = it.getString(ARG_PARAM)!!
         }
+        Log.d(TAG, "relPath:$relPath")
         fileContent = ProjectDataStorage.getFileContent(relPath)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-            inflater.inflate(R.layout.fragment_analysis_result, container, false)!!
+            inflater.inflate(R.layout.fragment_hexview, container, false)!!
 
-    var touchSource : View? = null
-    var clickSource : View? = null
+    var touchSource: View? = null
+    var clickSource: View? = null
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 

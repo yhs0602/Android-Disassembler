@@ -208,4 +208,23 @@ object ProjectManager {
         return File(currentProject!!.sourceFilePath).resolve(relPath)
     }
 
+    fun getRelPathFromOrig(path: String): String {
+        val rootPath = getOriginal("").absolutePath
+        val relPath: String
+        if (path.length > rootPath.length)
+            relPath = path.substring(rootPath.length+2)
+        else
+            relPath = ""
+        return relPath
+    }
+
+    fun getRelPathFromGen(path: String): String {
+        val rootPath = getGenerated("").absolutePath
+        val relPath: String
+        if (path.length > rootPath.length)
+            relPath = path.substring(rootPath.length+1)
+        else
+            relPath = ""
+        return relPath
+    }
 }
