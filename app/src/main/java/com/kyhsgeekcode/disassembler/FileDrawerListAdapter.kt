@@ -153,7 +153,8 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
             }
             DrawerItemType.DEX -> {
                 val filename = item.tag as String
-                val targetDirectory = File(File(appCtx.filesDir, "/dex-decompiled/"), File(filename).name + "/")
+                val targetDirectory = ProjectManager.getGenerated(ProjectManager.getRelPathFromOrig(filename))
+//                val targetDirectory = File(File(appCtx.filesDir, "/dex-decompiled/"), File(filename).name + "/")
                 targetDirectory.mkdirs()
                 Main.main(arrayOf("d", "-o", targetDirectory.absolutePath, filename))
                 return getSubObjects(FileDrawerListItem(targetDirectory, initialLevel))

@@ -312,7 +312,14 @@ class MainActivity : AppCompatActivity(),
         val fragment = when (item.type) {
             FileDrawerListItem.DrawerItemType.ARCHIVE -> ArchiveFragment.newInstance(relPath)
             FileDrawerListItem.DrawerItemType.APK -> APKFragment.newInstance(relPath)
-            FileDrawerListItem.DrawerItemType.NORMAL -> HexFragment.newInstance(relPath)
+            FileDrawerListItem.DrawerItemType.NORMAL -> {
+                val ext =  File(relPath).extension.toLowerCase()
+                if(textFileExts.contains(ext)) {
+                    TextFragment.newInstance(relPath)
+                } else {
+                    HexFragment.newInstance(relPath)
+                }
+            }
             FileDrawerListItem.DrawerItemType.BINARY -> BinaryFragment.newInstance(relPath)
             FileDrawerListItem.DrawerItemType.PE -> BinaryFragment.newInstance(relPath)
             FileDrawerListItem.DrawerItemType.PE_IL -> DotNetFragment.newInstance(relPath)

@@ -210,6 +210,7 @@ class FileDrawerListItem {
             inopenables.add(DrawerItemType.NONE)
             inopenables.add(DrawerItemType.PROJECTS)
             inopenables.add(DrawerItemType.PROJECT)
+            inopenables.add(DrawerItemType.FOLDER)
         }
     }
 }
