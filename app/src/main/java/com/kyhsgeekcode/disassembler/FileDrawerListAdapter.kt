@@ -13,6 +13,7 @@ import com.kyhsgeekcode.disassembler.FileDrawerListItem.DrawerItemType
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.getDrawable
+import kotlinx.serialization.UnstableDefault
 import org.jf.baksmali.Main
 import pl.openrnd.multilevellistview.ItemInfo
 import pl.openrnd.multilevellistview.MultiLevelListAdapter
@@ -35,6 +36,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
         return item.isExpandable
     }
 
+    @UnstableDefault
     override fun getSubObjects(anObject: Any): List<*> {
         val items: MutableList<FileDrawerListItem> = ArrayList()
         val item = anObject as FileDrawerListItem
@@ -44,18 +46,13 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
         val initialLevel = item.level
         val newLevel = initialLevel + 1
         when (item.type) {
-            DrawerItemType.HEAD -> {
-                when (item.tag as Int) {
-                    MainActivity.TAG_PROJECTS -> {
-                        val curProj = ProjectManager.currentProject
-                        if (curProj == null) {
-                            items.add(FileDrawerListItem("Nothing opened",
-                                    getDrawable(android.R.drawable.ic_secure), newLevel))
-                        } else {
-                            items.add(FileDrawerListItem(curProj.name,
-                                    getDrawable(android.R.drawable.ic_secure), newLevel))
-                        }
-                    }
+            DrawerItemType.PROJECTS -> {
+                val curProj = ProjectManager.currentProject
+                if (curProj == null) {
+                    items.add(FileDrawerListItem("Nothing opened", newLevel))
+                } else {
+                    items.add(FileDrawerListItem(curProj.name, newLevel, DrawerItemType.PROJECT,
+                            curProj, getDrawable(android.R.drawable.ic_secure)))
                 }
             }
             DrawerItemType.PROJECT -> {
@@ -112,10 +109,10 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                                 }
                             })
                         } else {
-                            items.add(FileDrawerListItem("The folder is empty", getDrawable(android.R.drawable.ic_secure), newLevel))
+                            items.add(FileDrawerListItem("The folder is empty", newLevel))
                         }
                     } else {
-                        items.add(FileDrawerListItem("Could not be read!", getDrawable(android.R.drawable.ic_secure), newLevel))
+                        items.add(FileDrawerListItem("Could not be read!", newLevel))
                     }
                 }
             }
@@ -149,7 +146,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                     return getSubObjects(FileDrawerListItem(targetDirectory, initialLevel))
                 } catch (e: IOException) {
                     Log.e("FileAdapter", "", e)
-                    items.add(FileDrawerListItem("NO", getDrawable(android.R.drawable.ic_secure), newLevel))
+                    items.add(FileDrawerListItem("NO", newLevel))
                 }
             }
             DrawerItemType.DEX -> {
@@ -165,7 +162,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                 val assembly = facileReflector.loadAssembly()
                 val types = assembly.allTypes
                 for (type in types) {
-                    items.add(FileDrawerListItem(type.namespace + "." + type.name, DrawerItemType.PE_IL_TYPE, arrayOf(facileReflector, type), newLevel))
+                    items.add(FileDrawerListItem("${type.namespace}.${type.name}", newLevel, DrawerItemType.PE_IL_TYPE, arrayOf(facileReflector, type)))
                 }
             } catch (e: Exception) {
                 Logger.e("FileAdapter", "", e)
@@ -187,12 +184,16 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                         fieldDesc += value
                         fieldDesc += ")"
                     }
-                    items.add(FileDrawerListItem(fieldDesc, DrawerItemType.FIELD, null, newLevel))
+                    items.add(FileDrawerListItem(fieldDesc, newLevel, DrawerItemType.FIELD))
                 }
                 for (method in methods) {
-                    items.add(FileDrawerListItem(method.name + method.methodSignature, DrawerItemType.METHOD, arrayOf(fr, method), newLevel))
+                    items.add(FileDrawerListItem("${method.name}${method.methodSignature}",
+                            newLevel,
+                            DrawerItemType.METHOD,
+                            arrayOf(fr, method)))
                 }
             }
+            else -> {}
         }
         //if expandable yes.
 //if folder show subfolders
@@ -283,6 +284,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
             iconTable[DrawerItemType.PE_IL_TYPE] = R.drawable.ic_type
             iconTable[DrawerItemType.FIELD] = R.drawable.ic_field
             iconTable[DrawerItemType.METHOD] = R.drawable.ic_method
+            iconTable[DrawerItemType.PROJECTS] = R.drawable.ic_folder_icon
         }
     }
 

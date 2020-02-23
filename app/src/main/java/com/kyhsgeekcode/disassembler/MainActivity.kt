@@ -267,7 +267,7 @@ class MainActivity : AppCompatActivity(),
         left_drawer.setAdapter(FileDrawerListAdapter().also { mDrawerAdapter = it }) //new ArrayAdapter<String>(MainActivity.this,
         //R.layout.row, mProjNames));
         val initialDrawers: MutableList<FileDrawerListItem> = ArrayList()
-        initialDrawers.add(FileDrawerListItem("Projects", FileDrawerListItem.DrawerItemType.HEAD, TAG_PROJECTS, 0))
+        initialDrawers.add(FileDrawerListItem("Projects", 0,  FileDrawerListItem.DrawerItemType.PROJECTS))
         mDrawerAdapter.setDataItems(initialDrawers)
         mDrawerAdapter.notifyDataSetChanged()
         left_drawer.setOnItemClickListener(object : OnItemClickListener {

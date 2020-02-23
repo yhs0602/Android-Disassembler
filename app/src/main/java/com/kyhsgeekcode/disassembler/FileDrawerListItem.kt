@@ -8,6 +8,7 @@ import at.pollaknet.api.facile.code.instruction.CilInstruction
 import at.pollaknet.api.facile.renderer.ILAsmRenderer
 import at.pollaknet.api.facile.symtab.symbols.Method
 import at.pollaknet.api.facile.symtab.symbols.TypeRef
+import com.kyhsgeekcode.getDrawable
 import com.kyhsgeekcode.isArchive
 import org.boris.pecoff4j.io.PEParser
 import java.io.File
@@ -109,6 +110,7 @@ class FileDrawerListItem {
         METHOD,
         DEX,
         PROJECT,
+        PROJECTS,
         DISASSEMBLY,
         HEAD,
         NONE
@@ -116,25 +118,15 @@ class FileDrawerListItem {
 
     var type: DrawerItemType
 
-    constructor(caption: String, type: DrawerItemType, tag: Int, level: Int) {
+    constructor(caption: String, level: Int,
+                type: DrawerItemType = DrawerItemType.NONE,
+                tag: Any? = null,
+                drawable: Drawable? = getDrawable(android.R.drawable.ic_secure)) {
         this.caption = caption
+        this.level = level
         this.type = type
         this.tag = tag
-        this.level = level
-    }
-
-    constructor(caption: String, drawable: Drawable?, level: Int) {
-        this.caption = caption
         this.drawable = drawable
-        type = DrawerItemType.NONE
-        this.level = level
-    }
-
-    constructor(caption: String, type: DrawerItemType, tag: Any?, level: Int) {
-        this.caption = caption
-        this.type = type
-        this.tag = tag
-        this.level = level
     }
 
     constructor(file: File, level: Int) {
@@ -209,6 +201,7 @@ class FileDrawerListItem {
             expandables.add(DrawerItemType.DEX)
             expandables.add(DrawerItemType.PE_IL)
             expandables.add(DrawerItemType.PE_IL_TYPE)
+            expandables.add(DrawerItemType.PROJECT)
         }
 
         init {
