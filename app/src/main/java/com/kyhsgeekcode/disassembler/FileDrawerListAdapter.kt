@@ -122,10 +122,10 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                 targetDirectory.mkdirs()
                 try {
                     val zi = ZipInputStream(FileInputStream(path))
-                    var entry: ZipEntry
+                    var entry: ZipEntry? = null
                     val buffer = ByteArray(2048)
-                    while (zi.nextEntry.also { entry = it } != null) {
-                        val outfile = File(targetDirectory, entry.name)
+                    while (zi.nextEntry?.also { entry = it } != null) {
+                        val outfile = File(targetDirectory, entry!!.name)
                         val canonicalPath = outfile.canonicalPath
                         if (!canonicalPath.startsWith(targetDirectory.canonicalPath)) {
                             throw SecurityException("The file may have a Zip Path Traversal Vulnerability." +

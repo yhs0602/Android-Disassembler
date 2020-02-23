@@ -202,10 +202,12 @@ class FileDrawerListItem {
             expandables.add(DrawerItemType.PE_IL)
             expandables.add(DrawerItemType.PE_IL_TYPE)
             expandables.add(DrawerItemType.PROJECT)
+            expandables.add(DrawerItemType.PROJECTS)
         }
 
         init {
             inopenables.add(DrawerItemType.FIELD)
+            inopenables.add(DrawerItemType.NONE)
         }
     }
 }
