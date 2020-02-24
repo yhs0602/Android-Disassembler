@@ -2,6 +2,7 @@ package com.kyhsgeekcode.disassembler.project.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.io.File
 
 @Serializable
 data class ProjectModel(
@@ -21,4 +22,7 @@ data class ProjectModel(
         var sourceFilePath: String,
         @SerialName("info")
         val info: ArrayList<ProjectFileModel> = ArrayList()
-)
+) {
+    val rootFile: File
+        get() = File(generatedFolder).parentFile
+}
