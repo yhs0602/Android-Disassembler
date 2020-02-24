@@ -19,4 +19,14 @@ enum class Register {
     R14,
     R15,
     R16,
+
+    CR0,
+    CR1,
+    CR2,
+    CR3,
+    CR4,
+    CR5,
+    CR6,
+    CR7,
+    CR8
 }
