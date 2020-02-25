@@ -300,11 +300,12 @@ class MainActivity : AppCompatActivity(),
 
     @UnstableDefault
     fun determineFragmentToOpen(item: FileDrawerListItem): Pair<Fragment, String> {
+        var title = "${item.caption} as ${item.type}"
         val rootPath = ProjectManager.getOriginal("").absolutePath
         val abspath = (item.tag as String)
         Log.d(TAG, "rootPath:${rootPath}")
         Log.d(TAG, "absPath:${abspath}")
-        val relPath: String = ProjectManager.getRelPathFromGen(abspath)
+        val relPath: String = ProjectManager.getRelPath(abspath)
 //        if (abspath.length > rootPath.length)
 //            relPath = abspath.substring(rootPath.length+2)
 //        else
@@ -315,8 +316,10 @@ class MainActivity : AppCompatActivity(),
             FileDrawerListItem.DrawerItemType.APK -> APKFragment.newInstance(relPath)
             FileDrawerListItem.DrawerItemType.NORMAL -> {
                 val ext =  File(relPath).extension.toLowerCase()
+
                 Log.d(TAG,"ext:$ext")
                 if(textFileExts.contains(ext)) {
+                    title = "${item.caption} as Text"
                     TextFragment.newInstance(relPath)
                 } else {
                     HexFragment.newInstance(relPath)
@@ -336,7 +339,7 @@ class MainActivity : AppCompatActivity(),
 //            FileDrawerListItem.DrawerItemType.NONE -> TODO()
             else -> throw Exception()
         }
-        val title = "${item.caption} as ${item.type}"
+
         return Pair(fragment, title)
     }
 

@@ -1,8 +1,6 @@
 package com.kyhsgeekcode.disassembler.project
 
 import android.util.Log
-import com.kyhsgeekcode.disassembler.Logger
-import com.kyhsgeekcode.disassembler.Utils.Project
 import kotlinx.serialization.UnstableDefault
 import java.io.File
 
@@ -15,7 +13,7 @@ object ProjectDataStorage {
     fun getFileContent(relPath: String): ByteArray {
         val key = Pair(relPath, DataType.FileContent)
         if (!data.containsKey(key)) {
-            data[key] = getOriginalOrGen(relPath).readBytes()
+            data[key] = resolveToRead(relPath)!!.readBytes()
         }
         return data[key] as ByteArray
     }
@@ -38,6 +36,7 @@ object ProjectDataStorage {
         val paths = relPath.split("/")
         val projectOrig = File(ProjectManager.currentProject!!.sourceFilePath)
         var file = projectOrig.resolve(relPath)
+        Log.d(TAG,"Orig cand: $file")
         if (file.exists() && !file.isDirectory)
             return file
         if (file.isDirectory) {
@@ -45,6 +44,7 @@ object ProjectDataStorage {
             if (newfile.exists() && !newfile.isDirectory)
                 return newfile
         }
+        Log.d(TAG,"Could not find from orig:$relPath")
         //Search in gen
         val generated = ProjectManager.currentProject!!.rootFile.resolve("generated")
         file = generated
@@ -58,7 +58,7 @@ object ProjectDataStorage {
                     return file
                 } else {
                     val candidate = File("${file.absolutePath}_gen")
-                    if(candidate.exists() && !candidate.isDirectory)
+                    if (candidate.exists() && !candidate.isDirectory)
                         return candidate
                     return null
                 }
@@ -74,7 +74,7 @@ object ProjectDataStorage {
     // Append "_gen" if already exists to the path
     // if it is final, overwrite if exists else append _gen
     @UnstableDefault
-    fun resolveToWrite(relPath: String, overwrite: Boolean): File {
+    fun resolveToWrite(relPath: String, overwrite: Boolean = false): File {
         requireNotNull(ProjectManager.currentProject)
         val rootFile = ProjectManager.currentProject!!.rootFile
         val generated = rootFile.resolve("generated")

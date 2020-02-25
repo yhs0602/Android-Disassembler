@@ -1,6 +1,8 @@
 package com.kyhsgeekcode.disassembler.project
 
 import android.content.Context
+import android.util.Log
+import com.kyhsgeekcode.disassembler.Logger
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.extractZip
 import com.kyhsgeekcode.isAccessible
@@ -28,12 +30,14 @@ import java.io.IOException
 
 @UnstableDefault
 object ProjectManager {
+    val TAG = "ProjectManager"
+
     val projectModels: MutableMap<String, ProjectModel> = HashMap()
     val projectModelToPath: MutableMap<ProjectModel, String> = HashMap()
     val projectPaths: MutableSet<String> = HashSet()
     val rootdir = appCtx.getExternalFilesDir(null)!!.resolve("projects/")
     var currentProject: ProjectModel? = null
-        private set
+        set
 
     init {
         val sharedPreference = appCtx.getSharedPreferences("ProjectManager", Context.MODE_PRIVATE)
@@ -212,19 +216,58 @@ object ProjectManager {
         val rootPath = getOriginal("").absolutePath
         val relPath: String
         if (path.length > rootPath.length)
-            relPath = path.substring(rootPath.length+2)
+            relPath = path.substring(rootPath.length + 2)
         else
             relPath = ""
         return relPath
+    }
+
+    fun getRelPath(path: String): String {
+        requireNotNull(currentProject)
+        if(path == currentProject!!.sourceFilePath)
+            return ""
+        val rootFilePath = currentProject!!.rootFile.absolutePath
+        val absPath = File(path).absolutePath
+        if (absPath.startsWith(rootFilePath)) {
+            //orig나 gen에 있다.
+            val orig = File(rootFilePath).resolve("original").path
+            if (absPath.startsWith(orig)) {
+                return substringWithoutSlash(absPath, orig)
+            } else {
+                val gen = currentProject!!.generatedFolder
+                if (absPath.startsWith(gen)) {
+                    return substringWithoutSlash(absPath, gen)
+                }
+            }
+//            val subs = absPath.substring(rootFilePath.length)
+//            if (subs.isNotEmpty() && subs[0] == '/')
+//                return subs.substring(1)
+//            return subs
+        }
+        //외부에 있다.
+        val srcPath = currentProject!!.sourceFilePath
+        if (absPath.startsWith(srcPath)) {
+            return substringWithoutSlash(absPath, srcPath)
+        }
+        Logger.e(TAG, "getRelPath called on $path")
+        assert(false)
+        return ""
     }
 
     fun getRelPathFromGen(path: String): String {
         val rootPath = getGenerated("").absolutePath
         val relPath: String
         if (path.length > rootPath.length)
-            relPath = path.substring(rootPath.length+1)
+            relPath = path.substring(rootPath.length + 1)
         else
             relPath = ""
         return relPath
+    }
+
+    private fun substringWithoutSlash(a: String, b: String): String {
+        val sub = a.substring(b.length)
+        if (sub.isNotEmpty() && sub[0] == '/')
+            return sub.substring(1)
+        return sub
     }
 }

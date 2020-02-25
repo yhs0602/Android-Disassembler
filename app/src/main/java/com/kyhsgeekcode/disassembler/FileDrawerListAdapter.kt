@@ -10,6 +10,7 @@ import at.pollaknet.api.facile.FacileReflector
 import at.pollaknet.api.facile.symtab.TypeKind
 import at.pollaknet.api.facile.symtab.symbols.Type
 import com.kyhsgeekcode.disassembler.FileDrawerListItem.DrawerItemType
+import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.getDrawable
@@ -118,7 +119,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
             }
             DrawerItemType.ARCHIVE, DrawerItemType.APK -> {
                 val path = item.tag as String
-                val targetDirectory = ProjectManager.getGenerated(ProjectManager.getRelPathFromOrig(path))
+                val targetDirectory = ProjectDataStorage.resolveToWrite((ProjectManager.getRelPath(path)))
 //                        File(File(appCtx.filesDir, "/extracted/"), File(path).name + "/")
 //                appCtx.filesDir.resolve("extracted").resolve()
                 targetDirectory.mkdirs()
@@ -153,7 +154,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
             }
             DrawerItemType.DEX -> {
                 val filename = item.tag as String
-                val targetDirectory = ProjectManager.getGenerated(ProjectManager.getRelPathFromOrig(filename))
+                val targetDirectory = ProjectDataStorage.resolveToWrite(ProjectManager.getRelPath(filename))
 //                val targetDirectory = File(File(appCtx.filesDir, "/dex-decompiled/"), File(filename).name + "/")
                 targetDirectory.mkdirs()
                 Main.main(arrayOf("d", "-o", targetDirectory.absolutePath, filename))
