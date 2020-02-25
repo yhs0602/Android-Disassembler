@@ -18,17 +18,16 @@ public class DotNetAssemblyProvider extends AssemblyProvider {
     }
 
     //Not implemented
-    @Override
-    public long getAll(byte[] bytes, long offset, long size, long virtaddr) {
-        return 0;
-    }
-
-    // Should Implement
-    @Override
-    public long getSome(byte[] bytes, long offset, long size, long virtaddr, int count) {
-
-        return 0;
-    }
 
     Assembly assembly;
+
+    @Override
+    public long getAll(int handle, byte[] bytes, long offset, long size, long virtaddr) {
+        return 0;
+    }
+
+    @Override
+    public long getSome(int handle, byte[] bytes, long offset, long size, long virtaddr, int count) {
+        return 0;
+    }
 }

@@ -11,15 +11,15 @@ public abstract class AssemblyProvider {
         this.adapter = adapter;
     }
 
-    public abstract long getAll(byte[] bytes, long offset, long size, long virtaddr);
+    public abstract long getAll(int handle, byte[] bytes, long offset, long size, long virtaddr);
 
-    public abstract long getSome(byte[] bytes, long offset, long size, long virtaddr, int count);
+    public abstract long getSome(int handle, byte[] bytes, long offset, long size, long virtaddr, int count);
 
     //Used by JNI
     public void AddItem(final DisassemblyListItem lvi) {
         new Handler(Looper.getMainLooper()).post(() -> {
             long addr = lvi.disasmResult.address;
-            List<Symbol> syms = activity.parsedFile.getSymbols();
+            List<Symbol> syms = adapter.getFile().getSymbols();
             for (Symbol sym : syms) {
                 if (sym.st_value == addr) {
                     lvi.comments = sym.demangled;
@@ -32,7 +32,6 @@ public abstract class AssemblyProvider {
         });
     }
 
-    MainActivity activity;
     private long total;
     DisasmListViewAdapter adapter;
 }

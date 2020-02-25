@@ -71,9 +71,15 @@ class MainActivity : AppCompatActivity(),
 
 
         ////////////////////////////////////////////Data Conversion//////////////////////////////////
-
+        /**
+         * @returns handle : Int
+         */
         @JvmStatic
         external fun Open(arch: Int, mode: Int): Int
+
+        @JvmStatic
+        external fun Finalize(handle: Int)
+
 
         val textFileExts: MutableSet<String> = HashSet()
 
@@ -380,7 +386,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun onDestroy() {
         super.onDestroy()
-        Finalize()
+//        Finalize()
 //        if (cs != null)
 //            cs = null
     }
@@ -1191,8 +1197,6 @@ class MainActivity : AppCompatActivity(),
      */
 //  public native String  disassemble(byte [] bytes, long entry);
     external fun Init(): Int
-
-    external fun Finalize()
 
     object Utils {
         @JvmStatic

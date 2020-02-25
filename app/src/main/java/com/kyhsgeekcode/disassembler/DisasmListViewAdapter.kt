@@ -14,7 +14,7 @@ import com.kyhsgeekcode.convertDpToPixel
 import com.kyhsgeekcode.disassembler.ColorHelper.palette
 
 class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
-        var file: AbstractFile) : BaseAdapter(), AbsListView.OnScrollListener {
+        var file: AbstractFile, val handle: Int) : BaseAdapter(), AbsListView.OnScrollListener {
     private val TAG = "Disassembler LV"
     //	public void setAddress(SparseArray<Long> address)
 //	{
@@ -84,7 +84,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     }
 
     // position에 위치한 데이터를 화면에 출력하는데 사용될 View를 리턴. : 필수 구현
-    override fun getView(position: Int, convertView: View, parent: ViewGroup): View { // final int pos = position;
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View { // final int pos = position;
         var convertView = convertView
         val context = parent.context
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
@@ -163,7 +163,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     fun loadMore(position: Int, address: Long) { //this.address.clear();
         Log.d(TAG, "LoadMore position: $position, writep: $writep, virtaddr: ${address.toString(16)}")
         writep = position
-        dit.getSome(file.fileContents, address + file.codeSectionBase - file.codeVirtAddr /*address-file.codeVirtualAddress*/, file.fileContents.size.toLong(), address, INSERT_COUNT)
+        dit.getSome(handle, file.fileContents, address + file.codeSectionBase - file.codeVirtAddr /*address-file.codeVirtualAddress*/, file.fileContents.size.toLong(), address, INSERT_COUNT)
     }
 
     // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현

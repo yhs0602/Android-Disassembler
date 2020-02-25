@@ -12,8 +12,14 @@ import android.widget.AutoCompleteTextView
 import android.widget.TableRow
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import capstone.Capstone
+import com.kyhsgeekcode.disassembler.models.Architecture
+import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_ALL
+import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_MAX
+import com.kyhsgeekcode.disassembler.models.Architecture.getArchitecture
 import kotlinx.android.synthetic.main.fragment_binary_disasm.*
 import kotlinx.serialization.UnstableDefault
+import java.lang.Exception
 import java.util.*
 
 class BinaryDisasmFragment : Fragment(), IOnBackPressed {
@@ -23,7 +29,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         Text
     }
 
-
+    var handle: Int = 0
     var disasmResults: LongSparseArray<DisassemblyListItem>? = LongSparseArray()
     var workerThread: Thread? = null
     var rowClkListener = View.OnClickListener { view ->
@@ -58,16 +64,34 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     @UnstableDefault
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        setupListView()
+
         setupSymCompleteAdapter()
 //        adapter = DisasmListViewAdapter(null)
         setHasOptionsMenu(true)
+        val type = parsedFile.machineType //elf.header.machineType;
+        val archs = getArchitecture(type)
+        val arch = archs[0]
+        var mode = 0
+        if (archs.size == 2) mode = archs[1]
+        if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL) {
+            Toast.makeText(activity, "Maybe this program don't support this machine:" + type.name, Toast.LENGTH_SHORT).show()
+        } else {
+//            var err: Int
+            try {
+                MainActivity.Open(arch,  /*CS_MODE_LITTLE_ENDIAN =*/mode).also { handle = it }
+                Toast.makeText(activity, "MachineType=${type.name} arch=$arch", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Log.e(TAG, "setmode type=${type.name} err=${e}arch${arch}mode=$mode")
+                Toast.makeText(activity, "failed to set architecture${e}arch=$arch", Toast.LENGTH_SHORT).show()
+            }
+        }
+        setupListView()
         disassemble()
     }
 
     @UnstableDefault
     private fun setupListView() { //moved to onCreate for avoiding NPE
-        adapter = DisasmListViewAdapter(parsedFile)
+        adapter = DisasmListViewAdapter(parsedFile, handle)
         disasmTabListview.adapter = adapter
         disasmTabListview.onItemClickListener = DisasmClickListener(this)
 //        adapter.addAll(disasmManager!!.getItems(), disasmManager!!.address)
@@ -233,6 +257,11 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             disasmTabListview.refreshDrawableState()
             ColorHelper.isUpdatedColor = false
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        MainActivity.Finalize(handle)
     }
 
     private fun setupSymCompleteAdapter() {

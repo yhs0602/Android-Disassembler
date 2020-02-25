@@ -18,9 +18,9 @@ public class DisasmIterator extends AssemblyProvider {
         super(adapter, total);
     }
 
-    public native long getAll(byte[] bytes, long offset, long size, long virtaddr/*,ArrayList<ListViewItem> arr*/);
+    public native long getAll(int handle, byte[] bytes, long offset, long size, long virtaddr/*,ArrayList<ListViewItem> arr*/);
 
-    public native long getSome(byte[] bytes, long offset, long size, long virtaddr, int count/*,ArrayList<ListViewItem> arr*/);
+    public native long getSome(int handle, byte[] bytes, long offset, long size, long virtaddr, int count/*,ArrayList<ListViewItem> arr*/);
 
     public int showNoti(int progress) {
         //mBuilder.setProgress((int)total,progress, false);
@@ -33,5 +33,5 @@ public class DisasmIterator extends AssemblyProvider {
         return 0;
     }
 
-    public native int CSoption(int type, int vslue);
+    public native int CSoption(int handle, int type, int vslue);
 }
