@@ -119,7 +119,8 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
             }
             DrawerItemType.ARCHIVE, DrawerItemType.APK -> {
                 val path = item.tag as String
-                val targetDirectory = ProjectDataStorage.resolveToWrite((ProjectManager.getRelPath(path)))
+                val targetDirectory = ProjectDataStorage.resolveToWrite(ProjectManager.getRelPath(path), true)
+                Log.d(TAG, "Target directory $targetDirectory")
 //                        File(File(appCtx.filesDir, "/extracted/"), File(path).name + "/")
 //                appCtx.filesDir.resolve("extracted").resolve()
                 targetDirectory.mkdirs()

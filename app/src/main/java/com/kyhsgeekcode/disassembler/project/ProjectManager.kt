@@ -231,10 +231,12 @@ object ProjectManager {
         if (absPath.startsWith(rootFilePath)) {
             //orig나 gen에 있다.
             val orig = File(rootFilePath).resolve("original").path
+            Log.d(TAG, "absPath:$absPath  \n orig:$orig")
             if (absPath.startsWith(orig)) {
                 return substringWithoutSlash(absPath, orig)
             } else {
                 val gen = currentProject!!.generatedFolder
+                Log.d(TAG, "absPath:$absPath \n gen:$gen")
                 if (absPath.startsWith(gen)) {
                     return substringWithoutSlash(absPath, gen)
                 }

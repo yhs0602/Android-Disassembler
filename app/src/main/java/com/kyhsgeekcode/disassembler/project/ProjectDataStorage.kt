@@ -36,7 +36,7 @@ object ProjectDataStorage {
         val paths = relPath.split("/")
         val projectOrig = File(ProjectManager.currentProject!!.sourceFilePath)
         var file = projectOrig.resolve(relPath)
-        Log.d(TAG,"Orig cand: $file")
+        Log.d(TAG, "Orig cand: $file")
         if (file.exists() && !file.isDirectory)
             return file
         if (file.isDirectory) {
@@ -44,15 +44,16 @@ object ProjectDataStorage {
             if (newfile.exists() && !newfile.isDirectory)
                 return newfile
         }
-        Log.d(TAG,"Could not find from orig:$relPath")
+        Log.d(TAG, "Could not find from orig:$relPath")
         //Search in gen
         val generated = ProjectManager.currentProject!!.rootFile.resolve("generated")
         file = generated
-        val finalIndex = paths.size
+        val finalIndex = paths.size-1
         for (pathI in paths.withIndex()) {
             val path = pathI.value
             val index = pathI.index
             file = file.resolve(path)
+            Log.d(TAG, "File:$file, index:$index, finalindex:$finalIndex")
             if (index == finalIndex) {
                 if (file.exists() && !file.isDirectory) {
                     return file
@@ -64,7 +65,7 @@ object ProjectDataStorage {
                 }
             } else if (file.exists() && file.isDirectory) {
 
-            } else {
+            } else if(file.exists()){
                 file = File("${file.absolutePath}_gen")
             }
         }
@@ -74,10 +75,12 @@ object ProjectDataStorage {
     // Append "_gen" if already exists to the path
     // if it is final, overwrite if exists else append _gen
     @UnstableDefault
-    fun resolveToWrite(relPath: String, overwrite: Boolean = false): File {
+    fun resolveToWrite(relPath: String, isDirectory: Boolean = false, overwrite: Boolean = false): File {
         requireNotNull(ProjectManager.currentProject)
+        Log.d(TAG, "resolveToWrite relPath : $relPath, overwrite: $overwrite")
         val rootFile = ProjectManager.currentProject!!.rootFile
         val generated = rootFile.resolve("generated")
+//        val generatedRoot = generated.resolve()
         val paths = relPath.split("/")
         var file = generated
         val finalIndex = paths.size - 1
@@ -87,10 +90,19 @@ object ProjectDataStorage {
             file = file.resolve(path)
             if (index == finalIndex) {
                 if (file.exists()) {
-                    if (overwrite) {
-                        return file
+                    return if(file.isDirectory) {
+                        if(isDirectory)
+                            file
+                        else
+                            File("${file.absolutePath}_gen")
+                    } else if(isDirectory) {
+                        File("${file.absolutePath}_gen")
+                    } else if (overwrite) {
+                        file.delete()
+                        file
                     } else {
-                        return File("${file.absolutePath}_gen")
+                        Log.d(TAG, "File $file exists and appended gen")
+                        File("${file.absolutePath}_gen")
                     }
                 } else {
                     return file
@@ -100,6 +112,7 @@ object ProjectDataStorage {
                     if (file.isDirectory) {
 
                     } else {
+                        Log.d(TAG, "File $file exists and appended gen")
                         file = File("${file.absolutePath}_gen")
                     }
                 } else {

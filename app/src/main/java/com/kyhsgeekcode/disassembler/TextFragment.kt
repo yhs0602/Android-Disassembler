@@ -21,6 +21,7 @@ import java.io.InputStreamReader
 import java.util.*
 
 class TextFragment : Fragment() {
+    val TAG = "TextFragment"
     val ARG_PARAM = "param"
     private lateinit var fileContent: ByteArray
     private lateinit var relPath: String
