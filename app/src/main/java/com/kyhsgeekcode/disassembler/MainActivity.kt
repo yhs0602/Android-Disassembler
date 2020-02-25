@@ -305,6 +305,7 @@ class MainActivity : AppCompatActivity(),
         val abspath = (item.tag as String)
         Log.d(TAG, "rootPath:${rootPath}")
         Log.d(TAG, "absPath:${abspath}")
+        val ext = File(abspath).extension.toLowerCase()
         val relPath: String = ProjectManager.getRelPath(abspath)
 //        if (abspath.length > rootPath.length)
 //            relPath = abspath.substring(rootPath.length+2)
@@ -315,10 +316,8 @@ class MainActivity : AppCompatActivity(),
             FileDrawerListItem.DrawerItemType.ARCHIVE -> ArchiveFragment.newInstance(relPath)
             FileDrawerListItem.DrawerItemType.APK -> APKFragment.newInstance(relPath)
             FileDrawerListItem.DrawerItemType.NORMAL -> {
-                val ext =  File(relPath).extension.toLowerCase()
-
-                Log.d(TAG,"ext:$ext")
-                if(textFileExts.contains(ext)) {
+                Log.d(TAG, "ext:$ext")
+                if (textFileExts.contains(ext)) {
                     title = "${item.caption} as Text"
                     TextFragment.newInstance(relPath)
                 } else {
