@@ -18,13 +18,13 @@ object ProjectDataStorage {
         return data[key] as ByteArray
     }
 
-    @UnstableDefault
-    private fun getOriginalOrGen(relPath: String): File {
-        val orig = ProjectManager.getOriginal(relPath)
-        if (!orig.exists())
-            return ProjectManager.getGenerated(relPath)
-        return orig
-    }
+//    @UnstableDefault
+//    private fun getOriginalOrGen(relPath: String): File {
+//        val orig = ProjectManager.getOriginal(relPath)
+//        if (!orig.exists())
+//            return ProjectManager.getGenerated(relPath)
+//        return orig
+//    }
 
     //If target does not exist(is a direcory)
     //중간 것의 original을 얻는 게 아니라면 반드시 전개된 것이 있다.

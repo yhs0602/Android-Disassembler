@@ -4,7 +4,10 @@ package com.kyhsgeekcode.disassembler
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
+import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
+import com.kyhsgeekcode.disassembler.project.ProjectManager
 import kotlinx.android.synthetic.main.fragment_binary.*
+import kotlinx.serialization.UnstableDefault
 
 class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     val ARG_PARAM1 = "RELPATH"
@@ -22,12 +25,13 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater.inflate(R.layout.fragment_binary, container, false)!!
 
+    @UnstableDefault
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         pagerAdapter = ViewPagerAdapter(childFragmentManager)
         pagerBinary.adapter = pagerAdapter
         binartTabLayout.setupWithViewPager(pagerBinary)
-        parsedFile = AbstractFile.createInstance(com.kyhsgeekcode.disassembler.project.ProjectManager.getOriginal(relPath))
+        parsedFile = AbstractFile.createInstance(ProjectDataStorage.resolveToRead(relPath)!!)
         setHasOptionsMenu(true)
     }
 

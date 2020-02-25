@@ -21,9 +21,8 @@ import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
 import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
+import com.kyhsgeekcode.disassembler.Utils.ProjectManager_OLD
 import com.kyhsgeekcode.disassembler.project.ProjectManager
-import com.kyhsgeekcode.disassembler.project.models.ProjectModel
-import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.isArchive
@@ -301,9 +300,9 @@ class MainActivity : AppCompatActivity(),
     @UnstableDefault
     fun determineFragmentToOpen(item: FileDrawerListItem): Pair<Fragment, String> {
         var title = "${item.caption} as ${item.type}"
-        val rootPath = ProjectManager.getOriginal("").absolutePath
+//        val rootPath = ProjectManager.getOriginal("").absolutePath
         val abspath = (item.tag as String)
-        Log.d(TAG, "rootPath:${rootPath}")
+//        Log.d(TAG, "rootPath:${rootPath}")
         Log.d(TAG, "absPath:${abspath}")
         val ext = File(abspath).extension.toLowerCase()
         val relPath: String = ProjectManager.getRelPath(abspath)
@@ -1054,7 +1053,7 @@ class MainActivity : AppCompatActivity(),
 
     private fun handleUDDFile(path: String, `is`: InputStream): Boolean {
         return try {
-            val data = com.kyhsgeekcode.disassembler.Utils.ProjectManager.ReadUDD(DataInputStream(`is`))
+            val data = ProjectManager_OLD.ReadUDD(DataInputStream(`is`))
             false //true;
         } catch (e: IOException) {
             Log.e(TAG, "path:$path", e)

@@ -201,26 +201,26 @@ object ProjectManager {
         //        FileUtils.moveDirectory(dest.resolve("sourceFilePath"), projectDir.resolve())
     }
 
-    fun getGenerated(relPath: String): File {
-        requireNotNull(currentProject)
-        requireNotNull(projectModelToPath[currentProject!!])
-        return File(currentProject!!.generatedFolder).resolve(relPath)
-    }
+//    fun getGenerated(relPath: String): File {
+//        requireNotNull(currentProject)
+//        requireNotNull(projectModelToPath[currentProject!!])
+//        return File(currentProject!!.generatedFolder).resolve(relPath)
+//    }
+//
+//    fun getOriginal(relPath: String): File {
+//        requireNotNull(currentProject)
+//        return File(currentProject!!.sourceFilePath).resolve(relPath)
+//    }
 
-    fun getOriginal(relPath: String): File {
-        requireNotNull(currentProject)
-        return File(currentProject!!.sourceFilePath).resolve(relPath)
-    }
-
-    fun getRelPathFromOrig(path: String): String {
-        val rootPath = getOriginal("").absolutePath
-        val relPath: String
-        if (path.length > rootPath.length)
-            relPath = path.substring(rootPath.length + 2)
-        else
-            relPath = ""
-        return relPath
-    }
+//    fun getRelPathFromOrig(path: String): String {
+//        val rootPath = getOriginal("").absolutePath
+//        val relPath: String
+//        if (path.length > rootPath.length)
+//            relPath = path.substring(rootPath.length + 2)
+//        else
+//            relPath = ""
+//        return relPath
+//    }
 
     fun getRelPath(path: String): String {
         requireNotNull(currentProject)
@@ -256,15 +256,15 @@ object ProjectManager {
         return ""
     }
 
-    fun getRelPathFromGen(path: String): String {
-        val rootPath = getGenerated("").absolutePath
-        val relPath: String
-        if (path.length > rootPath.length)
-            relPath = path.substring(rootPath.length + 1)
-        else
-            relPath = ""
-        return relPath
-    }
+//    fun getRelPathFromGen(path: String): String {
+//        val rootPath = getGenerated("").absolutePath
+//        val relPath: String
+//        if (path.length > rootPath.length)
+//            relPath = path.substring(rootPath.length + 1)
+//        else
+//            relPath = ""
+//        return relPath
+//    }
 
     private fun substringWithoutSlash(a: String, b: String): String {
         val sub = a.substring(b.length)
