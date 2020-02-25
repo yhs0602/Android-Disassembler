@@ -44,7 +44,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         if (view.isShown) { // 리스트뷰의 *0* 번 인덱스 항목이 리스트뷰의 상단에 보이고 있는 경우
             if (firstVisibleItem == totalItemCount - visibleItemCount) { // 항목을 추가한다.
                 val lvi = getItem(totalItemCount - 1) as DisassemblyListItem //itemsNew.get(totalItemCount-1);
-                LoadMore(totalItemCount, lvi.disasmResult.address + lvi.disasmResult.size)
+                loadMore(totalItemCount, lvi.disasmResult.address + lvi.disasmResult.size)
                 //				String str;
 //				for(int i = 0; i < INSERT_COUNT; i++) {
 //					str = "리스트뷰 항목 - " + (totalItemCount + i + 1);
@@ -160,8 +160,8 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     var writep = 0
     private var dit: DisasmIterator
     //@address eq virtualaddress
-    fun LoadMore(position: Int, address: Long) { //this.address.clear();
-        Log.d(TAG, "LoadMore$position,$writep,$address")
+    fun loadMore(position: Int, address: Long) { //this.address.clear();
+        Log.d(TAG, "LoadMore position: $position, writep: $writep, virtaddr: ${address.toString(16)}")
         writep = position
         dit.getSome(file.fileContents, address + file.codeSectionBase - file.codeVirtAddr /*address-file.codeVirtualAddress*/, file.fileContents.size.toLong(), address, INSERT_COUNT)
     }
@@ -176,7 +176,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         //? FIXME. crashes when rotated screen here, NPE.
         val lvi = itemsNew[addrl]
         if (lvi == null) {
-            LoadMore(position, addrl)
+            loadMore(position, addrl)
         }
         return lvi
     }
@@ -193,7 +193,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
 //cause: useless
 //however will implement backStack
         this.address.clear()
-        LoadMore( /**/0, address)
+        loadMore( /**/0, address)
         currentAddress = address
     }
 

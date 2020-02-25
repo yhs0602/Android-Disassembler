@@ -62,6 +62,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         setupSymCompleteAdapter()
 //        adapter = DisasmListViewAdapter(null)
         setHasOptionsMenu(true)
+        disassemble()
     }
 
     @UnstableDefault
@@ -77,29 +78,31 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         Log.v(TAG, "Strted disasm")
         //NOW there's no notion of pause or resume
         workerThread = Thread(Runnable {
-            val codesection = parsedFile!!.codeSectionBase
+            val codesection = parsedFile.codeSectionBase
             val start = codesection  //elfUtil.getCodeSectionOffset();
-            val limit = parsedFile!!.codeSectionLimit
-            val addr = parsedFile!!.codeVirtAddr //+ offset
-            Log.v(TAG, "code section point :" + java.lang.Long.toHexString(start))
+//            val limit = parsedFile.codeSectionLimit
+            val addr = parsedFile.codeVirtAddr //+ offset
+            Log.v(TAG, "code section point :${start.toString(16)}")
+            Log.d(TAG, "addr : ${addr.toString(16)}")
             //ListViewItem lvi;
 //	getFunctionNames();
-            val size = limit - start
-            val leftbytes = size
+//            val size = limit - start
+//            val leftbytes = size
             //DisasmIterator dai = new DisasmIterator(MainActivity.this,/*mNotifyManager,mBuilder,*/adapter, size);
 //IMPORTANT: un-outcomment here if it causes a bug
 //adapter.setDit(dai);
-            adapter.LoadMore(0, addr)
+            adapter.loadMore(0, addr)
             //long toresume=dai.getSome(filecontent,start,size,addr,1000000/*, disasmResults*/);
 /*if(toresume<0)
 					 {
 					 AlertError("Failed to disassemble:"+toresume,new Exception());
 					 }else{
 					 disasmManager.setResumeOffsetFromCode(toresume);
-					 }*/disasmResults = adapter.itemList()
+					 }*/
+            disasmResults = adapter.itemList()
             //mNotifyManager.cancel(0);
-//final int len=disasmResults.size();
-//add xrefs
+            //final int len=disasmResults.size();
+            //add xrefs
             activity?.runOnUiThread {
                 disasmTabListview.requestLayout()
                 //                tab2!!.invalidate()

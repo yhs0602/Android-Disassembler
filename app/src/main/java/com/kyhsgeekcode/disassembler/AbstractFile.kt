@@ -52,7 +52,7 @@ abstract class AbstractFile : Closeable {
 //
 //	}
     @JvmField
-    var ls = System.lineSeparator()
+    val ls = System.lineSeparator()
     open var codeSectionBase: Long = 0
     open var codeSectionLimit: Long = 0
 

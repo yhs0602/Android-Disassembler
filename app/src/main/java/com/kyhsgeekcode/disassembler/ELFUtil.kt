@@ -56,9 +56,6 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
             //Do some error
             return 0L
         }
-        set(codeSectionBase) {
-            super.codeSectionBase = codeSectionBase
-        }
 
     //MEMO - Elf file format
 // REL
@@ -67,7 +64,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
 // DYNSYM
 // STRTAB
     @Throws(IOException::class)
-    fun AfterConstructor() {
+    fun afterConstructor() {
         val sections = elf.sectionHeaders
         //assertNotNull( sections );
         val programHeaders = elf.programHeaders
@@ -364,6 +361,9 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
                         codeSectionBase = sh.fileOffset
                         codeSectionLimit = codeSectionBase + sh.size
                         codeVirtAddr = sh.virtualAddress
+                        Log.d(TAG, "CodeSectionBase:${codeSectionBase.toString(16)}," +
+                                " CodeSectionLimit:${codeSectionLimit.toString(16)}," +
+                                " CodeVirtAddr : ${codeVirtAddr.toString(16)}")
                     }
                 }
             }
@@ -482,6 +482,6 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
         elf = Elf(file)
         path = file.path
         fileContents = filec
-        AfterConstructor()
+        afterConstructor()
     }
 }
