@@ -119,10 +119,10 @@ object ColorHelper // implements Parcelable
             try {
                 val inputStream = appCtx.assets.open("themes.zip")
                 val zi = ZipInputStream(inputStream)
-                var entry: ZipEntry
+                var entry: ZipEntry?
                 val buffer = ByteArray(2048)
                 while (zi.nextEntry.also { entry = it } != null) {
-                    val outfile = File(themeDir, entry.name)
+                    val outfile = File(themeDir, entry!!.name)
                     val canonicalPath = outfile.canonicalPath
                     if (!canonicalPath.startsWith(themeDir.canonicalPath)) {
                         throw SecurityException("The theme zip file may have a Zip Path Traversal Vulnerability." +
@@ -131,7 +131,7 @@ object ColorHelper // implements Parcelable
                     var output: FileOutputStream? = null
                     try {
                         output = FileOutputStream(outfile)
-                        var len = 0
+                        var len: Int
                         while (zi.read(buffer).also { len = it } > 0) {
                             output.write(buffer, 0, len)
                         }
@@ -144,7 +144,7 @@ object ColorHelper // implements Parcelable
             }
         }
         val themes = themeDir.listFiles()
-        if (themes.size == 0) {
+        if (themes.isEmpty()) {
             val newf = File(themeDir, "Default")
             palettes["Default"] = Palette("Default", newf)
         } else {

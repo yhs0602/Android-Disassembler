@@ -7,7 +7,10 @@ import android.os.Bundle
 import android.util.Log
 import android.util.LongSparseArray
 import android.view.*
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.TableRow
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_binary_disasm.*
 import kotlinx.serialization.UnstableDefault

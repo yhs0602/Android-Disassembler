@@ -2,6 +2,7 @@ package com.kyhsgeekcode
 
 import android.content.ClipData
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.net.Uri
@@ -256,7 +257,9 @@ fun sendErrorReport(error: Throwable) {
         if (resultPath != null)
             emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(File(resultPath)))
     }
-    appCtx.startActivity(Intent.createChooser(emailIntent, appCtx.getString(R.string.send_crash_via_email)))
+    val intent = Intent.createChooser(emailIntent, appCtx.getString(R.string.send_crash_via_email))
+    intent.addFlags(FLAG_ACTIVITY_NEW_TASK)
+    appCtx.startActivity(intent)
 }
 
 fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }

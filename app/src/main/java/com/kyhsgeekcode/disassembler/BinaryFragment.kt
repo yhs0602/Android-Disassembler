@@ -33,6 +33,7 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
         binartTabLayout.setupWithViewPager(pagerBinary)
         parsedFile = AbstractFile.createInstance(ProjectDataStorage.resolveToRead(relPath)!!)
         setHasOptionsMenu(true)
+        pagerAdapter.addFragment(BinaryDisasmFragment.newInstance(relPath, BinaryDisasmFragment.ViewMode.Binary), "Disassembly")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
