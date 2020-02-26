@@ -1,15 +1,12 @@
 package com.kyhsgeekcode.disassembler
 
 import android.app.Dialog
-import android.app.ProgressDialog
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import com.github.chrisbanes.photoview.PhotoView
@@ -17,7 +14,6 @@ import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.tingyik90.snackprogressbar.SnackProgressBar
 import com.tingyik90.snackprogressbar.SnackProgressBarManager
 import kotlinx.android.synthetic.main.fragment_analysis_result.*
-import kotlinx.android.synthetic.main.fragment_string.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,11 +25,11 @@ class AnalysisResultFragment : Fragment() {
     private lateinit var relPath: String
     private lateinit var fileContent: ByteArray
 
-    private val snackProgressBarManager by lazy { SnackProgressBarManager(stringMain, lifecycleOwner = this) }
+    private val snackProgressBarManager by lazy { SnackProgressBarManager(analysisMain, lifecycleOwner = this) }
     val circularType =
             SnackProgressBar(SnackProgressBar.TYPE_CIRCULAR, "Loading...")
                     .setIsIndeterminate(false)
-                    .setAllowUserInput(false)
+                    .setAllowUserInput(true)
 
     @UnstableDefault
     @ExperimentalUnsignedTypes
@@ -43,28 +39,12 @@ class AnalysisResultFragment : Fragment() {
             relPath = it.getString(ARG_PARAM)!!
         }
         fileContent = ProjectDataStorage.getFileContent(relPath)
-        CoroutineScope(Dispatchers.Main).launch {
-            circularType.setMessage("Counting bytes ...")
-            circularType.setProgressMax(7)
-            val analyzer = Analyzer(fileContent)
-            withContext(Dispatchers.Default) {
-                analyzer.analyze {i, total, caption ->
-                    circularType.setMessage(caption)
-                    snackProgressBarManager.setProgress(i)
-                    snackProgressBarManager.show(circularType, SnackProgressBarManager.LENGTH_INDEFINITE)
-                    true
-                }
-            }
-            val drawable = analyzer.getImage()
-            tvAnalRes.text = analyzer.result
-            imageViewCount.setImageDrawable(drawable)
-            Log.d(TAG, "BG done")
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater.inflate(R.layout.fragment_analysis_result, container, false)!!
 
+    @ExperimentalUnsignedTypes
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         imageViewCount.setOnClickListener {
@@ -82,8 +62,28 @@ class AnalysisResultFragment : Fragment() {
                     ViewGroup.LayoutParams.MATCH_PARENT))
             builder.show()
         }
-
-
+        CoroutineScope(Dispatchers.Main).launch {
+            circularType.setMessage("Counting bytes ...")
+            circularType.setProgressMax(7)
+            val analyzer = Analyzer(fileContent)
+            withContext(Dispatchers.Default) {
+                analyzer.analyze { i, total, caption ->
+                    circularType.setMessage(caption)
+                    snackProgressBarManager.setProgress(i)
+                    activity?.runOnUiThread{
+                        snackProgressBarManager.show(circularType, SnackProgressBarManager.LENGTH_INDEFINITE)
+                    }
+                    true
+                }
+                activity?.runOnUiThread{
+                    snackProgressBarManager.dismiss()
+                    val drawable = analyzer.getImage()
+                    tvAnalRes.text = analyzer.result
+                    imageViewCount.setImageDrawable(drawable)
+                    Log.d(TAG, "BG done")
+                }
+            }
+        }
     }
 
     companion object {
