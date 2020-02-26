@@ -75,13 +75,12 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     }
 
     override fun setCurrentTab(index: Int): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        pagerBinary.setCurrentItem(index, true)
+        return pagerBinary.currentItem == index
     }
 
-    override fun getCurrentTab(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
+    override fun getCurrentTab(): Int = pagerBinary.currentItem
+    
     override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
         val clas: KClass<out Any>
         val fragment = when (tag) {
