@@ -1,6 +1,5 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.content.DialogInterface;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,17 +12,21 @@ import static com.kyhsgeekcode.UtilKt.setClipBoard;
 import static com.kyhsgeekcode.disassembler.UIUtilsKt.showEditDialog;
 import static com.kyhsgeekcode.disassembler.UIUtilsKt.showSelDialog;
 
-public class DisasmClickListener implements AdapterView.OnItemClickListener {
+public class DisasmClickListener implements View.OnClickListener {
     BinaryDisasmFragment binaryDisasmFragment;
     private String TAG = "Disassembler";
+    private int position;
+    private DisasmListViewAdapter adapter;
 
-    public DisasmClickListener(BinaryDisasmFragment fragment) {
+    public DisasmClickListener(BinaryDisasmFragment fragment, DisasmListViewAdapter adapter,  int position) {
         this.binaryDisasmFragment = fragment;
+        this.position = position;
+        this.adapter = adapter;
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View p2, int position, long id) {
-        final DisassemblyListItem lvi = (DisassemblyListItem) parent.getItemAtPosition(position);
+    public void onClick(View view) {
+        final DisassemblyListItem lvi = (DisassemblyListItem) adapter.getItem(position);
         final DisasmResult dar = lvi.disasmResult;
         menus = new ArrayList<>();
         menus.add(EDIT_COMMENT);

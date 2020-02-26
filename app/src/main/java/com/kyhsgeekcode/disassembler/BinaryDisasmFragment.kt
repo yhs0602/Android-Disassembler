@@ -12,14 +12,12 @@ import android.widget.AutoCompleteTextView
 import android.widget.TableRow
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import capstone.Capstone
-import com.kyhsgeekcode.disassembler.models.Architecture
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_ALL
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_MAX
 import com.kyhsgeekcode.disassembler.models.Architecture.getArchitecture
 import kotlinx.android.synthetic.main.fragment_binary_disasm.*
 import kotlinx.serialization.UnstableDefault
-import java.lang.Exception
 import java.util.*
 
 class BinaryDisasmFragment : Fragment(), IOnBackPressed {
@@ -91,11 +89,12 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 
     @UnstableDefault
     private fun setupListView() { //moved to onCreate for avoiding NPE
-        adapter = DisasmListViewAdapter(parsedFile, handle)
+        val mLayoutManager : LinearLayoutManager =  LinearLayoutManager(context)
+        adapter = DisasmListViewAdapter(parsedFile, handle, this, mLayoutManager)
         disasmTabListview.adapter = adapter
-        disasmTabListview.onItemClickListener = DisasmClickListener(this)
+        disasmTabListview.layoutManager = mLayoutManager
 //        adapter.addAll(disasmManager!!.getItems(), disasmManager!!.address)
-        disasmTabListview.setOnScrollListener(adapter)
+        disasmTabListview.addOnScrollListener(adapter.OnScrollListener())
     }
 
     fun disassemble() {
@@ -222,7 +221,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_DISASM)
             jmpBackstack.push(java.lang.Long.valueOf(adapter.currentAddress))
             adapter.OnJumpTo(address)
-            disasmTabListview!!.setSelection(0)
+            disasmTabListview.scrollToPosition(0)
         } else {
             Toast.makeText(activity, R.string.validaddress, Toast.LENGTH_SHORT).show()
         }
