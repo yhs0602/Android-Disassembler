@@ -81,7 +81,12 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     }
 
     override fun setCurrentTabByTag(tag: String): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        tag is
+        when(tag) {
+             else ->Class.forName("com.kyhsgeekcode.disassembler.BinaryDisasmFragment").kotlin
+        }.let{
+            pagerAdapter.findFragmentByType<it.type>()
+        }
     }
 
 }

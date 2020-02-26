@@ -142,7 +142,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             jmpBackstack.pop()
             return true
         } else {
-            (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_EXPORT)
+            (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_EXPORTSYMBOLS)
             return true
         }
 //        return false

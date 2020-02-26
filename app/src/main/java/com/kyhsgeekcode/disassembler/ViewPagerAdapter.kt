@@ -3,10 +3,13 @@ package com.kyhsgeekcode.disassembler
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import java.lang.reflect.Type
+import kotlin.reflect.KClass
 
-class ViewPagerAdapter(supportFragmentManager: FragmentManager) : FragmentStatePagerAdapter(supportFragmentManager,BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+class ViewPagerAdapter(supportFragmentManager: FragmentManager) : FragmentStatePagerAdapter(supportFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
-    private val mFragmentList = ArrayList<Fragment>()
+    val mFragmentList = ArrayList<Fragment>()
+
     private val mFragmentTitleList = ArrayList<String>()
 
     override fun getItem(position: Int): Fragment {
@@ -27,7 +30,15 @@ class ViewPagerAdapter(supportFragmentManager: FragmentManager) : FragmentStateP
         notifyDataSetChanged()
     }
 
-    fun removeTab(index:Int) {
+    fun findFragmentByTitle(title: String): Int {
+        return mFragmentTitleList.indexOf(title)
+    }
+
+    inline fun <reified R> findFragmentByType(): R {
+        mFragmentList.filterIsInstance<R>().first()
+    }
+
+    fun removeTab(index: Int) {
         mFragmentList.removeAt(index)
         mFragmentTitleList.removeAt(index)
         notifyDataSetChanged()
