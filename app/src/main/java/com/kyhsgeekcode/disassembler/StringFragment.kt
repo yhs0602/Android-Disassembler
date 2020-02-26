@@ -1,20 +1,14 @@
 package com.kyhsgeekcode.disassembler
 
-import android.app.ProgressDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.widget.EditText
-import android.widget.ProgressBar
-import com.codekidlabs.storagechooser.StorageChooser.dialog
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.tingyik90.snackprogressbar.SnackProgressBar
 import com.tingyik90.snackprogressbar.SnackProgressBarManager
@@ -53,34 +47,12 @@ class StringFragment : Fragment() {
             relPath = it.getString(RELPATH)!!
         }
         fileContent = ProjectDataStorage.getFileContent(relPath)
-        buttonStartFindString.setOnClickListener{
-            CoroutineScope(Dispatchers.Main).launch {
-                snackProgressBarManager.show(circularType, SnackProgressBarManager.LENGTH_INDEFINITE)
-                withContext(Dispatchers.Default) {
-                    val min = editTextStrFirst.text.toString().toInt()
-                    val max = editTextStrEnd.text.toString().toInt()
-                    val analyzer = Analyzer(fileContent)
-                    analyzer.searchStrings(stringAdapter,min, max) { i, tot ->
-                        circularType.setProgressMax(tot)
-                        snackProgressBarManager.setProgress(i)
-                        snackProgressBarManager.show(circularType, SnackProgressBarManager.LENGTH_INDEFINITE)
-                        true
-                    }
-                }
-                snackProgressBarManager.dismiss()
-            }
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_string, container, false)
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
     }
 
     override fun onAttach(context: Context) {
@@ -96,7 +68,39 @@ class StringFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         stringAdapter = FoundStringAdapter()
+        val llm = LinearLayoutManager(activity)
+        llm.orientation = LinearLayoutManager.VERTICAL
+        stringListVIew.layoutManager = llm
         stringListVIew.adapter = stringAdapter
+
+        buttonStartFindString.setOnClickListener {
+            CoroutineScope(Dispatchers.Main).launch {
+                snackProgressBarManager.show(circularType, SnackProgressBarManager.LENGTH_INDEFINITE)
+                val min = editTextStrFirst.text.toString().toInt()
+                val max = editTextStrEnd.text.toString().toInt()
+                if (min > 1 && min < max) {
+                    withContext(Dispatchers.Default) {
+                        val analyzer = Analyzer(fileContent)
+                        var oldTot = 100
+                        analyzer.searchStrings(stringAdapter, min, max) { i, tot ->
+                            snackProgressBarManager.setProgress(i)
+                            if (oldTot != tot) {
+                                oldTot = tot
+                                circularType.setProgressMax(tot)
+                                activity?.runOnUiThread {
+                                    snackProgressBarManager.updateTo(circularType)
+                                }
+                            }
+                            true
+                        }
+                    }
+                    stringAdapter.notifyDataSetChanged()
+                } else {
+                    Toast.makeText(activity, "Invalid parameter", Toast.LENGTH_SHORT).show()
+                }
+                snackProgressBarManager.dismiss()
+            }
+        }
     }
 
     override fun onDetach() {

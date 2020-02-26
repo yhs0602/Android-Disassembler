@@ -17,7 +17,7 @@
         android:digits="0123456789."
         android:ems="10"
         android:inputType="number"
-        android:text="0"
+        android:text="5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/textView"
         app:layout_constraintTop_toTopOf="parent" />
@@ -40,6 +40,7 @@
         android:digits="0123456789."
         android:ems="10"
         android:inputType="number"
+        android:text="10"
         app:layout_constraintLeft_toRightOf="@id/textView"
         app:layout_constraintRight_toLeftOf="@id/buttonStartFindString"
         app:layout_constraintTop_toTopOf="parent" />

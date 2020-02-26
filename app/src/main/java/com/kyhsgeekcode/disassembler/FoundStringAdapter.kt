@@ -13,6 +13,7 @@ class FoundStringAdapter : RecyclerView.Adapter<FoundStringAdapter.ViewHolder>()
     private val listViewItemList = ArrayList<FoundString>()
     fun addItem(str: FoundString) {
         listViewItemList.add(str)
+//        notifyDataSetChanged()
     }
 
     fun reset() {

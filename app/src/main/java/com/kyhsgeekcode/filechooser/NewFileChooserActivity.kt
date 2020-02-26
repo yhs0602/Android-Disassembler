@@ -12,11 +12,11 @@ import kotlinx.android.synthetic.main.activity_new_file_chooser.*
 
 
 class NewFileChooserActivity : AppCompatActivity() {
-    lateinit var adapter : NewFileChooserAdapter
+    lateinit var adapter: NewFileChooserAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
     val TAG = "NewFileChooserA"
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.v(TAG,"onCreate")
+        Log.v(TAG, "onCreate")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_file_chooser)
         adapter = NewFileChooserAdapter(this)
