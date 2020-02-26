@@ -89,7 +89,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 
     @UnstableDefault
     private fun setupListView() { //moved to onCreate for avoiding NPE
-        val mLayoutManager : LinearLayoutManager =  LinearLayoutManager(context)
+        val mLayoutManager: LinearLayoutManager = LinearLayoutManager(context)
         adapter = DisasmListViewAdapter(parsedFile, handle, this, mLayoutManager)
         disasmTabListview.adapter = adapter
         disasmTabListview.layoutManager = mLayoutManager
@@ -142,7 +142,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             jmpBackstack.pop()
             return true
         } else {
-            (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_EXPORTSYMBOLS)
+            (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_EXPORTSYMBOLS, true)
             return true
         }
 //        return false
@@ -218,7 +218,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 
     fun jumpto(address: Long) {
         if (isValidAddress(address)) { //not found
-            (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_DISASM)
+            (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_DISASM, true)
             jmpBackstack.push(java.lang.Long.valueOf(adapter.currentAddress))
             adapter.OnJumpTo(address)
             disasmTabListview.scrollToPosition(0)

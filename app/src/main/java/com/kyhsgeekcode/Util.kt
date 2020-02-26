@@ -10,6 +10,7 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import at.pollaknet.api.facile.Facile
 import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.disassembler.project.ProjectManager
@@ -254,8 +255,10 @@ fun sendErrorReport(error: Throwable) {
         } else {
             resultPath = path
         }
-        if (resultPath != null)
-            emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(File(resultPath)))
+        if (resultPath != null){
+            val uri = FileProvider.getUriForFile(appCtx, appCtx.applicationContext.packageName + ".provider", File(resultPath));
+            emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        }
     }
     val intent = Intent.createChooser(emailIntent, appCtx.getString(R.string.send_crash_via_email))
     intent.addFlags(FLAG_ACTIVITY_NEW_TASK)

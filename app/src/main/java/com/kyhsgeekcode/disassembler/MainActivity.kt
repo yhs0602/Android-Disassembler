@@ -1233,7 +1233,7 @@ class MainActivity : AppCompatActivity(),
         return tablayout.selectedTabPosition
     }
 
-    override fun setCurrentTabByTag(tag: String): Boolean {
+    override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

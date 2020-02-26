@@ -58,7 +58,7 @@ class SymbolListAdapter(val fragment:BinarySymbolFragment) : RecyclerView.Adapte
             val address = item.st_value
             //LongSparseArray arr;
             Toast.makeText(fragment.activity, "Jump to" + java.lang.Long.toHexString(address), Toast.LENGTH_SHORT).show()
-            (fragment.parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_DISASM)
+            (fragment.parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_DISASM, true)
             (fragment.parentFragment as BinaryDisasmFragment).jumpto(address)
             true
         }

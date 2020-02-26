@@ -8,6 +8,8 @@ import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import kotlinx.android.synthetic.main.fragment_binary.*
 import kotlinx.serialization.UnstableDefault
+import kotlin.reflect.KClass
+import kotlin.reflect.full.staticFunctions
 
 class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     val ARG_PARAM1 = "RELPATH"
@@ -80,13 +82,23 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun setCurrentTabByTag(tag: String): Boolean {
-        tag is
-        when(tag) {
-             else ->Class.forName("com.kyhsgeekcode.disassembler.BinaryDisasmFragment").kotlin
-        }.let{
-            pagerAdapter.findFragmentByType<it.type>()
+    override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
+        val clas: KClass<out Any>
+        val fragment = when (tag) {
+            TabTags.TAB_DISASM -> "BinaryDisasmFragment"
+            TabTags.TAB_ANALYSIS -> "AnalysisResultFragment"
+            TabTags.TAB_EXPORTSYMBOLS -> "SymbolFragment"
+            TabTags.TAB_STRINGS -> "StringFragment"
+            else -> return false
+        }.let {
+            clas = Class.forName("com.kyhsgeekcode.disassembler.$it").kotlin
+            pagerAdapter.findFragmentByType(clas)
+        } ?: if (!openNew) return false else {
+            val frag = clas.staticFunctions.single { it.name == "newInstance" }.call(relPath) as Fragment
+            pagerAdapter.addFragment(frag, tag)
         }
+        pagerBinary.setCurrentItem(fragment,true)
+        return true
     }
 
 }
