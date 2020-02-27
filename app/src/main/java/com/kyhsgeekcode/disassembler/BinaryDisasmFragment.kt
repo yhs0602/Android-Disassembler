@@ -217,7 +217,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     }
 
     fun jumpto(address: Long) {
-        if (isValidAddress(address)) { //not found
+        if (isValidAddress(address)) {
             (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_DISASM, true)
             jmpBackstack.push(java.lang.Long.valueOf(adapter.currentAddress))
             adapter.OnJumpTo(address)

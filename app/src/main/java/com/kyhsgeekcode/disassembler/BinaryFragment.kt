@@ -76,6 +76,15 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
                         putString(ARG_PARAM1, relPath)
                     }
                 }
+
+        val classNameByTag = HashMap<String, String>()
+
+        init {
+            classNameByTag[TabTags.TAB_DISASM] = "BinaryDisasmFragment"
+            classNameByTag[TabTags.TAB_ANALYSIS] = "AnalysisResultFragment"
+            classNameByTag[TabTags.TAB_EXPORTSYMBOLS] = "SymbolFragment"
+            classNameByTag[TabTags.TAB_STRINGS] = "StringFragment"
+        }
     }
 
     override fun setCurrentTab(index: Int): Boolean {
@@ -87,21 +96,28 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
 
     override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
         val clas: KClass<out Any>
-        val fragment = when (tag) {
-            TabTags.TAB_DISASM -> "BinaryDisasmFragment"
-            TabTags.TAB_ANALYSIS -> "AnalysisResultFragment"
-            TabTags.TAB_EXPORTSYMBOLS -> "SymbolFragment"
-            TabTags.TAB_STRINGS -> "StringFragment"
-            else -> return false
-        }.let {
+        val fragment = classNameByTag[tag].let {
             clas = Class.forName("com.kyhsgeekcode.disassembler.$it").kotlin
             pagerAdapter.findFragmentByType(clas)
         } ?: if (!openNew) return false else {
             val frag = clas.staticFunctions.single { it.name == "newInstance" }.call(relPath) as Fragment
             pagerAdapter.addFragment(frag, tag)
         }
-        pagerBinary.setCurrentItem(fragment,true)
+        pagerBinary.setCurrentItem(fragment, true)
         return true
     }
 
+    override fun findTabByTag(tag: String): Int? =
+            classNameByTag[tag]?.let {
+                val clas = Class.forName("com.kyhsgeekcode.disassembler.$it").kotlin
+                pagerAdapter.findFragmentByType(clas)
+            }
+
+
+    fun jumpto(address: Long) {
+        setCurrentTabByTag(TabTags.TAB_DISASM,true)
+        (pagerAdapter.getItem(findTabByTag(TabTags.TAB_DISASM)!!) as BinaryDisasmFragment).jumpto(address)
+    }
+
 }
+
