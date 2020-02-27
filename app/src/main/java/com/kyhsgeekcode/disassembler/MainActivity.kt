@@ -100,6 +100,7 @@ class MainActivity : AppCompatActivity(),
             textFileExts.add("json")
             textFileExts.add("md")
             textFileExts.add("il")
+            textFileExts.add("properties")
         }
     }
 
@@ -179,7 +180,7 @@ class MainActivity : AppCompatActivity(),
         pagerAdapter = ViewPagerAdapter(supportFragmentManager)
         pagerMain.adapter = pagerAdapter
         tablayout.setupWithViewPager(pagerMain)
-
+        pagerMain.offscreenPageLimit = 20
         pagerAdapter.addFragment(ProjectOverviewFragment.newInstance(), "Overview")
 
 //        setupSymCompleteAdapter()
