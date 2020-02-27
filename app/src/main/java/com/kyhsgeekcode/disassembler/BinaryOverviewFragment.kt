@@ -34,10 +34,10 @@ class BinaryOverviewFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         disableEnableControls(false, mainLinearLayoutSetupRaw)
-        mainBTFinishSetup.setOnClickListener {
+        mainBTOverrideAuto.setOnClickListener {
             allowRawSetup()
         }
-        mainBTOverrideAuto.setOnClickListener {
+        mainBTFinishSetup.setOnClickListener {
             if (parsedFile !is RawFile) { //AlertError("Not a raw file, but enabled?",new Exception());
 //return;
             }

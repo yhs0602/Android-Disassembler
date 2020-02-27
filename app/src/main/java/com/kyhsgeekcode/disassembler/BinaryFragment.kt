@@ -35,7 +35,11 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
         binartTabLayout.setupWithViewPager(pagerBinary)
         parsedFile = AbstractFile.createInstance(ProjectDataStorage.resolveToRead(relPath)!!)
         setHasOptionsMenu(true)
+        pagerBinary.offscreenPageLimit = 5
+        pagerAdapter.addFragment(BinaryOverviewFragment.newInstance(relPath), "Overview")
         pagerAdapter.addFragment(BinaryDisasmFragment.newInstance(relPath, BinaryDisasmFragment.ViewMode.Binary), "Disassembly")
+        pagerAdapter.addFragment(BinarySymbolFragment.newInstance(relPath), "Symbols")
+        pagerAdapter.addFragment(BinaryDetailFragment.newInstance(relPath), "Details")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -80,7 +84,7 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     }
 
     override fun getCurrentTab(): Int = pagerBinary.currentItem
-    
+
     override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
         val clas: KClass<out Any>
         val fragment = when (tag) {
