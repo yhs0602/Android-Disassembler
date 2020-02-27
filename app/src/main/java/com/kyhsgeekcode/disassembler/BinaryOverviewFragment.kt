@@ -92,6 +92,17 @@ class BinaryOverviewFragment : Fragment() {
         val items = Arrays.toString(MachineType::class.java.enumConstants).replace("^.|.$".toRegex(), "").split(", ").toTypedArray()
         val spinnerAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_dropdown_item, items)
         mainSpinnerArch.adapter = spinnerAdapter
+
+        mainETcodeOffset.setText(parsedFile.codeSectionBase.toString(16))
+        mainETcodeLimit.setText(parsedFile.codeSectionLimit.toString(16))
+        mainETentry.setText(parsedFile.entryPoint.toString(16))
+        mainETvirtaddr.setText(parsedFile.codeVirtAddr.toString(16))
+        val mcts = MachineType.values()
+        for (i in mcts.indices) {
+            if (mcts[i] == parsedFile.machineType) {
+                mainSpinnerArch.setSelection(i)
+            }
+        }
     }
 
     private fun allowRawSetup() {
