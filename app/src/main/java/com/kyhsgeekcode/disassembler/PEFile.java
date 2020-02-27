@@ -11,6 +11,7 @@ import org.boris.pecoff4j.OptionalHeader;
 import org.boris.pecoff4j.PE;
 import org.boris.pecoff4j.RVAConverter;
 import org.boris.pecoff4j.io.PEParser;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.EOFException;
 import java.io.File;
@@ -26,7 +27,7 @@ public class PEFile extends AbstractFile {
     private String TAG = "Disassembler PE";
 
     public PEFile(File file, byte[] filec) throws IOException, NotThisFormatException {
-        setPath(file.getPath());
+        path = file.getPath();
         try {
             pe = PEParser.parse(file);
         } catch (NegativeArraySizeException e) {
@@ -43,16 +44,15 @@ public class PEFile extends AbstractFile {
         int machine = pe.getCoffHeader().getMachine();
         //byte[] bytes=imd.getArchitecture();
         //int machine=ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getShort()&0xFFFF;
-        machineType = getMachineTypeFromPE(machine);
-        codeBase = oph.getBaseOfCode();
-        codeLimit = codeBase + oph.getSizeOfCode();
-        codeVirtualAddress = oph.getImageBase() + codeBase;
-        entryPoint = oph.getAddressOfEntryPoint();
+        setMachineType(getMachineTypeFromPE(machine));
+        setCodeSectionBase(oph.getBaseOfCode());
+        setCodeSectionLimit(getCodeSectionBase() + oph.getSizeOfCode());
+        setCodeVirtAddr(oph.getImageBase() + getCodeSectionBase());
+        setEntryPoint(oph.getAddressOfEntryPoint());
         fileContents = filec;
-        //Setup symbol table
-        symbols = new ArrayList<>();
-        importSymbols = new ArrayList<>();
 
+        getSymbols().clear();
+        getImportSymbols().clear();
         //Parse IAT
         ImportDirectory idir = imd.getImportTable();
         int numofIAT = idir.size();
@@ -88,7 +88,7 @@ public class PEFile extends AbstractFile {
                     //Log.v(TAG,dllname+"."+funcname);
                     plt.name = dllname + "." + funcname;
                     plt.address = firstThunkRaw + off;
-                    importSymbols.add(plt);
+                    getImportSymbols().add(plt);
                     Log.v(TAG, plt.toString());
                 }
                 off += 4;
@@ -125,7 +125,7 @@ public class PEFile extends AbstractFile {
                 sym.type = Symbol.Type.STT_FUNC;
                 sym.bind = Symbol.Bind.STB_GLOBAL;
                 sym.demangled = sym.name;
-                symbols.add(sym);
+                getSymbols().add(sym);
             }
         }
         //parse TLS
@@ -209,14 +209,14 @@ public class PEFile extends AbstractFile {
         builder.append(ls).append(ls);
         builder.append("======Export Table=====");
         builder.append(ls);
-        for (Symbol sym : symbols) {
+        for (Symbol sym : getSymbols()) {
             builder.append(sym.toString());
             builder.append(ls);
         }
         builder.append(ls);
         builder.append("======Import Table=====");
         builder.append(ls);
-        for (PLT plt : importSymbols) {
+        for (PLT plt : getImportSymbols()) {
             builder.append(plt.toString());
             builder.append(ls);
         }
@@ -239,6 +239,7 @@ public class PEFile extends AbstractFile {
         int SizeOfZeroFill;
         int Characteristics;
 
+        @NotNull
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder("TLS at ");

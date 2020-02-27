@@ -8,7 +8,7 @@ public class DisassemblyManager {
 
     //Container
     //DisasmListViewAdapter adapter; This may not be able to conainer Adapter, view, etc to prevent the memory leak
-    /*ArrayList*/ LongSparseArray<ListViewItem> items = new LongSparseArray<>();
+    /*ArrayList*/ LongSparseArray<DisassemblyListItem> items = new LongSparseArray<>();
 
     //The last address of disassembled(Used for abort/resume)
     //long lastAddress=0;
@@ -22,12 +22,12 @@ public class DisassemblyManager {
         return address;
     }
 
-    public void setData(LongSparseArray/*ArrayList*/<ListViewItem> items, SparseArray<Long> address) {
+    public void setData(LongSparseArray/*ArrayList*/<DisassemblyListItem> items, SparseArray<Long> address) {
         this.items = items;
         this.address = address;
     }
 
-    public LongSparseArray/*ArrayList*/<ListViewItem> getItems() {
+    public LongSparseArray/*ArrayList*/<DisassemblyListItem> getItems() {
         return items;
     }
 	

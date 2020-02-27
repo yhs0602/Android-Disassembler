@@ -2,6 +2,7 @@ package com.kyhsgeekcode.disassembler.project.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.io.File
 
 @Serializable
 data class ProjectModel(
@@ -10,8 +11,8 @@ data class ProjectModel(
         /**
          * The folder for temp analysis files
          */
-        @SerialName("baseFolder")
-        var baseFolder: String,
+        @SerialName("generated")
+        var generatedFolder: String,
         @SerialName("projectType")
         var projectType: String,
         /**
@@ -21,4 +22,7 @@ data class ProjectModel(
         var sourceFilePath: String,
         @SerialName("info")
         val info: ArrayList<ProjectFileModel> = ArrayList()
-)
+) {
+    val rootFile: File
+        get() = File(generatedFolder).parentFile
+}

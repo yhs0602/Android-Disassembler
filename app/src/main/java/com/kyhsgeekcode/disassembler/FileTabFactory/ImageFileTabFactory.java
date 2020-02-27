@@ -24,7 +24,7 @@ public class ImageFileTabFactory extends FileTabContentFactory {
         PhotoView pv = new PhotoView(context);
         if (bitmap == null) {
             Toast.makeText(context, "Failed to decode the file as an Image. Opening as Text", Toast.LENGTH_SHORT).show();
-            ((MainActivity) context).OpenNewTab(new File(tag), TabType.TEXT);
+            ((MainActivity) context).openNewTab(new File(tag), TabType.TEXT);
             return pv;
         }
         pv.setImageDrawable(new BitmapDrawable(context.getResources(), bitmap));

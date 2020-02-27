@@ -25,7 +25,18 @@
         android:largeHeap="true"
         android:resizeableActivity="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.kyhsgeekcode.filechooser.NewFileChooserActivity"></activity>
+        <provider
+            android:name=".CrashReportFileProvider"
+            android:authorities="com.kyhsgeekcode.disassembler.provider"
+            android:enabled="true"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
+        <activity android:name="com.kyhsgeekcode.filechooser.NewFileChooserActivity" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

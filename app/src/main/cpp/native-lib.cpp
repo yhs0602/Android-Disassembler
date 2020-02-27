@@ -34,12 +34,12 @@ using namespace std;
 //#define CODE "\xED\xFF\xFF\xEB\x04\xe0\x2d\xe5\x00\x00\x00\x00\xe0\x83\x22\xe5\xf1\x02\x03\x0e\x00\x00\xa0\xe3\x02\x30\xc1\xe7\x00\x00\x53\xe3\x00\x02\x01\xf1\x05\x40\xd0\xe8\xf4\x80\x00\x00"
 
 extern "C" {
-csh handle;
+//csh handle;
 const char *errmsg(cs_err e);
 
 int arch = CS_ARCH_ARM;
 
-static void print_insn_detail(string &buf, cs_insn *ins);
+static void print_insn_detail(jint handle, string &buf, cs_insn *ins);
 
 const char *errmsg(cs_err e) {
     switch (e) {
@@ -85,13 +85,23 @@ Java_com_kyhsgeekcode_disassembler_MainActivity_Init(JNIEnv *env, jobject thiz) 
     mem.vsnprintf = vsnprintf;
     mem.realloc = realloc;
     cs_option(NULL, CS_OPT_MEM, (size_t) &mem);
-    handle = 0;
+//    handle = 0;
     return 0;
 }
+
+/**
+ *
+ * @param env
+ * @param thiz
+ * @param arch1
+ * @param mode
+ * @return cs_handle
+ */
 JNIEXPORT jint JNICALL
 Java_com_kyhsgeekcode_disassembler_MainActivity_Open(JNIEnv *env, jclass thiz, jint arch1,
                                                      jint mode) {
     cs_err e;
+    csh handle = 0;
     cs_close(&handle);
     if ((e = cs_open((cs_arch) arch1, (cs_mode) mode, &handle)) != CS_ERR_OK) {
         return /* env->NewStringUTF(errmsg(e));*/e;
@@ -100,11 +110,11 @@ Java_com_kyhsgeekcode_disassembler_MainActivity_Open(JNIEnv *env, jclass thiz, j
     // turn on SKIPDATA mode
     cs_option(handle, CS_OPT_SKIPDATA, CS_OPT_ON);
     arch = arch1;
-    return CS_ERR_OK;
+    return handle;
 }
 JNIEXPORT void JNICALL
-Java_com_kyhsgeekcode_disassembler_MainActivity_Finalize(JNIEnv *env, jobject thiz) {
-    cs_close(&handle);
+Java_com_kyhsgeekcode_disassembler_MainActivity_Finalize(JNIEnv *env, jobject thiz, jint handle) {
+    cs_close((csh *) &handle);
     handle = 0;
 }
 
@@ -129,7 +139,8 @@ int cs_setup_mem() {
 }
 
 JNIEXPORT jint JNICALL
-Java_com_kyhsgeekcode_disassembler_DisasmIterator_CSoption(JNIEnv *env, jobject thiz, jint arg1,
+Java_com_kyhsgeekcode_disassembler_DisasmIterator_CSoption(JNIEnv *env, jobject thiz, jint handle,
+                                                           jint arg1,
                                                            jint arg2) {
     if (arg1 == CS_OPT_MODE) {
         arch = arg2;
@@ -178,6 +189,7 @@ static int messagePipe[2];
 //@returns the offset to resume later
 JNIEXPORT jlong JNICALL
 Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject thiz,
+                                                          jint handle,
                                                           jbyteArray bytes, jlong offset,
                                                           jlong size, jlong virtaddr,
                                                           jint count/*, jobject arr*/) {
@@ -190,7 +202,7 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "ArrayListcls");
     jclass darcls = env->FindClass("com/kyhsgeekcode/disassembler/DisasmResult");
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "Disasmresult");
-    jclass lvicls = env->FindClass("com/kyhsgeekcode/disassembler/ListViewItem");
+    jclass lvicls = env->FindClass("com/kyhsgeekcode/disassembler/DisassemblyListItem");
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "Listviewitem");
     jclass thecls = env->GetObjectClass(thiz);
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "thizclass");
@@ -206,7 +218,7 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
     jmethodID notify = env->GetMethodID(thecls, "showNoti", "(I)I");
     __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "shownotimethod");
     jmethodID additem = env->GetMethodID(thecls, "AddItem",
-                                         "(Lcom/kyhsgeekcode/disassembler/ListViewItem;)V");
+                                         "(Lcom/kyhsgeekcode/disassembler/DisassemblyListItem;)V");
     int done = 0;
     // allocate memory cache for 1 instruction, to be used by cs_disasm_iter later.
     cs_insn *insn = cs_malloc(handle);
@@ -440,9 +452,10 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
 }
 JNIEXPORT jlong JNICALL
 Java_com_kyhsgeekcode_disassembler_DisasmIterator_getAll(JNIEnv *env, jobject thiz,
+                                                         jint handle,
                                                          jbyteArray bytes, jlong offset, jlong size,
                                                          jlong virtaddr/*, jobject arr*/) {
-    return Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(env, thiz, bytes, offset, size,
+    return Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(env, thiz, handle, bytes, offset, size,
                                                                      virtaddr, 2148483647);
 }
 //public NativeLong cs_disasm2(NativeLong handle, byte[] code, NativeLong code_offset,NativeLong code_len,
@@ -537,7 +550,7 @@ static void print_string_hex(string buf, char *comment, unsigned char *str, size
     }
     buf += "\n";
 }
-static void print_insn_detail(string &buf, cs_insn *ins) {
+static void print_insn_detail(jint handle, string &buf, cs_insn *ins) {
     cs_arm *arm;
     int i;
     char *b;

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Open">
+        <menu>
+            <item
+                android:id="@+id/showSymbols"
+                android:title="Symbols" />
+            <item
+                android:id="@+id/showDisassembly"
+                android:title="Disassembly" />
+            <item
+                android:id="@+id/showDetails"
+                android:title="Details" />
+        </menu>
+    </item>
+
+</menu>

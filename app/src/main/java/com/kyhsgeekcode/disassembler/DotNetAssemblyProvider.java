@@ -9,7 +9,7 @@ import at.pollaknet.api.facile.symtab.symbols.scopes.Assembly;
 //
 public class DotNetAssemblyProvider extends AssemblyProvider {
     public DotNetAssemblyProvider(MainActivity activity, DisasmListViewAdapter adapter, long total, Assembly assembly) {
-        super(activity, adapter, total);
+        super(adapter, total);
         this.assembly = assembly;
         Type[] types = assembly.getAllTypes();
         for (Type t : types) {
@@ -18,17 +18,16 @@ public class DotNetAssemblyProvider extends AssemblyProvider {
     }
 
     //Not implemented
-    @Override
-    public long getAll(byte[] bytes, long offset, long size, long virtaddr) {
-        return 0;
-    }
-
-    // Should Implement
-    @Override
-    public long getSome(byte[] bytes, long offset, long size, long virtaddr, int count) {
-
-        return 0;
-    }
 
     Assembly assembly;
+
+    @Override
+    public long getAll(int handle, byte[] bytes, long offset, long size, long virtaddr) {
+        return 0;
+    }
+
+    @Override
+    public long getSome(int handle, byte[] bytes, long offset, long size, long virtaddr, int count) {
+        return 0;
+    }
 }

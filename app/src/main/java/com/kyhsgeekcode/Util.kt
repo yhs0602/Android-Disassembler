@@ -1,17 +1,36 @@
 package com.kyhsgeekcode
 
+import android.content.ClipData
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.content.pm.PackageManager
+import android.content.res.Resources
+import android.net.Uri
+import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.util.Log
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import at.pollaknet.api.facile.Facile
+import com.kyhsgeekcode.disassembler.R
+import com.kyhsgeekcode.disassembler.project.ProjectManager
+import kotlinx.serialization.UnstableDefault
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveException
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
 import org.apache.commons.compress.utils.IOUtils
 import org.apache.commons.io.FileUtils
+import splitties.init.appCtx
+import splitties.systemservices.clipboardManager
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
+import kotlin.math.roundToInt
 
 
 fun extractZip(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ -> }) {
@@ -156,4 +175,135 @@ fun getEntryName(source: File, file: File): String {
     val index: Int = source.absolutePath.length + 1
     val path = file.canonicalPath
     return path.substring(index)
+}
+
+
+//https://stackoverflow.com/a/6425744/8614565
+fun deleteRecursive(fileOrDirectory: File) {
+    if (fileOrDirectory.isDirectory) for (child in fileOrDirectory.listFiles()) deleteRecursive(child)
+    fileOrDirectory.delete()
+}
+
+fun setClipBoard(s: String?) {
+    val clip = ClipData.newPlainText("Android Disassembler", s)
+    clipboardManager.setPrimaryClip(clip)
+}
+
+private fun getRealPathFromURI(uri: Uri): String {
+    var filePath: String
+    filePath = uri.path ?: return ""
+    //경로에 /storage가 들어가면 real file path로 판단
+    if (filePath.startsWith("/storage")) return filePath
+    val wholeID = DocumentsContract.getDocumentId(uri)
+    //wholeID는 파일명이 abc.zip이라면 /document/B5D7-1CE9:abc.zip와 같습니다.
+// Split at colon, use second item in the array
+    val id = wholeID.split(":").toTypedArray()[0]
+    //Log.e(TAG, "id = " + id);
+    val column = arrayOf(MediaStore.Files.FileColumns.DATA)
+    //파일의 이름을 통해 where 조건식을 만듭니다.
+    val sel = MediaStore.Files.FileColumns.DATA + " LIKE '%" + id + "%'"
+    //External storage에 있는 파일의 DB를 접근하는 방법 입니다.
+    val cursor = appCtx.contentResolver.query(MediaStore.Files.getContentUri("external"), column, sel, null, null)
+            ?: return ""
+    //SQL문으로 표현하면 아래와 같이 되겠죠????
+//SELECT _dtat FROM files WHERE _data LIKE '%selected file name%'
+    val columnIndex = cursor.getColumnIndex(column[0])
+    if (cursor.moveToFirst()) {
+        filePath = cursor.getString(columnIndex)
+    }
+    cursor.close()
+    return filePath
+}
+
+//https://stackoverflow.com/a/48351453/8614565
+fun convertDpToPixel(dp: Float): Int {
+    val metrics = Resources.getSystem().displayMetrics
+    val px = dp * (metrics.densityDpi / 160f)
+    return px.roundToInt()
+}
+
+fun getDrawable(id: Int) = ContextCompat.getDrawable(appCtx, id)
+
+@UnstableDefault
+fun sendErrorReport(error: Throwable) {
+    val emailIntent = Intent(Intent.ACTION_SEND)
+    emailIntent.type = "plain/text"
+    emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("1641832e@fire.fundersclub.com"))
+    var ver = ""
+    try {
+        val pInfo = appCtx.packageManager.getPackageInfo(appCtx.packageName, 0)
+        ver = pInfo.versionName
+    } catch (e: PackageManager.NameNotFoundException) {
+        e.printStackTrace()
+    }
+    emailIntent.putExtra(Intent.EXTRA_SUBJECT,
+            "Crash report - " + error.message + "(ver" + ver + ")")
+    val content = StringBuilder(Log.getStackTraceString(error))
+    emailIntent.putExtra(Intent.EXTRA_TEXT,
+            content.toString())
+    val resultPath: String?
+    if (error is RuntimeException) {
+        val path = ProjectManager.currentProject?.sourceFilePath
+        if (path != null) {
+            val file = File(path)
+            if (file.isDirectory) {
+                resultPath = appCtx.externalCacheDir!!.resolve("archive.tar.gz").path
+                createTarGZ(path ,resultPath)
+            } else {
+                resultPath = path
+            }
+        } else {
+            resultPath = path
+        }
+        if (resultPath != null){
+            val uri = FileProvider.getUriForFile(appCtx, appCtx.applicationContext.packageName + ".provider", File(resultPath));
+            emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        }
+    }
+    val intent = Intent.createChooser(emailIntent, appCtx.getString(R.string.send_crash_via_email))
+    intent.addFlags(FLAG_ACTIVITY_NEW_TASK)
+    appCtx.startActivity(intent)
+}
+
+fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
+
+@Throws(FileNotFoundException::class, IOException::class)
+fun createTarGZ(dirPath: String, outPath: String) {
+    var fOut: FileOutputStream? = null
+    var bOut: BufferedOutputStream? = null
+    var gzOut: GzipCompressorOutputStream? = null
+    var tOut: TarArchiveOutputStream? = null
+    try {
+        fOut = FileOutputStream(File(outPath))
+        bOut = BufferedOutputStream(fOut)
+        gzOut = GzipCompressorOutputStream(bOut)
+        tOut = TarArchiveOutputStream(gzOut)
+        addFileToTarGz(tOut, dirPath, "")
+    } finally {
+        tOut?.finish()
+        tOut?.close()
+        gzOut?.close()
+        bOut?.close()
+        fOut?.close()
+    }
+}
+
+@Throws(IOException::class)
+fun addFileToTarGz(tOut: TarArchiveOutputStream, path: String, base: String) {
+    val f = File(path)
+    val entryName = base + f.name
+    val tarEntry = TarArchiveEntry(f, entryName)
+    tOut.putArchiveEntry(tarEntry)
+    if (f.isFile) {
+        IOUtils.copy(FileInputStream(f), tOut)
+        tOut.closeArchiveEntry()
+    } else {
+        tOut.closeArchiveEntry()
+        val children = f.listFiles()
+        if (children != null) {
+            for (child in children) {
+                addFileToTarGz(tOut, child.absolutePath, "$entryName/")
+            }
+        }
+    }
 }

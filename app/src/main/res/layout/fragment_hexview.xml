@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1.0"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/hexTextViewCols"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right|center_vertical"
+            android:text="00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F"
+            android:textColor="#0C03F2"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <GridView
+            android:id="@+id/mainGridViewHex"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:columnWidth="120dp"
+            android:gravity="center"
+            android:numColumns="16" />
+
+        <TextView
+            android:id="@+id/hexTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Text"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/hexTextViewAsciiCol"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="0 1 2 3 4 5 6 7 8 9 A B C D E F"
+            android:textSize="11sp"
+            android:visibility="gone" />
+
+        <GridView
+            android:id="@+id/mainGridViewAscii"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:columnWidth="120dp"
+            android:gravity="center"
+            android:numColumns="16" />
+        <!--TextView
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:text="Text"
+            android:id="@+id/hexTextViewAscii"
+            android:textSize="11sp"/-->
+
+    </LinearLayout>
+
+</LinearLayout>

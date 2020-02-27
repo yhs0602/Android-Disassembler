@@ -4,7 +4,6 @@ package com.kyhsgeekcode.disassembler.Calc;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,7 @@ public class Operator extends Token implements Comparable<Operator> {
     }
 
     //public double
-    public Operator(String s) {
+    Operator(String s) {
         super(s, Type.OPERATOR);
         if (operation == null) {
             operation = str2op.get(s);
@@ -37,7 +36,7 @@ public class Operator extends Token implements Comparable<Operator> {
             operation = Operation.MULT;
     }
 
-    public Operator(char c) {
+    Operator(char c) {
         this("" + c);
         operation = ch2op.get(c);
         if (operation == null)
@@ -49,7 +48,7 @@ public class Operator extends Token implements Comparable<Operator> {
         //type=Type.OPERATOR;
     }
 
-    public Data calc(Stack<Token> stack) {
+    Data calc(Stack<Token> stack) {
         switch (operation) {
             case ADD:
                 return new Data(stack.pop().getValue().getDouble() + stack.pop().getValue().getDouble());
@@ -342,17 +341,12 @@ public class Operator extends Token implements Comparable<Operator> {
         //str2op.put("*",Operation.MULT);
         //str2op.put('/',Operation.DIV);
         //str2op.put('=',Operation.MOV);
-        Set ks = str2op.keySet();
+        Set<String> ks = str2op.keySet();
         keyList.addAll(ks);
-        Collections.sort(keyList, new Comparator<String>() {
-            @Override
-            public int compare(String p1, String p2) {
-                return p2.length() - p1.length();
-            }
-        });
+        Collections.sort(keyList, (p1, p2) -> p2.length() - p1.length());
     }
 
-    static final Map<Operation, Integer> op2priority = new HashMap<>();
+    private static final Map<Operation, Integer> op2priority = new HashMap<>();
 
     static {
         op2priority.put(Operation.SINC, 1);
