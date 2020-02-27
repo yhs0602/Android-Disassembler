@@ -37,6 +37,11 @@ class ViewPagerAdapter(supportFragmentManager: FragmentManager) : FragmentStateP
     fun findFragmentByType(type: KClass<out Any>): Int? {
         return mFragmentList.indexOfFirst {
             type.isInstance(it)
+        }.let {
+            if (it == -1)
+                null
+            else
+                it
         }
     }
 

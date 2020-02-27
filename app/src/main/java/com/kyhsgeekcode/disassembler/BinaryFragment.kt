@@ -2,6 +2,7 @@ package com.kyhsgeekcode.disassembler
 
 //import kotlinx.android.synthetic.main.fragment_analysis_result.*
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
@@ -9,9 +10,14 @@ import com.kyhsgeekcode.disassembler.project.ProjectManager
 import kotlinx.android.synthetic.main.fragment_binary.*
 import kotlinx.serialization.UnstableDefault
 import kotlin.reflect.KClass
+import kotlin.reflect.full.companionObject
+import kotlin.reflect.full.companionObjectInstance
+import kotlin.reflect.full.functions
 import kotlin.reflect.full.staticFunctions
 
 class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
+    val TAG = "BinaryFragment"
+
     val ARG_PARAM1 = "RELPATH"
     lateinit var relPath: String
     override lateinit var parsedFile: AbstractFile
@@ -50,10 +56,20 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.analyze -> {
-                pagerAdapter.addFragment(AnalysisResultFragment.newInstance(relPath), "Analysis")
+                setCurrentTabByTag(TabTags.TAB_ANALYSIS, true)
+//                pagerAdapter.addFragment(AnalysisResultFragment.newInstance(relPath), "Analysis")
             }
             R.id.findString -> {
                 pagerAdapter.addFragment(StringFragment.newInstance(relPath), "Strings")
+            }
+            R.id.showSymbols -> {
+                setCurrentTabByTag(TabTags.TAB_EXPORTSYMBOLS, true)
+            }
+            R.id.showDetails -> {
+                setCurrentTabByTag(TabTags.TAB_DETAILS, true)
+            }
+            R.id.showDisassembly -> {
+                setCurrentTabByTag(TabTags.TAB_DISASM, true)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -82,7 +98,7 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
         init {
             classNameByTag[TabTags.TAB_DISASM] = "BinaryDisasmFragment"
             classNameByTag[TabTags.TAB_ANALYSIS] = "AnalysisResultFragment"
-            classNameByTag[TabTags.TAB_EXPORTSYMBOLS] = "SymbolFragment"
+            classNameByTag[TabTags.TAB_EXPORTSYMBOLS] = "BinarySymbolFragment"
             classNameByTag[TabTags.TAB_STRINGS] = "StringFragment"
         }
     }
@@ -100,7 +116,8 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
             clas = Class.forName("com.kyhsgeekcode.disassembler.$it").kotlin
             pagerAdapter.findFragmentByType(clas)
         } ?: if (!openNew) return false else {
-            val frag = clas.staticFunctions.single { it.name == "newInstance" }.call(relPath) as Fragment
+            Log.d(TAG, "Open new")
+            val frag = clas.companionObject!!.functions.single { it.name == "newInstance" }.call(clas.companionObjectInstance, relPath) as Fragment
             pagerAdapter.addFragment(frag, tag)
         }
         pagerBinary.setCurrentItem(fragment, true)
