@@ -1248,6 +1248,11 @@ class MainActivity : AppCompatActivity(),
 
     override fun notifyDataSetChanged() {
         mDrawerAdapter.notifyDataSetChanged()
+        val orig = left_drawer.isAlwaysExpanded
+        left_drawer.isAlwaysExpanded = !orig
+        left_drawer.isAlwaysExpanded = orig
+        left_drawer.refreshDrawableState()
+        left_drawer.requestLayout()
     }
 
 //    internal inner class SaveDBAsync : AsyncTask<DatabaseHelper?, Int?, Void?>() {
