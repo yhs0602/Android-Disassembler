@@ -1,16 +1,17 @@
 package com.kyhsgeekcode.disassembler
 
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.CharacterStyle
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.kyhsgeekcode.disassembler.FileTabFactory.TextFileTabFactory
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import kotlinx.android.synthetic.main.fragment_text.*
 import kotlinx.serialization.UnstableDefault
@@ -25,6 +26,7 @@ class TextFragment : Fragment() {
     val ARG_PARAM = "param"
     private lateinit var fileContent: ByteArray
     private lateinit var relPath: String
+    val spanBlue = ForegroundColorSpan(Color.BLUE)
     @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +58,7 @@ class TextFragment : Fragment() {
                     while (ofs < line!!.length && ofe != -1) {
                         ofe = line!!.indexOf(term, ofs)
                         if (ofe == -1) break else {
-                            ss.setSpan(CharacterStyle.wrap(TextFileTabFactory.spanBlue), ofe, ofe + term.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            ss.setSpan(CharacterStyle.wrap(spanBlue), ofe, ofe + term.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                         }
                         ofs = ofe + 1
                     }

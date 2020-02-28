@@ -400,13 +400,17 @@ class MainActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         when (id) {
+            R.id.closeFile -> {
+                val curTab = getCurrentTab()
+                pagerAdapter.removeTab(curTab)
+            }
             R.id.settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 //SettingActivity.putExtra("ColorHelper",colorHelper);
                 startActivity(intent)
             }
             R.id.online_help -> {
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/KYHSGeekCode/Android-Disassembler/blob/master/README.md"))
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/KYHSGeekCode/Android-Disassembler#usage-explanation-video"))
                 startActivity(browserIntent)
             }
             R.id.calc -> {
@@ -422,7 +426,7 @@ class MainActivity : AppCompatActivity(),
     }
 
 
-    fun showSelDialog(ListItems: List<String>?, title: String?, listener: DialogInterface.OnClickListener?) {
+    private fun showSelDialog(ListItems: List<String>?, title: String?, listener: DialogInterface.OnClickListener?) {
         showSelDialog(this, ListItems!!, title, listener)
     }
 
