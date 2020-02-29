@@ -311,6 +311,7 @@ fun addFileToTarGz(tOut: TarArchiveOutputStream, path: String, base: String) {
     }
 }
 
+// https://stackoverflow.com/a/59509302/8614565
 inline fun <reified T> T.callPrivateFunc(name: String, vararg args: Any?): Any? =
         T::class
                 .declaredMemberFunctions
