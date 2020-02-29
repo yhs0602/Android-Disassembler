@@ -32,7 +32,6 @@ import com.kyhsgeekcode.sendErrorReport
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.serialization.UnstableDefault
 import pl.openrnd.multilevellistview.ItemInfo
-import pl.openrnd.multilevellistview.MultiLevelListAdapter
 import pl.openrnd.multilevellistview.MultiLevelListView
 import pl.openrnd.multilevellistview.OnItemClickListener
 import java.io.*
@@ -245,7 +244,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun handleViewActionIntent() {
-        //https://www.androidpub.com/1351553
+        // https://www.androidpub.com/1351553
         val intent = intent
         if (intent.action == Intent.ACTION_VIEW) { // User opened this app from file browser
             val filePath = intent.data?.path
@@ -389,9 +388,6 @@ class MainActivity : AppCompatActivity(),
 
     override fun onDestroy() {
         super.onDestroy()
-//        Finalize()
-//        if (cs != null)
-//            cs = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -467,30 +463,6 @@ class MainActivity : AppCompatActivity(),
 ////        showFileChooser() /*File*/
 //    }
 
-    /////////////////////////////////////////////Export - Output//////////////////////////////////
-//    fun ExportDisasm() {
-//        ExportDisasm(null)
-//    }
-
-//    private fun ExportDisasm(runnable: Runnable?) {
-//        requestAppPermissions(this)
-//        if (fpath == null || "".compareTo(fpath!!, ignoreCase = true) == 0) {
-//            AlertSelFile()
-//            return
-//        }
-//        Toast.makeText(this, "Sorry, not stable yet", Toast.LENGTH_SHORT).show()
-//        if (true) return
-//        if (currentProject == null) {
-//            val etName = EditText(this)
-//            ShowEditDialog(getString(R.string.newProject), getString(R.string.enterNewProjName), etName, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 ->
-//                val projn = etName.text.toString()
-//                SaveDisasmNewProject(projn, runnable)
-//            }, getString(R.string.cancel), DialogInterface.OnClickListener { p1, p2 -> })
-//        } else {
-//            ShowExportOptions(runnable)
-//        }
-//    }
-
 //    //FIX ME, TO DO
 //    private fun ExportDisasmSub(mode: Int) {
 //        Log.v(TAG, "Saving disassembly")
@@ -559,75 +531,7 @@ class MainActivity : AppCompatActivity(),
 //        AlertSaveSuccess(file)
 //    }
 
-//    private fun SaveDisasmRaw() {
-//        val dir = File(ProjectManager.RootFile, currentProject!!.name + "/")
-//        Log.d(TAG, "dirpath=" + dir.absolutePath)
-//        val file = File(dir, "Disassembly.raw")
-//        Log.d(TAG, "filepath=" + file.absolutePath)
-//        dir.mkdirs()
-//        try {
-//            file.createNewFile()
-//        } catch (e: IOException) {
-//            Log.e(TAG, "", e)
-//            Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show()
-//        }
-//        try {
-//            val fos = FileOutputStream(file)
-//            val oos = ObjectOutputStream(fos)
-//            oos.writeObject(disasmResults)
-//            oos.close()
-//        } catch (e: IOException) {
-//            alertError(getString(R.string.failSaveFile), e)
-//            return
-//        }
-//        AlertSaveSuccess(file)
-//    }
 
-//    private fun SaveDetail(runnable: Runnable? = null) {
-//        requestAppPermissions(this)
-//        if (fpath == null || "".compareTo(fpath!!, ignoreCase = true) == 0) {
-//            AlertSelFile()
-//            return
-//        }
-//        if (currentProject == null) {
-//            val etName = EditText(this)
-//            showEditDialog(getString(R.string.newProject), getString(R.string.enterNewProjName), etName, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 ->
-//                val projn = etName.text.toString()
-//                SaveDetailNewProject(projn)
-//                runnable?.run()
-//            }, getString(R.string.cancel), DialogInterface.OnClickListener { p1, p2 -> })
-//        } else {
-//            try {
-//                SaveDetailSub(currentProject!!)
-//                runnable?.run()
-//            } catch (e: IOException) {
-//                alertError(getString(R.string.failSaveFile), e)
-//            }
-//        }
-//        //SaveDetailOld();
-//    }
-//
-//    private fun SaveDetail(dir: File, file: File) {
-//        dir.mkdirs()
-//        try {
-//            file.createNewFile()
-//        } catch (e: IOException) {
-//            Log.e(TAG, "", e)
-//            Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show()
-//        }
-//        try {
-//            val fos = FileOutputStream(file)
-//            try {
-//                fos.write(parsedFile.toString().toByteArray())
-//            } catch (e: IOException) {
-//                Log.e(TAG, "", e)
-//            }
-//        } catch (e: FileNotFoundException) {
-//            Log.e(TAG, "", e)
-//        }
-//        AlertSaveSuccess(file)
-//    }
-//
 //    private fun SaveDetailNewProject(projn: String) {
 //        try {
 //            val proj = projectManager!!.newProject(projn, fpath)
@@ -676,84 +580,6 @@ class MainActivity : AppCompatActivity(),
 //            runnable?.run()
 //            dialog2.dismiss()
 //        })
-//    }
-
-//    private fun createZip() {
-//        var targetFile: File?
-//        try {
-//            val projFolder = File(ProjectManager.RootFile, currentProject!!.name + "/")
-//            val fos = FileOutputStream(File(ProjectManager.RootFile, currentProject!!.name + ".zip").also { targetFile = it })
-//            val zos = ZipOutputStream(fos)
-//            val targets = projFolder.listFiles()
-//            val buf = ByteArray(4096)
-//            var readlen: Int
-//            for (file in targets) {
-//                Log.v(TAG, "writing " + file.name)
-//                val ze = ZipEntry(file.name)
-//                zos.putNextEntry(ze)
-//                val fis = FileInputStream(file)
-//                while (fis.read(buf, 0, 4096).also { readlen = it } > 0) zos.write(buf, 0, readlen)
-//                zos.closeEntry()
-//                fis.close()
-//            }
-//            zos.close()
-//            fos.close()
-//        } catch (e: Exception) {
-//            alertError(R.string.fail_exportzip, e)
-//            targetFile = null
-//        }
-//        if (targetFile != null) AlertSaveSuccess(targetFile!!)
-//    }
-//
-//    private fun SaveDisasm(disasmF: DatabaseHelper) {
-////        SaveDBAsync().execute(disasmF)
-//    }
-//
-//    private fun SaveDetailOld() {
-//        Log.v(TAG, "Saving details")
-//        val dir = File(Environment.getExternalStorageDirectory().path + "disasm/")
-//        val file = File(dir, File(fpath).name + "_" + Date(System.currentTimeMillis()).toString() + ".details.txt")
-//        SaveDetail(dir, file)
-//    }
-
-    ////////////////////////////////////////////End Export - Output/////////////////////////////////////////
-//////////////////////////////////////////////Projects////////////////////////////////////////////////////////////////////////
-//    override fun onOpen(proj: ProjectManager.Project) {
-//        db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
-//        disableEnableControls(false, llmainLinearLayoutSetupRaw)
-//        onChoosePath(proj.oriFilePath)
-//        currentProject = proj
-//        val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
-//        val projecteditor = projectsetting.edit()
-//        projecteditor.putString(LASTPROJKEY, proj.name)
-//        projecteditor.apply()
-//        val det = proj.detail
-//        if ("" != det) {
-//            detailText.setText(det)
-//        }
-//        val dir = File(ProjectManager.RootFile, currentProject!!.name + "/")
-//        Log.d(TAG, "dirpath=" + dir.absolutePath)
-//        val file = File(dir, "Disassembly.raw")
-//        if (file.exists()) {
-//            try {
-//                val fis = FileInputStream(file)
-//                val ois = ObjectInputStream(fis)
-//                disasmResults = ois.readObject() as LongSparseArray<ListViewItem>
-//                ois.close()
-//            } catch (e: ClassNotFoundException) {
-//                alertError(R.string.fail_loadraw, e)
-//            } catch (e: IOException) {
-//                alertError(R.string.fail_loadraw, e)
-//            }
-//        } else {
-//            disasmResults = LongSparseArray() //(LongSparseArray<ListViewItem>) db.getAll();
-//        }
-//        if (disasmResults != null) {
-//            adapter!!.addAll(disasmResults, SparseArray())
-//        } else {
-//            disasmResults = LongSparseArray()
-//        }
-//        shouldSave = true
 //    }
 
     ////////////////////////////////////////////////End Project//////////////////////////////////////////////
@@ -1005,17 +831,6 @@ class MainActivity : AppCompatActivity(),
         return
     }
 
-    //TabType Ignored
-    fun openNewTab(file: File, type: TabType) {
-//        val factory = factoryList[type.ordinal]
-//        factory.setType(file.absolutePath, type)
-//        tabhost1.addTab(tabhost1.newTabSpec(file.absolutePath).setContent(factory).setIndicator(file.name))
-    }
-
-    fun closeTab(index: Int) {
-        pagerAdapter.removeTab(index)
-    }
-
     private fun HandleZipFIle(path: String, inputStream: InputStream): Boolean {
         var lowname: String
         val candfolder = File(filesDir, "candidates/")
@@ -1187,47 +1002,7 @@ class MainActivity : AppCompatActivity(),
 //        //DisassembleFile(0/*parsedFile.getEntryPoint()*/);
 //    }
 
-//
-//    private fun showProgressDialog(s: String): ProgressDialog {
-//        val dialog = ProgressDialog(this)
-//        dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-//        dialog.setMessage(s)
-//        dialog.setCancelable(false)
-//        dialog.show()
-//        return dialog
-//    }
-
-    //////////////////////////////////////////////////////End Choose Column/////////////////////////////////////////
-/* A native method that is implemented by the
-     * 'hello-jni' native library, which is packaged
-     * with this application.
-     */
-//  public native String  disassemble(byte [] bytes, long entry);
     external fun Init(): Int
-
-    object Utils {
-        @JvmStatic
-        @Throws(IOException::class)
-        fun getBytes(inputStream: InputStream): ByteArray {
-            return inputStream.use { it.readBytes() }
-        }
-//            var len: Int
-//            var size = 1024
-//            var buf: ByteArray
-//            if (inputStream is ByteArrayInputStream) {
-//                size = inputStream.available()
-//                buf = ByteArray(size)
-//                len = inputStream.read(buf, 0, size)
-//            } else {
-//                val bos = ByteArrayOutputStream()
-//                buf = ByteArray(size)
-//                while (inputStream.read(buf, 0, size).also { len = it } != -1) bos.write(buf, 0, len)
-//                buf = bos.toByteArray()
-//            }
-//            inputStream.close()
-//            return buf
-//        }
-    }
 
     override fun setCurrentTab(index: Int): Boolean {
         val tab = tablayout.getTabAt(index) ?: return false

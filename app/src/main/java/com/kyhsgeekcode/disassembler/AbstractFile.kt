@@ -5,12 +5,10 @@ import at.pollaknet.api.facile.Facile
 import at.pollaknet.api.facile.exception.CoffPeDataNotFoundException
 import at.pollaknet.api.facile.exception.SizeMismatchException
 import at.pollaknet.api.facile.exception.UnexpectedHeaderDataException
-import com.kyhsgeekcode.disassembler.MainActivity.Utils.getBytes
 import nl.lxtreme.binutils.elf.MachineType
 import splitties.init.appCtx
 import java.io.Closeable
 import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 
 //represents a raw file and interface
@@ -79,7 +77,7 @@ abstract class AbstractFile : Closeable {
             //그리고 AfterReadFully 함수는 없어질지도 모른다!
             //그러면 중복코드도 사라짐
             //행복회로
-            val content = getBytes(FileInputStream(file))
+            val content = file.readBytes()
             if (file.path.endsWith("assets/bin/Data/Managed/Assembly-CSharp.dll")) { //Unity C# dll file
                 Logger.v(TAG, "Found C# unity dll")
                 try {
