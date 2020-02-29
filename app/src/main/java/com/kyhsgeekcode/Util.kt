@@ -31,6 +31,9 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
 import kotlin.math.roundToInt
+import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 
 
 fun extractZip(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ -> }) {
@@ -248,14 +251,14 @@ fun sendErrorReport(error: Throwable) {
             val file = File(path)
             if (file.isDirectory) {
                 resultPath = appCtx.externalCacheDir!!.resolve("archive.tar.gz").path
-                createTarGZ(path ,resultPath)
+                createTarGZ(path, resultPath)
             } else {
                 resultPath = path
             }
         } else {
             resultPath = path
         }
-        if (resultPath != null){
+        if (resultPath != null) {
             val uri = FileProvider.getUriForFile(appCtx, appCtx.applicationContext.packageName + ".provider", File(resultPath));
             emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
         }
@@ -307,3 +310,17 @@ fun addFileToTarGz(tOut: TarArchiveOutputStream, path: String, base: String) {
         }
     }
 }
+
+inline fun <reified T> T.callPrivateFunc(name: String, vararg args: Any?): Any? =
+        T::class
+                .declaredMemberFunctions
+                .firstOrNull { it.name == name }
+                ?.apply { isAccessible = true }
+                ?.call(this, *args)
+
+inline fun <reified T : Any, R> T.getPrivateProperty(name: String): R? =
+        T::class
+                .memberProperties
+                .firstOrNull { it.name == name }
+                ?.apply { isAccessible = true }
+                ?.get(this) as? R

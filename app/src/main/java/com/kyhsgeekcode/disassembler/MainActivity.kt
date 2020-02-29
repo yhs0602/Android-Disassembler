@@ -19,6 +19,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
+import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.Utils.ProjectManager_OLD
@@ -31,6 +32,7 @@ import com.kyhsgeekcode.sendErrorReport
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.serialization.UnstableDefault
 import pl.openrnd.multilevellistview.ItemInfo
+import pl.openrnd.multilevellistview.MultiLevelListAdapter
 import pl.openrnd.multilevellistview.MultiLevelListView
 import pl.openrnd.multilevellistview.OnItemClickListener
 import java.io.*
@@ -1252,9 +1254,10 @@ class MainActivity : AppCompatActivity(),
 
     override fun notifyDataSetChanged() {
         mDrawerAdapter.notifyDataSetChanged()
-        val orig = left_drawer.isAlwaysExpanded
-        left_drawer.isAlwaysExpanded = !orig
-        left_drawer.isAlwaysExpanded = orig
+        mDrawerAdapter.callPrivateFunc("reloadData")
+//        val orig = left_drawer.isAlwaysExpanded
+//        left_drawer.isAlwaysExpanded = !orig
+//        left_drawer.isAlwaysExpanded = orig
         left_drawer.refreshDrawableState()
         left_drawer.requestLayout()
     }
