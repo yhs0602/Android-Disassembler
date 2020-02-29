@@ -78,6 +78,7 @@ class ProjectOverviewFragment : Fragment() {
 
 //        mDrawerAdapter.
     }
+
     companion object {
         fun newInstance(): ProjectOverviewFragment {
             return ProjectOverviewFragment()

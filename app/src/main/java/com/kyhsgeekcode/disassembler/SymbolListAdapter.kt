@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.symbol_row.view.*
 import java.util.*
 
-class SymbolListAdapter(val fragment:BinarySymbolFragment) : RecyclerView.Adapter<SymbolListAdapter.ViewHolder>() {
+class SymbolListAdapter(val fragment: BinarySymbolFragment) : RecyclerView.Adapter<SymbolListAdapter.ViewHolder>() {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     private val itemList = ArrayList<Symbol>()
     private val TAG = "Disassembler sym"

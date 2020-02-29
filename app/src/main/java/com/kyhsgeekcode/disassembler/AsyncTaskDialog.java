@@ -6,18 +6,17 @@ import android.os.AsyncTask;
 import android.view.Window;
 
 public abstract class AsyncTaskDialog<Param, Result> extends AsyncTask<Param, Integer, Result> {
+    ProgressDialog dialog;
+    Context context;
+    String title;
+    String message;
+    int max;
     public AsyncTaskDialog(Context context, String title, String message, int max) {
         this.context = context;
         this.title = title;
         this.message = message;
         this.max = max;
     }
-
-    ProgressDialog dialog;
-    Context context;
-    String title;
-    String message;
-    int max;
 
     @Override
     protected void onPreExecute() {

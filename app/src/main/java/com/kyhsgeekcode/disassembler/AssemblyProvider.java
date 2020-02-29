@@ -6,6 +6,9 @@ import android.os.Looper;
 import java.util.List;
 
 public abstract class AssemblyProvider {
+    DisasmListViewAdapter adapter;
+    private long total;
+
     public AssemblyProvider(DisasmListViewAdapter adapter, /*Unused */long total) {
         this.total = total;
         this.adapter = adapter;
@@ -31,7 +34,4 @@ public abstract class AssemblyProvider {
             return;
         });
     }
-
-    private long total;
-    DisasmListViewAdapter adapter;
 }

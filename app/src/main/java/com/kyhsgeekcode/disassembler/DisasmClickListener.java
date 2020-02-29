@@ -2,7 +2,6 @@ package com.kyhsgeekcode.disassembler;
 
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.EditText;
 
 import java.util.ArrayList;
@@ -13,12 +12,16 @@ import static com.kyhsgeekcode.disassembler.UIUtilsKt.showEditDialog;
 import static com.kyhsgeekcode.disassembler.UIUtilsKt.showSelDialog;
 
 public class DisasmClickListener implements View.OnClickListener {
+    final String EDIT_COMMENT = "Edit comment";
+    final String COPY = "Copy to clipboard";
+    final String PATCH = "Patch assembly";
+    final String JUMP = "Follow jump";
     BinaryDisasmFragment binaryDisasmFragment;
+    List<String> menus = new ArrayList<>();
     private String TAG = "Disassembler";
     private int position;
     private DisasmListViewAdapter adapter;
-
-    public DisasmClickListener(BinaryDisasmFragment fragment, DisasmListViewAdapter adapter,  int position) {
+    public DisasmClickListener(BinaryDisasmFragment fragment, DisasmListViewAdapter adapter, int position) {
         this.binaryDisasmFragment = fragment;
         this.position = position;
         this.adapter = adapter;
@@ -59,10 +62,4 @@ public class DisasmClickListener implements View.OnClickListener {
             });
         }
     }
-
-    List<String> menus = new ArrayList<>();
-    final String EDIT_COMMENT = "Edit comment";
-    final String COPY = "Copy to clipboard";
-    final String PATCH = "Patch assembly";
-    final String JUMP = "Follow jump";
 }

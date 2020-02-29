@@ -145,6 +145,16 @@ public class RadioGridGroup extends TableLayout implements View.OnClickListener 
     }
 
     static class SavedState extends BaseSavedState {
+        public static final Parcelable.Creator<SavedState> CREATOR =
+                new Parcelable.Creator<SavedState>() {
+                    public SavedState createFromParcel(Parcel in) {
+                        return new SavedState(in);
+                    }
+
+                    public SavedState[] newArray(int size) {
+                        return new SavedState[size];
+                    }
+                };
         int buttonId;
 
         /**
@@ -171,16 +181,5 @@ public class RadioGridGroup extends TableLayout implements View.OnClickListener 
             super.writeToParcel(out, flags);
             out.writeInt(buttonId);
         }
-
-        public static final Parcelable.Creator<SavedState> CREATOR =
-                new Parcelable.Creator<SavedState>() {
-                    public SavedState createFromParcel(Parcel in) {
-                        return new SavedState(in);
-                    }
-
-                    public SavedState[] newArray(int size) {
-                        return new SavedState[size];
-                    }
-                };
     }
 }

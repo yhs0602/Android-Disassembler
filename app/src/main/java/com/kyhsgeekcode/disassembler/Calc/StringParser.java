@@ -5,8 +5,12 @@ import android.util.Log;
 import java.util.Set;
 
 public class StringParser {
+    int i = 0;
+    Set<String> str2opks = null;
+    Set<Character> ch2opks = null;
     private String TAG = "Disassembler parser";
-
+    private String source;
+    private char[] chars;
     public StringParser(String s) {
         source = s;
         chars = s.toCharArray();
@@ -29,7 +33,7 @@ public class StringParser {
             }
             if (i != s) {
                 String str = new String(chars, s, i - s);
-                if (Operator.str2op.keySet().contains(str)) {
+                if (Operator.str2op.containsKey(str)) {
                     return new Operator(str);
                 } else {
                     return new Token(str);
@@ -78,10 +82,4 @@ public class StringParser {
         }
         return null;
     }
-
-    private String source;
-    private char[] chars;
-    int i = 0;
-    Set<String> str2opks = null;
-    Set<Character> ch2opks = null;
 }

@@ -8,6 +8,10 @@ import at.pollaknet.api.facile.symtab.symbols.scopes.Assembly;
 // size -> 1 or (실제 바이트 사이즈)
 //
 public class DotNetAssemblyProvider extends AssemblyProvider {
+    Assembly assembly;
+
+    //Not implemented
+
     public DotNetAssemblyProvider(MainActivity activity, DisasmListViewAdapter adapter, long total, Assembly assembly) {
         super(adapter, total);
         this.assembly = assembly;
@@ -16,10 +20,6 @@ public class DotNetAssemblyProvider extends AssemblyProvider {
             //t.get
         }
     }
-
-    //Not implemented
-
-    Assembly assembly;
 
     @Override
     public long getAll(int handle, byte[] bytes, long offset, long size, long virtaddr) {

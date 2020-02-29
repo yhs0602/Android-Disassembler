@@ -7,6 +7,10 @@ public class HexManager {
     byte[] bytes;
     String sep = System.lineSeparator();
 
+    public HexManager() {
+        bytes = new byte[1];
+    }
+
     public void Show(TextView tv, int startaddress) {
         //show n bytes from startaddress
         startaddress /= 16;
@@ -28,10 +32,6 @@ public class HexManager {
             }
         }
         tv.setText(sb.toString().trim());
-    }
-
-    public HexManager() {
-        bytes = new byte[1];
     }
 
     public void setBytes(byte[] b) {

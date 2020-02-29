@@ -6,8 +6,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public class HexView extends View {
-    private byte[] bytes;
     boolean isScrolling = false;
+    private byte[] bytes;
 
     public HexView(Context context) {
         super(context);

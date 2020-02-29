@@ -24,6 +24,8 @@ import nl.lxtreme.binutils.elf.Elf;
 import nl.lxtreme.binutils.elf.MachineType;
 
 public class PEFile extends AbstractFile {
+    PE pe;
+    ArrayList<TLS> tlss = new ArrayList<>();
     private String TAG = "Disassembler PE";
 
     public PEFile(File file, byte[] filec) throws IOException, NotThisFormatException {
@@ -198,10 +200,6 @@ public class PEFile extends AbstractFile {
         //I don't know
         return nl.lxtreme.binutils.elf.MachineType.i386;
     }
-
-    PE pe;
-
-    ArrayList<TLS> tlss = new ArrayList<>();
 
     @Override
     public String toString() {

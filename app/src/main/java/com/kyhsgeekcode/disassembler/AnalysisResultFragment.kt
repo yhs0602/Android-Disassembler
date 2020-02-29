@@ -70,12 +70,12 @@ class AnalysisResultFragment : Fragment() {
                 analyzer.analyze { i, total, caption ->
                     circularType.setMessage(caption)
                     snackProgressBarManager.setProgress(i)
-                    activity?.runOnUiThread{
+                    activity?.runOnUiThread {
                         snackProgressBarManager.show(circularType, SnackProgressBarManager.LENGTH_INDEFINITE)
                     }
                     true
                 }
-                activity?.runOnUiThread{
+                activity?.runOnUiThread {
                     snackProgressBarManager.dismiss()
                     val drawable = analyzer.getImage()
                     tvAnalRes.text = analyzer.result

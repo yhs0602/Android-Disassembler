@@ -2,6 +2,7 @@ package com.kyhsgeekcode.disassembler
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -32,8 +33,8 @@ class ImageFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if(bitmap != null) {
-            imageFragmentView.setImageBitmap(bitmap)
+        if (bitmap != null) {
+            imageFragmentView.setImageDrawable(BitmapDrawable(context!!.resources, bitmap))
         } else {
             imageFragmentView.setImageResource(R.drawable.ic_launcher)
         }

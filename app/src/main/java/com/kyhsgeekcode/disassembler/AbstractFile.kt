@@ -25,7 +25,7 @@ abstract class AbstractFile : Closeable {
         }
         val builder = StringBuilder(if (this is RawFile) "The file has not been configured. You should setup manually in the first page before you can see the details."
                 + System.lineSeparator() else "")
-        builder.append( /*R.getString(R.string.FileSize)*/"File Size:").append(Integer.toHexString(fileContents!!.size))
+        builder.append( /*R.getString(R.string.FileSize)*/"File Size:").append(Integer.toHexString(fileContents.size))
                 .append(ls)
         builder.append(appCtx.getString(R.string.FoffsCS)).append(java.lang.Long.toHexString(codeSectionBase))
                 .append(ls)

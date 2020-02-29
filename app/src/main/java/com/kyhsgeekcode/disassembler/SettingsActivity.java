@@ -26,6 +26,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
     String[] prefnames;
     ColorHelper colorhelper;
+    private String TAG = "Disassembler settings";
 
     @Override
     public boolean onPreferenceChange(Preference p1, Object p2) {
@@ -74,7 +75,7 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 			/*switch(val)
 			{
 				case 0:
-					
+
 					//CodeKidX
 					break;
 				case 1:
@@ -85,8 +86,6 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         }
         return false;
     }
-
-    private String TAG = "Disassembler settings";
 
     @Override
     public boolean onPreferenceClick(Preference p1) {

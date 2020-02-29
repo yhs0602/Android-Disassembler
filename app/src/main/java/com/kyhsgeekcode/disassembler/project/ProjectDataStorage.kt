@@ -48,7 +48,7 @@ object ProjectDataStorage {
         //Search in gen
         val generated = ProjectManager.currentProject!!.rootFile.resolve("generated")
         file = generated
-        val finalIndex = paths.size-1
+        val finalIndex = paths.size - 1
         for (pathI in paths.withIndex()) {
             val path = pathI.value
             val index = pathI.index
@@ -65,7 +65,7 @@ object ProjectDataStorage {
                 }
             } else if (file.exists() && file.isDirectory) {
 
-            } else if(file.exists()){
+            } else if (file.exists()) {
                 file = File("${file.absolutePath}_gen")
             }
         }
@@ -90,12 +90,12 @@ object ProjectDataStorage {
             file = file.resolve(path)
             if (index == finalIndex) {
                 if (file.exists()) {
-                    return if(file.isDirectory) {
-                        if(isDirectory)
+                    return if (file.isDirectory) {
+                        if (isDirectory)
                             file
                         else
                             File("${file.absolutePath}_gen")
-                    } else if(isDirectory) {
+                    } else if (isDirectory) {
                         File("${file.absolutePath}_gen")
                     } else if (overwrite) {
                         file.delete()

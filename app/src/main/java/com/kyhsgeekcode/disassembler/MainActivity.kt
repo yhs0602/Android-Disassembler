@@ -167,10 +167,6 @@ class MainActivity : AppCompatActivity(),
 
 
     private lateinit var mDrawerAdapter: FileDrawerListAdapter
-    /////////////////////////////////////////Activity Life Cycle///////////////////////////////////////////////////
-    override fun onResume() {
-        super.onResume()
-    }
 
     lateinit var pagerAdapter: ViewPagerAdapter
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -384,10 +380,6 @@ class MainActivity : AppCompatActivity(),
         (fragment as? IOnBackPressed)?.onBackPressed()?.not()?.let {
             super.onBackPressed()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

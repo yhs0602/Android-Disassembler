@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 public class PrototypeParser {
+    Map<String, Prototype> prototypes = new HashMap<>();
+
     public PrototypeParser(FileReader reader) throws IOException {
         BufferedReader br = new BufferedReader(reader);
         //reads in the file and parses prototype.
@@ -58,8 +60,6 @@ public class PrototypeParser {
     public String getPrototype(String funcname) {
         return "";
     }
-
-    Map<String, Prototype> prototypes = new HashMap<>();
 
     enum Progress {
         RETTYPE,

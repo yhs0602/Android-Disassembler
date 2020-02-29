@@ -5,8 +5,8 @@ import android.content.Context;
 //import android.support.multidex.*;
 
 public class EnableMultidex extends /*MultiDex*/Application {
-    private static EnableMultidex enableMultiDex;
     public static Context context;
+    private static EnableMultidex enableMultiDex;
 
     public EnableMultidex() {
         enableMultiDex = this;

@@ -13,28 +13,28 @@ public class RetainedFragment extends Fragment {
     private AbstractFile parsedFile;
     private String path;
 
-    public void setPath(String path) {
-        this.path = path;
-    }
-
     public String getPath() {
         return path;
     }
 
-    public void setParsedFile(AbstractFile elfUtil) {
-        this.parsedFile = elfUtil;
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public AbstractFile getParsedFile() {
         return parsedFile;
     }
 
-    public void setFilecontent(byte[] filecontent) {
-        this.filecontent = filecontent;
+    public void setParsedFile(AbstractFile elfUtil) {
+        this.parsedFile = elfUtil;
     }
 
     public byte[] getFilecontent() {
         return filecontent;
+    }
+
+    public void setFilecontent(byte[] filecontent) {
+        this.filecontent = filecontent;
     }
 
     // this method is only called once for this fragment
@@ -45,11 +45,11 @@ public class RetainedFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    public void setDisasmManager(DisassemblyManager data) {
-        this.data = data;
-    }
-
     public DisassemblyManager getDisasmManager() {
         return data;
+    }
+
+    public void setDisasmManager(DisassemblyManager data) {
+        this.data = data;
     }
 }

@@ -12,19 +12,138 @@ import java.util.Stack;
 
 public class Operator extends Token implements Comparable<Operator> {
 
-    //returns positive if this is higher
-    @Override
-    public int compareTo(Operator p1) {
-        Integer myp = op2priority.get(this.operation);
-        Integer youp = op2priority.get(p1.operation);
-        if (myp == null && youp == null)
-            return 0;
-        if (myp == null)
-            return -1;
-        if (youp == null)
-            return -1;
-        return -myp.compareTo(youp);
+    static final Map<Character, Operation> ch2op = new HashMap<>();
+    static final Map<String, Operation> str2op = new HashMap<>();
+    static final List<String> keyList = new ArrayList<>();
+    private static final Map<Operation, Integer> op2priority = new HashMap<>();
+
+    static {
+        ch2op.put('+', Operation.ADD);
+        ch2op.put('-', Operation.SUB);
+        ch2op.put('*', Operation.MULT);
+        ch2op.put('×', Operation.MULT);
+        ch2op.put('÷', Operation.DIV);
+        ch2op.put('/', Operation.DIV);
+        ch2op.put('=', Operation.MOV);
+        ch2op.put('(', Operation.LPAR);
+        ch2op.put(')', Operation.RPAR);
+
     }
+
+    static {
+        str2op.put(">>", Operation.SHR);
+        str2op.put("<<", Operation.SHL);
+        str2op.put(">>>", Operation.ASHR);
+        str2op.put("<<<", Operation./*A*/SHL);
+        str2op.put("<<<<", Operation.ROL);
+        str2op.put(">>>>", Operation.ROR);
+        str2op.put("**", Operation.POWER);
+        str2op.put("++", Operation.PINC);
+        str2op.put("--", Operation.PDEC);
+
+        str2op.put("sin", Operation.SIN);
+        str2op.put("cos", Operation.COS);
+        str2op.put("exp", Operation.EXP);
+        str2op.put("ln", Operation.LN);
+        str2op.put("log2", Operation.LOG2);
+        str2op.put("tan", Operation.TAN)
+        ;
+        str2op.put("sinh", Operation.SINH);
+        str2op.put("cosh", Operation.COSH);
+        str2op.put("tanh", Operation.TANH);
+        str2op.put("asin", Operation.ASIN);
+        str2op.put("acos", Operation.ACOS);
+        str2op.put("atan", Operation.ATAN);
+        str2op.put("sec", Operation.SEC);
+        str2op.put("csc", Operation.CSC);
+        str2op.put("cot", Operation.COT);
+        str2op.put("cosec", Operation.CSC);
+
+
+        str2op.put("hex", Operation.HEX);
+        str2op.put("bin", Operation.BIN);
+        str2op.put("oct", Operation.OCT);
+        str2op.put("dec", Operation.DEC);
+        str2op.put("polar", Operation.POLAR);
+
+        str2op.put("sqrt", Operation.SQRT);
+        str2op.put("√", Operation.SQRT);
+        //str2op.put("*",Operation.MULT);
+        //str2op.put('/',Operation.DIV);
+        //str2op.put('=',Operation.MOV);
+        Set<String> ks = str2op.keySet();
+        keyList.addAll(ks);
+        Collections.sort(keyList, (p1, p2) -> p2.length() - p1.length());
+    }
+
+    static {
+        op2priority.put(Operation.SINC, 1);
+        op2priority.put(Operation.SDEC, 1);
+        op2priority.put(Operation.LPAR, 1);
+        op2priority.put(Operation.RPAR, 1);
+        op2priority.put(Operation.MEMB, 1);
+        op2priority.put(Operation.MEMP, 1);
+        op2priority.put(Operation.LSUB, 1);
+        op2priority.put(Operation.RSUB, 1);
+
+        op2priority.put(Operation.PINC, 2);
+        op2priority.put(Operation.PDEC, 2);
+        op2priority.put(Operation.UPLUS, 2);
+        op2priority.put(Operation.UMINUS, 2);
+        op2priority.put(Operation.LNOT, 2);
+        op2priority.put(Operation.BNOT, 2);
+        op2priority.put(Operation.CAST, 2);
+        op2priority.put(Operation.DREF, 2);
+        op2priority.put(Operation.ADDR, 2);
+        op2priority.put(Operation.SIZEOF, 2);
+        op2priority.put(Operation.ALIGNOF, 2);
+
+        op2priority.put(Operation.MULT, 3);
+        op2priority.put(Operation.DIV, 3);
+        op2priority.put(Operation.REMAINDER, 3);
+
+        op2priority.put(Operation.ADD, 4);
+        op2priority.put(Operation.SUB, 4);
+
+        op2priority.put(Operation.SHR, 5);
+        op2priority.put(Operation.SHL, 5);
+
+        op2priority.put(Operation.GT, 6);
+        op2priority.put(Operation.LT, 6);
+        op2priority.put(Operation.GE, 6);
+        op2priority.put(Operation.LE, 6);
+
+        op2priority.put(Operation.NE, 7);
+        op2priority.put(Operation.EQ, 7);
+
+        op2priority.put(Operation.BAND, 8);
+        op2priority.put(Operation.BXOR, 9);
+        op2priority.put(Operation.BOR, 10);
+
+        op2priority.put(Operation.LAND, 11);
+        op2priority.put(Operation.LOR, 12);
+
+        op2priority.put(Operation.TEN, 13);
+
+        op2priority.put(Operation.MOV, 14);
+        op2priority.put(Operation.MOVADD, 14);
+        op2priority.put(Operation.MOVSUB, 14);
+        op2priority.put(Operation.MOVMUL, 14);
+        op2priority.put(Operation.MOVDIV, 14);
+        op2priority.put(Operation.MOVREM, 14);
+        op2priority.put(Operation.MOVSHR, 14);
+        op2priority.put(Operation.MOVSHL, 14);
+        op2priority.put(Operation.MOVROR, 14);
+        op2priority.put(Operation.MOVROL, 14);
+        op2priority.put(Operation.MOVAND, 14);
+        op2priority.put(Operation.MOVXOR, 14);
+        op2priority.put(Operation.MOVOR, 14);
+
+        op2priority.put(Operation.COMMA, 15);
+        op2priority.put(Operation.SEMICOLON, 15);
+    }
+
+    Operation operation;
 
     //public double
     Operator(String s) {
@@ -42,10 +161,23 @@ public class Operator extends Token implements Comparable<Operator> {
         if (operation == null)
             operation = Operation.MULT;
     }
-
     public Operator(char[] src, int start, int n) {
         this(new String(src, start, n));
         //type=Type.OPERATOR;
+    }
+
+    //returns positive if this is higher
+    @Override
+    public int compareTo(Operator p1) {
+        Integer myp = op2priority.get(this.operation);
+        Integer youp = op2priority.get(p1.operation);
+        if (myp == null && youp == null)
+            return 0;
+        if (myp == null)
+            return -1;
+        if (youp == null)
+            return -1;
+        return -myp.compareTo(youp);
     }
 
     Data calc(Stack<Token> stack) {
@@ -190,8 +322,6 @@ public class Operator extends Token implements Comparable<Operator> {
         return null;
     }
 
-    Operation operation;
-
     enum Operation {
         //order by priority
         //PLUS,
@@ -280,139 +410,6 @@ public class Operator extends Token implements Comparable<Operator> {
         OCT,
         DEC,
         POLAR
-    }
-
-    static final Map<Character, Operation> ch2op = new HashMap<>();
-
-    static {
-        ch2op.put('+', Operation.ADD);
-        ch2op.put('-', Operation.SUB);
-        ch2op.put('*', Operation.MULT);
-        ch2op.put('×', Operation.MULT);
-        ch2op.put('÷', Operation.DIV);
-        ch2op.put('/', Operation.DIV);
-        ch2op.put('=', Operation.MOV);
-        ch2op.put('(', Operation.LPAR);
-        ch2op.put(')', Operation.RPAR);
-
-    }
-
-    static final Map<String, Operation> str2op = new HashMap<>();
-    static final List<String> keyList = new ArrayList<>();
-
-    static {
-        str2op.put(">>", Operation.SHR);
-        str2op.put("<<", Operation.SHL);
-        str2op.put(">>>", Operation.ASHR);
-        str2op.put("<<<", Operation./*A*/SHL);
-        str2op.put("<<<<", Operation.ROL);
-        str2op.put(">>>>", Operation.ROR);
-        str2op.put("**", Operation.POWER);
-        str2op.put("++", Operation.PINC);
-        str2op.put("--", Operation.PDEC);
-
-        str2op.put("sin", Operation.SIN);
-        str2op.put("cos", Operation.COS);
-        str2op.put("exp", Operation.EXP);
-        str2op.put("ln", Operation.LN);
-        str2op.put("log2", Operation.LOG2);
-        str2op.put("tan", Operation.TAN)
-        ;
-        str2op.put("sinh", Operation.SINH);
-        str2op.put("cosh", Operation.COSH);
-        str2op.put("tanh", Operation.TANH);
-        str2op.put("asin", Operation.ASIN);
-        str2op.put("acos", Operation.ACOS);
-        str2op.put("atan", Operation.ATAN);
-        str2op.put("sec", Operation.SEC);
-        str2op.put("csc", Operation.CSC);
-        str2op.put("cot", Operation.COT);
-        str2op.put("cosec", Operation.CSC);
-
-
-        str2op.put("hex", Operation.HEX);
-        str2op.put("bin", Operation.BIN);
-        str2op.put("oct", Operation.OCT);
-        str2op.put("dec", Operation.DEC);
-        str2op.put("polar", Operation.POLAR);
-
-        str2op.put("sqrt", Operation.SQRT);
-        str2op.put("√", Operation.SQRT);
-        //str2op.put("*",Operation.MULT);
-        //str2op.put('/',Operation.DIV);
-        //str2op.put('=',Operation.MOV);
-        Set<String> ks = str2op.keySet();
-        keyList.addAll(ks);
-        Collections.sort(keyList, (p1, p2) -> p2.length() - p1.length());
-    }
-
-    private static final Map<Operation, Integer> op2priority = new HashMap<>();
-
-    static {
-        op2priority.put(Operation.SINC, 1);
-        op2priority.put(Operation.SDEC, 1);
-        op2priority.put(Operation.LPAR, 1);
-        op2priority.put(Operation.RPAR, 1);
-        op2priority.put(Operation.MEMB, 1);
-        op2priority.put(Operation.MEMP, 1);
-        op2priority.put(Operation.LSUB, 1);
-        op2priority.put(Operation.RSUB, 1);
-
-        op2priority.put(Operation.PINC, 2);
-        op2priority.put(Operation.PDEC, 2);
-        op2priority.put(Operation.UPLUS, 2);
-        op2priority.put(Operation.UMINUS, 2);
-        op2priority.put(Operation.LNOT, 2);
-        op2priority.put(Operation.BNOT, 2);
-        op2priority.put(Operation.CAST, 2);
-        op2priority.put(Operation.DREF, 2);
-        op2priority.put(Operation.ADDR, 2);
-        op2priority.put(Operation.SIZEOF, 2);
-        op2priority.put(Operation.ALIGNOF, 2);
-
-        op2priority.put(Operation.MULT, 3);
-        op2priority.put(Operation.DIV, 3);
-        op2priority.put(Operation.REMAINDER, 3);
-
-        op2priority.put(Operation.ADD, 4);
-        op2priority.put(Operation.SUB, 4);
-
-        op2priority.put(Operation.SHR, 5);
-        op2priority.put(Operation.SHL, 5);
-
-        op2priority.put(Operation.GT, 6);
-        op2priority.put(Operation.LT, 6);
-        op2priority.put(Operation.GE, 6);
-        op2priority.put(Operation.LE, 6);
-
-        op2priority.put(Operation.NE, 7);
-        op2priority.put(Operation.EQ, 7);
-
-        op2priority.put(Operation.BAND, 8);
-        op2priority.put(Operation.BXOR, 9);
-        op2priority.put(Operation.BOR, 10);
-
-        op2priority.put(Operation.LAND, 11);
-        op2priority.put(Operation.LOR, 12);
-
-        op2priority.put(Operation.TEN, 13);
-
-        op2priority.put(Operation.MOV, 14);
-        op2priority.put(Operation.MOVADD, 14);
-        op2priority.put(Operation.MOVSUB, 14);
-        op2priority.put(Operation.MOVMUL, 14);
-        op2priority.put(Operation.MOVDIV, 14);
-        op2priority.put(Operation.MOVREM, 14);
-        op2priority.put(Operation.MOVSHR, 14);
-        op2priority.put(Operation.MOVSHL, 14);
-        op2priority.put(Operation.MOVROR, 14);
-        op2priority.put(Operation.MOVROL, 14);
-        op2priority.put(Operation.MOVAND, 14);
-        op2priority.put(Operation.MOVXOR, 14);
-        op2priority.put(Operation.MOVOR, 14);
-
-        op2priority.put(Operation.COMMA, 15);
-        op2priority.put(Operation.SEMICOLON, 15);
     }
 	/*
 	1 	++ -- 	Suffix/postfix increment and decrement 	Left-to-right

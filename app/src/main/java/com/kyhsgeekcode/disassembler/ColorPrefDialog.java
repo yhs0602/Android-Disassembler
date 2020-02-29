@@ -11,15 +11,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class ColorPrefDialog extends Dialog {
+    SharedPreferences setting;
+    SharedPreferences.Editor editor;
     private TextView mTitleView;
     private TextView mContentView;
     private Button mLeftButton;
     private Button mRightButton;
     private String mTitle;
     private String mContent;
-
-    SharedPreferences setting;
-    SharedPreferences.Editor editor;
     private View.OnClickListener mLeftClickListener;
     private View.OnClickListener mRightClickListener;
 
@@ -31,6 +30,35 @@ public class ColorPrefDialog extends Dialog {
     private ColorPrefLvAdapter adapter;
 
     private TextView preview;
+
+    // 클릭버튼이 하나일때 생성자 함수로 클릭이벤트를 받는다.
+    public ColorPrefDialog(Context context, String title,
+                           View.OnClickListener singleListener, Palette palette) {
+        super(context, android.R.style.Theme_Translucent_NoTitleBar);
+        this.mTitle = title;
+        this.mRightClickListener = singleListener;
+        adapter = new ColorPrefLvAdapter(palette, context);
+        //if(context instanceof MainActivity)
+        //{
+        //	ma=(MainActivity) context;
+        //}
+    }
+
+    // 클릭버튼이 확인과 취소 두개일때 생성자 함수로 이벤트를 받는다
+    public ColorPrefDialog(Context context, String title,
+                           String content, View.OnClickListener leftListener,
+                           View.OnClickListener rightListener, Palette palette) {
+        super(context, android.R.style.Theme_Translucent_NoTitleBar);
+        this.mTitle = title;
+        this.mContent = content;
+        this.mLeftClickListener = leftListener;
+        this.mRightClickListener = rightListener;
+        adapter = new ColorPrefLvAdapter(palette, context);
+        //if(context instanceof MainActivity)
+        //{
+        //	ma=(MainActivity) context;
+        //}
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,35 +102,6 @@ public class ColorPrefDialog extends Dialog {
                 dismiss();
             }
         });
-    }
-
-    // 클릭버튼이 하나일때 생성자 함수로 클릭이벤트를 받는다.
-    public ColorPrefDialog(Context context, String title,
-                           View.OnClickListener singleListener, Palette palette) {
-        super(context, android.R.style.Theme_Translucent_NoTitleBar);
-        this.mTitle = title;
-        this.mRightClickListener = singleListener;
-        adapter = new ColorPrefLvAdapter(palette, context);
-        //if(context instanceof MainActivity)
-        //{
-        //	ma=(MainActivity) context;
-        //}
-    }
-
-    // 클릭버튼이 확인과 취소 두개일때 생성자 함수로 이벤트를 받는다
-    public ColorPrefDialog(Context context, String title,
-                           String content, View.OnClickListener leftListener,
-                           View.OnClickListener rightListener, Palette palette) {
-        super(context, android.R.style.Theme_Translucent_NoTitleBar);
-        this.mTitle = title;
-        this.mContent = content;
-        this.mLeftClickListener = leftListener;
-        this.mRightClickListener = rightListener;
-        adapter = new ColorPrefLvAdapter(palette, context);
-        //if(context instanceof MainActivity)
-        //{
-        //	ma=(MainActivity) context;
-        //}
     }
 
 }

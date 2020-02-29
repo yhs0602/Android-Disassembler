@@ -9,6 +9,10 @@ import android.view.View;
 import java.util.ArrayList;
 
 public class ArrowView extends View {
+    Paint paint = new Paint();
+    Path mPath = new Path();
+    ArrayList<ArrowInfo> list = new ArrayList<>();
+
     public ArrowView(android.content.Context context) {
         super(context);
         Init();
@@ -94,9 +98,12 @@ public class ArrowView extends View {
         return;
     }
 
-    Paint paint = new Paint();
-    Path mPath = new Path();
-    ArrayList<ArrowInfo> list = new ArrayList<>();
+    enum ArrowType {
+        JUMP,
+        CALL,
+        JCC,
+        CALLCC
+    }
 
     class ArrowInfo {
         int startrow;
@@ -109,13 +116,6 @@ public class ArrowView extends View {
             endrow = e;
             this.type = type;
         }
-    }
-
-    enum ArrowType {
-        JUMP,
-        CALL,
-        JCC,
-        CALLCC
     }
 
 }

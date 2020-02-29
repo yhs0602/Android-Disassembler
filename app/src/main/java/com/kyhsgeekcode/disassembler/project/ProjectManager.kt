@@ -37,7 +37,6 @@ object ProjectManager {
     val projectPaths: MutableSet<String> = HashSet()
     val rootdir = appCtx.getExternalFilesDir(null)!!.resolve("projects/")
     var currentProject: ProjectModel? = null
-        set
 
     init {
         val sharedPreference = appCtx.getSharedPreferences("ProjectManager", Context.MODE_PRIVATE)
@@ -224,7 +223,7 @@ object ProjectManager {
 
     fun getRelPath(path: String): String {
         requireNotNull(currentProject)
-        if(path == currentProject!!.sourceFilePath)
+        if (path == currentProject!!.sourceFilePath)
             return ""
         val rootFilePath = currentProject!!.rootFile.absolutePath
         val absPath = File(path).absolutePath

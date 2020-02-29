@@ -37,13 +37,13 @@ public class HexGridAdapter extends BaseAdapter {
         this.bytes = bytes;
     }
 
+    public byte[] getBytes() {
+        return bytes;
+    }
+
     public void setBytes(byte[] bytes) {
         this.bytes = bytes;
         notifyDataSetChanged();
-    }
-
-    public byte[] getBytes() {
-        return bytes;
     }
 
     @Override

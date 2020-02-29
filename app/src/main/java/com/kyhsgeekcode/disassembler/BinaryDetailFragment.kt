@@ -14,6 +14,7 @@ class BinaryDetailFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         detailText.setText((parentFragment as IParsedFileProvider).parsedFile.toString())
     }
+
     companion object {
         private val ARG_PARAM: String = "relpath"
         fun newInstance(relPath: String): BinaryDetailFragment {

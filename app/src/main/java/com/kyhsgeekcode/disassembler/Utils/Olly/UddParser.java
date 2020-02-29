@@ -17,57 +17,6 @@ import java.util.Map;
 //ex Sva/Sav, etc
 
 public class UddParser {
-    private String HDR_MAGIC = "Mod\u0000";
-
-    class Record {
-        int magic; //32 bits
-        int size; //32 bits
-
-        public Record(ByteBuffer buf) {
-            magic = buf.getInt();
-            size = buf.getInt();
-            byte[] content = new byte[size];
-            buf.get(content, 0, size);
-            //struct.pack call
-            //magic -> string
-            char[] chs = new char[4];
-            chs[0] = (char) ((magic >> 24) & 0xFF);
-            chs[1] = (char) ((magic >> 16) & 0xFF);
-            chs[2] = (char) ((magic >> 8) & 0xFF);
-            chs[3] = (char) ((magic) & 0xFF);
-            String s = new String(chs);
-            try {
-                dispatch_tale.get(s).invoke(null);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e) {
-
-            } catch (Exception e) {
-
-            }
-        }
-        //little endian unsigned int
-
-    }
-
-    public static void ReadRecord(File file) throws IOException {
-        int read = 0;
-        int index = 0;
-        int total = (int) file.length();
-        byte[] bytes = new byte[total];
-        InputStream is = new FileInputStream(file);
-        while (is.available() > 0) {
-            read = is.read(bytes, index, 4096);
-            index += read;
-        }
-        ByteBuffer buf = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
-
-    }
-
-    //public static void handle
-
     static Map<String, Method> dispatch_tale = new HashMap<>();
 
     static {
@@ -120,6 +69,57 @@ public class UddParser {
         } catch (NoSuchMethodException e) {
 
         }
+    }
+
+    private String HDR_MAGIC = "Mod\u0000";
+
+    //public static void handle
+
+    public static void ReadRecord(File file) throws IOException {
+        int read = 0;
+        int index = 0;
+        int total = (int) file.length();
+        byte[] bytes = new byte[total];
+        InputStream is = new FileInputStream(file);
+        while (is.available() > 0) {
+            read = is.read(bytes, index, 4096);
+            index += read;
+        }
+        ByteBuffer buf = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
+
+    }
+
+    class Record {
+        int magic; //32 bits
+        int size; //32 bits
+
+        public Record(ByteBuffer buf) {
+            magic = buf.getInt();
+            size = buf.getInt();
+            byte[] content = new byte[size];
+            buf.get(content, 0, size);
+            //struct.pack call
+            //magic -> string
+            char[] chs = new char[4];
+            chs[0] = (char) ((magic >> 24) & 0xFF);
+            chs[1] = (char) ((magic >> 16) & 0xFF);
+            chs[2] = (char) ((magic >> 8) & 0xFF);
+            chs[3] = (char) ((magic) & 0xFF);
+            String s = new String(chs);
+            try {
+                dispatch_tale.get(s).invoke(null);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+
+            } catch (Exception e) {
+
+            }
+        }
+        //little endian unsigned int
+
     }
 
 }

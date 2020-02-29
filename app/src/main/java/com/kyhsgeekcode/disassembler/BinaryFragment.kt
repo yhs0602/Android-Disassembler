@@ -6,14 +6,12 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
-import com.kyhsgeekcode.disassembler.project.ProjectManager
 import kotlinx.android.synthetic.main.fragment_binary.*
 import kotlinx.serialization.UnstableDefault
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.functions
-import kotlin.reflect.full.staticFunctions
 
 class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     val TAG = "BinaryFragment"
@@ -132,7 +130,7 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
 
 
     fun jumpto(address: Long) {
-        setCurrentTabByTag(TabTags.TAB_DISASM,true)
+        setCurrentTabByTag(TabTags.TAB_DISASM, true)
         (pagerAdapter.getItem(findTabByTag(TabTags.TAB_DISASM)!!) as BinaryDisasmFragment).jumpto(address)
     }
 

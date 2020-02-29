@@ -12,8 +12,9 @@ import androidx.annotation.RequiresApi
 /////////////////////////////////////End Show **** dialog///////////////////////////////////////////
 ///////////////////////////////////////Permission///////////////////////////////////////////////////
 val TAG = "PermissionUtils"
+
 fun requestAppPermissions(a: Activity) {
-    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
         (a as MainActivity).onRequestPermissionsResult(MainActivity.REQUEST_WRITE_STORAGE_REQUEST_CODE,
                 emptyArray(), intArrayOf(PackageManager.PERMISSION_GRANTED))
         return

@@ -38,7 +38,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
     override fun toString(): String {
         val sb = StringBuilder(super.toString())
         sb.append(System.lineSeparator())
-        for (plt in importSymbols!!) {
+        for (plt in importSymbols) {
             sb.append(plt).append(System.lineSeparator())
         }
         sb.append(elf.toString()) //.append(Arrays.toString(symstrings))
@@ -172,7 +172,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
                 if (p1.type == Symbol.Type.STT_FUNC) return@Comparator -1
                 if (p2.type == Symbol.Type.STT_FUNC) 1 else 0
             })
-            for (sym in symbols!!) {
+            for (sym in symbols) {
                 sb.append(sym.toString())
             }
             /*https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-35166
@@ -385,7 +385,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
                 val r_offset = relaBuf.long //unsigned, byte offset from targetSection
                 val r_info = relaBuf.long //unsigned, index to sourceSymtab
                 val index = (r_info shr 32 and -0x1).toInt()
-                val symbol = symbols!![index]
+                val symbol = symbols[index]
                 val r_addend = relaBuf.long //signed, delta
                 val rela = Rela()
                 rela.targetSection = targetSection

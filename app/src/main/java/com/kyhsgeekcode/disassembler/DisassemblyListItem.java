@@ -98,60 +98,60 @@ public class DisassemblyListItem implements Serializable {
         return disasmResult.isBranch();
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public String getAddress() {
         return address;
     }
 
-    public void setBytes(String bytes) {
-        this.bytes = bytes;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getBytes() {
         return bytes;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setBytes(String bytes) {
+        this.bytes = bytes;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public void setInstruction(String instruction) {
-        this.instruction = instruction;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getInstruction() {
         return instruction;
     }
 
-    public void setOperands(String operands) {
-        this.operands = operands;
+    public void setInstruction(String instruction) {
+        this.instruction = instruction;
     }
 
     public String getOperands() {
         return operands;
     }
 
-    public void setComments(String comments) {
-        this.comments = comments;
+    public void setOperands(String operands) {
+        this.operands = operands;
     }
 
     public String getComments() {
         return comments;
     }
 
-    public void setCondition(String condition) {
-        this.condition = condition;
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 
     public String getCondition() {
         return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
     }
 
     public void AddComment(String comment) {

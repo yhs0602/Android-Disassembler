@@ -4,6 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Token {
+    public static final Map<String, Double> constants = new HashMap<>();
+
+    static {
+        constants.put("PI", Math.PI);
+        constants.put("E", Math.E);
+        constants.put("π", Math.PI);
+    }
+
+    Type type;
+    String name;
+    Data data;
+
     public Token(char[] src, int start, int n) {
         this(new String(src, start, n));
     }
@@ -28,7 +40,7 @@ public class Token {
         } else {
             //Var
             //name=s;
-            if (constants.keySet().contains(name)) {
+            if (constants.containsKey(name)) {
                 data = new Data(constants.get(name));
             } else {
                 data = new Data(0);
@@ -37,10 +49,12 @@ public class Token {
 
         type = Type.OPERAND;
     }
-
     public Token(String s, Type t) {
         name = s;
         type = t;
+    }
+    public Token(Data data) {
+        this.data = data;
     }
 
     public boolean isOperator() {
@@ -51,21 +65,8 @@ public class Token {
         return type == Type.OPERAND;
     }
 
-    enum Type {
-        OPERATOR,
-        OPERAND
-    }
-
-    Type type;
-    String name;
-    Data data;
-
     public Data getValue() {
         return data;
-    }
-
-    public Token(Data data) {
-        this.data = data;
     }
 
     @Override
@@ -73,12 +74,9 @@ public class Token {
         return "name=" + name + ",type=" + type + ",data=" + data;
     }
 
-    public static final Map<String, Double> constants = new HashMap<>();
-
-    static {
-        constants.put("PI", Math.PI);
-        constants.put("E", Math.E);
-        constants.put("π", Math.PI);
+    enum Type {
+        OPERATOR,
+        OPERAND
     }
 
 }

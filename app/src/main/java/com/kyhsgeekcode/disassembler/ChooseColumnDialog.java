@@ -14,13 +14,22 @@ import android.widget.TextView;
 
 public class ChooseColumnDialog extends Dialog {
 
+    public static final int TAGLabel = 1;
+    public static final int TAGAddress = 2;
+    public static final int TAGBytes = 3;
+    public static final int TAGInstruction = 4;
+    public static final int TAGCondition = 5;
+    public static final int TAGOperands = 6;
+    public static final int TAGComment = 7;
+    SharedPreferences setting;
+    SharedPreferences.Editor editor;
+    MainActivity ma;//may cause leak?...
     private TextView mTitleView;
     private TextView mContentView;
     private Button mLeftButton;
     private Button mRightButton;
     private String mTitle;
     private String mContent;
-
     private CheckBox mCKAddress;
     private CheckBox mCKLabel;
     private CheckBox mCKBytes;
@@ -28,14 +37,34 @@ public class ChooseColumnDialog extends Dialog {
     private CheckBox mCKCondition;
     private CheckBox mCKOperands;
     private CheckBox mCKComments;
-
-    SharedPreferences setting;
-    SharedPreferences.Editor editor;
     private View.OnClickListener mLeftClickListener;
     private View.OnClickListener mRightClickListener;
-
-    MainActivity ma;//may cause leak?...
     private String TAG = "Disassembler dialog";
+    // 클릭버튼이 하나일때 생성자 함수로 클릭이벤트를 받는다.
+    public ChooseColumnDialog(Context context, String title,
+                              View.OnClickListener singleListener) {
+        super(context, android.R.style.Theme_Translucent_NoTitleBar);
+        this.mTitle = title;
+        this.mLeftClickListener = singleListener;
+        //if(context instanceof MainActivity)
+        //{
+        //	ma=(MainActivity) context;
+        //}
+    }
+    // 클릭버튼이 확인과 취소 두개일때 생성자 함수로 이벤트를 받는다
+    public ChooseColumnDialog(Context context, String title,
+                              String content, View.OnClickListener leftListener,
+                              View.OnClickListener rightListener) {
+        super(context, android.R.style.Theme_Translucent_NoTitleBar);
+        this.mTitle = title;
+        this.mContent = content;
+        this.mLeftClickListener = leftListener;
+        this.mRightClickListener = rightListener;
+        //if(context instanceof MainActivity)
+        //{
+        //	ma=(MainActivity) context;
+        //}
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,40 +157,5 @@ public class ChooseColumnDialog extends Dialog {
         });
 
     }
-
-    // 클릭버튼이 하나일때 생성자 함수로 클릭이벤트를 받는다.
-    public ChooseColumnDialog(Context context, String title,
-                              View.OnClickListener singleListener) {
-        super(context, android.R.style.Theme_Translucent_NoTitleBar);
-        this.mTitle = title;
-        this.mLeftClickListener = singleListener;
-        //if(context instanceof MainActivity)
-        //{
-        //	ma=(MainActivity) context;
-        //}
-    }
-
-    // 클릭버튼이 확인과 취소 두개일때 생성자 함수로 이벤트를 받는다
-    public ChooseColumnDialog(Context context, String title,
-                              String content, View.OnClickListener leftListener,
-                              View.OnClickListener rightListener) {
-        super(context, android.R.style.Theme_Translucent_NoTitleBar);
-        this.mTitle = title;
-        this.mContent = content;
-        this.mLeftClickListener = leftListener;
-        this.mRightClickListener = rightListener;
-        //if(context instanceof MainActivity)
-        //{
-        //	ma=(MainActivity) context;
-        //}
-    }
-
-    public static final int TAGLabel = 1;
-    public static final int TAGAddress = 2;
-    public static final int TAGBytes = 3;
-    public static final int TAGInstruction = 4;
-    public static final int TAGCondition = 5;
-    public static final int TAGOperands = 6;
-    public static final int TAGComment = 7;
 
 }

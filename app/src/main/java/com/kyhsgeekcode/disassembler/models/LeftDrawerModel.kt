@@ -1,4 +1,3 @@
 package com.kyhsgeekcode.disassembler.models
 
-class LeftDrawerModel {
-}
+class LeftDrawerModel

@@ -16,15 +16,14 @@ import java.util.Map;
 
 public class ProjectManager_OLD {
     private static final String TAG = "Disasm PM_new";
-
-    public static void Write() {
-
-    }
-
     static Map<String, Class<?>> type2Reader = new HashMap<>();
 
     static {
         type2Reader.put("udd", UDDReader.class);
+    }
+
+    public static void Write() {
+
     }
 
     public static DisasmInfo Read(InputStream is, String type) throws IOException {

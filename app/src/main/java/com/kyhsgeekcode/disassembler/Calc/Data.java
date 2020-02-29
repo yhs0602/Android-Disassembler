@@ -4,6 +4,7 @@ public class Data {
     long longVal;
     double doubleVal;
     String strVal;
+    Type type;
 
     //String varName;
     public Data(long value) {
@@ -99,6 +100,4 @@ public class Data {
         DOUBLE,
         STRING
     }
-
-    Type type;
 }

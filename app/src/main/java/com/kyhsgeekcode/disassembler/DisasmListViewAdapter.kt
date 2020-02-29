@@ -6,7 +6,6 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -276,17 +275,13 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
 //                    Log.v("...", "Last Item Wow !");
 //                    //Do pagination.. i.e. fetch new data
 //                }
-                onScroll(recyclerView, pastVisiblesItems, visibleItemCount,totalItemCount)
+                onScroll(recyclerView, pastVisiblesItems, visibleItemCount, totalItemCount)
             }
-        }
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
         }
 
         //thanks to http://www.tipssoft.com/bulletin/board.php?bo_table=FAQ&wr_id=1188
         //Smooth, but performance hit
-         fun onScroll(view: RecyclerView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+        fun onScroll(view: RecyclerView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
             if (totalItemCount < 2) return
             currentAddress = (getItem(firstVisibleItem) as DisassemblyListItem).disasmResult.address
             //Log.v(TAG,"onScroll("+firstVisibleItem+","+visibleItemCount+","+totalItemCount);
