@@ -31,6 +31,5 @@ class BinarySymbolFragment : Fragment() {
                 }
             }
         }
-
     }
 }

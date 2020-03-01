@@ -56,6 +56,5 @@ class ImageFragment : Fragment() {
                         putString(ARG_PARAM, relPath)
                     }
                 }
-
     }
 }

@@ -53,6 +53,4 @@ object Architecture {
         Log.e("Architecture", "Unsupported machine!!" + type.name)
         return intArrayOf(CS_ARCH_ALL)
     }
-
 }
-

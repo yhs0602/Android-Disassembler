@@ -1,13 +1,13 @@
 package com.kyhsgeekcode.disassembler
 
 import android.util.Log
-import nl.lxtreme.binutils.elf.Elf
-import nl.lxtreme.binutils.elf.ElfClass
-import nl.lxtreme.binutils.elf.SectionType
 import java.io.File
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.*
+import nl.lxtreme.binutils.elf.Elf
+import nl.lxtreme.binutils.elf.ElfClass
+import nl.lxtreme.binutils.elf.SectionType
 
 class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
     var elf: Elf
@@ -26,8 +26,8 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
      }
      entryPoint = getWord((byte)0, (byte)0, (byte)0, (byte)0);
      }*/
-//private long entryPoint;
-//private byte [] fileContents;
+// private long entryPoint;
+// private byte [] fileContents;
     var bExecutable = false
     private val TAG = "Disassembler elfutil"
     @Throws(IOException::class)
@@ -41,23 +41,23 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
         for (plt in importSymbols) {
             sb.append(plt).append(System.lineSeparator())
         }
-        sb.append(elf.toString()) //.append(Arrays.toString(symstrings))
+        sb.append(elf.toString()) // .append(Arrays.toString(symstrings))
                 .append("\n").append(info)
         return sb.toString()
     }
 
-    //Do some error
+    // Do some error
     override var codeSectionBase: Long = 0
         get() {
             if (field != 0L) {
                 return field
             }
             Log.e(TAG, "Code base 0?")
-            //Do some error
+            // Do some error
             return 0L
         }
 
-    //MEMO - Elf file format
+    // MEMO - Elf file format
 // REL
 // RELA has (Offset from sh_info) Info (index to symtab at sh_link, type) value
 // SYMTAB
@@ -66,32 +66,32 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
     @Throws(IOException::class)
     fun afterConstructor() {
         val sections = elf.sectionHeaders
-        //assertNotNull( sections );
+        // assertNotNull( sections );
         val programHeaders = elf.programHeaders
-        //assertNotNull( programHeaders );
+        // assertNotNull( programHeaders );
         machineType = elf.header.machineType
         val header = elf.header
-        //assertNotNull( header );
-        if (header.entryPoint == 0L) { //Log.i(TAG, "file " + file.getName() + "doesnt have entry point. currently set to 0x30");
-//entryPoint = 0;
+        // assertNotNull( header );
+        if (header.entryPoint == 0L) { // Log.i(TAG, "file " + file.getName() + "doesnt have entry point. currently set to 0x30");
+// entryPoint = 0;
         } else {
             entryPoint = header.entryPoint
         }
-        //Analyze ExportAddressTable(DynSym)
+        // Analyze ExportAddressTable(DynSym)
         if (elf.dynamicTable != null) {
             val sb = StringBuilder()
             Log.v(TAG, "size of dynamic table=" + elf.dynamicTable.size)
-            val strtab = 0L //pointer to the string table
+            val strtab = 0L // pointer to the string table
             val hash = 0L
             val sym_cnt = 0
             val i = 0
             val dynsymbuffer = ByteBuffer.wrap(byteArrayOf())
             val symbuffer = ByteBuffer.wrap(byteArrayOf())
             val strtable = elf.dynamicStringTable
-            //elf.getDynamicSymbolTable();
+            // elf.getDynamicSymbolTable();
             val dynsyms = ArrayList<Symbol>()
-            //byte[] symtabs=elf.getDynamicSymbolTable();
-//Syms has DynSyms
+            // byte[] symtabs=elf.getDynamicSymbolTable();
+// Syms has DynSyms
 /*try
 			{
 				dynsymbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.DYNSYM));
@@ -158,15 +158,15 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
 				Log.e(TAG, "", e);
 			}*/sb.append(System.lineSeparator()).append("syms;").append(System.lineSeparator())
             symbols.clear()
-            //if (dynsyms != null)
-//symbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
+            // if (dynsyms != null)
+// symbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
 //            //First, Analyze Symbol table
 //            ParseSymtab(sb, strtable);
 //            // Second, Analyze Rela table
 //            ArrayList<Rela> relas = new ArrayList<>();
 //            ParseRela(relas);
             loadBinary(path)
-            //sort it? this should be after plt parse
+            // sort it? this should be after plt parse
             Collections.sort(symbols, Comparator { p1, p2 ->
                 if (p1.type == p2.type) return@Comparator 0
                 if (p1.type == Symbol.Type.STT_FUNC) return@Comparator -1
@@ -327,27 +327,27 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
 					*/
 //                }
 //            }
-//Now prepare IAT(PLT/GOT)
-//get .got
+// Now prepare IAT(PLT/GOT)
+// get .got
 //            for (SectionHeader hdr : sections) {
 //                if (".plt".equalsIgnoreCase(hdr.getName())) {
-//plt is code
-//					 000173ec __android_log_print@plt:
-//					 173ec:       e28fc600        add     ip, pc, #0, 12  ; ip!=pc?
-//					 173f0:       e28cca11        add     ip, ip, #69632  ; addr of got?
-//					 173f4:       e5bcf9f4        ldr     pc, [ip, #2548]!; index=2548
-//						 000173f8 sleep@plt:
-//					 173f8:       e28fc600        add     ip, pc, #0, 12
-//					 173fc:       e28cca11        add     ip, ip, #69632
-//					 17400:       e5bcf9ec        ldr     pc, [ip, #2540]!
-//					 ...
+// plt is code
+// 					 000173ec __android_log_print@plt:
+// 					 173ec:       e28fc600        add     ip, pc, #0, 12  ; ip!=pc?
+// 					 173f0:       e28cca11        add     ip, ip, #69632  ; addr of got?
+// 					 173f4:       e5bcf9f4        ldr     pc, [ip, #2548]!; index=2548
+// 						 000173f8 sleep@plt:
+// 					 173f8:       e28fc600        add     ip, pc, #0, 12
+// 					 173fc:       e28cca11        add     ip, ip, #69632
+// 					 17400:       e5bcf9ec        ldr     pc, [ip, #2540]!
+// 					 ...
 //                    ByteBuffer buf = elf.getSection(hdr);
 //                }
 //            }
 //            dynsymbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.PROGBITS));
 // importSymbols=ParsePLT(path);
             info = sb.toString()
-            //Log.i(TAG, "info=" + info);
+            // Log.i(TAG, "info=" + info);
         }
         Log.v(TAG, "Checking code section")
         for (sh in elf.sectionHeaders) {
@@ -370,10 +370,10 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
         }
     }
 
-    //private long codeOffset=0L;
-//private long codeLimit=0L;
-//private long codeVirtualAddress=0L;
-//String[] symstrings;
+    // private long codeOffset=0L;
+// private long codeLimit=0L;
+// private long codeVirtualAddress=0L;
+// String[] symstrings;
     @Throws(IOException::class)
     private fun ParseRela(relas: ArrayList<Rela>) {
         val relaSec = elf.getSectionHeaderByType(SectionType.RELA)
@@ -382,11 +382,11 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
             val targetSection = relaSec.info
             val sourceSymtab = relaSec.link
             while (relaBuf.hasRemaining()) {
-                val r_offset = relaBuf.long //unsigned, byte offset from targetSection
-                val r_info = relaBuf.long //unsigned, index to sourceSymtab
+                val r_offset = relaBuf.long // unsigned, byte offset from targetSection
+                val r_info = relaBuf.long // unsigned, index to sourceSymtab
                 val index = (r_info shr 32 and -0x1).toInt()
                 val symbol = symbols[index]
-                val r_addend = relaBuf.long //signed, delta
+                val r_addend = relaBuf.long // signed, delta
                 val rela = Rela()
                 rela.targetSection = targetSection
                 rela.symsection = sourceSymtab

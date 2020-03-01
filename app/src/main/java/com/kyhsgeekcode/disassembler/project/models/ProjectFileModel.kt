@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProjectFileModel(
-        @SerialName("filepath")
-        val path: String,
-        @SerialName("guessedType")
-        val guessedType: ProjectFileType
+    @SerialName("filepath")
+    val path: String,
+    @SerialName("guessedType")
+    val guessedType: ProjectFileType
 )

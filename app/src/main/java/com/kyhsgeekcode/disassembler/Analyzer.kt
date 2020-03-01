@@ -7,11 +7,11 @@ import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
-import splitties.init.appCtx
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
 import kotlin.experimental.and
+import splitties.init.appCtx
 
 @ExperimentalUnsignedTypes
 class Analyzer(private val bytes: ByteArray) {
@@ -30,14 +30,14 @@ class Analyzer(private val bytes: ByteArray) {
     private var MD4Hash = "Unknown"
     private var SHA1Hash = "Unknown"
     private val nums = IntArray(256)
-    //Search for strings
-    fun  /*List<String>*/searchStrings(adapter: FoundStringAdapter, min: Int, max: Int, progress: (Int, Int) -> Boolean) { //List<String> list=new ArrayList<>();
-//char lastch=0;
+    // Search for strings
+    fun /*List<String>*/searchStrings(adapter: FoundStringAdapter, min: Int, max: Int, progress: (Int, Int) -> Boolean) { // List<String> list=new ArrayList<>();
+// char lastch=0;
         var strstart = -1
         adapter.reset()
         for (i in bytes.indices) {
             val v = bytes[i].toUByte().toShort().toChar()
-            //Log.v(TAG,""+v);
+            // Log.v(TAG,""+v);
             if (Character.isISOControl(v) == false /*Character.isUnicodeIdentifierStart(v)||Character.isJavaLetterOrDigit(v)*/) {
                 if (strstart == -1) strstart = i
             } else if (strstart != -1) {
@@ -49,12 +49,12 @@ class Analyzer(private val bytes: ByteArray) {
                     fs.length = length
                     fs.offset = offset.toLong()
                     fs.string = str
-                    //Log.v(TAG,str);
+                    // Log.v(TAG,str);
                     adapter.addItem(fs)
-                } else { //Logger.v(TAG,"Ignoring short string at:"+offset);
+                } else { // Logger.v(TAG,"Ignoring short string at:"+offset);
                 }
                 strstart = -1
-                //Log.i(TAG,str);
+                // Log.i(TAG,str);
             }
             if (i % 100 == 0)
                 progress(i, bytes.size)
@@ -80,13 +80,13 @@ class Analyzer(private val bytes: ByteArray) {
             if (nums[i] > max) max = nums[i]
         }
         val yPerCount = graphY.toFloat() / max
-        //x-axis
+        // x-axis
         mCanvas.drawLine(20f, sizeY - 40.toFloat(), sizeX - 20.toFloat(), sizeY - 40.toFloat(), paintLine)
         paintLine.textSize = 20f
         for (i in 0..15) {
             mCanvas.drawText("" + i * 16, 20 + i * 64.toFloat(), sizeY.toFloat(), paintLine)
         }
-        //y-axis
+        // y-axis
         mCanvas.drawLine(20f, sizeY - 40.toFloat(), 20f, 0f, paintLine)
         for (i in 0..5) {
             mCanvas.drawText("" + (max.toFloat() * i / 5.0f).toInt(), 0f, baseY - graphY * i / 5.0f - 10, paintLine)
@@ -152,7 +152,7 @@ class Analyzer(private val bytes: ByteArray) {
             return sb.toString()
         }
 
-    fun analyze(progress: (Int, Int, String) -> Boolean) { //Count shorts, calculate average, ...
+    fun analyze(progress: (Int, Int, String) -> Boolean) { // Count shorts, calculate average, ...
         Logger.v(TAG, "Counting numbers")
         Arrays.fill(nums, 0)
         for (i in uBytes.indices) {
@@ -162,7 +162,7 @@ class Analyzer(private val bytes: ByteArray) {
         progress(7, 1, "Measuring average...")
         Logger.v(TAG, "Averaging")
         var div: Double
-        //double[] divs = new double[256];
+        // double[] divs = new double[256];
         var avg = 0.0
         for (i in 0..255) {
             div = nums[i].toDouble() / uBytes.size.toDouble()
@@ -172,8 +172,8 @@ class Analyzer(private val bytes: ByteArray) {
         Logger.v(TAG, "Avg:$avg")
 
         progress(7, 2, "Measuring Entropy...")
-        //Calculate Entropy (bits/symbol)
-//https://rosettacode.org/wiki/Entropy
+        // Calculate Entropy (bits/symbol)
+// https://rosettacode.org/wiki/Entropy
         Logger.v(TAG, "Measuring entropy")
         var entropy = 0.0
         for (i in 0..255) {
@@ -192,31 +192,31 @@ class Analyzer(private val bytes: ByteArray) {
         G *= 2.0
 
         progress(7, 4, "Performing Chi-Square test...")
-        //Do Chi-square test
-//https://rosettacode.org/wiki/Verify_distribution_uniformity/Chi-squared_test
-//https://rosettacode.org/wiki/Verify_distribution_uniformity/Chi-squared_test#C
+        // Do Chi-square test
+// https://rosettacode.org/wiki/Verify_distribution_uniformity/Chi-squared_test
+// https://rosettacode.org/wiki/Verify_distribution_uniformity/Chi-squared_test#C
         Logger.v(TAG, "Chi-square test")
         chiDof = uBytes.size - 1
         Logger.v(TAG, "chiDof:$chiDof")
-        chiDist = chi2UniformDistance(uBytes, uBytes.size) //x2Dist(shorts);
+        chiDist = chi2UniformDistance(uBytes, uBytes.size) // x2Dist(shorts);
         Logger.v(TAG, "chiDist:$chiDist")
-        chiProb = chi2Probability(chiDof, chiDist) //xhi2Prob(dof, dist);
+        chiProb = chi2Probability(chiDof, chiDist) // xhi2Prob(dof, dist);
         Logger.v(TAG, "chiProb:$chiProb")
         chiIsUniform = chiIsUniform(uBytes, uBytes.size, 0.05)
         Logger.v(TAG, "chiIsUniform:$chiIsUniform")
 
         progress(7, 5, "Performing monte-carlo analysis...")
-        //Monte Carlo PI calc
+        // Monte Carlo PI calc
         Logger.v(TAG, "Performing Monte Carlo")
         var inCircle = 0
-        for (i in 0 until uBytes.size - 1) { //a square with a side of length 2 centered at 0 has
-//x and y range of -1 to 1
+        for (i in 0 until uBytes.size - 1) { // a square with a side of length 2 centered at 0 has
+// x and y range of -1 to 1
             val randX = uBytes[i].toDouble() / 256.0 * 2 - 1 // (Math.random() * 2) - 1;//range -1 to 1
-            val randY = uBytes[i + 1].toDouble() / 256.0 * 2 - 1 //range -1 to 1
-            //distance from (0,0) = sqrt((x-0)^2+(y-0)^2)
+            val randY = uBytes[i + 1].toDouble() / 256.0 * 2 - 1 // range -1 to 1
+            // distance from (0,0) = sqrt((x-0)^2+(y-0)^2)
             val distFromCenter = Math.sqrt(randX * randX + randY * randY)
-            //^ or in Java 1.5+: double dist= Math.hypot(randX, randY);
-            if (distFromCenter < 1) { //circle with diameter of 2 has radius of 1
+            // ^ or in Java 1.5+: double dist= Math.hypot(randX, randY);
+            if (distFromCenter < 1) { // circle with diameter of 2 has radius of 1
                 inCircle++
             }
         }
@@ -224,8 +224,8 @@ class Analyzer(private val bytes: ByteArray) {
         Logger.v(TAG, "Monte Carlo PI:$monteCarloPI")
 
         progress(7, 6, "Measuring auto correlation...")
-        //Serial correlation coefficient
-//compute sum of squared
+        // Serial correlation coefficient
+// compute sum of squared
         Logger.v(TAG, "Measuring correlation coeffs")
         var sumsq = 0.0
         for (i in uBytes.indices) {
@@ -332,17 +332,17 @@ class Analyzer(private val bytes: ByteArray) {
 
     companion object {
         private const val TAG = "Analyzer"
-        //static double x2Dist(byte[] data) {
-//	avg;
-//	double sqs = stream(data).reduce(0, (a, b) -> a + pow((b - avg), 2));
-//	return sqs / avg;
-//}
-//static double x2Prob(double dof, double distance) {
-//	return Gamma.regularizedGammaQ(dof / 2, distance / 2);
-//}
-//static boolean x2IsUniform(byte[] data, double significance) {
-//	return x2Prob(data.length - 1.0, x2Dist(data)) > significance;
-//}
+        // static double x2Dist(byte[] data) {
+// 	avg;
+// 	double sqs = stream(data).reduce(0, (a, b) -> a + pow((b - avg), 2));
+// 	return sqs / avg;
+// }
+// static double x2Prob(double dof, double distance) {
+// 	return Gamma.regularizedGammaQ(dof / 2, distance / 2);
+// }
+// static boolean x2IsUniform(byte[] data, double significance) {
+// 	return x2Prob(data.length - 1.0, x2Dist(data)) > significance;
+// }
         fun Simpson3_8(f: Ifctn, a: Double, b: Double, N: Int, gamma: Double): Double {
             Log.v(TAG, "Simpson; a:" + a + "b:" + b + "N:" + N)
             var j: Int
@@ -352,7 +352,7 @@ class Analyzer(private val bytes: ByteArray) {
             var sum = f.f(a) + f.f(b)
             j = 3 * N - 1
             while (j > 0) {
-                //Logger.v(TAG,"Simpson_ j:"+j+",sum:"+sum);
+                // Logger.v(TAG,"Simpson_ j:"+j+",sum:"+sum);
                 l1 = if (j % 3 != 0) 3.0 else 2.0
                 sum += l1 * f.f(a + h1 * j) / gamma
                 j--
@@ -383,7 +383,7 @@ class Analyzer(private val bytes: ByteArray) {
         }
     }
 
-    //Analyzes code, strings, etc
+    // Analyzes code, strings, etc
     init {
         uBytes = bytes.toUByteArray()
 //        uBytes = ShortArray(bytes.size)

@@ -8,14 +8,14 @@ import com.kyhsgeekcode.extractZip
 import com.kyhsgeekcode.isAccessible
 import com.kyhsgeekcode.saveAsZip
 import com.kyhsgeekcode.toValidFileName
+import java.io.File
+import java.io.IOException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import org.apache.commons.io.FileUtils
 import org.json.JSONException
 import splitties.init.appCtx
-import java.io.File
-import java.io.IOException
 
 /**
  * the list of paths of project_info.json is saved to a SharedPreference.
@@ -170,9 +170,9 @@ object ProjectManager {
     fun export(projectModel: ProjectModel, outDir: File): Boolean {
         require(projectModelToPath.contains(projectModel))
         save(projectModel)
-        //projectModel.sourceFilePath
-        //projectModel.baseFolder
-        //projectModel itself
+        // projectModel.sourceFilePath
+        // projectModel.baseFolder
+        // projectModel itself
         val outZipFile = outDir.resolve("DisassemblerProject_${projectModel.name.toValidFileName()}.zip")
         saveAsZip(outZipFile,
                 Pair(projectModel.sourceFilePath, "sourceFilePath"),
@@ -228,7 +228,7 @@ object ProjectManager {
         val rootFilePath = currentProject!!.rootFile.absolutePath
         val absPath = File(path).absolutePath
         if (absPath.startsWith(rootFilePath)) {
-            //orig나 gen에 있다.
+            // orig나 gen에 있다.
             val orig = File(rootFilePath).resolve("original").path
             Log.d(TAG, "absPath:$absPath  \n orig:$orig")
             if (absPath.startsWith(orig)) {
@@ -245,7 +245,7 @@ object ProjectManager {
 //                return subs.substring(1)
 //            return subs
         }
-        //외부에 있다.
+        // 외부에 있다.
         val srcPath = currentProject!!.sourceFilePath
         if (absPath.startsWith(srcPath)) {
             return substringWithoutSlash(absPath, srcPath)

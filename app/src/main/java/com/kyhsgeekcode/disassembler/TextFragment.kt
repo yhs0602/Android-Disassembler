@@ -13,13 +13,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
-import kotlinx.android.synthetic.main.fragment_text.*
-import kotlinx.serialization.UnstableDefault
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStreamReader
 import java.util.*
+import kotlinx.android.synthetic.main.fragment_text.*
+import kotlinx.serialization.UnstableDefault
 
 class TextFragment : Fragment() {
     val TAG = "TextFragment"
@@ -47,7 +47,7 @@ class TextFragment : Fragment() {
 
         val br = BufferedReader(InputStreamReader(ByteArrayInputStream(fileContent)))
         var line: String?
-        while (br.readLine().also { line = it } != null) { //https://stackoverflow.com/a/46390973/8614565
+        while (br.readLine().also { line = it } != null) { // https://stackoverflow.com/a/46390973/8614565
             val ss = SpannableString(line)
             if (terms != null) {
                 for (term in terms) {

@@ -14,11 +14,6 @@ import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.getDrawable
-import kotlinx.serialization.UnstableDefault
-import org.jf.baksmali.Main
-import pl.openrnd.multilevellistview.ItemInfo
-import pl.openrnd.multilevellistview.MultiLevelListAdapter
-import splitties.init.appCtx
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -29,6 +24,11 @@ import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import kotlin.experimental.and
+import kotlinx.serialization.UnstableDefault
+import org.jf.baksmali.Main
+import pl.openrnd.multilevellistview.ItemInfo
+import pl.openrnd.multilevellistview.MultiLevelListAdapter
+import splitties.init.appCtx
 
 class FileDrawerListAdapter : MultiLevelListAdapter() {
     var mAlwaysExpandend = false
@@ -41,7 +41,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
     override fun getSubObjects(anObject: Any): List<*> {
         val items: MutableList<FileDrawerListItem> = ArrayList()
         val item = anObject as FileDrawerListItem
-        //Moved From MainActivity.java
+        // Moved From MainActivity.java
 //        Toast.makeText(context, item.caption, Toast.LENGTH_SHORT).show()
         //
         val initialLevel = item.level
@@ -163,7 +163,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
             }
             DrawerItemType.PE_IL -> try {
                 val facileReflector = Facile.load(item.tag as String)
-                //load the assembly
+                // load the assembly
                 val assembly = facileReflector.loadAssembly()
                 val types = assembly.allTypes
                 for (type in types) {
@@ -201,9 +201,9 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
             else -> {
             }
         }
-        //if expandable yes.
-//if folder show subfolders
-//if zip/apk unzip and show
+        // if expandable yes.
+// if folder show subfolders
+// if zip/apk unzip and show
         return items
     }
 
@@ -230,7 +230,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
     }
 
     private inner class ViewHolder {
-        var nameView: TextView? = null //ImageView arrowView;
+        var nameView: TextView? = null // ImageView arrowView;
     }
 
     override fun getViewForObject(anObject: Any, convertView: View?, itemInfo: ItemInfo): View {
@@ -240,7 +240,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
             viewHolder = ViewHolder()
             convertView2 = LayoutInflater.from(appCtx).inflate(R.layout.filedraweritem, null)
             viewHolder.nameView = convertView2.findViewById(R.id.fileDrawerTextView)
-            //viewHolder.levelBeamView = (LevelBeamView) convertView.findViewById(R.id.dataItemLevelBeam);
+            // viewHolder.levelBeamView = (LevelBeamView) convertView.findViewById(R.id.dataItemLevelBeam);
             convertView2.tag = viewHolder
         } else {
             viewHolder = convertView2.tag as ViewHolder
@@ -258,8 +258,8 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
             drawable?.setBounds(0, 0, 40, 40)
         }
         viewHolder.nameView!!.setCompoundDrawablesRelative(compounds[0], compounds[1], compounds[2], compounds[3])
-        //viewHolder.levelBeamView.setLevel(itemInfo.getLevel());
-//Log.d("FileAdapter", "Level:" + item.level);
+        // viewHolder.levelBeamView.setLevel(itemInfo.getLevel());
+// Log.d("FileAdapter", "Level:" + item.level);
         viewHolder.nameView!!.setPaddingRelative(item.level * 30, 0, 0, 0)
         return convertView2 as View
     }
@@ -293,5 +293,4 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
             iconTable[DrawerItemType.PROJECTS] = R.drawable.ic_folder_icon
         }
     }
-
 }

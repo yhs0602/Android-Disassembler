@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(),
 //        private const val TAB_ANALYSIS = 7
         private const val REQUEST_SELECT_FILE = 123
         const val REQUEST_SELECT_FILE_NEW = 124
-        //https://medium.com/@gurpreetsk/memory-management-on-android-using-ontrimmemory-f500d364bc1a
+        // https://medium.com/@gurpreetsk/memory-management-on-android-using-ontrimmemory-f500d364bc1a
         private const val LASTPROJKEY = "lastProject"
         private const val TAG = "Disassembler"
         private const val RATIONALSETTING = "showRationals"
@@ -70,8 +70,7 @@ class MainActivity : AppCompatActivity(),
         const val TAG_PROCESSES = 3
         const val TAG_RUNNING_APPS = 4
 
-
-        ////////////////////////////////////////////Data Conversion//////////////////////////////////
+        // //////////////////////////////////////////Data Conversion//////////////////////////////////
         /**
          * @returns handle : Int
          */
@@ -80,7 +79,6 @@ class MainActivity : AppCompatActivity(),
 
         @JvmStatic
         external fun Finalize(handle: Int)
-
 
         val textFileExts: MutableSet<String> = HashSet()
 
@@ -105,22 +103,22 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    //////////////////////////////////////////////Views/////////////////////////////////////
+    // ////////////////////////////////////////////Views/////////////////////////////////////
 //    var touchSource: View? = null
 //    var clickSource: View? = null
     var llmainLinearLayoutSetupRaw: ConstraintLayout? = null
 
     //    var tab1: LinearLayout? = null
 //    var tab2: LinearLayout? = null
-    //FileTabContentFactory factory = new FileTabContentFactory(this);
+    // FileTabContentFactory factory = new FileTabContentFactory(this);
 //    val textFactory: FileTabContentFactory = TextFileTabFactory(this)
 //    val imageFactory: FileTabContentFactory = ImageFileTabFactory(this)
 //    val nativeDisasmFactory: FileTabContentFactory = NativeDisassemblyFactory(this)
 //    val factoryList: MutableList<FileTabContentFactory> = ArrayList()
-    ///////////////////////////////////////////////////UI manager////////////////////////////////////////////
+    // /////////////////////////////////////////////////UI manager////////////////////////////////////////////
 //    var hexManager = HexManager()
     var toDoAfterPermQueue: Queue<Runnable> = LinkedBlockingQueue()
-    /////////////////////////////////////////////////Current working data///////////////////////////////////////
+    // ///////////////////////////////////////////////Current working data///////////////////////////////////////
 //    var fpath: String? = null
 //        set(fpath) {
 //            field = fpath
@@ -132,25 +130,22 @@ class MainActivity : AppCompatActivity(),
 //            dataFragment!!.filecontent = filecontent
 //        }
     @JvmField
-    var parsedFile //Parsed file info
-            : AbstractFile? = null
-    /////////////////////////////////////////////////Settings/////////////////////////////////////////////////////
+    var parsedFile: AbstractFile? = null// Parsed file info
+    // ///////////////////////////////////////////////Settings/////////////////////////////////////////////////////
 //    var settingPath: SharedPreferences? = null
-    /////////////////////////////////////////////////Choose Column////////////////////////////////////
+    // ///////////////////////////////////////////////Choose Column////////////////////////////////////
 
-    ///////////////////////////////////////////////End Permission//////////////////////////////////////////////////////
-//////////////////////////////////////////////Column Picking/////////////////////////////////////////////////////
+    // /////////////////////////////////////////////End Permission//////////////////////////////////////////////////////
+// ////////////////////////////////////////////Column Picking/////////////////////////////////////////////////////
 
     /*ArrayList*/
-
 
     private var dataFragment: RetainedFragment? = null
     private var disasmManager: DisassemblyManager? = null
 
-    //private SymbolTableAdapter symAdapter;
+    // private SymbolTableAdapter symAdapter;
 
-    //DisasmIterator disasmIterator
-
+    // DisasmIterator disasmIterator
 
     //    val runnableRequestLayout = Runnable {
 //        //adapter.notifyDataSetChanged();
@@ -164,7 +159,6 @@ class MainActivity : AppCompatActivity(),
     //    private var projectManager: ProjectManager? = null
 //    private var currentProject: ProjectManager.Project? = null
     //    private var lvSymbols: ListView? = null
-
 
     private lateinit var mDrawerAdapter: FileDrawerListAdapter
 
@@ -187,8 +181,8 @@ class MainActivity : AppCompatActivity(),
 //
 
 //            disasmManager!!.setData(adapter!!.itemList(), adapter!!.getAddress())
-            //handleDataFragment()
-            //LoadProjects
+            // handleDataFragment()
+            // LoadProjects
             setupLeftDrawer()
             handleViewActionIntent()
         })
@@ -196,7 +190,6 @@ class MainActivity : AppCompatActivity(),
         manageShowRational()
         clearCache()
     }
-
 
 //    private fun handleDataFragment() {
 //        // find the retained fragment on binaryDisasmFragment restarts
@@ -224,7 +217,7 @@ class MainActivity : AppCompatActivity(),
     private fun manageShowRational() {
         val showRationalSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
         val show = showRationalSetting.getBoolean("show", true)
-        if (show) { //showPermissionRationales();
+        if (show) { // showPermissionRationales();
             val editorShowPermission = showRationalSetting.edit()
             editorShowPermission.putBoolean("show", false)
             editorShowPermission.apply()
@@ -259,7 +252,7 @@ class MainActivity : AppCompatActivity(),
 //                } else { //User opened pther files
                 onChoosePathNew(intent!!.data!!)
 //                }
-            } else { //User opened other files
+            } else { // User opened other files
                 onChoosePathNew(intent!!.data!!)
             }
         } else { // android.intent.action.MAIN
@@ -270,10 +263,10 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun setupLeftDrawer() {
-        //mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        // mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         // Set the adapter for the list view
-        left_drawer.setAdapter(FileDrawerListAdapter().also { mDrawerAdapter = it }) //new ArrayAdapter<String>(MainActivity.this,
-        //R.layout.row, mProjNames));
+        left_drawer.setAdapter(FileDrawerListAdapter().also { mDrawerAdapter = it }) // new ArrayAdapter<String>(MainActivity.this,
+        // R.layout.row, mProjNames));
         val initialDrawers: MutableList<FileDrawerListItem> = ArrayList()
         initialDrawers.add(FileDrawerListItem("Projects", 0, FileDrawerListItem.DrawerItemType.PROJECTS))
         mDrawerAdapter.setDataItems(initialDrawers)
@@ -294,7 +287,7 @@ class MainActivity : AppCompatActivity(),
                 }, null, null)
             }
 
-            override fun onGroupItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) { //Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
+            override fun onGroupItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) { // Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
                 if ((item as FileDrawerListItem).isOpenable)
                     onItemClicked(parent, view, item, itemInfo)
             }
@@ -307,14 +300,14 @@ class MainActivity : AppCompatActivity(),
 //        val rootPath = ProjectManager.getOriginal("").absolutePath
         val abspath = (item.tag as String)
 //        Log.d(TAG, "rootPath:${rootPath}")
-        Log.d(TAG, "absPath:${abspath}")
+        Log.d(TAG, "absPath:$abspath")
         val ext = File(abspath).extension.toLowerCase()
         val relPath: String = ProjectManager.getRelPath(abspath)
 //        if (abspath.length > rootPath.length)
 //            relPath = abspath.substring(rootPath.length+2)
 //        else
 //            relPath = ""
-        Log.d(TAG, "relPath:${relPath}")
+        Log.d(TAG, "relPath:$relPath")
         val fragment = when (item.type) {
             FileDrawerListItem.DrawerItemType.ARCHIVE -> ArchiveFragment.newInstance(relPath)
             FileDrawerListItem.DrawerItemType.APK -> APKFragment.newInstance(relPath)
@@ -356,9 +349,9 @@ class MainActivity : AppCompatActivity(),
                 permEditor.apply()
             }
             requestAppPermissions(this@MainActivity)
-            //String [] accs=getAccounts();
+            // String [] accs=getAccounts();
             sendErrorReport(p2)
-            //	ori.uncaughtException(p1, p2);
+            // 	ori.uncaughtException(p1, p2);
             Log.wtf(TAG, "UncaughtException", p2)
             finish()
         }
@@ -396,7 +389,7 @@ class MainActivity : AppCompatActivity(),
             }
             R.id.settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
-                //SettingActivity.putExtra("ColorHelper",colorHelper);
+                // SettingActivity.putExtra("ColorHelper",colorHelper);
                 startActivity(intent)
             }
             R.id.online_help -> {
@@ -415,18 +408,20 @@ class MainActivity : AppCompatActivity(),
         return super.onOptionsItemSelected(item)
     }
 
-
     private fun showSelDialog(ListItems: List<String>?, title: String?, listener: DialogInterface.OnClickListener?) {
         showSelDialog(this, ListItems!!, title, listener)
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<String>,
+            grantResults: IntArray
+    ) {
         when (requestCode) {
             REQUEST_WRITE_STORAGE_REQUEST_CODE -> {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty()
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) { // permission was granted, yay! Do the
+                if (grantResults.isNotEmpty() &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) { // permission was granted, yay! Do the
 // contacts-related task you need to do.
                     while (!toDoAfterPermQueue.isEmpty()) {
                         val run = toDoAfterPermQueue.remove()
@@ -449,10 +444,9 @@ class MainActivity : AppCompatActivity(),
         Toast.makeText(this, resid, Toast.LENGTH_SHORT).show()
     }
 
-
 //    private fun AlertSelFile() {
 //        Toast.makeText(this, R.string.selfilefirst, Toast.LENGTH_SHORT).show()
-////        showFileChooser() /*File*/
+// //        showFileChooser() /*File*/
 //    }
 
 //    //FIX ME, TO DO
@@ -523,7 +517,6 @@ class MainActivity : AppCompatActivity(),
 //        AlertSaveSuccess(file)
 //    }
 
-
 //    private fun SaveDetailNewProject(projn: String) {
 //        try {
 //            val proj = projectManager!!.newProject(projn, fpath)
@@ -574,11 +567,9 @@ class MainActivity : AppCompatActivity(),
 //        })
 //    }
 
-    ////////////////////////////////////////////////End Project//////////////////////////////////////////////
+    // //////////////////////////////////////////////End Project//////////////////////////////////////////////
     fun disassembleFile(offset: Long) {
-
     }
-
 
     private fun alertError(p0: Int, e: Exception, sendError: Boolean = true) {
         Log.e(TAG, "" + p0, e)
@@ -590,11 +581,10 @@ class MainActivity : AppCompatActivity(),
         showErrorDialog(this, p0, e, sendError)
     }
 
-
     val PATHPREF = "path"
     private fun showFileChooser() {
         requestAppPermissions(this)
-        //SharedPreferences sharedPreferences = null;
+        // SharedPreferences sharedPreferences = null;
         val settingPath1 = getSharedPreferences(PATHPREF, Context.MODE_PRIVATE)
         var prepath = settingPath1.getString(DiskUtil.SC_PREFERENCE_KEY, "/storage/emulated/0/")
         var tmp = File(prepath)
@@ -612,13 +602,13 @@ class MainActivity : AppCompatActivity(),
                         .withMemoryBar(true)
                         .allowCustomPath(true)
                         .setType(StorageChooser.FILE_PICKER)
-                        .actionSave(true) //.withPreference(settingPath)
-//	.withPredefinedPath(prepath)
+                        .actionSave(true) // .withPreference(settingPath)
+// 	.withPredefinedPath(prepath)
                         .shouldResumeSession(true)
                         .showHidden(true)
                         .build()
                 // Show dialog whenever you want by
-//chooser.getsConfig().setPrimaryPath(prepath);
+// chooser.getsConfig().setPrimaryPath(prepath);
                 chooser.show()
                 // get path that the user has chosen
                 chooser.setOnSelectListener { path ->
@@ -627,7 +617,7 @@ class MainActivity : AppCompatActivity(),
                     edi.apply()
                     disableEnableControls(false, llmainLinearLayoutSetupRaw)
 //                    onChoosePath(path)
-                    //Log.e("SELECTED_PATH", path);
+                    // Log.e("SELECTED_PATH", path);
                 }
             } catch (e: Exception) {
                 Toast.makeText(this, "An error happened using the external file choosing library. Please choose another file chooser in settings.", Toast.LENGTH_SHORT).show()
@@ -680,7 +670,6 @@ class MainActivity : AppCompatActivity(),
     }
 
     private fun onChoosePathNew(uri: Uri) {
-
     }
 
 //    private fun onChoosePath(uri: Uri) {
@@ -777,8 +766,8 @@ class MainActivity : AppCompatActivity(),
 //        in.close();
 //        */OpenNewTab(file, TabType.NATIVE_DISASM)
 //            //AfterReadFully(file);
-////Toast.makeText(this, "success size=" + index /*+ type.name()*/, Toast.LENGTH_SHORT).show();
-////OnOpenStream(fsize, path, index, file);
+// //Toast.makeText(this, "success size=" + index /*+ type.name()*/, Toast.LENGTH_SHORT).show();
+// //OnOpenStream(fsize, path, index, file);
 //        } catch (e: IOException) {
 //            if (e.message!!.contains("Permission denied")) {
 //                val tmpfile = File(getExternalFilesDir(null), "tmp.so")
@@ -811,8 +800,8 @@ class MainActivity : AppCompatActivity(),
 //            }
 //
 //            //Log.e(TAG, "", e);
-////AlertError("Failed to open and parse the file",e);
-////Toast.makeText(this, Log.getStackTraceString(e), 30).show();
+// //AlertError("Failed to open and parse the file",e);
+// //Toast.makeText(this, Log.getStackTraceString(e), 30).show();
 //        }
 //
 //    }
@@ -874,12 +863,12 @@ class MainActivity : AppCompatActivity(),
     private fun handleUDDFile(path: String, `is`: InputStream): Boolean {
         return try {
             val data = ProjectManager_OLD.ReadUDD(DataInputStream(`is`))
-            false //true;
+            false // true;
         } catch (e: IOException) {
             Log.e(TAG, "path:$path", e)
             false
         }
-        //return false;
+        // return false;
     }
 
 //    @Throws(IOException::class)
@@ -887,7 +876,7 @@ class MainActivity : AppCompatActivity(),
 //        supportActionBar!!.title = "Disassembler(" + file.name + ")"
 //
 //        //hexManager.setBytes(filecontent);
-////hexManager.Show(tvHex,0);
+// //hexManager.Show(tvHex,0);
 //
 //        //new Analyzer(filecontent).searchStrings();
 //        if (file.path.endsWith("assets/bin/Data/Managed/Assembly-CSharp.dll")) { //Unity C# dll file
@@ -899,14 +888,14 @@ class MainActivity : AppCompatActivity(),
 //                if (assembly != null) { //output some useful information
 //                    Logger.v(TAG, assembly.toExtendedString())
 //                    //assembly.getAllTypes()[0].getMethods()[0].getMethodBody().
-////generate output
-////ILAsmRenderer renderer = new ILAsmRenderer(facileReflector);
-////renderer.renderSourceFilesToDirectory(
-////        assembly,
-////        System.getProperty("user.dir"));
-////print out the location of the files
-////System.out.println("Generated decompiled files in: " +
-////        System.getProperty("user.dir"));
+// //generate output
+// //ILAsmRenderer renderer = new ILAsmRenderer(facileReflector);
+// //renderer.renderSourceFilesToDirectory(
+// //        assembly,
+// //        System.getProperty("user.dir"));
+// //print out the location of the files
+// //System.out.println("Generated decompiled files in: " +
+// //        System.getProperty("user.dir"));
 //                    setParsedFile(ILAssmebly(facileReflector))
 //                } else {
 //                    println("File maybe contains only resources...")
@@ -980,9 +969,9 @@ class MainActivity : AppCompatActivity(),
 //        shouldSave = true
 //        val list = parsedFile!!.getSymbols()
 //        //		for(int i=0;i<list.size();++i){
-////			symbolLvAdapter.addItem(list.get(i));
-////			symbolLvAdapter.notifyDataSetChanged();
-////		}
+// //			symbolLvAdapter.addItem(list.get(i));
+// //			symbolLvAdapter.notifyDataSetChanged();
+// //		}
 //        symbolLvAdapter!!.itemList().clear()
 //        symbolLvAdapter!!.addAll(list)
 //        for (s in symbolLvAdapter!!.itemList()) {
@@ -1008,15 +997,15 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun findTabByTag(tag: String): Int? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onFragmentInteraction(uri: Uri) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun notifyDataSetChanged() {
@@ -1060,7 +1049,7 @@ class MainActivity : AppCompatActivity(),
 //            progress!!.progress = a[0]
 //            //Log.d(TAG + " onProgressUpdate", "You are in progress update ... " + a[0]);
 //        } /*
-//6
+// 6
 //    factoryList.add(textFactory)
 //    factoryList.add(imageFactory)
 //    factoryList.add(nativeDisasmFactory)

@@ -1,16 +1,15 @@
 package com.kyhsgeekcode.disassembler
 
 import android.util.Log
-import splitties.init.appCtx
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
+import splitties.init.appCtx
 
-object ColorHelper // implements Parcelable
-{
+object ColorHelper  {
     var isUpdatedColor = false
     var architecture = 0
 
@@ -62,15 +61,15 @@ object ColorHelper // implements Parcelable
     {
         p.readStringArray(names);
     }*/
-//combined by ORs
-//index=group_type
+// combined by ORs
+// index=group_type
 // Common instruction groups - to be consistent across all architectures.
-//public static final int CS_GRP_INVALID = 0;  // uninitialized/invalid group.
-//public static final int CS_GRP_JUMP    = 1;  // all jump instructions (conditional+direct+indirect jumps)
-//	public static final int CS_GRP_CALL    = 2;  // all call instructions
-//	public static final int CS_GRP_RET     = 3;  // all return instructions
-//	public static final int CS_GRP_INT     = 4;  // all interrupt instructions (int+syscall)
-//	public static final int CS_GRP_IRET    = 5;  // all interrupt return instructions
+// public static final int CS_GRP_INVALID = 0;  // uninitialized/invalid group.
+// public static final int CS_GRP_JUMP    = 1;  // all jump instructions (conditional+direct+indirect jumps)
+// 	public static final int CS_GRP_CALL    = 2;  // all call instructions
+// 	public static final int CS_GRP_RET     = 3;  // all return instructions
+// 	public static final int CS_GRP_INT     = 4;  // all interrupt instructions (int+syscall)
+// 	public static final int CS_GRP_IRET    = 5;  // all interrupt return instructions
 // 1 2 3 4 5 6 7
     var palette: Palette?
     @JvmField
@@ -84,8 +83,8 @@ object ColorHelper // implements Parcelable
 
     fun getTxtColor(groups: ByteArray?, cnt: Int): Int {
         val color = palette!!.defaultTxtColor
-        for (i in 0 until cnt) { //Log.v(TAG,"txtgroup="+groups[i]);
-            try { //color=//txtColors[groups[i]&0xff];
+        for (i in 0 until cnt) { // Log.v(TAG,"txtgroup="+groups[i]);
+            try { // color=//txtColors[groups[i]&0xff];
                 break
             } catch (e: ArrayIndexOutOfBoundsException) {
                 Log.e(TAG, "", e)
@@ -96,9 +95,9 @@ object ColorHelper // implements Parcelable
 
     fun getBkColor(groups: ByteArray?, cnt: Int): Int {
         val color = palette!!.defaultBkColor
-        //Log.v(TAG,"bkgroup="+groups[i]);
+        // Log.v(TAG,"bkgroup="+groups[i]);
         for (i in 0 until cnt) {
-            try { //color=//bkColors[groups[i]&0xFF];
+            try { // color=//bkColors[groups[i]&0xFF];
                 break
             } catch (e: ArrayIndexOutOfBoundsException) {
                 Log.e(TAG, "", e)
@@ -107,9 +106,7 @@ object ColorHelper // implements Parcelable
         return color
     }
 
-
     private const val TAG = "Disassembler"
-
 
     init {
         val ext = appCtx.getExternalFilesDir(null)?.absoluteFile
@@ -155,6 +152,6 @@ object ColorHelper // implements Parcelable
         }
         palette = palettes["KYHSGeekCode"]
         assert(palette != null)
-        //palette=new Palette();
+        // palette=new Palette();
     }
 }

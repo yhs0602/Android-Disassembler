@@ -7,17 +7,16 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import java.util.*
 import kotlinx.android.synthetic.main.fragment_binary_overview.*
 import kotlinx.serialization.UnstableDefault
 import nl.lxtreme.binutils.elf.MachineType
-import java.util.*
 
 class BinaryOverviewFragment : Fragment() {
     val TAG = "BinaryOverviewFragment"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater.inflate(R.layout.fragment_binary_overview, container, false)!!
-
 
     private lateinit var relPath: String
     private lateinit var parsedFile: AbstractFile
@@ -28,7 +27,6 @@ class BinaryOverviewFragment : Fragment() {
             relPath = it.getString(ARG_PARAM)!!
             parsedFile = (parentFragment as IParsedFileProvider).parsedFile
         }
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -38,8 +36,8 @@ class BinaryOverviewFragment : Fragment() {
             allowRawSetup()
         }
         mainBTFinishSetup.setOnClickListener {
-            if (parsedFile !is RawFile) { //AlertError("Not a raw file, but enabled?",new Exception());
-//return;
+            if (parsedFile !is RawFile) { // AlertError("Not a raw file, but enabled?",new Exception());
+// return;
             }
             val base: String
             val entry: String
@@ -54,10 +52,10 @@ class BinaryOverviewFragment : Fragment() {
                 Log.e(TAG, "Error", e)
                 return@setOnClickListener
             }
-            //int checked=rgdArch.getCheckedRadioButtonId();
+            // int checked=rgdArch.getCheckedRadioButtonId();
             var mct = MachineType.ARM
-            try { //if(checked==R.id.rbAuto)
-//	{
+            try { // if(checked==R.id.rbAuto)
+// 	{
                 val s = mainSpinnerArch.selectedItem as String
                 val mcss = MachineType.values()
                 var i = 0
@@ -88,7 +86,7 @@ class BinaryOverviewFragment : Fragment() {
             }
         }
 //        spinnerArch = findViewById(R.id.mainSpinnerArch)
-        //https://stackoverflow.com/a/13783744/8614565
+        // https://stackoverflow.com/a/13783744/8614565
         val items = Arrays.toString(MachineType::class.java.enumConstants).replace("^.|.$".toRegex(), "").split(", ").toTypedArray()
         val spinnerAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_dropdown_item, items)
         mainSpinnerArch.adapter = spinnerAdapter

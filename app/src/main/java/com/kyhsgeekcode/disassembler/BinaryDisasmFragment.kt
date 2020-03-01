@@ -16,9 +16,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_ALL
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_MAX
 import com.kyhsgeekcode.disassembler.models.Architecture.getArchitecture
+import java.util.*
 import kotlinx.android.synthetic.main.fragment_binary_disasm.*
 import kotlinx.serialization.UnstableDefault
-import java.util.*
 
 class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 
@@ -33,7 +33,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     var rowClkListener = View.OnClickListener { view ->
         val tablerow = view as TableRow
         val lvi = tablerow.tag as DisassemblyListItem
-        //TextView sample = (TextView) tablerow.getChildAt(1);
+        // TextView sample = (TextView) tablerow.getChildAt(1);
         tablerow.setBackgroundColor(Color.GREEN)
     }
     var jmpBackstack = Stack<Long>()
@@ -53,7 +53,6 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             relPath = it.getString(ARG_PARAM)!!
             parsedFile = (parentFragment as IParsedFileProvider).parsedFile
         }
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
@@ -66,7 +65,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         setupSymCompleteAdapter()
 //        adapter = DisasmListViewAdapter(null)
         setHasOptionsMenu(true)
-        val type = parsedFile.machineType //elf.header.machineType;
+        val type = parsedFile.machineType // elf.header.machineType;
         val archs = getArchitecture(type)
         val arch = archs[0]
         var mode = 0
@@ -76,7 +75,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         } else {
 //            var err: Int
             try {
-                MainActivity.Open(arch,  /*CS_MODE_LITTLE_ENDIAN =*/mode).also { handle = it }
+                MainActivity.Open(arch, /*CS_MODE_LITTLE_ENDIAN =*/mode).also { handle = it }
                 Toast.makeText(activity, "MachineType=${type.name} arch=$arch", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Log.e(TAG, "setmode type=${type.name} err=${e}arch${arch}mode=$mode")
@@ -88,7 +87,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     }
 
     @UnstableDefault
-    private fun setupListView() { //moved to onCreate for avoiding NPE
+    private fun setupListView() { // moved to onCreate for avoiding NPE
         val mLayoutManager: LinearLayoutManager = LinearLayoutManager(context)
         adapter = DisasmListViewAdapter(parsedFile, handle, this, mLayoutManager)
         disasmTabListview.adapter = adapter
@@ -99,23 +98,23 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 
     fun disassemble() {
         Log.v(TAG, "Strted disasm")
-        //NOW there's no notion of pause or resume
+        // NOW there's no notion of pause or resume
         workerThread = Thread(Runnable {
             val codesection = parsedFile.codeSectionBase
-            val start = codesection  //elfUtil.getCodeSectionOffset();
+            val start = codesection // elfUtil.getCodeSectionOffset();
 //            val limit = parsedFile.codeSectionLimit
-            val addr = parsedFile.codeVirtAddr //+ offset
+            val addr = parsedFile.codeVirtAddr // + offset
             Log.v(TAG, "code section point :${start.toString(16)}")
             Log.d(TAG, "addr : ${addr.toString(16)}")
-            //ListViewItem lvi;
-//	getFunctionNames();
+            // ListViewItem lvi;
+// 	getFunctionNames();
 //            val size = limit - start
 //            val leftbytes = size
-            //DisasmIterator dai = new DisasmIterator(MainActivity.this,/*mNotifyManager,mBuilder,*/adapter, size);
-//IMPORTANT: un-outcomment here if it causes a bug
-//adapter.setDit(dai);
+            // DisasmIterator dai = new DisasmIterator(MainActivity.this,/*mNotifyManager,mBuilder,*/adapter, size);
+// IMPORTANT: un-outcomment here if it causes a bug
+// adapter.setDit(dai);
             adapter.loadMore(0, addr)
-            //long toresume=dai.getSome(filecontent,start,size,addr,1000000/*, disasmResults*/);
+            // long toresume=dai.getSome(filecontent,start,size,addr,1000000/*, disasmResults*/);
 /*if(toresume<0)
 					 {
 					 AlertError("Failed to disassemble:"+toresume,new Exception());
@@ -123,9 +122,9 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 					 disasmManager.setResumeOffsetFromCode(toresume);
 					 }*/
             disasmResults = adapter.itemList()
-            //mNotifyManager.cancel(0);
-            //final int len=disasmResults.size();
-            //add xrefs
+            // mNotifyManager.cancel(0);
+            // final int len=disasmResults.size();
+            // add xrefs
             activity?.runOnUiThread {
                 disasmTabListview.requestLayout()
                 //                tab2!!.invalidate()
@@ -152,9 +151,9 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         when (item.itemId) {
             R.id.chooserow -> {
                 mCustomDialog = ChooseColumnDialog(activity,
-                        "Select columns to view",  // Title
-                        "Choose columns",  // Content
-                        leftListener,  // left
+                        "Select columns to view", // Title
+                        "Choose columns", // Content
+                        leftListener, // left
                         null) // right
                 mCustomDialog!!.show()
             }
@@ -178,7 +177,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                     try {
                         val address = dest.toLong(16)
                         jumpto(address)
-                    } catch (nfe: NumberFormatException) { //not a number, lookup symbol table
+                    } catch (nfe: NumberFormatException) { // not a number, lookup symbol table
                         val syms = parsedFile.symbols
                         for (sym in syms) {
                             if (sym.name != null && sym.name == dest) {
@@ -199,7 +198,6 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         }
         return super.onOptionsItemSelected(item)
     }
-
 
     private fun parseAddress(toString: String?): Long {
         if (toString == null) {
@@ -239,13 +237,13 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 			Log.v(TAG,"Hint="+hint);
 			String [] parsed=hint.split(", ",0);
 			Log.v(TAG,Arrays.toString(parsed));*/columns = cs
-            adapter.isShowAddress = cs.showAddress ///*v.getTag(CustomDialog.TAGAddress)*/);
-            adapter.isShowLabel = cs.showLabel ///*v.getTag(CustomDialog.TAGLabel)*/);
-            adapter.isShowBytes = cs.showBytes ///*v.getTag(CustomDialog.TAGBytes)*/);
-            adapter.isShowInstruction = cs.showInstruction ///*v.getTag(CustomDialog.TAGInstruction)*/);
-            adapter.isShowComment = cs.showComments ///*v.getTag(CustomDialog.TAGComment)*/);
-            adapter.isShowOperands = cs.showOperands ///*v.getTag(CustomDialog.TAGOperands)*/);
-            adapter.isShowCondition = cs.showConditions ///*v.getTag(CustomDialog.TAGCondition)*/);
+            adapter.isShowAddress = cs.showAddress // /*v.getTag(CustomDialog.TAGAddress)*/);
+            adapter.isShowLabel = cs.showLabel // /*v.getTag(CustomDialog.TAGLabel)*/);
+            adapter.isShowBytes = cs.showBytes // /*v.getTag(CustomDialog.TAGBytes)*/);
+            adapter.isShowInstruction = cs.showInstruction // /*v.getTag(CustomDialog.TAGInstruction)*/);
+            adapter.isShowComment = cs.showComments // /*v.getTag(CustomDialog.TAGComment)*/);
+            adapter.isShowOperands = cs.showOperands // /*v.getTag(CustomDialog.TAGOperands)*/);
+            adapter.isShowCondition = cs.showConditions // /*v.getTag(CustomDialog.TAGCondition)*/);
             disasmTabListview.requestLayout()
         }
     }
@@ -265,9 +263,8 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 
     private fun setupSymCompleteAdapter() {
         autoSymAdapter = ArrayAdapter(activity!!, android.R.layout.select_dialog_item)
-        //autocomplete.setThreshold(2);
-        //autocomplete.setAdapter(autoSymAdapter);
-
+        // autocomplete.setThreshold(2);
+        // autocomplete.setAdapter(autoSymAdapter);
     }
 
     companion object {
@@ -279,6 +276,5 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                 }
             }
         }
-
     }
 }

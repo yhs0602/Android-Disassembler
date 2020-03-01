@@ -12,7 +12,7 @@ import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import kotlinx.android.synthetic.main.fragment_hexview.*
 import kotlinx.serialization.UnstableDefault
 
-//TODO: Add a cusom HEX view
+// TODO: Add a cusom HEX view
 class HexFragment : Fragment() {
     val ARG_PARAM = "param"
     private lateinit var fileContent: ByteArray

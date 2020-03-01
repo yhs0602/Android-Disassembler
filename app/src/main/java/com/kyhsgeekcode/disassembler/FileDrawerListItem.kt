@@ -10,27 +10,26 @@ import at.pollaknet.api.facile.symtab.symbols.Method
 import at.pollaknet.api.facile.symtab.symbols.TypeRef
 import com.kyhsgeekcode.getDrawable
 import com.kyhsgeekcode.isArchive
-import org.boris.pecoff4j.io.PEParser
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.util.*
+import org.boris.pecoff4j.io.PEParser
 
 class FileDrawerListItem {
     var caption: String
-    var tag //number or path or object
-            : Any? = null
+    var tag: Any? = null // number or path or object
     var drawable: Drawable? = null
     var level: Int
     var isInZip = false
 
-    //Unused dummy
+    // Unused dummy
     fun CreateDataToPath(root: File?): String? {
         if (tag is Array<*> && (tag as Array<Any?>).size > 1 && (tag as Array<Any?>)[0] is FacileReflector && (tag as Array<Any?>)[1] is Method) {
             val method = (tag as Array<Any>)[1] as Method
             val reflector = (tag as Array<Any?>)[0] as FacileReflector?
             val mb = method.methodBody
-            //mb.toString();
+            // mb.toString();
             val outDir = File(root, "temp-cil/")
             outDir.mkdirs()
             val outFile = File(outDir, method.name.replace("[^a-zA-Z0-9._]+".toRegex(), "_") + ".il")
@@ -118,10 +117,13 @@ class FileDrawerListItem {
 
     var type: DrawerItemType
 
-    constructor(caption: String, level: Int,
-                type: DrawerItemType = DrawerItemType.NONE,
-                tag: Any? = null,
-                drawable: Drawable? = getDrawable(android.R.drawable.ic_secure)) {
+    constructor(
+        caption: String,
+        level: Int,
+        type: DrawerItemType = DrawerItemType.NONE,
+        tag: Any? = null,
+        drawable: Drawable? = getDrawable(android.R.drawable.ic_secure)
+    ) {
         this.caption = caption
         this.level = level
         this.type = type
@@ -148,14 +150,14 @@ class FileDrawerListItem {
                 type = DrawerItemType.PE
                 try {
                     val pe = PEParser.parse(file.path)
-                    //https://web.archive.org/web/20110930194955/http://www.grimes.demon.co.uk/dotnet/vistaAndDotnet.htm
-                    //Not fourteenth, but 15th
-                    //for(int i=0;i<20;i++) {
+                    // https://web.archive.org/web/20110930194955/http://www.grimes.demon.co.uk/dotnet/vistaAndDotnet.htm
+                    // Not fourteenth, but 15th
+                    // for(int i=0;i<20;i++) {
                     val idd = pe.optionalHeader.getDataDirectory(14)
                     //    Log.d(TAG, "i:"+i+", size:" + idd.getSize() + ", address:" + idd.getVirtualAddress());
                     if (idd.size != 0 && idd.virtualAddress != 0)
                         type = DrawerItemType.PE_IL
-                    //}
+                    // }
                 } catch (e: IOException) {
                     Log.e(TAG, "", e)
                 } catch (e: ArrayIndexOutOfBoundsException) {

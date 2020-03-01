@@ -5,8 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.logview_item.view.*
 import java.util.*
+import kotlinx.android.synthetic.main.logview_item.view.*
 
 class LogAdapter : RecyclerView.Adapter<LogAdapter.ViewHolder>() {
     companion object {

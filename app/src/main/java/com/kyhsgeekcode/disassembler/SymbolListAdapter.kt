@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.symbol_row.view.*
 import java.util.*
+import kotlinx.android.synthetic.main.symbol_row.view.*
 
 class SymbolListAdapter(val fragment: BinarySymbolFragment) : RecyclerView.Adapter<SymbolListAdapter.ViewHolder>() {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
@@ -21,14 +21,14 @@ class SymbolListAdapter(val fragment: BinarySymbolFragment) : RecyclerView.Adapt
         return
     }
 
-    //You should not modify
+    // You should not modify
     fun itemList(): ArrayList<Symbol> {
         return itemList
     }
 
     fun addItem(item: Symbol) {
         itemList.add(item)
-        //notifyDataSetChanged();
+        // notifyDataSetChanged();
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -36,7 +36,6 @@ class SymbolListAdapter(val fragment: BinarySymbolFragment) : RecyclerView.Adapt
         val tvDemangled: TextView = view.symbolrowTVdemangled
         val tvAddress: TextView = view.symbolrowTVaddress
         val tvProperty: TextView = view.symbolrowTVprop
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -56,7 +55,7 @@ class SymbolListAdapter(val fragment: BinarySymbolFragment) : RecyclerView.Adapt
                 return@setOnLongClickListener true
             }
             val address = item.st_value
-            //LongSparseArray arr;
+            // LongSparseArray arr;
             Toast.makeText(fragment.activity, "Jump to" + java.lang.Long.toHexString(address), Toast.LENGTH_SHORT).show()
             (fragment.parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_DISASM, true)
             (fragment.parentFragment as BinaryFragment).jumpto(address)

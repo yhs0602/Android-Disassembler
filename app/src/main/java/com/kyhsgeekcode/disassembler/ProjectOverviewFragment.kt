@@ -14,9 +14,9 @@ import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.isArchive
+import java.io.File
 import kotlinx.android.synthetic.main.fragment_project_overview.*
 import kotlinx.serialization.UnstableDefault
-import java.io.File
 
 class ProjectOverviewFragment : Fragment() {
 
@@ -27,7 +27,7 @@ class ProjectOverviewFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         selFile.setOnClickListener {
             val j = Intent(activity, NewFileChooserActivity::class.java)
-            startActivityForResult(j, MainActivity.REQUEST_SELECT_FILE_NEW) //Control goes to binaryDisasmFragment
+            startActivityForResult(j, MainActivity.REQUEST_SELECT_FILE_NEW) // Control goes to binaryDisasmFragment
         }
         fileNameText.isFocusable = false
         fileNameText.isEnabled = false
@@ -69,9 +69,9 @@ class ProjectOverviewFragment : Fragment() {
         )
     }
 
-    //Actually, currentProject is set and automatically figured out
+    // Actually, currentProject is set and automatically figured out
     private fun initializeDrawer(project: ProjectModel) {
-        //project.sourceFilePath
+        // project.sourceFilePath
         val sourceFileOrFolder = File(project.sourceFilePath)
         fileNameText.setText(sourceFileOrFolder.absolutePath)
         (activity as IDrawerManager).notifyDataSetChanged()

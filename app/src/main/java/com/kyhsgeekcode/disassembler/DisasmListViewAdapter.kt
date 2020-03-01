@@ -14,17 +14,18 @@ import com.kyhsgeekcode.disassembler.ColorHelper.palette
 import kotlinx.android.synthetic.main.listview_item.view.*
 
 class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
-        var file: AbstractFile, val handle: Int, val fragment: BinaryDisasmFragment,
-        val mLayoutManager: LinearLayoutManager
+    var file: AbstractFile,
+    val handle: Int,
+    val fragment: BinaryDisasmFragment,
+    val mLayoutManager: LinearLayoutManager
 ) : RecyclerView.Adapter<DisasmListViewAdapter.ViewHolder>() {
     private lateinit var listView: RecyclerView
     private val TAG = "Disassembler LV"
 
-
-    //	public void setAddress(SparseArray<Long> address)
-//	{
-//		this.address = address;
-//	}
+    // 	public void setAddress(SparseArray<Long> address)
+// 	{
+// 		this.address = address;
+// 	}
 //
     var currentAddress: Long = 0
 //    private val mainactivity: MainActivity? = null
@@ -39,39 +40,40 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
 //        this.dit = dit
 //    }
 
-
-    //private / *ListViewItem[]*/LongSparseArray<ListViewItem> listViewItemList=new LongSparseArray<>();
-//private long lvLength=0;
-//LinkedList ll;
-    fun addAll( /*ArrayList*/
-            data: LongSparseArray<DisassemblyListItem>, addr: SparseArray<Long>) {
-        itemsNew = data //.clone();
-        address = addr //.clone();
-        //for(;;)
-//{
-//	break;
-//}
-//listViewItemList.addAll(data);
-//itemsNew=data;
+    // private / *ListViewItem[]*/LongSparseArray<ListViewItem> listViewItemList=new LongSparseArray<>();
+// private long lvLength=0;
+// LinkedList ll;
+    fun addAll(/*ArrayList*/
+        data: LongSparseArray<DisassemblyListItem>,
+        addr: SparseArray<Long>
+    ) {
+        itemsNew = data // .clone();
+        address = addr // .clone();
+        // for(;;)
+// {
+// 	break;
+// }
+// listViewItemList.addAll(data);
+// itemsNew=data;
         notifyDataSetChanged()
     }
 
-    //You should not modify
+    // You should not modify
     /*ArrayList*/
     fun itemList(): LongSparseArray<DisassemblyListItem> {
-        return itemsNew /// *listViewItemList;// */new ArrayList<ListViewItem>().addAll(listViewItemList);
+        return itemsNew // / *listViewItemList;// */new ArrayList<ListViewItem>().addAll(listViewItemList);
     }
 
-    //New method
-//private int [] address;
-//position->address
+    // New method
+// private int [] address;
+// position->address
     var address = SparseArray<Long>()
-    //address->item
+    // address->item
     private var itemsNew = LongSparseArray<DisassemblyListItem>()
     var writep = 0
     private var dit: DisasmIterator
-    //@address eq virtualaddress
-    fun loadMore(position: Int, address: Long) { //this.address.clear();
+    // @address eq virtualaddress
+    fun loadMore(position: Int, address: Long) { // this.address.clear();
         Log.d(TAG, "LoadMore position: $position, writep: $writep, virtaddr: ${address.toString(16)}")
         writep = position
         dit.getSome(handle, file.fileContents, address + file.codeSectionBase - file.codeVirtAddr /*address-file.codeVirtualAddress*/, file.fileContents.size.toLong(), address, INSERT_COUNT)
@@ -84,7 +86,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
 
     fun getItem(position: Int): Any {
         val addrl = address[position] ?: return DisassemblyListItem()
-        //? FIXME. crashes when rotated screen here, NPE.
+        // ? FIXME. crashes when rotated screen here, NPE.
         val lvi = itemsNew[addrl]
         if (lvi == null) {
             loadMore(position, addrl)
@@ -95,16 +97,17 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     fun addItem(item: DisassemblyListItem) {
         itemsNew.put(item.disasmResult.address, item)
         address.put(writep, item.disasmResult.address)
-        writep++ //continuously add
-        //notifyDataSetChanged();
+        writep++ // continuously add
+        // notifyDataSetChanged();
     }
 
-    fun OnJumpTo( /*int position,*/
-            address: Long) { //refreshing is inevitable, and backward is ignored.
-//cause: useless
-//however will implement backStack
+    fun OnJumpTo(/*int position,*/
+        address: Long
+    ) { // refreshing is inevitable, and backward is ignored.
+// cause: useless
+// however will implement backStack
         this.address.clear()
-        loadMore( /**/0, address)
+        loadMore(/**/0, address)
         currentAddress = address
     }
 
@@ -122,7 +125,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
 		//notifyDataSetChanged();
     }
 	*/
-//?!!!
+// ?!!!
 // 지정한 위치(position)에 있는 데이터와 관계된 아이템(row)의 ID를 리턴. : 필수 구현
     override fun getItemId(position: Int): Long {
         return position.toLong()
@@ -131,7 +134,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     fun addItem(disasm: DisasmResult?) {
         val item = DisassemblyListItem(disasm)
         addItem(item)
-        //notifyDataSetChanged();
+        // notifyDataSetChanged();
     }
 
     var architecture = 0
@@ -144,10 +147,10 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     }
 
     init {
-        //FIXME:clarification needed but OK now
-        //address=//new long[file.fileContents.length];//Use sparseArray if oom
+        // FIXME:clarification needed but OK now
+        // address=//new long[file.fileContents.length];//Use sparseArray if oom
 //        mainactivity = ma;
-//IMPORTANT Note: total arg is unused
+// IMPORTANT Note: total arg is unused
         dit = DisasmIterator(this, 0)
     }
 
@@ -188,9 +191,8 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
 
     override fun getItemCount(): Int = address.size()
 
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val disassemblyListItem = getItem(position) as DisassemblyListItem //listViewItemList/ *[position];*/.get(position);
+        val disassemblyListItem = getItem(position) as DisassemblyListItem // listViewItemList/ *[position];*/.get(position);
         val dar = disassemblyListItem.disasmResult
 
         val palette = palette
@@ -200,7 +202,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
             tvOperands.requestLayout()
             val defTxtColor = palette!!.defaultTxtColor
             val defBkColor = palette.defaultBkColor
-            //convertView.setBackgroundColor(palette.getDefaultBkColor());
+            // convertView.setBackgroundColor(palette.getDefaultBkColor());
             tvInst.setBackgroundColor(palette.getBkColorByGrps(dar.groups, dar.groups_count.toInt(), dar.id))
             tvAddr.setBackgroundColor(defBkColor)
             tvBytes.setBackgroundColor(defBkColor)
@@ -226,9 +228,8 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         }
     }
 
-
     // private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>(100) ;
-    //Lazy, efficient
+    // Lazy, efficient
 /*
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
@@ -268,10 +269,10 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
                 val visibleItemCount = mLayoutManager.childCount
                 val totalItemCount = mLayoutManager.itemCount
                 val pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition()
-////                if (loading)
-////                {
+// //                if (loading)
+// //                {
 //                if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
-////                        loading = false;
+// //                        loading = false;
 //                    Log.v("...", "Last Item Wow !");
 //                    //Do pagination.. i.e. fetch new data
 //                }
@@ -279,23 +280,23 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
             }
         }
 
-        //thanks to http://www.tipssoft.com/bulletin/board.php?bo_table=FAQ&wr_id=1188
-        //Smooth, but performance hit
+        // thanks to http://www.tipssoft.com/bulletin/board.php?bo_table=FAQ&wr_id=1188
+        // Smooth, but performance hit
         fun onScroll(view: RecyclerView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
             if (totalItemCount < 2) return
             currentAddress = (getItem(firstVisibleItem) as DisassemblyListItem).disasmResult.address
-            //Log.v(TAG,"onScroll("+firstVisibleItem+","+visibleItemCount+","+totalItemCount);
+            // Log.v(TAG,"onScroll("+firstVisibleItem+","+visibleItemCount+","+totalItemCount);
             // 리스트뷰가 구성이 완료되어 보이는 경우
             if (view.isShown) { // 리스트뷰의 *0* 번 인덱스 항목이 리스트뷰의 상단에 보이고 있는 경우
                 if (firstVisibleItem == totalItemCount - visibleItemCount) { // 항목을 추가한다.
-                    val lvi = getItem(totalItemCount - 1) as DisassemblyListItem //itemsNew.get(totalItemCount-1);
+                    val lvi = getItem(totalItemCount - 1) as DisassemblyListItem // itemsNew.get(totalItemCount-1);
                     loadMore(totalItemCount, lvi.disasmResult.address + lvi.disasmResult.size)
                     // *0*totalitemcount-1 번 인덱스 항목 *위*below 로 INSERT_COUNT 개수의 항목이 추가되었으므로
                     // //기존의 0 번 인덱스 항목은 INSERT_COUNT 번 인덱스가 되었다.
                     // 기존 *0*tic-1번 항목이 보여져서 항목이 추가될때 해당 항목의 모든 영역이
                     // 보이지않았을 수도 있으므로 이미 모든 영역이 노출됐던 INSERT_COUNT + 1
                     // 항목을 보이도록 설정하여 스크롤을 부드럽게 보이도록 한다.
-                    //view.setSelection();
+                    // view.setSelection();
                 }
             }
         }

@@ -1,17 +1,17 @@
 package com.kyhsgeekcode.disassembler
 
-//import kotlinx.android.synthetic.main.fragment_analysis_result.*
+// import kotlinx.android.synthetic.main.fragment_analysis_result.*
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
-import kotlinx.android.synthetic.main.fragment_binary.*
-import kotlinx.serialization.UnstableDefault
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.functions
+import kotlinx.android.synthetic.main.fragment_binary.*
+import kotlinx.serialization.UnstableDefault
 
 class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     val TAG = "BinaryFragment"
@@ -73,7 +73,6 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
         return super.onOptionsItemSelected(item)
     }
 
-
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -128,11 +127,8 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
                 pagerAdapter.findFragmentByType(clas)
             }
 
-
     fun jumpto(address: Long) {
         setCurrentTabByTag(TabTags.TAB_DISASM, true)
         (pagerAdapter.getItem(findTabByTag(TabTags.TAB_DISASM)!!) as BinaryDisasmFragment).jumpto(address)
     }
-
 }
-

@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.strings_row.view.*
 import java.util.*
+import kotlinx.android.synthetic.main.strings_row.view.*
 
 class FoundStringAdapter : RecyclerView.Adapter<FoundStringAdapter.ViewHolder>() {
     private val listViewItemList = ArrayList<FoundString>()
@@ -47,15 +47,15 @@ class FoundStringAdapter : RecyclerView.Adapter<FoundStringAdapter.ViewHolder>()
             tvStringLength.text = item.length.toString()
             tvString.text = item.string
             val str = item.string
-            if (str.startsWith(".")) { //section name?
+            if (str.startsWith(".")) { // section name?
                 tvString.setTextColor(Color.WHITE)
                 tvString.setBackgroundColor(Color.BLACK)
             }
-            if (str.contains("/")) { //path/url
+            if (str.contains("/")) { // path/url
                 tvString.setTextColor(Color.BLUE)
                 tvString.setBackgroundColor(Color.WHITE)
             }
-            if (str.contains("\\")) { //path
+            if (str.contains("\\")) { // path
                 tvString.setTextColor(Color.CYAN)
                 tvString.setBackgroundColor(Color.WHITE)
             }

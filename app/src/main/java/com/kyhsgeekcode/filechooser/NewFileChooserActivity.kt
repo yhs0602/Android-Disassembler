@@ -10,7 +10,6 @@ import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.filechooser.model.FileItem
 import kotlinx.android.synthetic.main.activity_new_file_chooser.*
 
-
 class NewFileChooserActivity : AppCompatActivity() {
     lateinit var adapter: NewFileChooserAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager

@@ -60,9 +60,9 @@ object RealPathUtils {
             getRealPathFromURI_API11to18(contentUri)
         else
             getRealPathFromURI_API19(contentUri)
-        //Log.d(TAG, "File Path: " + path);
+        // Log.d(TAG, "File Path: " + path);
 // Get the file instance
-//File file = new File(path);
+// File file = new File(path);
         return path
     }
 }

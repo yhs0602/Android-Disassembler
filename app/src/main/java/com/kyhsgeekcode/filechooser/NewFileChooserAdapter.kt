@@ -9,13 +9,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.filechooser.model.FileItem
-import kotlinx.android.synthetic.main.new_file_chooser_row.view.*
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlinx.android.synthetic.main.new_file_chooser_row.view.*
 
 class NewFileChooserAdapter(
-        private
-        val parentActivity: NewFileChooserActivity
+    private
+    val parentActivity: NewFileChooserActivity
 ) : RecyclerView.Adapter<NewFileChooserAdapter.ViewHolder>() {
     val TAG = "Adapter"
     private val values: MutableList<FileItem> = ArrayList()
@@ -25,7 +25,7 @@ class NewFileChooserAdapter(
 
     init {
         backStack.clear()
-        //backStack.push(FileItem.rootItem)
+        // backStack.push(FileItem.rootItem)
         currentParentItem = FileItem.rootItem
         onClickListener = View.OnClickListener { v ->
             val item = v.tag as FileItem
@@ -34,7 +34,7 @@ class NewFileChooserAdapter(
                 return@OnClickListener
             }
             if (item.canExpand()) {
-                //물어본다.
+                // 물어본다.
                 if (!item.isProjectAble() && !item.isRawAvailable()) {
                     navigateInto(item)
                     return@OnClickListener
@@ -58,7 +58,7 @@ class NewFileChooserAdapter(
                             navigateInto(item)
                         }.show()
             } else {
-                //물어보고 진행한다.
+                // 물어보고 진행한다.
                 AlertDialog.Builder(parentActivity)
                         .setTitle("Open the file ${item.text}?")
                         .setPositiveButton("Open") { _, _ ->
@@ -77,7 +77,7 @@ class NewFileChooserAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        //Log.d(TAG,"onCreateViewHolder")
+        // Log.d(TAG,"onCreateViewHolder")
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.new_file_chooser_row, parent, false)
 //        listView = parent as RecyclerView

@@ -8,12 +8,11 @@ import androidx.core.content.ContextCompat
 import at.pollaknet.api.facile.Facile
 import com.kyhsgeekcode.*
 import com.kyhsgeekcode.disassembler.R
-import splitties.init.appCtx
 import java.io.File
 import java.io.Serializable
+import splitties.init.appCtx
 
-
-//A item of base, or a file
+// A item of base, or a file
 open class FileItem : Serializable {
     val TAG = "FileItem"
 
@@ -50,8 +49,8 @@ open class FileItem : Serializable {
     @Transient
     var drawable: Drawable? = null
 
-    var file: File? = null  //항목이 의미하는 파일 자체
-    var backFile: File? = null  //항목이 전개되었을 때 나타낼 디렉토리
+    var file: File? = null // 항목이 의미하는 파일 자체
+    var backFile: File? = null // 항목이 전개되었을 때 나타낼 디렉토리
 
     val isExpandable: Boolean by lazy {
         file?.isDirectory == true ||
@@ -105,8 +104,8 @@ open class FileItem : Serializable {
         } else if (file?.isDotnetFile() == true) {
             val result = ArrayList<FileItem>()
             val facileReflector = Facile.load(file!!.path)
-            //load the assembly
-            //load the assembly
+            // load the assembly
+            // load the assembly
             val assembly = facileReflector.loadAssembly()
             val types = assembly.allTypes
             for (type in types) {
@@ -147,10 +146,10 @@ open class FileItem : Serializable {
             override fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
                 val result = ArrayList<FileItem>()
                 val pm: PackageManager = appCtx.packageManager
-                //get a list of installed apps.
+                // get a list of installed apps.
                 val packages = pm.getInstalledApplications(PackageManager.GET_META_DATA)
                 val numpkg = packages.size
-                //dialog.setMessage("Sorting APKs...")
+                // dialog.setMessage("Sorting APKs...")
                 publisher(numpkg * 2, 0)
                 packages.sortBy {
                     pm.getApplicationLabel(it) as String
@@ -158,8 +157,8 @@ open class FileItem : Serializable {
                 publisher(numpkg * 2, numpkg)
                 var i = 0
                 val defaultD: Drawable? = getDrawable(android.R.drawable.gallery_thumb)
-                for (packageInfo in packages) { //Log.d(TAG, "Installed package :" + packageInfo.packageName);
-//Log.d(TAG, "Apk file path:" + packageInfo.sourceDir);
+                for (packageInfo in packages) { // Log.d(TAG, "Installed package :" + packageInfo.packageName);
+// Log.d(TAG, "Apk file path:" + packageInfo.sourceDir);
                     val applabel = pm.getApplicationLabel(packageInfo) as String
                     var icon: Drawable? = defaultD
                     try {
@@ -184,6 +183,4 @@ open class FileItem : Serializable {
             }
         }
     }
-
 }
-
