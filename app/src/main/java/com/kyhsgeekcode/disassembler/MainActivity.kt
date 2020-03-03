@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity(),
 
     /*ArrayList*/
 
-    private var dataFragment: RetainedFragment? = null
+
     private var disasmManager: DisassemblyManager? = null
 
     // private SymbolTableAdapter symAdapter;
