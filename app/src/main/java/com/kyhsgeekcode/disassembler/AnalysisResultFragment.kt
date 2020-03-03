@@ -6,8 +6,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.ImageView
 import android.widget.RelativeLayout
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.fragment.app.Fragment
 import com.github.chrisbanes.photoview.PhotoView
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
@@ -55,7 +55,7 @@ class AnalysisResultFragment : Fragment() {
             builder.setOnDismissListener {
                 // nothing;
             }
-            val imageView: ImageView = PhotoView(activity)
+            val imageView: AppCompatImageView = PhotoView(activity)
             imageView.setImageDrawable(imageViewCount!!.drawable)
             builder.addContentView(imageView, RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
