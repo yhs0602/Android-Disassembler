@@ -83,6 +83,10 @@ meta-data android:name="com.google.android.gms.version"
         <activity android:name=".FileSelectorActivity" />
         <activity android:name="com.kyhsgeekcode.rootpicker.FileSelectorActivity" />
         <activity android:name=".DonateActivity" />
+        <activity android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
+        <activity android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"/>
     </application>
 
 </manifest>

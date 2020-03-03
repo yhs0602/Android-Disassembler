@@ -49,10 +49,10 @@
     <string name="export">내보내기</string>
     <string name="choose_columns">열 선택</string>
     <string name="property">속성</string>
-    <string name="open_calculator">계산기 열기</string>
+    <string name="open_calculator">계산기</string>
     <string name="save">저장</string>
     <string name="donate_see_ad">광고 보기</string>
-    <string name="settings_help">설정 / 오프라인 도움말</string>
+    <string name="settings_help">설정 / 도움말</string>
     <string name="location">"위치: "</string>
     <string name="cannot_be_read">[%1$s] 폴더 읽기에 실패했습니다!</string>
     <string name="NoRoot_GoDefault">루트 권한을 얻기에 실패했습니다. 기본 위치로 이동합니다.</string>
@@ -86,4 +86,16 @@
     <string name="choose_text_colors_and_background_colors">글과 배경 색을 설정합니다.</string>
     <string name="no_data">데이터가 없습니다.</string>
     <string name="show">보기</string>
+    <string name="jump_to">찾아가기</string>
+    <string name="find">찾기</string>
+    <string name="analyze">분석</string>
+    <string name="title_activity_settings">설정</string>
+    <string name="messages_header">메시지</string>
+    <string name="sync_header">동기화</string>
+    <string name="signature_title">사인</string>
+    <string name="reply_title">대답</string>
+    <string name="attachment_summary_on">첨부파일O</string>
+    <string name="attachment_summary_off">첨부파일X</string>
+    <string name="attachment_title">첨부파일</string>
+    <string name="sync_title">동기화</string>
 </resources>

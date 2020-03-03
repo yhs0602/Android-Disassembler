@@ -393,10 +393,10 @@ class MainActivity : AppCompatActivity(),
                 // SettingActivity.putExtra("ColorHelper",colorHelper);
                 startActivity(intent)
             }
-            R.id.online_help -> {
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/KYHSGeekCode/Android-Disassembler#usage-explanation-video"))
-                startActivity(browserIntent)
-            }
+//            R.id.online_help -> {
+//                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/KYHSGeekCode/Android-Disassembler#usage-explanation-video"))
+//                startActivity(browserIntent)
+//            }
             R.id.calc -> {
                 val et = EditText(this)
                 showEditDialog(this, getString(R.string.calculator), "Enter an expression to measure", et, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 -> Toast.makeText(this@MainActivity, Calculator.Calc(et.text.toString()).toString(), Toast.LENGTH_SHORT).show() }, getString(R.string.cancel), null)

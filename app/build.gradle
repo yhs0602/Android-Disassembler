@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlinx-serialization'
 apply plugin: 'de.mannodermaus.android-junit5'
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
+apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 
 android {
     compileSdkVersion 29
@@ -37,6 +38,8 @@ android {
         //abortOnError false
     }
     ktlintMainSourceSetCheck.enabled = false
+    ktlintTestSourceSetCheck.enabled = false
+
     buildTypes {
         release {
             minifyEnabled false
@@ -102,6 +105,9 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.3'
 
     implementation 'androidx.preference:preference:1.1.0'
+    implementation "com.mikepenz:aboutlibraries-core:7.1.0"
+    implementation "com.mikepenz:aboutlibraries:7.1.0"
+    implementation "androidx.cardview:cardview:1.0.0"
 
 //    implementation 'mnemonik:mnemonik:2.0.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'

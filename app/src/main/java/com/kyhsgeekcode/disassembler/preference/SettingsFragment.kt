@@ -1,5 +1,6 @@
 package com.kyhsgeekcode.disassembler.preference
 
+import android.R.string
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -10,13 +11,14 @@ import android.widget.EditText
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceScreen
 import com.kyhsgeekcode.disassembler.*
+import com.mikepenz.aboutlibraries.LibsBuilder
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import java.util.*
+
 
 class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
     private lateinit var prefnames: Array<String?>
@@ -193,16 +195,22 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClic
         lp.onPreferenceChangeListener = this
         val lp2 = findPreference<ListPreference>("filepicker")
         lp2!!.onPreferenceChangeListener = this
-        val scrn = findPreference<PreferenceScreen>("openscrn")
-        //scrn.setOnPreferenceClickListener(this);
-        val cnt = scrn!!.preferenceCount
-        Log.d(TAG, "Cnt $cnt")
-
-        for (i in 0 until cnt) {
-            val prf = scrn.getPreference(i)
-            Log.d(TAG,"$i, $prf")
-            prf.onPreferenceClickListener = this
+        val scrn = findPreference<Preference>("openscrn")
+        scrn?.setOnPreferenceClickListener {
+            LibsBuilder()
+                    .withFields(string::class.java.fields)
+                    .start(activity!!) // start the activity
+            true
         }
+        //scrn.setOnPreferenceClickListener(this);
+//        val cnt = scrn!!.preferenceCount
+//        Log.d(TAG, "Cnt $cnt")
+
+//        for (i in 0 until cnt) {
+//            val prf = scrn.getPreference(i)
+//            Log.d(TAG,"$i, $prf")
+//            prf.onPreferenceClickListener = this
+//        }
         //setOnPreferenceChange(findPreference("userNameOpen"));
 //	setOnPreferenceChange(findPreference("autoUpdate_ringtone"));
 //        requestAppPermissions(this);

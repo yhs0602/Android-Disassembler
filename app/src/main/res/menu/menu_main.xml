@@ -56,9 +56,7 @@
     <item
         android:id="@+id/settings"
         android:title="@string/settings_help" />
-    <item
-        android:id="@+id/online_help"
-        android:title="@string/online_help" />
+
     <item
         android:id="@+id/donate"
         android:title="@string/donate_see_ad" />

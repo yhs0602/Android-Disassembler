@@ -54,44 +54,13 @@
             android:title="View online manual">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://github.com/KYHSGeekCode/Android-Disassembler/blob/master/README.md" />
+                android:data="https://github.com/KYHSGeekCode/Android-Disassembler#usage-explanation-video" />
         </Preference>
 
-        <PreferenceScreen
+        <Preference
             android:key="openscrn"
             android:summary="Check open source license"
             android:title="Open source LICENSE">
-            <Preference
-                android:key="capstone"
-                android:summary="capstone disassembler engine"
-                android:title="Capstone" />
-            <Preference
-                android:key="colorpicker"
-                android:summary="Color picker"
-                android:title="com.github.danielnilsson9.colorpickerview" />
-
-            <Preference
-                android:key="filechooser"
-                android:summary="Storage chooser by codekidX"
-                android:title="Storage Chooser 2.0" />
-
-            <Preference
-                android:key="binutils"
-                android:summary="Java-binutils by J.W. Janssen."
-                android:title="Java-binutils" />
-            <Preference
-                android:key="pecoff4j"
-                android:summary="PE parser by kichik"
-                android:title="PECOFF4J" />
-            <Preference
-                android:key="androidicon"
-                android:summary="Google's android icon"
-                android:title="Android robot icon" />
-            <Preference
-                android:key="icons"
-                android:summary="Icons"
-                android:title="Icons by google" />
-
-        </PreferenceScreen>
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

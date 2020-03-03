@@ -3,7 +3,7 @@
     <string name="app_name">Disassembler</string>
     <string name="app_info">Application info</string>
     <string name="dev_info">Developer info</string>
-    <string name="dev_info_detail">Check out developer info!</string>
+    <string name="dev_info_detail">Check out developer info</string>
     <string name="send_mail">Send Email</string>
     <string name="send_mail_detail">Send an e-mail to the developer.</string>
     <string name="open_info">Open source info</string>
@@ -62,10 +62,10 @@
     <string name="export">Export</string>
     <string name="choose_columns">Choose columns</string>
     <string name="property">Property</string>
-    <string name="open_calculator">Open calculator</string>
+    <string name="open_calculator">Calculator</string>
     <string name="save">save</string>
     <string name="donate_see_ad">See ad</string>
-    <string name="settings_help">Settings / Offline Help</string>
+    <string name="settings_help">Settings / Help</string>
     <string name="NoRoot_GoDefault">Unable to get root access. Going to default directory</string>
     <string name="location">Location: </string>
     <string name="cannot_be_read">The folder [%1$s] cannot be read!</string>
@@ -120,5 +120,183 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
+    <string name="define_Capstone" translatable="false"></string>
+    <string name="library_Capstone_author" translatable="false">aquynh</string>
+    <string name="library_Capstone_authorWebsite" translatable="false">https://github.com/aquynh</string>
+    <string name="library_Capstone_libraryName" translatable="false">Capstone </string>
+    <string name="library_Capstone_libraryDescription" translatable="false">Capstone disassembly/disassembler framework: Core (Arm, Arm64, BPF, EVM, M68K, M680X, MOS65xx, Mips, PPC, RISCV, Sparc, SystemZ, TMS320C64x, Web Assembly, X86, X86_64, XCore) + bindings. http://www.capstone-engine.org </string>
+    <string name="library_Capstone_libraryVersion" translatable="false">4.0.1 </string>
+    <string name="library_Capstone_libraryWebsite" translatable="false">https://github.com/aquynh/capstone</string>
+    <string name="library_Capstone_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_Capstone_isOpenSource" translatable="false"> true </string>
+    <string name="library_Capstone_repositoryLink" translatable="false">https://github.com/aquynh/capstone </string>
+
+    <string name="define_ColorPickerView" translatable="false"></string>
+    <string name="library_ColorPickerView_author" translatable="false">skydoves</string>
+    <string name="library_ColorPickerView_authorWebsite" translatable="false">https://github.com/skydoves</string>
+    <string name="library_ColorPickerView_libraryName" translatable="false">ColorPickerView </string>
+    <string name="library_ColorPickerView_libraryDescription" translatable="false">Android colorpicker for getting colors from any images by tapping on the desired color. </string>
+    <string name="library_ColorPickerView_libraryVersion" translatable="false">2.1.6 </string>
+    <string name="library_ColorPickerView_libraryWebsite" translatable="false">https://github.com/skydoves/ColorPickerView</string>
+    <string name="library_ColorPickerView_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_ColorPickerView_isOpenSource" translatable="false"> true </string>
+    <string name="library_ColorPickerView_repositoryLink" translatable="false">https://github.com/skydoves/ColorPickerView </string>
+
+    <string name="define_Java_binutils" translatable="false"></string>
+    <string name="library_Javabinutils_author" translatable="false">jawi</string>
+    <string name="library_Javabinutils_authorWebsite" translatable="false">https://github.com/jawi</string>
+    <string name="library_Javabinutils_libraryName" translatable="false">java_binutils </string>
+    <string name="library_Javabinutils_libraryDescription" translatable="false">Provides a java library to read AR, ELF, COFF and other kind of binary
+files </string>
+    <string name="library_Javabinutils_libraryVersion" translatable="false">1.0.0 </string>
+    <string name="library_Javabinutils_libraryWebsite" translatable="false">https://github.com/jawi/java_binutils</string>
+    <string name="library_Javabinutils_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_Javabinutils_isOpenSource" translatable="false"> true </string>
+    <string name="library_Javabinutils_repositoryLink" translatable="false">https://github.com/jawi/java_binutils </string>
+
+    <string name="define_PECOFF4J" translatable="false"></string>
+    <string name="library_PECOFF4J_author" translatable="false">kichik</string>
+    <string name="library_PECOFF4J_authorWebsite" translatable="false">https://github.com/kichik</string>
+    <string name="library_PECOFF4J_libraryName" translatable="false">PECOFF4J </string>
+    <string name="library_PECOFF4J_libraryDescription" translatable="false">PE/COFF 4J is a java engineering library for portable executables, the format used by Windows </string>
+    <string name="library_PECOFF4J_libraryVersion" translatable="false">0.0.2.2 </string>
+    <string name="library_PECOFF4J_libraryWebsite" translatable="false">https://github.com/kichik/pecoff4j</string>
+    <string name="library_PECOFF4J_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_PECOFF4J_isOpenSource" translatable="false"> true </string>
+    <string name="library_PECOFF4J_repositoryLink" translatable="false">https://github.com/kichik/pecoff4j </string>
+
+    <string name="define_RootFilePicker" translatable="false"></string>
+    <string name="library_RootFilePicker_author" translatable="false">KYHSGeekCode</string>
+    <string name="library_RootFilePicker_authorWebsite" translatable="false">https://github.com/KYHSGeekCode</string>
+    <string name="library_RootFilePicker_libraryName" translatable="false">RootFilePicker </string>
+    <string name="library_RootFilePicker_libraryDescription" translatable="false">The simplest root file picker for android apps. </string>
+    <string name="library_RootFilePicker_libraryVersion" translatable="false">1.0.0 </string>
+    <string name="library_RootFilePicker_libraryWebsite" translatable="false">https://github.com/KYHSGeekCode/RootFilePicker</string>
+    <string name="library_RootFilePicker_licenseId" translatable="false">mit </string>
+    <string name="library_RootFilePicker_isOpenSource" translatable="false"> true </string>
+    <string name="library_RootFilePicker_repositoryLink" translatable="false">https://github.com/KYHSGeekCode/RootFilePicker </string>
+
+    <string name="define_androidMultiLevelListview" translatable="false"></string>
+    <string name="library_androidMultiLevelListview_author" translatable="false">open-rnd</string>
+    <string name="library_androidMultiLevelListview_authorWebsite" translatable="false">https://github.com/open-rnd</string>
+    <string name="library_androidMultiLevelListview_libraryName" translatable="false">android-multi-level-listview </string>
+    <string name="library_androidMultiLevelListview_libraryDescription" translatable="false">Android library providing view for displaying items grouped into levels and sub-levels. Levels hierarchy size is not limited. </string>
+    <string name="library_androidMultiLevelListview_libraryVersion" translatable="false">1.0.1 </string>
+    <string name="library_androidMultiLevelListview_libraryWebsite" translatable="false">https://github.com/open-rnd/android-multi-level-listview</string>
+    <string name="library_androidMultiLevelListview_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_androidMultiLevelListview_isOpenSource" translatable="false"> true </string>
+    <string name="library_androidMultiLevelListview_repositoryLink" translatable="false">https://github.com/open-rnd/android-multi-level-listview </string>
+
+    <string name="define_FacileAPI" translatable="false"></string>
+    <string name="library_FacileAPI_author" translatable="false">TomSmartBishop</string>
+    <string name="library_FacileAPI_authorWebsite" translatable="false">https://github.com/TomSmartBishop</string>
+    <string name="library_FacileAPI_libraryName" translatable="false">facile-api </string>
+    <string name="library_FacileAPI_libraryDescription" translatable="false">The Facile API is capable of reading (decompiling) .Net assemblies. Covering the metadata tables, the embedded types and methods, including their bodies as CIL (bytecode). http://tomsmartbishop.github.io/facil… </string>
+    <string name="library_FacileAPI_libraryVersion" translatable="false">1.0.3 </string>
+    <string name="library_FacileAPI_libraryWebsite" translatable="false">http://tomsmartbishop.github.io/facile-api/</string>
+    <string name="library_FacileAPI_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_FacileAPI_isOpenSource" translatable="false"> true </string>
+    <string name="library_FacileAPI_repositoryLink" translatable="false">https://github.com/TomSmartBishop/facile-api </string>
+
+    <string name="define_ELFIO" translatable="false"></string>
+    <string name="library_ELFIO_author" translatable="false">serge1</string>
+    <string name="library_ELFIO_authorWebsite" translatable="false">https://github.com/serge1</string>
+    <string name="library_ELFIO_libraryName" translatable="false">ELFIO </string>
+    <string name="library_ELFIO_libraryDescription" translatable="false">ELFIO - ELF (Executable and Linkable Format) reader and producer implemented as a header only C++ library http://serge1.github.io/ELFIO </string>
+    <string name="library_ELFIO_libraryVersion" translatable="false">3.5 </string>
+    <string name="library_ELFIO_libraryWebsite" translatable="false">http://serge1.github.io/ELFIO</string>
+    <string name="library_ELFIO_licenseId" translatable="false">mit </string>
+    <string name="library_ELFIO_isOpenSource" translatable="false"> true </string>
+    <string name="library_ELFIO_repositoryLink" translatable="false">https://github.com/serge1/ELFIO </string>
+
+    <string name="define_ApacheCommonsIO" translatable="false"></string>
+    <string name="library_ApacheCommonsIO_author" translatable="false">Apache Commons</string>
+    <string name="library_ApacheCommonsIO_authorWebsite" translatable="false">http://commons.apache.org/</string>
+    <string name="library_ApacheCommonsIO_libraryName" translatable="false">Apache commons IO </string>
+    <string name="library_ApacheCommonsIO_libraryDescription" translatable="false">Commons IO is a library of utilities to assist with developing IO functionality. </string>
+    <string name="library_ApacheCommonsIO_libraryVersion" translatable="false">2.6 </string>
+    <string name="library_ApacheCommonsIO_libraryWebsite" translatable="false">https://commons.apache.org/proper/commons-io/</string>
+    <string name="library_ApacheCommonsIO_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_ApacheCommonsIO_isOpenSource" translatable="false"> true </string>
+    <string name="library_ApacheCommonsIO_repositoryLink" translatable="false">https://commons.apache.org/proper/commons-io/ </string>
+
+    <string name="define_Splitties" translatable="false"></string>
+    <string name="library_Splitties_author" translatable="false">LouisCAD</string>
+    <string name="library_Splitties_authorWebsite" translatable="false">https://github.com/LouisCAD</string>
+    <string name="library_Splitties_libraryName" translatable="false">Splitties </string>
+    <string name="library_Splitties_libraryDescription" translatable="false">A family of small Kotlin libraries for delightful Android development </string>
+    <string name="library_Splitties_libraryVersion" translatable="false">3.0.0 </string>
+    <string name="library_Splitties_libraryWebsite" translatable="false">https://github.com/LouisCAD/Splitties</string>
+    <string name="library_Splitties_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_Splitties_isOpenSource" translatable="false"> true </string>
+    <string name="library_Splitties_repositoryLink" translatable="false">https://github.com/LouisCAD/Splitties </string>
+
+    <string name="define_MaterialComponentsAndroid" translatable="false"></string>
+    <string name="library_MaterialComponentsAndroid_author" translatable="false">material-components</string>
+    <string name="library_MaterialComponentsAndroid_authorWebsite" translatable="false">https://github.com/material-components</string>
+    <string name="library_MaterialComponentsAndroid_libraryName" translatable="false">material-components-android </string>
+    <string name="library_MaterialComponentsAndroid_libraryDescription" translatable="false">Modular and customizable Material Design UI components for
+Android </string>
+    <string name="library_MaterialComponentsAndroid_libraryVersion" translatable="false">1.2.0 </string>
+    <string name="library_MaterialComponentsAndroid_libraryWebsite" translatable="false">https://github.com/material-components/material-components-android</string>
+    <string name="library_MaterialComponentsAndroid_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_MaterialComponentsAndroid_isOpenSource" translatable="false"> true </string>
+    <string name="library_MaterialComponentsAndroid_repositoryLink" translatable="false">https://github.com/material-components/material-components-android </string>
+
+    <string name="define_KotlinxCoroutines" translatable="false"></string>
+    <string name="library_KotlinxCoroutines_author" translatable="false">Kotlin</string>
+    <string name="library_KotlinxCoroutines_authorWebsite" translatable="false">https://github.com/Kotlin</string>
+    <string name="library_KotlinxCoroutines_libraryName" translatable="false">kotlinx.coroutines </string>
+    <string name="library_KotlinxCoroutines_libraryDescription" translatable="false">Library support for Kotlin coroutines </string>
+    <string name="library_KotlinxCoroutines_libraryVersion" translatable="false">1.3.3 </string>
+    <string name="library_KotlinxCoroutines_libraryWebsite" translatable="false">https://github.com/Kotlin/kotlinx.coroutines</string>
+    <string name="library_KotlinxCoroutines_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_KotlinxCoroutines_isOpenSource" translatable="false"> true </string>
+    <string name="library_KotlinxCoroutines_repositoryLink" translatable="false">https://github.com/Kotlin/kotlinx.coroutines </string>
+
+    <string name="define_snackprogressbar" translatable="false"></string>
+    <string name="library_snackprogressbar_author" translatable="false">tingyik90</string>
+    <string name="library_snackprogressbar_authorWebsite" translatable="false">https://github.com/tingyik90</string>
+    <string name="library_snackprogressbar_libraryName" translatable="false">snackprogressbar </string>
+    <string name="library_snackprogressbar_libraryDescription" translatable="false">Enhanced Snackbar with ProgressBar for Android. </string>
+    <string name="library_snackprogressbar_libraryVersion" translatable="false">6.2.1 </string>
+    <string name="library_snackprogressbar_libraryWebsite" translatable="false">https://github.com/tingyik90/snackprogressbar</string>
+    <string name="library_snackprogressbar_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_snackprogressbar_isOpenSource" translatable="false"> true </string>
+    <string name="library_snackprogressbar_repositoryLink" translatable="false">https://github.com/tingyik90/snackprogressbar </string>
+
+    <string name="define_Spek" translatable="false"></string>
+    <string name="library_Spek_author" translatable="false">spekframework</string>
+    <string name="library_Spek_authorWebsite" translatable="false">https://github.com/spekframework</string>
+    <string name="library_Spek_libraryName" translatable="false">spek </string>
+    <string name="library_Spek_libraryDescription" translatable="false">A specification framework for Kotlin </string>
+    <string name="library_Spek_libraryVersion" translatable="false">2.0.9 </string>
+    <string name="library_Spek_libraryWebsite" translatable="false">http://spekframework.org/</string>
+    <string name="library_Spek_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_Spek_isOpenSource" translatable="false"> true </string>
+    <string name="library_Spek_repositoryLink" translatable="false">https://github.com/spekframework/spek </string>
+
+    <string name="define_kotlinxSerialization" translatable="false"></string>
+    <string name="library_kotlinxSerialization_author" translatable="false">Kotlin</string>
+    <string name="library_kotlinxSerialization_authorWebsite" translatable="false">https://github.com/Kotlin</string>
+    <string name="library_kotlinxSerialization_libraryName" translatable="false">kotlinx.serialization </string>
+    <string name="library_kotlinxSerialization_libraryDescription" translatable="false">Kotlin multiplatform / multi-format serialization </string>
+    <string name="library_kotlinxSerialization_libraryVersion" translatable="false">0.20.0 </string>
+    <string name="library_kotlinxSerialization_libraryWebsite" translatable="false">https://github.com/Kotlin/kotlinx.serialization</string>
+    <string name="library_kotlinxSerialization_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_kotlinxSerialization_isOpenSource" translatable="false"> true </string>
+    <string name="library_kotlinxSerialization_repositoryLink" translatable="false">https://github.com/Kotlin/kotlinx.serialization </string>
+
+    <string name="define_AndroidX" translatable="false"></string>
+    <string name="library_AndroidX_author" translatable="false">AOSP</string>
+    <string name="library_AndroidX_authorWebsite" translatable="false">https://android.googlesource.com/</string>
+    <string name="library_AndroidX_libraryName" translatable="false">AndroidX </string>
+    <string name="library_AndroidX_libraryDescription" translatable="false">Android X </string>
+    <string name="library_AndroidX_libraryVersion" translatable="false">variable </string>
+    <string name="library_AndroidX_libraryWebsite" translatable="false">https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev</string>
+    <string name="library_AndroidX_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_AndroidX_isOpenSource" translatable="false"> true </string>
+    <string name="library_AndroidX_repositoryLink" translatable="false">https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev </string>
 
 </resources>
