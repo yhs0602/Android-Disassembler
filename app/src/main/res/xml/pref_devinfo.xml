@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="git"
+        android:summary="Github"
+        android:title="Github repository">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://github.com/KYHSGeekCode/Android-Disassembler" />
+    </Preference>
+    <Preference
+        android:key="kyhs"
+        android:summary="Hyeonseo Yang: Undergraduate in Seoul National University"
+        android:title="KYHSGeekCode - Maintainer/Developer">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://stackoverflow.com/users/8614565/kyhsgeekcode" />
+    </Preference>
+    <Preference
+        android:key="venky"
+        android:summary="just a techy guy"
+        android:title="PramUkesh Venky - The early bug reporter">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://github.com/PramUkesh" />
+    </Preference>
+</PreferenceScreen>

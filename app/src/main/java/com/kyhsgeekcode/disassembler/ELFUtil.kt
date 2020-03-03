@@ -474,7 +474,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
     companion object {
         @JvmStatic
         external fun Demangle(mangled: String?): String?
-
+        @JvmStatic
         external fun ParsePLT(filepath: String?): List<PLT?>?
     }
 

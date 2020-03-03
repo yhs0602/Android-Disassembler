@@ -20,10 +20,10 @@
         android:gravity="center"
         android:textColor="@android:color/black"
         android:textSize="15sp"
-        android:text="Choose text colors and background colors" />
+        android:text="@string/choose_text_colors_and_background_colors" />
 
     <ListView
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_width="wrap_content"
         android:layout_weight="1.0"
         android:id="@+id/colorpref_list" />

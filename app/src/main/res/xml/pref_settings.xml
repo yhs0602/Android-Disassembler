@@ -1,52 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--
-    <CheckBoxPreference
-    android:defaultValue="false"
-    android:key="useUserName"
-    android:summaryOff="사용자의 이름을 사용하지 않습니다"
-    android:summaryOn="사용자의 이름을 사용합니다"
-    android:title="사용자 이름 사용" />
-
-    <EditTextPreference
-    android:defaultValue="Mir"
-    android:dependency="useUserName"
-    android:key="userName"
-    android:maxLines="1"
-    android:selectAllOnFocus="true"
-    android:singleLine="true"
-    android:title="사용자 이름 설정" />
-
-    <ListPreference
-    android:defaultValue="0"
-    android:dependency="useUserName"
-    android:entries="@array/userNameOpen"
-    android:entryValues="@array/userNameOpen_values"
-    android:key="userNameOpen"
-    android:negativeButtonText="@null"
-    android:positiveButtonText="@null"
-    android:title="이름 공개 범위" />
-
-    <PreferenceCategory android:title="자동 업데이트" >
-    <CheckBoxPreference
-    android:defaultValue="false"
-    android:key="useUpdateNofiti"
-    android:summary="업데이트후 알림을 띄웁니다"
-    android:title="알림 사용"
-    />
-
-    <RingtonePreference
-    android:defaultValue="content://settings/system/notification_sound"
-    android:dependency="useUpdateNofiti"
-    android:key="autoUpdate_ringtone"
-    android:ringtoneType="notification"
-    android:showSilent="true"
-    android:title="알림 소리"
-    />
-    </PreferenceCategory>
-    -->
     <PreferenceCategory android:title="@string/disasmTheme">
-
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/predefinedcolor"
@@ -76,42 +30,10 @@
         app:default_color="colorPrimary"/-->
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/app_info">
-        <PreferenceScreen
+        <Preference
+            android:fragment="com.kyhsgeekcode.disassembler.preference.DeveloperInfoFragment"
             android:summary="@string/dev_info"
-            android:title="@string/dev_info_detail">
-            <Preference
-                android:summary="Github"
-                android:title="Github repository"
-                android:key="git">
-                <intent
-                    android:action="android.intent.action.VIEW"
-                    android:data="https://github.com/KYHSGeekCode/Android-Disassembler" />
-            </Preference>
-            <Preference
-                android:summary="Hyeonseo Yang: A high school student"
-                android:title="KYHSGeekCode - Maintainer/Developer"
-                android:key="kyhs">
-                <intent
-                    android:action="android.intent.action.VIEW"
-                    android:data="https://stackoverflow.com/users/8614565/kyhsgeekcode" />
-            </Preference>
-            <Preference
-                android:summary="just a techy guy"
-                android:title="PramUkesh Venky - Primary bug reporter"
-                android:key="venky">
-                <intent
-                    android:action="android.intent.action.VIEW"
-                    android:data="https://github.com/PramUkesh" />
-            </Preference>
-        </PreferenceScreen>
-
-        <!--Preference android:title="@string/prefs_web_page" >
-        <intent android:action="android.intent.action.VIEW"
-        android:data="http://www.example.com" />
-        </Preference-->
-        <!--intent
-        android:targetClass="com.kyhsgeekcode.disassembler.MadeByActivity"
-        android:targetPackage="com.kyhsgeekcode.disassembler" /-->
+            android:title="@string/dev_info_detail" />
         <Preference
             android:summary="@string/send_mail_detail"
             android:title="@string/send_mail">
@@ -126,94 +48,49 @@
                 android:action="android.intent.action.SENDTO"
                 android:data="mailto:1641832e@fire.fundersclub.com" />
         </Preference>
-        <!--Preference
-        android:summary="@string/open_info"
-        android:title="@string/open_info_detail" >
-        <intent
-        android:targetClass="com.jourhyang.disasmarm.OpenSourceActivity"
-        android:targetPackage="com.jourhyang.disasmarm" />
-        </Preference-->
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-            android:key="help"
-            android:title="Help"
-            android:summary="Read manual">
-            <Preference
-                android:summary="Choose file"
-                android:title="Choosing a target file"
-                android:key="helpchoosefile" />
-            <Preference
-                android:summary="Show/save details"
-                android:title="Details"
-                android:key="helpdetail" />
+        <Preference
+            android:key="readme"
+            android:summary="Online readme.md"
+            android:title="View online manual">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/KYHSGeekCode/Android-Disassembler/blob/master/README.md" />
+        </Preference>
 
-            <Preference
-                android:summary="Show symbols"
-                android:title="Symbols"
-                android:key="helpsymbol" />
-
-            <Preference
-                android:summary="Show/export disassembly"
-                android:title="Disassembly"
-                android:key="helpdisassembly" />
-            <Preference
-                android:summary="Ways to setup parameters manually"
-                android:title="Setting up manually"
-                android:key="helpsetupmanual" />
-            <Preference
-                android:summary="Managing projects"
-                android:title="Projects"
-                android:key="helpprojects" />
-            <Preference
-                android:summary="Setting up preferences"
-                android:title="Preferences"
-                android:key="helppreferences" />
-            <Preference
-                android:summary="Supported features"
-                android:title="Features"
-                android:key="helpfeature" />
-            <Preference
-                android:summary="Online readme.md"
-                android:title="View online manual"
-                android:key="readme">
-                <intent
-                    android:action="android.intent.action.VIEW"
-                    android:data="https://github.com/KYHSGeekCode/Android-Disassembler/blob/master/README.md" />
-            </Preference>
-        </PreferenceScreen>
-        <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        <PreferenceScreen
             android:key="openscrn"
-            android:title="Open source LICENSE"
-            android:summary="Check open source license">
+            android:summary="Check open source license"
+            android:title="Open source LICENSE">
             <Preference
+                android:key="capstone"
                 android:summary="capstone disassembler engine"
-                android:title="Capstone"
-                android:key="capstone" />
+                android:title="Capstone" />
             <Preference
+                android:key="colorpicker"
                 android:summary="Color picker"
-                android:title="com.github.danielnilsson9.colorpickerview"
-                android:key="colorpicker" />
+                android:title="com.github.danielnilsson9.colorpickerview" />
 
             <Preference
+                android:key="filechooser"
                 android:summary="Storage chooser by codekidX"
-                android:title="Storage Chooser 2.0"
-                android:key="filechooser" />
+                android:title="Storage Chooser 2.0" />
 
             <Preference
+                android:key="binutils"
                 android:summary="Java-binutils by J.W. Janssen."
-                android:title="Java-binutils"
-                android:key="binutils" />
+                android:title="Java-binutils" />
             <Preference
+                android:key="pecoff4j"
                 android:summary="PE parser by kichik"
-                android:title="PECOFF4J"
-                android:key="pecoff4j" />
+                android:title="PECOFF4J" />
             <Preference
+                android:key="androidicon"
                 android:summary="Google's android icon"
-                android:title="Android robot icon"
-                android:key="androidicon" />
+                android:title="Android robot icon" />
             <Preference
+                android:key="icons"
                 android:summary="Icons"
-                android:title="Icons by google"
-                android:key="icons" />
+                android:title="Icons by google" />
 
         </PreferenceScreen>
     </PreferenceCategory>

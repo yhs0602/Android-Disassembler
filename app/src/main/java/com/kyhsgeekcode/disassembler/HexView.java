@@ -21,9 +21,9 @@ public class HexView extends View {
         super(context, attrs, defStyleAttr);
     }
 
-    public HexView(Context context, android.util.AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-    }
+//    public HexView(Context context, android.util.AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+////        super(context, attrs, defStyleAttr, defStyleRes);
+//    }
 
     @Override
     public void draw(Canvas canvas) {

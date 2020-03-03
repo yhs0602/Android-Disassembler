@@ -8,7 +8,6 @@ import android.util.Log
 import android.util.LongSparseArray
 import android.view.*
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.TableRow
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -16,9 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_ALL
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_MAX
 import com.kyhsgeekcode.disassembler.models.Architecture.getArchitecture
-import java.util.*
 import kotlinx.android.synthetic.main.fragment_binary_disasm.*
 import kotlinx.serialization.UnstableDefault
+import java.util.*
 
 class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 
@@ -158,7 +157,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                 mCustomDialog!!.show()
             }
             R.id.jumpto -> run {
-                val autocomplete = object : AutoCompleteTextView(activity) {
+                val autocomplete = object : androidx.appcompat.widget.AppCompatAutoCompleteTextView(activity) {
                     override fun enoughToFilter(): Boolean {
                         return true
                     }

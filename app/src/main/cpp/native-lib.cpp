@@ -113,7 +113,7 @@ Java_com_kyhsgeekcode_disassembler_MainActivity_Open(JNIEnv *env, jclass thiz, j
     return handle;
 }
 JNIEXPORT void JNICALL
-Java_com_kyhsgeekcode_disassembler_MainActivity_Finalize(JNIEnv *env, jobject thiz, jint handle) {
+Java_com_kyhsgeekcode_disassembler_MainActivity_Finalize(JNIEnv *env, jclass thiz, jint handle) {
     cs_close((csh *) &handle);
     handle = 0;
 }
@@ -297,7 +297,7 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
         }
         env->SetObjectField(dar, fidOPStr, jstr);
         env->DeleteLocalRef(jstr);
-        env->SetLongField(dar, fidAddr, insn->address);
+        env->SetLongField(dar, fidAddr, (long long int)(insn->address));
 
         env->SetIntField(dar, fidID, insn->id);
 

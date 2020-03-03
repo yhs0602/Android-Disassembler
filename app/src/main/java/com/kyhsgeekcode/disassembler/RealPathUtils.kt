@@ -49,7 +49,9 @@ object RealPathUtils {
         val cursor = appCtx.contentResolver.query(contentUri!!, proj, null, null, null)
         val column_index = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
         cursor.moveToFirst()
-        return cursor.getString(column_index)
+        val res =  cursor.getString(column_index)
+        cursor.close()
+        return res
     }
 
     fun getRealPathFromURI(contentUri: Uri?): String? {

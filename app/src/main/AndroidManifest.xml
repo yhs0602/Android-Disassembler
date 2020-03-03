@@ -24,7 +24,12 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:resizeableActivity="true"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".preference.SettingsActivity"
+            android:label="@string/title_activity_settings" />
+
         <provider
             android:name=".CrashReportFileProvider"
             android:authorities="com.kyhsgeekcode.disassembler.provider"
@@ -33,7 +38,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
         <activity android:name="com.kyhsgeekcode.filechooser.NewFileChooserActivity" />
@@ -69,7 +74,6 @@
             </intent-filter
             -->
         </activity>
-        <activity android:name=".SettingsActivity" />
         <!--
 meta-data android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" /

@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:baselineAligned="false">
 
     <LinearLayout
         android:layout_height="match_parent"
@@ -16,7 +17,7 @@
             android:text="00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F"
             android:id="@+id/hexTextViewCols"
             android:textSize="12sp"
-            android:gravity="right|center_vertical"
+            android:gravity="end|center_vertical"
             android:textColor="#0C03F2" />
 
         <TextView

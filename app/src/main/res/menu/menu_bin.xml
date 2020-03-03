@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Open">
+    <item android:title="@string/show">
         <menu>
             <item
                 android:id="@+id/showSymbols"
-                android:title="Symbols" />
+                android:title="@string/symbols" />
             <item
                 android:id="@+id/showDisassembly"
-                android:title="Disassembly" />
+                android:title="@string/disassembly" />
             <item
                 android:id="@+id/showDetails"
-                android:title="Details" />
+                android:title="@string/details" />
         </menu>
     </item>
 

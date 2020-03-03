@@ -8,14 +8,14 @@
         android:title="@string/closeFile"/>
     <item
         android:id="@+id/jumpto"
-        android:title="Goto" />
+        android:title="@string/jump_to" />
     <item
         android:id="@+id/chooserow"
         android:title="@string/choose_columns" />
     <item
         android:id="@+id/find"
         android:enabled="true"
-        android:title="Find">
+        android:title="@string/find">
         <menu>
             <item
                 android:id="@+id/findString"
@@ -46,13 +46,10 @@
         android:id="@+id/save"
         android:title="@string/save"
         android:enabled="false" />
-    <item
-        android:id="@+id/export"
-        android:title="export project as zip"
-        android:enabled="false" />
+
     <item
         android:id="@+id/analyze"
-        android:title="Analyze" />
+        android:title="@string/analyze" />
     <item
         android:id="@+id/calc"
         android:title="@string/open_calculator" />

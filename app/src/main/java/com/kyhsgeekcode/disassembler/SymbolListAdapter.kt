@@ -65,7 +65,7 @@ class SymbolListAdapter(val fragment: BinarySymbolFragment) : RecyclerView.Adapt
             tvMangled.text = item.name
             tvDemangled.text = item.demangled
             tvAddress.text = java.lang.Long.toHexString(item.st_value)
-            tvProperty.text = "${item.bind}${item.type}"
+            tvProperty.text = "${item.bind} / ${item.type}"
         }
     }
 }

@@ -2,6 +2,7 @@ bin/
 gen/
 obj/
 build/
+app/release/
 .gradle/
 .idea
 app/.cxx

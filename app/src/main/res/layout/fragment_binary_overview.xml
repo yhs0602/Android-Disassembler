@@ -53,7 +53,8 @@
             android:inputType="number"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/tvFoffCSe"
-            app:layout_constraintTop_toBottomOf="@+id/mainETcodeOffset" />
+            app:layout_constraintTop_toBottomOf="@+id/mainETcodeOffset"
+            android:autofillHints="0" />
 
         <TextView
             android:id="@+id/tvVaEP"

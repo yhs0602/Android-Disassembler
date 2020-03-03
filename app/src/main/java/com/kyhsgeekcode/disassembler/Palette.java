@@ -26,6 +26,9 @@ public class Palette {
     static Set<Integer> X86PopIns = new HashSet<>();
     int[][] colors;
     String name;
+    public String getName() {
+        return name;
+    }
     File src;
     int arch = Capstone.CS_ARCH_ARM;
     private String TAG = "Disassembler palette";

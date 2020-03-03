@@ -35,7 +35,7 @@ public class Logger {
         LogData ldata = new LogData();
         ldata.TAG = TAG;
         ldata.description = desc;
-        ldata.time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
+        ldata.time = SimpleDateFormat.getDateTimeInstance().format(new Date()); //new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
         ldata.level = level;
         //Maximum 1023
         while (data.size() > 1024) {

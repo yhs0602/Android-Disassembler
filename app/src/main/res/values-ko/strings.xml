@@ -82,4 +82,8 @@
     <string name="analysis">분석 결과</string>
     <string name="closeTab">탭 닫기</string>
     <string name="closeFile">파일 닫기</string>
+    <string name="hello_blank_fragment">미구현입니다</string>
+    <string name="choose_text_colors_and_background_colors">글과 배경 색을 설정합니다.</string>
+    <string name="no_data">데이터가 없습니다.</string>
+    <string name="show">보기</string>
 </resources>
