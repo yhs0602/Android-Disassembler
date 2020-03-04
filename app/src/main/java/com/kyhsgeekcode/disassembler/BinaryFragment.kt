@@ -102,6 +102,7 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
             classNameByTag[TabTags.TAB_ANALYSIS] = "AnalysisResultFragment"
             classNameByTag[TabTags.TAB_EXPORTSYMBOLS] = "BinarySymbolFragment"
             classNameByTag[TabTags.TAB_STRINGS] = "StringFragment"
+            classNameByTag[TabTags.TAB_DETAILS] = "BinaryDetailFragment"
         }
     }
 
