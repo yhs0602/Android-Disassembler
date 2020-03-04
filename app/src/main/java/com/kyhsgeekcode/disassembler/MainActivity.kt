@@ -27,6 +27,7 @@ import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.Utils.ProjectManager_OLD
 import com.kyhsgeekcode.disassembler.preference.SettingsActivity
 import com.kyhsgeekcode.disassembler.project.ProjectManager
+import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.isArchive
@@ -167,6 +168,8 @@ class MainActivity : AppCompatActivity(),
     private lateinit var mDrawerAdapter: FileDrawerListAdapter
 
     lateinit var pagerAdapter: ViewPagerAdapter
+
+    lateinit var overviewFragment: ProjectOverviewFragment
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         TooLargeTool.startLogging(application)
@@ -181,7 +184,8 @@ class MainActivity : AppCompatActivity(),
             pagerMain.setCurrentItem(tab.position, true)
         }.attach()
         pagerMain.offscreenPageLimit = 20
-        pagerAdapter.addFragment(ProjectOverviewFragment.newInstance(), "Overview")
+        overviewFragment = ProjectOverviewFragment.newInstance()
+        pagerAdapter.addFragment(overviewFragment, "Overview")
 
 //        setupSymCompleteAdapter()
         toDoAfterPermQueue.add(Runnable {
@@ -678,7 +682,21 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    @UnstableDefault
     private fun onChoosePathNew(uri: Uri) {
+        if (uri.scheme == "content") {
+            contentResolver.openInputStream(uri).use { inStream ->
+                val file = getExternalFilesDir(null)?.resolve("tmp")?.resolve("openDirect")
+                        ?: return
+                file.parentFile.mkdirs()
+                file.outputStream().use{ fileOut ->
+                    inStream?.copyTo(fileOut)
+                }
+                val project = ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, true)
+                overviewFragment.initializeDrawer(project)
+                notifyDataSetChanged()
+            }
+        }
     }
 
 //    private fun onChoosePath(uri: Uri) {

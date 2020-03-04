@@ -31,6 +31,9 @@ class ProjectOverviewFragment : Fragment() {
         }
         fileNameText.isFocusable = false
         fileNameText.isEnabled = false
+        if(ProjectManager.currentProject!=null) {
+            fileNameText.setText("Launched directly from external source")
+        }
     }
 
     @UnstableDefault
@@ -70,11 +73,11 @@ class ProjectOverviewFragment : Fragment() {
     }
 
     // Actually, currentProject is set and automatically figured out
-    private fun initializeDrawer(project: ProjectModel) {
+    fun initializeDrawer(project: ProjectModel) {
         // project.sourceFilePath
         val sourceFileOrFolder = File(project.sourceFilePath)
-        fileNameText.setText(sourceFileOrFolder.absolutePath)
-        (activity as IDrawerManager).notifyDataSetChanged()
+        fileNameText?.setText(sourceFileOrFolder.absolutePath)
+        (activity as? IDrawerManager)?.notifyDataSetChanged()
 
 //        mDrawerAdapter.
     }
