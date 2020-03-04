@@ -5,13 +5,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
+import com.google.android.material.tabs.TabLayoutMediator
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
+import kotlinx.android.synthetic.main.fragment_binary.*
+import kotlinx.serialization.UnstableDefault
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.functions
-import kotlinx.android.synthetic.main.fragment_binary.*
-import kotlinx.serialization.UnstableDefault
 
 class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     val TAG = "BinaryFragment"
@@ -34,9 +35,13 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     @UnstableDefault
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        pagerAdapter = ViewPagerAdapter(childFragmentManager)
+        pagerAdapter = ViewPagerAdapter(childFragmentManager, lifecycle)
         pagerBinary.adapter = pagerAdapter
-        binartTabLayout.setupWithViewPager(pagerBinary)
+        TabLayoutMediator(binaryTabLayout, pagerBinary) { tab, position ->
+            tab.text = pagerAdapter.getTitle(position)
+            pagerBinary.setCurrentItem(tab.position, true)
+        }.attach()
+//        binaryTabLayout.setupWithViewPager(pagerBinary)
         parsedFile = AbstractFile.createInstance(ProjectDataStorage.resolveToRead(relPath)!!)
         setHasOptionsMenu(true)
         pagerBinary.offscreenPageLimit = 5
@@ -129,6 +134,6 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
 
     fun jumpto(address: Long) {
         setCurrentTabByTag(TabTags.TAB_DISASM, true)
-        (pagerAdapter.getItem(findTabByTag(TabTags.TAB_DISASM)!!) as BinaryDisasmFragment).jumpto(address)
+        (pagerAdapter.createFragment(findTabByTag(TabTags.TAB_DISASM)!!) as BinaryDisasmFragment).jumpto(address)
     }
 }
