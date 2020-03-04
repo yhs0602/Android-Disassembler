@@ -19,6 +19,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
+import com.gu.toolargetool.TooLargeTool
 import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
@@ -35,6 +36,7 @@ import kotlinx.serialization.UnstableDefault
 import pl.openrnd.multilevellistview.ItemInfo
 import pl.openrnd.multilevellistview.MultiLevelListView
 import pl.openrnd.multilevellistview.OnItemClickListener
+import splitties.init.appCtx
 import java.io.*
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
@@ -166,6 +168,7 @@ class MainActivity : AppCompatActivity(),
     lateinit var pagerAdapter: ViewPagerAdapter
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TooLargeTool.startLogging(application)
         setupUncaughtException()
         initNative()
         setContentView(R.layout.main)

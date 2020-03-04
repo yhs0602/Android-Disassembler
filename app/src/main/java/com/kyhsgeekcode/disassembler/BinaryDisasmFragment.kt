@@ -22,8 +22,7 @@ import java.util.*
 class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 
     enum class ViewMode {
-        Binary,
-        Text
+        Binary, Text
     }
 
     var handle: Int = 0

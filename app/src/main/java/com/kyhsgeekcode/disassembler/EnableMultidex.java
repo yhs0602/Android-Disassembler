@@ -2,11 +2,15 @@ package com.kyhsgeekcode.disassembler;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
+
+import com.gu.toolargetool.TooLargeTool;
 //import android.support.multidex.*;
 
 public class EnableMultidex extends /*MultiDex*/Application {
     public static Context context;
     private static EnableMultidex enableMultiDex;
+    private String TAG = "EnableMultiDex";
 
     public EnableMultidex() {
         enableMultiDex = this;
@@ -19,7 +23,9 @@ public class EnableMultidex extends /*MultiDex*/Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG, "OnCreate");
         context = getApplicationContext();
 
     }
 }
+
