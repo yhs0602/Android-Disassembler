@@ -33,6 +33,9 @@ using namespace std;
 
 //#define CODE "\xED\xFF\xFF\xEB\x04\xe0\x2d\xe5\x00\x00\x00\x00\xe0\x83\x22\xe5\xf1\x02\x03\x0e\x00\x00\xa0\xe3\x02\x30\xc1\xe7\x00\x00\x53\xe3\x00\x02\x01\xf1\x05\x40\xd0\xe8\xf4\x80\x00\x00"
 
+#include <vector>
+vector<csh> handles;
+
 extern "C" {
 //csh handle;
 const char *errmsg(cs_err e);
@@ -85,6 +88,7 @@ Java_com_kyhsgeekcode_disassembler_MainActivity_Init(JNIEnv *env, jobject thiz) 
     mem.vsnprintf = vsnprintf;
     mem.realloc = realloc;
     cs_option(NULL, CS_OPT_MEM, (size_t) &mem);
+    handles.clear();
 //    handle = 0;
     return 0;
 }
@@ -95,7 +99,7 @@ Java_com_kyhsgeekcode_disassembler_MainActivity_Init(JNIEnv *env, jobject thiz) 
  * @param thiz
  * @param arch1
  * @param mode
- * @return cs_handle
+ * @return cs_handle index
  */
 JNIEXPORT jint JNICALL
 Java_com_kyhsgeekcode_disassembler_MainActivity_Open(JNIEnv *env, jclass thiz, jint arch1,
@@ -110,12 +114,17 @@ Java_com_kyhsgeekcode_disassembler_MainActivity_Open(JNIEnv *env, jclass thiz, j
     // turn on SKIPDATA mode
     cs_option(handle, CS_OPT_SKIPDATA, CS_OPT_ON);
     arch = arch1;
-    return handle;
+    handles.push_back(handle);
+    return handles.size()-1;
 }
 JNIEXPORT void JNICALL
-Java_com_kyhsgeekcode_disassembler_MainActivity_Finalize(JNIEnv *env, jclass thiz, jint handle) {
-    cs_close((csh *) &handle);
+Java_com_kyhsgeekcode_disassembler_MainActivity_Finalize(JNIEnv *env, jclass thiz, jint handleIndex) {
+    csh handle = handles[handleIndex];
+    cs_close(&handle);
     handle = 0;
+    vector<csh>::iterator it = handles.begin();
+    advance(it, (size_t)handleIndex);
+    handles.erase(it);
 }
 
 struct platform {
@@ -139,12 +148,13 @@ int cs_setup_mem() {
 }
 
 JNIEXPORT jint JNICALL
-Java_com_kyhsgeekcode_disassembler_DisasmIterator_CSoption(JNIEnv *env, jobject thiz, jint handle,
+Java_com_kyhsgeekcode_disassembler_DisasmIterator_CSoption(JNIEnv *env, jobject thiz, jint handleIndex,
                                                            jint arg1,
                                                            jint arg2) {
     if (arg1 == CS_OPT_MODE) {
         arch = arg2;
     }
+    csh handle = handles[handleIndex];
     return (int) cs_option(handle, (cs_opt_type) arg1, arg2);
 }
 
@@ -189,10 +199,13 @@ static int messagePipe[2];
 //@returns the offset to resume later
 JNIEXPORT jlong JNICALL
 Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject thiz,
-                                                          jint handle,
+                                                          jint handleIndex,
                                                           jbyteArray bytes, jlong offset,
                                                           jlong size, jlong virtaddr,
                                                           jint count/*, jobject arr*/) {
+
+    csh handle = handles[handleIndex];
+
     int bytelen = env->GetArrayLength(bytes);
     jbyte *byte_buf;
     byte_buf = env->GetByteArrayElements(bytes, NULL);
@@ -274,6 +287,7 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
     // disassemble one instruction a time & store the result into @insn variable above
 
     __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "getsome_iter_Start");
+
     while (cs_disasm_iter(handle, &code, &code_size, &addr, insn) && done < count) {
         // analyze disassembled instruction in @insn variable ...
         // NOTE: @code, @code_size & @address variables are all updated
@@ -452,10 +466,10 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
 }
 JNIEXPORT jlong JNICALL
 Java_com_kyhsgeekcode_disassembler_DisasmIterator_getAll(JNIEnv *env, jobject thiz,
-                                                         jint handle,
+                                                         jint handleIndex,
                                                          jbyteArray bytes, jlong offset, jlong size,
                                                          jlong virtaddr/*, jobject arr*/) {
-    return Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(env, thiz, handle, bytes, offset, size,
+    return Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(env, thiz, handleIndex, bytes, offset, size,
                                                                      virtaddr, 2148483647);
 }
 //public NativeLong cs_disasm2(NativeLong handle, byte[] code, NativeLong code_offset,NativeLong code_len,
