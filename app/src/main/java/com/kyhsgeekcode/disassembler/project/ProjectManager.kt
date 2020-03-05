@@ -94,9 +94,9 @@ object ProjectManager {
         val determinedSourceFolder: File
         if (copy) {
             val copyTargetFileOrFolder = origFolder.resolve(targetFileOrFolder.name)
-            if (!targetFileOrFolder.isDirectory)
+            if (!targetFileOrFolder.isDirectory && targetFileOrFolder != copyTargetFileOrFolder)
                 FileUtils.copyFile(targetFileOrFolder, copyTargetFileOrFolder)
-            else
+            else if(targetFileOrFolder != copyTargetFileOrFolder)
                 FileUtils.copyDirectory(targetFileOrFolder, copyTargetFileOrFolder)
             determinedSourceFolder = copyTargetFileOrFolder
         } else {
