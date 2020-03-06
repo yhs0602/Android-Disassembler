@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler.utils2
+package com.kyhsgeekcode.disassembler.utils
 
 // https://stackoverflow.com/a/4761689/8614565
 

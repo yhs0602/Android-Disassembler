@@ -1,8 +1,8 @@
-package com.kyhsgeekcode.disassembler.utils2.Olly;
+package com.kyhsgeekcode.disassembler.utils.Olly;
 
 import com.kyhsgeekcode.disassembler.BuildConfig;
-import com.kyhsgeekcode.disassembler.utils2.CommentInfo;
-import com.kyhsgeekcode.disassembler.utils2.DisasmInfo;
+import com.kyhsgeekcode.disassembler.utils.CommentInfo;
+import com.kyhsgeekcode.disassembler.utils.DisasmInfo;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

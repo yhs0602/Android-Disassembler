@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler.utils2.Olly;
+package com.kyhsgeekcode.disassembler.utils.Olly;
 
 import java.util.HashMap;
 import java.util.Map;

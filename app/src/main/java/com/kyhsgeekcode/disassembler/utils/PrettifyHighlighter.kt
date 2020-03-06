@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler.utils2
+package com.kyhsgeekcode.disassembler.utils
 
 import prettify.PrettifyParser
 import syntaxhighlight.ParseResult

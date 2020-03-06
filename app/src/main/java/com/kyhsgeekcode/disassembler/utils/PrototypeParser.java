@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler.utils2;
+package com.kyhsgeekcode.disassembler.utils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

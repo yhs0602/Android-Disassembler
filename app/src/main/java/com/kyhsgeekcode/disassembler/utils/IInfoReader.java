@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler.utils2;
+package com.kyhsgeekcode.disassembler.utils;
 
 import java.io.IOException;
 import java.io.InputStream;

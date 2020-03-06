@@ -1,7 +1,7 @@
-package com.kyhsgeekcode.disassembler.utils2.Olly;
+package com.kyhsgeekcode.disassembler.utils.Olly;
 
-import com.kyhsgeekcode.disassembler.utils2.DisasmInfo;
-import com.kyhsgeekcode.disassembler.utils2.IInfoReader;
+import com.kyhsgeekcode.disassembler.utils.DisasmInfo;
+import com.kyhsgeekcode.disassembler.utils.IInfoReader;
 
 import java.io.DataInputStream;
 import java.io.IOException;
