@@ -13,13 +13,15 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
+import com.kyhsgeekcode.disassembler.utils.PrettifyHighlighter
+import com.kyhsgeekcode.disassembler.utils.decompressXML
+import kotlinx.android.synthetic.main.fragment_text.*
+import kotlinx.serialization.UnstableDefault
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStreamReader
 import java.util.*
-import kotlinx.android.synthetic.main.fragment_text.*
-import kotlinx.serialization.UnstableDefault
 
 class TextFragment : Fragment() {
     val TAG = "TextFragment"
@@ -27,6 +29,7 @@ class TextFragment : Fragment() {
     private lateinit var fileContent: ByteArray
     private lateinit var relPath: String
     val spanBlue = ForegroundColorSpan(Color.BLUE)
+
     @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +45,32 @@ class TextFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        val ext = File(relPath).extension.toLowerCase()
+        var highlighted = SpannableStringBuilder()
+        var strContent: String?
+        if (ext == "xml") {
+            try {
+                highlighted = decompressXML(fileContent)
+                strContent = null
+            } catch (e: NotThisFormatException) {
+                strContent = fileContent.toString(Charsets.UTF_8)
+            }
+        } else {
+            strContent = fileContent.toString(Charsets.UTF_8)
+        }
+        if(strContent!=null) {
+            highlighted = PrettifyHighlighter.highlight(if (ext == "smali") {
+                "java"
+            } else {
+                ext
+            }, strContent)
+        }
+//        val ssb = readAndColorize()
+        textFragmentTextView.setText(highlighted, TextView.BufferType.SPANNABLE)
+        textFragmentTextView.setBackgroundColor(Color.BLACK)
+    }
+
+    private fun readAndColorize(): SpannableStringBuilder {
         val ssb = SpannableStringBuilder()
         val terms: List<String>? = TermList[File(relPath).extension.toLowerCase()]
 
@@ -69,7 +98,7 @@ class TextFragment : Fragment() {
             Log.d(TAG, "ss:$ss")
         }
         Log.d(TAG, "ss:$ssb")
-        textFragmentTextView.setText(ssb, TextView.BufferType.SPANNABLE)
+        return ssb
     }
 
     companion object {

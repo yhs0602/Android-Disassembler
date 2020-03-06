@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Process
@@ -24,10 +25,10 @@ import com.gu.toolargetool.TooLargeTool
 import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
-import com.kyhsgeekcode.disassembler.utils.ProjectManager_OLD
 import com.kyhsgeekcode.disassembler.preference.SettingsActivity
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
+import com.kyhsgeekcode.disassembler.utils.ProjectManager_OLD
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.isArchive
@@ -65,6 +66,7 @@ class MainActivity : AppCompatActivity(),
 //        private const val TAB_ANALYSIS = 7
         private const val REQUEST_SELECT_FILE = 123
         const val REQUEST_SELECT_FILE_NEW = 124
+
         // https://medium.com/@gurpreetsk/memory-management-on-android-using-ontrimmemory-f500d364bc1a
         private const val LASTPROJKEY = "lastProject"
         private const val TAG = "Disassembler"
@@ -123,6 +125,7 @@ class MainActivity : AppCompatActivity(),
     // /////////////////////////////////////////////////UI manager////////////////////////////////////////////
 //    var hexManager = HexManager()
     var toDoAfterPermQueue: Queue<Runnable> = LinkedBlockingQueue()
+
     // ///////////////////////////////////////////////Current working data///////////////////////////////////////
 //    var fpath: String? = null
 //        set(fpath) {
@@ -330,7 +333,13 @@ class MainActivity : AppCompatActivity(),
                     title = "${item.caption} as Text"
                     TextFragment.newInstance(relPath)
                 } else {
-                    HexFragment.newInstance(relPath)
+                    val file = File(abspath)
+                    try {
+                        BitmapFactory.decodeStream(file.inputStream())?.recycle()
+                        ImageFragment.newInstance(relPath)
+                    } catch (e: Exception) {
+                        HexFragment.newInstance(relPath)
+                    }
                 }
             }
             FileDrawerListItem.DrawerItemType.BINARY -> BinaryFragment.newInstance(relPath)
@@ -689,7 +698,7 @@ class MainActivity : AppCompatActivity(),
                 val file = getExternalFilesDir(null)?.resolve("tmp")?.resolve("openDirect")
                         ?: return
                 file.parentFile.mkdirs()
-                file.outputStream().use{ fileOut ->
+                file.outputStream().use { fileOut ->
                     inStream?.copyTo(fileOut)
                 }
                 val project = ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, true)

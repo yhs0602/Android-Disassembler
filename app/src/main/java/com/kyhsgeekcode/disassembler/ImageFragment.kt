@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import kotlinx.android.synthetic.main.fragment_image.*
@@ -36,6 +37,7 @@ class ImageFragment : Fragment() {
         if (bitmap != null) {
             imageFragmentView.setImageDrawable(BitmapDrawable(context!!.resources, bitmap))
         } else {
+            Toast.makeText(activity!!, "The image could not be decoded!", Toast.LENGTH_SHORT).show()
             imageFragmentView.setImageResource(R.drawable.ic_launcher)
         }
     }
