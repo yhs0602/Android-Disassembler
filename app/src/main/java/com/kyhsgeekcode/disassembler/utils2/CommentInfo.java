@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler.Utils;
+package com.kyhsgeekcode.disassembler.utils2;
 
 public class CommentInfo {
     public long offset;

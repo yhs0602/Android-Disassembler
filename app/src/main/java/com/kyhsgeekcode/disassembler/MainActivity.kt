@@ -24,7 +24,7 @@ import com.gu.toolargetool.TooLargeTool
 import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
-import com.kyhsgeekcode.disassembler.Utils.ProjectManager_OLD
+import com.kyhsgeekcode.disassembler.utils2.ProjectManager_OLD
 import com.kyhsgeekcode.disassembler.preference.SettingsActivity
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
@@ -887,9 +887,9 @@ class MainActivity : AppCompatActivity(),
 //        return false
 //    }
 
-    private fun handleUDDFile(path: String, `is`: InputStream): Boolean {
+    private fun handleUDDFile(path: String, inputStream: InputStream): Boolean {
         return try {
-            val data = ProjectManager_OLD.ReadUDD(DataInputStream(`is`))
+            val data = ProjectManager_OLD.ReadUDD(DataInputStream(inputStream))
             false // true;
         } catch (e: IOException) {
             Log.e(TAG, "path:$path", e)

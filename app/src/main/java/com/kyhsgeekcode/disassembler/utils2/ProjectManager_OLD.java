@@ -1,9 +1,9 @@
-package com.kyhsgeekcode.disassembler.Utils;
+package com.kyhsgeekcode.disassembler.utils2;
 
 import android.util.Log;
 
-import com.kyhsgeekcode.disassembler.Utils.Olly.UDDReader;
-import com.kyhsgeekcode.disassembler.Utils.Olly.UddTag;
+import com.kyhsgeekcode.disassembler.utils2.Olly.UDDReader;
+import com.kyhsgeekcode.disassembler.utils2.Olly.UddTag;
 
 import java.io.DataInputStream;
 import java.io.File;
