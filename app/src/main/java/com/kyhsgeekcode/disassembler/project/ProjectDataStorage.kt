@@ -121,6 +121,11 @@ object ProjectDataStorage {
         }
         return file
     }
+
+    fun putFileContent(keykey: String, datadata: ByteArray) {
+         val key = Pair(keykey, DataType.FileContent)
+        data[key] = datadata
+    }
 }
 
 enum class DataType {

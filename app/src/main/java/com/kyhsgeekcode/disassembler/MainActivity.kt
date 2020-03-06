@@ -18,6 +18,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import at.pollaknet.api.facile.FacileReflector
+import at.pollaknet.api.facile.renderer.ILAsmRenderer
+import at.pollaknet.api.facile.symtab.symbols.Method
 import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
 import com.google.android.material.tabs.TabLayoutMediator
@@ -26,6 +29,7 @@ import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.preference.SettingsActivity
+import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.disassembler.utils.ProjectManager_OLD
@@ -36,6 +40,7 @@ import com.kyhsgeekcode.rootpicker.FileSelectorActivity
 import com.kyhsgeekcode.sendErrorReport
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.serialization.UnstableDefault
+import kotlinx.serialization.toUtf8Bytes
 import pl.openrnd.multilevellistview.ItemInfo
 import pl.openrnd.multilevellistview.MultiLevelListView
 import pl.openrnd.multilevellistview.OnItemClickListener
@@ -314,6 +319,14 @@ class MainActivity : AppCompatActivity(),
     fun determineFragmentToOpen(item: FileDrawerListItem): Pair<Fragment, String> {
         var title = "${item.caption} as ${item.type}"
 //        val rootPath = ProjectManager.getOriginal("").absolutePath
+        if(item.type == FileDrawerListItem.DrawerItemType.METHOD) {
+            val reflector = (item.tag as Array<*>)[0] as FacileReflector
+            val method = (item.tag as Array<*>)[1] as Method
+            val renderedStr = ILAsmRenderer(reflector).render(method)
+            val key = "${method.owner.name}.${method.name}_${method.methodSignature}"
+            ProjectDataStorage.putFileContent(key,renderedStr.toUtf8Bytes())
+            return Pair(TextFragment.newInstance(key), key)
+        }
         val abspath = (item.tag as String)
 //        Log.d(TAG, "rootPath:${rootPath}")
         Log.d(TAG, "absPath:$abspath")

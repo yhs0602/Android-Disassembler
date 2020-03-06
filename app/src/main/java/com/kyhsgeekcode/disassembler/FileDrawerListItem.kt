@@ -213,6 +213,7 @@ class FileDrawerListItem {
             inopenables.add(DrawerItemType.PROJECTS)
             inopenables.add(DrawerItemType.PROJECT)
             inopenables.add(DrawerItemType.FOLDER)
+            inopenables.add(DrawerItemType.PE_IL_TYPE)
         }
     }
 }
