@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import kotlin.reflect.KClass
 
@@ -14,7 +15,7 @@ class ViewPagerAdapter : FragmentStateAdapter  {
     constructor(fragmentmanager: FragmentManager, lifecycle: Lifecycle) : super(fragmentmanager, lifecycle)
 
     val mFragmentList = ArrayList<Fragment>()
-
+    private val pageIds= mFragmentList.map { it.hashCode().toLong() }
     private val mFragmentTitleList = ArrayList<String>()
 
     fun getTitle(pos: Int): String {
@@ -22,11 +23,11 @@ class ViewPagerAdapter : FragmentStateAdapter  {
     }
 
     override fun getItemId(position: Int): Long {
-        return super.getItemId(position)
+        return mFragmentList[position].hashCode().toLong()
     }
 
     override fun containsItem(itemId: Long): Boolean {
-        return super.containsItem(itemId)
+        return pageIds.contains(itemId)
     }
 
     override fun getItemCount(): Int {
@@ -62,6 +63,8 @@ class ViewPagerAdapter : FragmentStateAdapter  {
     fun removeTab(index: Int) {
         mFragmentList.removeAt(index)
         mFragmentTitleList.removeAt(index)
+        notifyItemRangeChanged(index, mFragmentList.size)
+        notifyItemRemoved(index)
         notifyDataSetChanged()
     }
 

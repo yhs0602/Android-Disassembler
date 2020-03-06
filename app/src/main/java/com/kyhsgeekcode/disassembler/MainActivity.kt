@@ -407,8 +407,10 @@ class MainActivity : AppCompatActivity(),
         when (id) {
             R.id.closeFile -> {
                 val curTab = getCurrentTab()
-                if(curTab != 0)
+                if(curTab != 0) {
+//                    tablayout.removeTab(tablayout.getTabAt(curTab)!!)
                     pagerAdapter.removeTab(curTab)
+                }
             }
             R.id.settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
@@ -1030,7 +1032,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun getCurrentTab(): Int {
-        return tablayout.selectedTabPosition
+        return pagerMain.currentItem
     }
 
     override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
