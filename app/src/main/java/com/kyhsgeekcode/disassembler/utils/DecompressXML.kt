@@ -114,7 +114,7 @@ fun decompressXML(xml: ByteArray): SpannableStringBuilder {
                 val attrValue = if (attrValueSi != -1) compXmlString(xml, sitOff, stOff, attrValueSi) else "resourceID 0x" + Integer.toHexString(attrResId)
                 appendSpanned(sb, " $attrName", ForegroundColorSpan(PrettifyHighlighter.getColor("kwd")))
                 appendSpanned(sb, "=\"", ForegroundColorSpan(PrettifyHighlighter.getColor("pun")))
-                appendSpanned(sb, "$attrValue", ForegroundColorSpan(PrettifyHighlighter.getColor("str")))
+                appendSpanned(sb, "$attrValue", ForegroundColorSpan(PrettifyHighlighter.getColor("lit")))
                 appendSpanned(sb, "\"", ForegroundColorSpan(PrettifyHighlighter.getColor("pun")))
                 sb.append(System.lineSeparator())
                 //tr.add(attrName, attrValue);

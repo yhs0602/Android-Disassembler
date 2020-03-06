@@ -407,7 +407,8 @@ class MainActivity : AppCompatActivity(),
         when (id) {
             R.id.closeFile -> {
                 val curTab = getCurrentTab()
-                pagerAdapter.removeTab(curTab)
+                if(curTab != 0)
+                    pagerAdapter.removeTab(curTab)
             }
             R.id.settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)

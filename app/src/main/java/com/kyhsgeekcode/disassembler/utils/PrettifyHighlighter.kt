@@ -7,7 +7,6 @@ import android.text.style.ForegroundColorSpan
 import prettify.PrettifyParser
 import syntaxhighlight.ParseResult
 import syntaxhighlight.Parser
-import java.util.regex.Pattern
 
 // https://stackoverflow.com/a/19787125/8614565
 object PrettifyHighlighter {
