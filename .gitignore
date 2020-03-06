@@ -8,3 +8,4 @@ app/release/
 app/.cxx
 app/.externalNativeBuild
 local.properties
+*.hprof

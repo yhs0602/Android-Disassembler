@@ -13,6 +13,7 @@ import com.kyhsgeekcode.disassembler.FileDrawerListItem.DrawerItemType
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
+import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.getDrawable
 import java.io.File
 import java.io.FileInputStream
@@ -60,6 +61,12 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                 val projectModel = item.tag as ProjectModel
                 val file = File(projectModel.sourceFilePath)
                 items.add(FileDrawerListItem(file, newLevel))
+                if(projectModel.projectType == ProjectType.APK) {
+                    val libsFolder = File("${file.absolutePath}_libs")
+                    if(libsFolder.exists()) {
+                        items.add(FileDrawerListItem(libsFolder,newLevel))
+                    }
+                }
             }
             DrawerItemType.FOLDER -> {
                 val path = item.tag as String

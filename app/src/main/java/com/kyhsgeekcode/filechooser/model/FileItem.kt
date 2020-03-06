@@ -8,9 +8,9 @@ import androidx.core.content.ContextCompat
 import at.pollaknet.api.facile.Facile
 import com.kyhsgeekcode.*
 import com.kyhsgeekcode.disassembler.R
+import splitties.init.appCtx
 import java.io.File
 import java.io.Serializable
-import splitties.init.appCtx
 
 // A item of base, or a file
 open class FileItem : Serializable {
@@ -167,7 +167,7 @@ open class FileItem : Serializable {
                         Log.e(TAG, "", e)
                     }
                     val label = applabel + "(" + packageInfo.packageName + ")"
-                    result.add(FileItemApp(label, File(packageInfo.sourceDir), icon))
+                    result.add(FileItemApp(label, File(packageInfo.sourceDir), File(packageInfo.nativeLibraryDir), icon))
                     i++
                     if (i % 10 == 0) {
                         publisher(numpkg * 2, i + numpkg)

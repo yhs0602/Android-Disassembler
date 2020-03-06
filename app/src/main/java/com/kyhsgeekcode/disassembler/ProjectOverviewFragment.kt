@@ -13,16 +13,19 @@ import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
+import com.kyhsgeekcode.filechooser.model.FileItemApp
 import com.kyhsgeekcode.isArchive
-import java.io.File
 import kotlinx.android.synthetic.main.fragment_project_overview.*
 import kotlinx.serialization.UnstableDefault
+import org.apache.commons.io.FileUtils
+import java.io.File
 
 class ProjectOverviewFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             inflater.inflate(R.layout.fragment_project_overview, container, false)!!
 
+    @UnstableDefault
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         selFile.setOnClickListener {
@@ -31,7 +34,7 @@ class ProjectOverviewFragment : Fragment() {
         }
         fileNameText.isFocusable = false
         fileNameText.isEnabled = false
-        if(ProjectManager.currentProject!=null) {
+        if (ProjectManager.currentProject != null) {
             fileNameText.setText("Launched directly from external source")
         }
     }
@@ -50,7 +53,7 @@ class ProjectOverviewFragment : Fragment() {
                 Log.v(TAG, "Open as project$openAsProject")
                 if (fi.file?.isArchive() == true) {
                 }
-                onChoosePathNew(fi.file!!)
+                onChoosePathNew(fi)
 //                val project = ProjectManager.newProject(fi.file!!, ProjectType.APK, if(openAsProject) fi.file?.name else null)
 //                initializeDrawer(project)
             }
@@ -58,15 +61,33 @@ class ProjectOverviewFragment : Fragment() {
     }
 
     @UnstableDefault
-    private fun onChoosePathNew(file: File) {
+    private fun onChoosePathNew(fileItem: FileItem) {
+        val file = fileItem.file!!
+        val nativeFile: File? = if (fileItem is FileItemApp) {
+            fileItem.nativeFile
+        } else {
+            null
+        }
+        val projectType = fileItemTypeToProjectType(fileItem)
         showYesNoDialog(activity!!, "Copy contents",
                 "Do you want to copy the target file to the app's project folder? It is recommended",
-                DialogInterface.OnClickListener { dlg, which ->
-                    val project = ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, true)
+                DialogInterface.OnClickListener { _, _ ->
+                    val project = ProjectManager.newProject(file, projectType, file.name, true)
+                    if (nativeFile != null && nativeFile.exists() && nativeFile.canRead()) {
+                        val targetFolder = File(project.sourceFilePath+"_libs")
+                        targetFolder.mkdirs()
+                        var targetFile = targetFolder.resolve(nativeFile.name)
+                        var i=0
+                        while(targetFile.exists()) {
+                            targetFile = File(targetFile.absolutePath+"_extracted_$i.so")
+                            i++
+                        }
+                        FileUtils.copyDirectory(nativeFile, targetFile)
+                    }
                     initializeDrawer(project)
                 },
                 DialogInterface.OnClickListener { dlg, which ->
-                    val project = ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, false)
+                    val project = ProjectManager.newProject(file, projectType, file.name, false)
                     initializeDrawer(project)
                 }
         )
@@ -86,5 +107,11 @@ class ProjectOverviewFragment : Fragment() {
         fun newInstance(): ProjectOverviewFragment {
             return ProjectOverviewFragment()
         }
+    }
+
+    fun fileItemTypeToProjectType(fileItem: FileItem): String {
+        if (fileItem is FileItemApp)
+            return ProjectType.APK
+        return ProjectType.UNKNOWN
     }
 }
