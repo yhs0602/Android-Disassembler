@@ -127,9 +127,6 @@ dependencies {
 
     implementation 'com.gu.android:toolargetool:0.2.1@aar'
 }
-repositories {
-    mavenCentral()
-}
 /*
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
