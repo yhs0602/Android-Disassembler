@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
+import com.kyhsgeekcode.TAG
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import kotlinx.android.synthetic.main.fragment_hexview.*
 import kotlinx.serialization.UnstableDefault

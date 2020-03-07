@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.kyhsgeekcode.TAG
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
@@ -16,6 +17,10 @@ import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.filechooser.model.FileItemApp
 import com.kyhsgeekcode.isArchive
 import kotlinx.android.synthetic.main.fragment_project_overview.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.UnstableDefault
 import org.apache.commons.io.FileUtils
 import java.io.File
@@ -69,28 +74,44 @@ class ProjectOverviewFragment : Fragment() {
             null
         }
         val projectType = fileItemTypeToProjectType(fileItem)
-        showYesNoDialog(activity!!, "Copy contents",
-                "Do you want to copy the target file to the app's project folder? It is recommended",
-                DialogInterface.OnClickListener { _, _ ->
-                    val project = ProjectManager.newProject(file, projectType, file.name, true)
-                    if (nativeFile != null && nativeFile.exists() && nativeFile.canRead()) {
-                        val targetFolder = File(project.sourceFilePath+"_libs")
-                        targetFolder.mkdirs()
-                        var targetFile = targetFolder.resolve(nativeFile.name)
-                        var i=0
-                        while(targetFile.exists()) {
-                            targetFile = File(targetFile.absolutePath+"_extracted_$i.so")
-                            i++
-                        }
-                        FileUtils.copyDirectory(nativeFile, targetFile)
-                    }
-                    initializeDrawer(project)
-                },
-                DialogInterface.OnClickListener { dlg, which ->
-                    val project = ProjectManager.newProject(file, projectType, file.name, false)
-                    initializeDrawer(project)
+        val dialogOnClickListener = DialogInterface.OnClickListener { dlg, which ->
+            CoroutineScope(Dispatchers.Main).launch {
+                (activity as ProgressHandler).startProgress()
+                val project = withContext(Dispatchers.IO) {
+                    onClickCopyDialog(file, projectType, nativeFile, which == DialogInterface.BUTTON_POSITIVE)
                 }
+                initializeDrawer(project)
+                (activity as ProgressHandler).finishProgress()
+            }
+        }
+        showYesNoDialog(activity!!, "Copy contents",
+                getString(R.string.askCopy),
+                dialogOnClickListener, dialogOnClickListener
         )
+    }
+
+
+    @UnstableDefault
+    private fun onClickCopyDialog(file: File, projectType: String, nativeFile: File?, copy: Boolean): ProjectModel {
+        val project = ProjectManager.newProject(file, projectType, file.name, copy)
+        if (copy) {
+            copyNativeDirToProject(nativeFile, project)
+        }
+        return project
+    }
+
+    private fun copyNativeDirToProject(nativeFile: File?, project: ProjectModel) {
+        if (nativeFile != null && nativeFile.exists() && nativeFile.canRead()) {
+            val targetFolder = File(project.sourceFilePath + "_libs")
+            targetFolder.mkdirs()
+            var targetFile = targetFolder.resolve(nativeFile.name)
+            var i = 0
+            while (targetFile.exists()) {
+                targetFile = File(targetFile.absolutePath + "_extracted_$i.so")
+                i++
+            }
+            FileUtils.copyDirectory(nativeFile, targetFile)
+        }
     }
 
     // Actually, currentProject is set and automatically figured out

@@ -98,4 +98,5 @@
     <string name="attachment_summary_off">첨부파일X</string>
     <string name="attachment_title">첨부파일</string>
     <string name="sync_title">동기화</string>
+    <string name="askCopy">대상 파일을 본 앱의 프로젝트 폴더로 복사하시겠습니까?(권장)</string>
 </resources>

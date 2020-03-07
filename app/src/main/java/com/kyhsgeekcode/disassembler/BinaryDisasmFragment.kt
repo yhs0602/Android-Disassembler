@@ -12,6 +12,7 @@ import android.widget.TableRow
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.kyhsgeekcode.TAG
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_ALL
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_MAX
 import com.kyhsgeekcode.disassembler.models.Architecture.getArchitecture
@@ -134,6 +135,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     }
 
     override fun onBackPressed(): Boolean {
+        Log.d(TAG, "onBackPressed, ${jmpBackstack.size}")
         if (!jmpBackstack.empty()) {
             jumpto(jmpBackstack.pop())
             jmpBackstack.pop()

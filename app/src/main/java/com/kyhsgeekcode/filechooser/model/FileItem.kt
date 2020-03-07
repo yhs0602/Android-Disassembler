@@ -75,8 +75,11 @@ open class FileItem : Serializable {
             return emptyList()
         if (file?.isDirectory == true) {
             val result = ArrayList<FileItem>()
-            for (childFile in file!!.listFiles()) {
-                result.add(FileItem(file = childFile))
+            val children = file!!.listFiles()
+            val total = children.size
+            for (childFile in children.withIndex()) {
+                result.add(FileItem(file = childFile.value))
+                publisher(childFile.index, total)
             }
             return result
         } else if (file?.isArchive() == true) {

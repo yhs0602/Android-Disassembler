@@ -28,6 +28,7 @@ import com.gu.toolargetool.TooLargeTool
 import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
+import com.kyhsgeekcode.disassembler.PermissionUtils.requestAppPermissions
 import com.kyhsgeekcode.disassembler.preference.SettingsActivity
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.project.ProjectManager
@@ -38,6 +39,8 @@ import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.isArchive
 import com.kyhsgeekcode.rootpicker.FileSelectorActivity
 import com.kyhsgeekcode.sendErrorReport
+import com.tingyik90.snackprogressbar.SnackProgressBar
+import com.tingyik90.snackprogressbar.SnackProgressBarManager
 import kotlinx.android.synthetic.main.main.*
 import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.toUtf8Bytes
@@ -59,7 +62,17 @@ class MainActivity : AppCompatActivity(),
         DexFragment.OnFragmentInteractionListener,
         DotNetFragment.OnFragmentInteractionListener,
         StringFragment.OnFragmentInteractionListener,
-        IDrawerManager {
+        IDrawerManager,
+        ProgressHandler {
+
+    private val snackProgressBarManager by lazy { SnackProgressBarManager(mainLayout, lifecycleOwner = this) }
+    private val circularType = SnackProgressBar(SnackProgressBar.TYPE_HORIZONTAL, "Loading...")
+            .setIsIndeterminate(false)
+            .setAllowUserInput(false)
+    private val indeterminate = SnackProgressBar(SnackProgressBar.TYPE_CIRCULAR, "Loading...")
+            .setIsIndeterminate(true)
+            .setAllowUserInput(false)
+
     companion object {
         const val SETTINGKEY = "setting"
         const val REQUEST_WRITE_STORAGE_REQUEST_CODE = 1
@@ -81,6 +94,7 @@ class MainActivity : AppCompatActivity(),
         const val TAG_PROJECTS = 2
         const val TAG_PROCESSES = 3
         const val TAG_RUNNING_APPS = 4
+
 
         // //////////////////////////////////////////Data Conversion//////////////////////////////////
         /**
@@ -319,12 +333,12 @@ class MainActivity : AppCompatActivity(),
     fun determineFragmentToOpen(item: FileDrawerListItem): Pair<Fragment, String> {
         var title = "${item.caption} as ${item.type}"
 //        val rootPath = ProjectManager.getOriginal("").absolutePath
-        if(item.type == FileDrawerListItem.DrawerItemType.METHOD) {
+        if (item.type == FileDrawerListItem.DrawerItemType.METHOD) {
             val reflector = (item.tag as Array<*>)[0] as FacileReflector
             val method = (item.tag as Array<*>)[1] as Method
             val renderedStr = ILAsmRenderer(reflector).render(method)
             val key = "${method.owner.name}.${method.name}_${method.methodSignature}"
-            ProjectDataStorage.putFileContent(key,renderedStr.toUtf8Bytes())
+            ProjectDataStorage.putFileContent(key, renderedStr.toUtf8Bytes())
             return Pair(TextFragment.newInstance(key), key)
         }
         val abspath = (item.tag as String)
@@ -420,7 +434,7 @@ class MainActivity : AppCompatActivity(),
         when (id) {
             R.id.closeFile -> {
                 val curTab = getCurrentTab()
-                if(curTab != 0) {
+                if (curTab != 0) {
 //                    tablayout.removeTab(tablayout.getTabAt(curTab)!!)
                     pagerAdapter.removeTab(curTab)
                 }
@@ -1068,6 +1082,25 @@ class MainActivity : AppCompatActivity(),
 //        left_drawer.isAlwaysExpanded = orig
         left_drawer.refreshDrawableState()
         left_drawer.requestLayout()
+    }
+
+    override fun publishProgress(current: Int, total: Int?, message: String?) {
+        snackProgressBarManager.setProgress(current)
+        if (total != null || message != null) {
+            if(total!=null)
+                circularType.setProgressMax(total)
+            if(message!=null)
+                circularType.setMessage(message)
+            snackProgressBarManager.updateTo(circularType)
+        }
+    }
+
+    override fun startProgress() {
+        snackProgressBarManager.show(indeterminate, SnackProgressBarManager.LENGTH_INDEFINITE)
+    }
+
+    override fun finishProgress() {
+        snackProgressBarManager.dismiss()
     }
 
 //    internal inner class SaveDBAsync : AsyncTask<DatabaseHelper?, Int?, Void?>() {

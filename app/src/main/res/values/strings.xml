@@ -298,5 +298,6 @@ Android </string>
     <string name="library_AndroidX_licenseId" translatable="false">apache_2_0 </string>
     <string name="library_AndroidX_isOpenSource" translatable="false"> true </string>
     <string name="library_AndroidX_repositoryLink" translatable="false">https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev </string>
+    <string name="askCopy">Do you want to copy the target file to the app\'s project folder? It is recommended</string>
 
 </resources>
