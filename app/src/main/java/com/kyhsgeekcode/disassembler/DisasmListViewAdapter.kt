@@ -76,6 +76,8 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     fun loadMore(position: Int, address: Long) { // this.address.clear();
         Log.d(TAG, "LoadMore position: $position, writep: $writep, virtaddr: ${address.toString(16)}")
         writep = position
+        if(currentAddress == 0L)
+            currentAddress = address + file.codeSectionBase - file.codeVirtAddr
         dit.getSome(handle, file.fileContents, address + file.codeSectionBase - file.codeVirtAddr /*address-file.codeVirtualAddress*/, file.fileContents.size.toLong(), address, INSERT_COUNT)
     }
 
@@ -101,7 +103,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         // notifyDataSetChanged();
     }
 
-    fun OnJumpTo(/*int position,*/
+    fun onJumpTo(/*int position,*/
         address: Long
     ) { // refreshing is inevitable, and backward is ignored.
 // cause: useless

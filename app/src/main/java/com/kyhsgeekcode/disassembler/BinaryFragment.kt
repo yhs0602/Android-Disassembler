@@ -14,7 +14,7 @@ import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.functions
 
-class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
+class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackPressed {
     val TAG = "BinaryFragment"
 
     val ARG_PARAM1 = "RELPATH"
@@ -137,5 +137,13 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider {
     fun jumpto(address: Long) {
         setCurrentTabByTag(TabTags.TAB_DISASM, true)
         (pagerAdapter.createFragment(findTabByTag(TabTags.TAB_DISASM)!!) as BinaryDisasmFragment).jumpto(address)
+    }
+
+    override fun onBackPressed(): Boolean {
+        val fragment = pagerAdapter.createFragment(pagerBinary.currentItem)
+        if ((fragment as? IOnBackPressed)?.onBackPressed() != true) {
+            return false
+        }
+        return true
     }
 }

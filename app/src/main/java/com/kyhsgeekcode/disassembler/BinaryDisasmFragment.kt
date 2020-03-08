@@ -219,7 +219,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         if (isValidAddress(address)) {
             (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_DISASM, true)
             jmpBackstack.push(java.lang.Long.valueOf(adapter.currentAddress))
-            adapter.OnJumpTo(address)
+            adapter.onJumpTo(address)
             disasmTabListview.scrollToPosition(0)
         } else {
             Toast.makeText(activity, R.string.validaddress, Toast.LENGTH_SHORT).show()

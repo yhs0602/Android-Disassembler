@@ -408,7 +408,7 @@ class MainActivity : AppCompatActivity(),
 
     override fun onBackPressed() {
         val fragment = pagerAdapter.createFragment(pagerMain.currentItem)
-        (fragment as? IOnBackPressed)?.onBackPressed()?.not()?.let {
+        if ((fragment as? IOnBackPressed)?.onBackPressed() != true) {
             super.onBackPressed()
         }
     }
@@ -1076,9 +1076,9 @@ class MainActivity : AppCompatActivity(),
     override fun publishProgress(current: Int, total: Int?, message: String?) {
         snackProgressBarManager.setProgress(current)
         if (total != null || message != null) {
-            if(total!=null)
+            if (total != null)
                 circularType.setProgressMax(total)
-            if(message!=null)
+            if (message != null)
                 circularType.setMessage(message)
             snackProgressBarManager.updateTo(circularType)
         }
