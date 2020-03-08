@@ -351,10 +351,10 @@ class MainActivity : AppCompatActivity(),
                 } else {
                     val file = File(abspath)
                     try {
-                        BitmapFactory.decodeStream(file.inputStream())?.recycle()
+                        (BitmapFactory.decodeStream(file.inputStream())?:throw Exception()).recycle()
                         ImageFragment.newInstance(relPath)
                     } catch (e: Exception) {
-                        HexFragment.newInstance(relPath)
+                        BinaryFragment.newInstance(relPath)
                     }
                 }
             }

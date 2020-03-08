@@ -145,6 +145,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                         outfile.parentFile.mkdirs()
                         var output: FileOutputStream? = null
                         try {
+//                            Log.d(TAG, "entry: $entry, outfile:$outfile")
                             output = FileOutputStream(outfile)
                             var len = 0
                             while (zi.read(buffer).also { len = it } > 0) {
