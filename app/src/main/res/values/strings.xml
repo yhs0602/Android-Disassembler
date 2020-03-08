@@ -300,4 +300,14 @@ Android </string>
     <string name="library_AndroidX_repositoryLink" translatable="false">https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev </string>
     <string name="askCopy">Do you want to copy the target file to the app\'s project folder? It is recommended</string>
 
+    <string name="define_smali" translatable="false"></string>
+    <string name="library_smali_author" translatable="false">JesusFreke</string>
+    <string name="library_smali_authorWebsite" translatable="false">https://github.com/JesusFreke</string>
+    <string name="library_smali_libraryName" translatable="false">smali </string>
+    <string name="library_smali_libraryDescription" translatable="false">smali/baksmali </string>
+    <string name="library_smali_libraryVersion" translatable="false">2.4.0 </string>
+    <string name="library_smali_libraryWebsite" translatable="false">https://bitbucket.org/JesusFreke/smali/downloads/</string>
+    <string name="library_smali_licenseId" translatable="false">apache_2_0 </string>
+    <string name="library_smali_isOpenSource" translatable="false"> true </string>
+    <string name="library_smali_repositoryLink" translatable="false">https://github.com/JesusFreke/smali </string>
 </resources>
