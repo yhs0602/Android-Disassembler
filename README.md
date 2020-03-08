@@ -4,9 +4,9 @@
 
 # Android-Disassembler - Analyze your malicious app on your phone
 
-Disassemble **ANY** files including android shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files, ANY files you want like pictures, audios, etc(for fun) entirely on Android. Capstone-based disassembler application on android.
+Android Disassembler is an application that is able to analyze several types of files such as APK files, dex files, shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files and much more. These app features are based on [capstone library](https://github.com/aquynh/capstone), [elf](https://github.com/serge1/ELFIO) [parser](https://github.com/jawi/java-binutils), [PE parser](https://github.com/kichik/pecoff4j), [backsmali](https://github.com/JesusFreke/smali), and [facile reflector](https://github.com/TomSmartBishop/facile-api).
 
-# Version 2.0.1 [pre-release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 2.0.2 [pre-release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
 ## What's new : Tab system renewal, fix several issues
 # Features
@@ -91,6 +91,7 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
  - [Spek](https://github.com/spekframework/spek)
  - [Kotlinx serialization](https://github.com/Kotlin/kotlinx.serialization)
  - [AndroidX](https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev)
+ - [smali](https://github.com/JesusFreke/smali)
 # TODO
  - Show prototypes of NDK/C standard APIs in the symbols tab.
  - More sophisticated colorizing
@@ -106,6 +107,7 @@ Disassemble **ANY** files including android shared libraries (aka .so files) (ND
  - About to add other utilities.
  - Add android resource analyzer
  - Let user choose file from google drive
+ - Let user choose samples from web by hashes
 
 # Thanks
 https://reverseengineering.stackexchange.com/a/20124/23870
