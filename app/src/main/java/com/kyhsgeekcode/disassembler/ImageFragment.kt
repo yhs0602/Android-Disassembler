@@ -24,6 +24,7 @@ class ImageFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             relPath = it.getString(ARG_PARAM)!!
+            it.clear()
         }
         Log.d(TAG, "relPath:$relPath")
         bitmap = BitmapFactory.decodeFile(ProjectDataStorage.resolveToRead(relPath)?.absolutePath)

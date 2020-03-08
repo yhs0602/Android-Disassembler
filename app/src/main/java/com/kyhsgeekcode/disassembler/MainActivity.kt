@@ -25,6 +25,7 @@ import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
 import com.google.android.material.tabs.TabLayoutMediator
 import com.gu.toolargetool.TooLargeTool
+import com.kyhsgeekcode.FileExtensions.textFileExts
 import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
@@ -106,8 +107,6 @@ class MainActivity : AppCompatActivity(),
         @JvmStatic
         external fun Finalize(handle: Int)
 
-        val textFileExts: MutableSet<String> = HashSet()
-
         /* this is used to load the 'hello-jni' library on application
      * startup. The library has already been unpacked into
      * /data/data/com.example.hellojni/lib/libhello-jni.so at
@@ -117,16 +116,6 @@ class MainActivity : AppCompatActivity(),
             System.loadLibrary("native-lib")
         }
 
-        init {
-            textFileExts.add("xml")
-            textFileExts.add("txt")
-            textFileExts.add("smali")
-            textFileExts.add("java")
-            textFileExts.add("json")
-            textFileExts.add("md")
-            textFileExts.add("il")
-            textFileExts.add("properties")
-        }
     }
 
     // ////////////////////////////////////////////Views/////////////////////////////////////

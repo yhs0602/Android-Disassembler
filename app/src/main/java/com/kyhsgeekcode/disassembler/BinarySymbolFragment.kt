@@ -27,7 +27,7 @@ class BinarySymbolFragment : Fragment() {
         fun newInstance(relPath: String): BinarySymbolFragment {
             return BinarySymbolFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM, relPath)
+//                    putString(ARG_PARAM, relPath)
                 }
             }
         }

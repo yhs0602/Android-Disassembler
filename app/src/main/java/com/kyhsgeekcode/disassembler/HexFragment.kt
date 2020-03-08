@@ -23,6 +23,7 @@ class HexFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             relPath = it.getString(ARG_PARAM)!!
+            it.clear()
         }
         Log.d(TAG, "relPath:$relPath")
         fileContent = ProjectDataStorage.getFileContent(relPath)

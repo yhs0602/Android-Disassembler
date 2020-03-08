@@ -26,6 +26,7 @@ class BinaryOverviewFragment : Fragment() {
         arguments?.let {
             relPath = it.getString(ARG_PARAM)!!
             parsedFile = (parentFragment as IParsedFileProvider).parsedFile
+            it.clear()
         }
     }
 

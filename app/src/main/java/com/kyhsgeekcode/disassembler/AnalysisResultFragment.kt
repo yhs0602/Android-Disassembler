@@ -38,6 +38,7 @@ class AnalysisResultFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             relPath = it.getString(ARG_PARAM)!!
+            it.clear()
         }
         fileContent = ProjectDataStorage.getFileContent(relPath)
     }

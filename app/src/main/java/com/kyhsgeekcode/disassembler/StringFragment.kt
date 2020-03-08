@@ -45,6 +45,7 @@ class StringFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             relPath = it.getString(RELPATH)!!
+            it.clear()
         }
         fileContent = ProjectDataStorage.getFileContent(relPath)
     }

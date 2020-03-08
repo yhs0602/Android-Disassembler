@@ -29,6 +29,7 @@ class DexFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)!!
+            it.clear()
         }
     }
 

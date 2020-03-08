@@ -11,17 +11,9 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import at.pollaknet.api.facile.Facile
+import com.kyhsgeekcode.FileExtensions.peFileExts
 import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.disassembler.project.ProjectManager
-import java.io.*
-import java.util.zip.ZipEntry
-import java.util.zip.ZipException
-import java.util.zip.ZipInputStream
-import kotlin.math.roundToInt
-import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.isAccessible
 import kotlinx.serialization.UnstableDefault
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveException
@@ -32,8 +24,19 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
 import org.apache.commons.compress.utils.IOUtils
 import org.apache.commons.io.FileUtils
+import org.boris.pecoff4j.ImageDataDirectory
+import org.boris.pecoff4j.PE
+import org.boris.pecoff4j.io.PEParser
 import splitties.init.appCtx
 import splitties.systemservices.clipboardManager
+import java.io.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipException
+import java.util.zip.ZipInputStream
+import kotlin.math.roundToInt
+import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 
 fun extractZip(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ -> }) {
     val zi = ZipInputStream(from.inputStream())
@@ -77,12 +80,24 @@ fun File.isArchive(): Boolean {
 }
 
 fun File.isDotnetFile(): Boolean {
-    return try {
-        Facile.load(path)
-        true
-    } catch (e: Exception) {
-        false
+    if (peFileExts.contains(extension.toLowerCase())) {
+        return try {
+            val pe: PE = PEParser.parse(path)
+            //https://web.archive.org/web/20110930194955/http://www.grimes.demon.co.uk/dotnet/vistaAndDotnet.htm
+            //Not fourteenth, but 15th
+            val idd: ImageDataDirectory = pe.optionalHeader.getDataDirectory(14)
+            idd.size != 0 && idd.virtualAddress != 0
+//        try {
+//            Facile.load(path)
+//            true
+//        } catch (e: Exception) {
+//            false
+//        }
+        } catch (e: Exception) {
+            false
+        }
     }
+    return false
 }
 
 fun File.isDexFile(): Boolean = extension.toLowerCase() == "dex"

@@ -20,7 +20,7 @@ class BinaryDetailFragment : Fragment() {
         fun newInstance(relPath: String): BinaryDetailFragment {
             return BinaryDetailFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM, relPath)
+//                    putString(ARG_PARAM, relPath)
                 }
             }
         }

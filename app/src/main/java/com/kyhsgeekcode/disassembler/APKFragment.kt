@@ -29,6 +29,7 @@ class APKFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             relPath = it.getString(ARG_PARAM1)!!
+            it.clear()
         }
     }
 
