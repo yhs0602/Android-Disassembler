@@ -18,6 +18,10 @@ object ProjectDataStorage {
         return data[key] as ByteArray
     }
 
+    fun getExtension(relPath: String) : String {
+        return resolveToRead(relPath)?.extension ?: ""
+    }
+
 //    @UnstableDefault
 //    private fun getOriginalOrGen(relPath: String): File {
 //        val orig = ProjectManager.getOriginal(relPath)

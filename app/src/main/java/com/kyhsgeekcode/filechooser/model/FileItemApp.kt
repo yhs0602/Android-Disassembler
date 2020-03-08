@@ -11,20 +11,23 @@ class FileItemApp(label: String, val realFile: File, val nativeFile: File, icon:
     //    override val TAG = FileItemApp::class.java.simpleName
     override fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
         backFile = File(appCtx.cacheDir, realFile.name)
+        backFile!!.deleteRecursively()
+        backFile!!.mkdirs()
         extract(realFile, backFile!!) { total, count ->
             publisher(total.toInt(), count.toInt())
         }
         if (nativeFile.exists()) {
             if (nativeFile.canRead()) {
                 val targetFolder = backFile!!.resolve("libs")
-                var targetFile = targetFolder.resolve(nativeFile.name)
+                val targetFile = targetFolder.resolve(nativeFile.name)
+                var madetargetFile= targetFile
                 var i = 0
                 while (targetFile.exists()) {
-                    targetFile = File(targetFile.absolutePath + "_extractedLibs$i")
+                    madetargetFile = File(targetFile.absolutePath + "_extractedLibs$i")
                     i++
                 }
                 targetFolder.mkdirs()
-                FileUtils.copyDirectory(nativeFile, targetFile)
+                FileUtils.copyDirectory(nativeFile, madetargetFile)
             } else {
                 Logger.e(TAG, "Native file $nativeFile could not be read")
             }

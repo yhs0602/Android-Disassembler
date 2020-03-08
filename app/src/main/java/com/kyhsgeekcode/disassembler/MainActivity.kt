@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity(),
         ProgressHandler {
 
     private val snackProgressBarManager by lazy { SnackProgressBarManager(mainLayout, lifecycleOwner = this) }
-    private val circularType = SnackProgressBar(SnackProgressBar.TYPE_HORIZONTAL, "Loading...")
+    private val horizontal = SnackProgressBar(SnackProgressBar.TYPE_HORIZONTAL, "Loading...")
             .setIsIndeterminate(false)
             .setAllowUserInput(false)
     private val indeterminate = SnackProgressBar(SnackProgressBar.TYPE_CIRCULAR, "Loading...")
@@ -289,7 +289,7 @@ class MainActivity : AppCompatActivity(),
     private fun setupLeftDrawer() {
         // mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         // Set the adapter for the list view
-        left_drawer.setAdapter(FileDrawerListAdapter().also { mDrawerAdapter = it }) // new ArrayAdapter<String>(MainActivity.this,
+        left_drawer.setAdapter(FileDrawerListAdapter(this).also { mDrawerAdapter = it }) // new ArrayAdapter<String>(MainActivity.this,
         // R.layout.row, mProjNames));
         val initialDrawers: MutableList<FileDrawerListItem> = ArrayList()
         initialDrawers.add(FileDrawerListItem("Projects", 0, FileDrawerListItem.DrawerItemType.PROJECTS))
@@ -378,7 +378,9 @@ class MainActivity : AppCompatActivity(),
 
     private fun setupUncaughtException() {
         Thread.setDefaultUncaughtExceptionHandler { p1: Thread?, p2: Throwable ->
-            Toast.makeText(this@MainActivity, Log.getStackTraceString(p2), Toast.LENGTH_SHORT).show()
+            runOnUiThread{
+                Toast.makeText(this@MainActivity, Log.getStackTraceString(p2), Toast.LENGTH_SHORT).show()
+            }
             if (p2 is SecurityException) {
                 Toast.makeText(this@MainActivity, R.string.didUgrant, Toast.LENGTH_SHORT).show()
                 val permSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
@@ -1077,11 +1079,13 @@ class MainActivity : AppCompatActivity(),
         snackProgressBarManager.setProgress(current)
         if (total != null || message != null) {
             if (total != null)
-                circularType.setProgressMax(total)
+                horizontal.setProgressMax(total)
             if (message != null)
-                circularType.setMessage(message)
-            snackProgressBarManager.updateTo(circularType)
+                horizontal.setMessage(message)
+            snackProgressBarManager.updateTo(horizontal)
         }
+        if(snackProgressBarManager.getLastShown() != null)
+            snackProgressBarManager.show(horizontal, SnackProgressBarManager.LENGTH_INDEFINITE)
     }
 
     override fun startProgress() {

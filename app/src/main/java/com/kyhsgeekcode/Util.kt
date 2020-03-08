@@ -110,6 +110,8 @@ fun extract(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ ->
         val archi = ArchiveStreamFactory().createArchiveInputStream(BufferedInputStream(from.inputStream()))
         var entry: ArchiveEntry?
         while (archi.nextEntry.also { entry = it } != null) {
+            if(entry!!.name == "")
+                continue
             if (!archi.canReadEntryData(entry)) {
                 // log something?
                 Log.e("Extract archive", "Cannot read entry data")

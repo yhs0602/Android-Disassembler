@@ -15,6 +15,11 @@ import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.getDrawable
+import kotlinx.serialization.UnstableDefault
+import org.jf.baksmali.Main
+import pl.openrnd.multilevellistview.ItemInfo
+import pl.openrnd.multilevellistview.MultiLevelListAdapter
+import splitties.init.appCtx
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -25,13 +30,8 @@ import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import kotlin.experimental.and
-import kotlinx.serialization.UnstableDefault
-import org.jf.baksmali.Main
-import pl.openrnd.multilevellistview.ItemInfo
-import pl.openrnd.multilevellistview.MultiLevelListAdapter
-import splitties.init.appCtx
 
-class FileDrawerListAdapter : MultiLevelListAdapter() {
+class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelListAdapter() {
     var mAlwaysExpandend = false
     override fun isExpandable(anObject: Any): Boolean {
         val item = anObject as FileDrawerListItem
@@ -61,10 +61,10 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                 val projectModel = item.tag as ProjectModel
                 val file = File(projectModel.sourceFilePath)
                 items.add(FileDrawerListItem(file, newLevel))
-                if(projectModel.projectType == ProjectType.APK) {
+                if (projectModel.projectType == ProjectType.APK) {
                     val libsFolder = File("${file.absolutePath}_libs")
-                    if(libsFolder.exists()) {
-                        items.add(FileDrawerListItem(libsFolder,newLevel))
+                    if (libsFolder.exists()) {
+                        items.add(FileDrawerListItem(libsFolder, newLevel))
                     }
                 }
             }
@@ -130,7 +130,11 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                 Log.d(TAG, "Target directory $targetDirectory")
 //                        File(File(appCtx.filesDir, "/extracted/"), File(path).name + "/")
 //                appCtx.filesDir.resolve("extracted").resolve()
+                targetDirectory.deleteRecursively()
                 targetDirectory.mkdirs()
+                val total = File(path).length() * 2
+                progressHandler.publishProgress(0, total.toInt())
+                var read = 0
                 try {
                     val zi = ZipInputStream(FileInputStream(path))
                     var entry: ZipEntry? = null
@@ -145,31 +149,39 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                         outfile.parentFile.mkdirs()
                         var output: FileOutputStream? = null
                         try {
-//                            Log.d(TAG, "entry: $entry, outfile:$outfile")
+                            if(entry!!.name=="")
+                                continue
+                            Log.d(TAG, "entry: $entry, outfile:$outfile")
                             output = FileOutputStream(outfile)
                             var len = 0
                             while (zi.read(buffer).also { len = it } > 0) {
                                 output.write(buffer, 0, len)
                             }
+                            read += len
                         } finally { // we must always close the output file
                             output?.close()
                         }
+                        progressHandler.publishProgress(read)
                     }
+                    progressHandler.finishProgress()
                     return getSubObjects(FileDrawerListItem(targetDirectory, initialLevel))
                 } catch (e: IOException) {
                     Log.e("FileAdapter", "", e)
-                    items.add(FileDrawerListItem("NO", newLevel))
+                    items.add(FileDrawerListItem("Failed to extract", newLevel))
                 }
             }
             DrawerItemType.DEX -> {
+                progressHandler.startProgress()
                 val filename = item.tag as String
                 val targetDirectory = ProjectDataStorage.resolveToWrite(ProjectManager.getRelPath(filename), true)
 //                val targetDirectory = File(File(appCtx.filesDir, "/dex-decompiled/"), File(filename).name + "/")
                 targetDirectory.mkdirs()
                 Main.main(arrayOf("d", "-o", targetDirectory.absolutePath, filename))
+                progressHandler.finishProgress()
                 return getSubObjects(FileDrawerListItem(targetDirectory, initialLevel))
             }
             DrawerItemType.PE_IL -> try {
+                progressHandler.startProgress()
                 val facileReflector = Facile.load(item.tag as String)
                 // load the assembly
                 val assembly = facileReflector.loadAssembly()
@@ -179,6 +191,8 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
                 }
             } catch (e: Exception) {
                 Logger.e("FileAdapter", "", e)
+            } finally {
+                progressHandler.finishProgress()
             }
             DrawerItemType.PE_IL_TYPE -> {
                 val cont = item.tag as Array<Any>
@@ -212,6 +226,7 @@ class FileDrawerListAdapter : MultiLevelListAdapter() {
         // if expandable yes.
 // if folder show subfolders
 // if zip/apk unzip and show
+        progressHandler.finishProgress()
         return items
     }
 
