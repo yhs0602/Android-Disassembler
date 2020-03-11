@@ -49,6 +49,10 @@ object ProjectDataStorage {
                 return newfile
         }
         Log.d(TAG, "Could not find from orig:$relPath")
+        file = projectOrig.parentFile.resolve(relPath)
+        if(file.exists() && !file.isDirectory)
+            return file
+        Log.d(TAG,"Could not find from libs: $file")
         // Search in gen
         val generated = ProjectManager.currentProject!!.rootFile.resolve("generated")
         file = generated

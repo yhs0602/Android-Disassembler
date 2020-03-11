@@ -1,17 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/closetab"
-        android:title="@string/closeTab"/>
-    <item
         android:id="@+id/closeFile"
         android:title="@string/closeFile"/>
-    <item
-        android:id="@+id/jumpto"
-        android:title="@string/jump_to" />
-    <item
-        android:id="@+id/chooserow"
-        android:title="@string/choose_columns" />
+
     <item
         android:id="@+id/find"
         android:enabled="true"
@@ -47,9 +39,7 @@
         android:title="@string/save"
         android:enabled="false" />
 
-    <item
-        android:id="@+id/analyze"
-        android:title="@string/analyze" />
+
     <item
         android:id="@+id/calc"
         android:title="@string/open_calculator" />

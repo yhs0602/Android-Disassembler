@@ -16,8 +16,8 @@ android {
         applicationId "com.kyhsgeekcode.disassembler"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 9
-        versionName "1.5.0"
+        versionCode 10
+        versionName "2.0.2"
         multiDexEnabled true
         //testInstrumentationRunner "android.support.test.runner.   AndroidJUnitRunner"
         externalNativeBuild {

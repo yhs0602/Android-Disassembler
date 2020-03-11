@@ -53,7 +53,7 @@ public class PEFile extends AbstractFile {
         setEntryPoint(oph.getAddressOfEntryPoint());
         fileContents = filec;
 
-        getSymbols().clear();
+        getExportSymbols().clear();
         getImportSymbols().clear();
         //Parse IAT
         ImportDirectory idir = imd.getImportTable();
@@ -76,7 +76,7 @@ public class PEFile extends AbstractFile {
                 long data = buf.getInt() & 0xFFFFFFFF;
                 if (data == 0)
                     break;
-                PLT plt = new PLT();
+                ImportSymbol importSymbol = new ImportSymbol();
                 if ((data & 0x80000000) != 0) {
                     //MSB 1;Ordinal
                     int ordinal = (int) (data & 0x7FFFFFFF);
@@ -88,10 +88,11 @@ public class PEFile extends AbstractFile {
 					 INT.getShort();*/
                     String funcname = Elf.getZString(filec, rvc.convertVirtualAddressToRawDataPointer((int) data) + 2);
                     //Log.v(TAG,dllname+"."+funcname);
-                    plt.name = dllname + "." + funcname;
-                    plt.address = firstThunkRaw + off;
-                    getImportSymbols().add(plt);
-                    Log.v(TAG, plt.toString());
+                    importSymbol.owner = dllname;
+                    importSymbol.name = funcname;
+                    importSymbol.address = firstThunkRaw + off;
+                    getImportSymbols().add(importSymbol);
+                    Log.v(TAG, importSymbol.toString());
                 }
                 off += 4;
             }
@@ -127,7 +128,7 @@ public class PEFile extends AbstractFile {
                 sym.type = Symbol.Type.STT_FUNC;
                 sym.bind = Symbol.Bind.STB_GLOBAL;
                 sym.demangled = sym.name;
-                getSymbols().add(sym);
+                getExportSymbols().add(sym);
             }
         }
         //parse TLS
@@ -207,15 +208,15 @@ public class PEFile extends AbstractFile {
         builder.append(ls).append(ls);
         builder.append("======Export Table=====");
         builder.append(ls);
-        for (Symbol sym : getSymbols()) {
+        for (Symbol sym : getExportSymbols()) {
             builder.append(sym.toString());
             builder.append(ls);
         }
         builder.append(ls);
         builder.append("======Import Table=====");
         builder.append(ls);
-        for (PLT plt : getImportSymbols()) {
-            builder.append(plt.toString());
+        for (ImportSymbol importSymbol : getImportSymbols()) {
+            builder.append(importSymbol.toString());
             builder.append(ls);
         }
 

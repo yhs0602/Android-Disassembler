@@ -48,13 +48,13 @@ public class Symbol {
 
      https://stackoverflow.com/q/48181509/8614565*/
 
-    enum Bind {
+    public enum Bind {
         STB_LOCAL,
         STB_GLOBAL,
         STB_WEAK
     }
 
-    enum Type {
+    public enum Type {
         STT_NOTYPE,
         STT_OBJECT,
         STT_FUNC,

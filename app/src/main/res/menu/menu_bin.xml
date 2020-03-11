@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <item
+        android:id="@+id/closetab"
+        android:title="@string/closeTab"/>
     <item android:title="@string/show">
         <menu>
             <item
@@ -14,5 +16,14 @@
                 android:title="@string/details" />
         </menu>
     </item>
+    <item
+        android:id="@+id/jumpto"
+        android:title="@string/jump_to" />
 
+    <item
+        android:id="@+id/choosecolumns"
+        android:title="@string/choose_columns" />
+    <item
+        android:id="@+id/analyze"
+        android:title="@string/analyze" />
 </menu>

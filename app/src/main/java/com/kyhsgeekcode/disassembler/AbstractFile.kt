@@ -54,8 +54,8 @@ abstract class AbstractFile : Closeable {
     open var codeSectionBase: Long = 0
     open var codeSectionLimit: Long = 0
 
-    val symbols: MutableList<Symbol> = ArrayList()
-    val importSymbols: List<PLT> = ArrayList()
+    val exportSymbols: MutableList<Symbol> = ArrayList()
+    val importSymbols: MutableList<ImportSymbol> = ArrayList()
     lateinit var fileContents: ByteArray
     open var entryPoint: Long = 0
     open var codeVirtAddr: Long = 0

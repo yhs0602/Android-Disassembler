@@ -48,7 +48,8 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
         pagerBinary.offscreenPageLimit = 5
         pagerAdapter.addFragment(BinaryOverviewFragment.newInstance(relPath), "Overview")
         pagerAdapter.addFragment(BinaryDisasmFragment.newInstance(relPath, BinaryDisasmFragment.ViewMode.Binary), "Disassembly")
-        pagerAdapter.addFragment(BinarySymbolFragment.newInstance(relPath), "Symbols")
+        pagerAdapter.addFragment(BinaryExportSymbolFragment.newInstance(relPath), "Export Symbols")
+        pagerAdapter.addFragment(BinaryImportSymbolFragment.newInstance(relPath), "Import Symbols")
         pagerAdapter.addFragment(BinaryDetailFragment.newInstance(relPath), "Details")
     }
 
@@ -101,7 +102,7 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
         init {
             classNameByTag[TabTags.TAB_DISASM] = "BinaryDisasmFragment"
             classNameByTag[TabTags.TAB_ANALYSIS] = "AnalysisResultFragment"
-            classNameByTag[TabTags.TAB_EXPORTSYMBOLS] = "BinarySymbolFragment"
+            classNameByTag[TabTags.TAB_EXPORTSYMBOLS] = "BinaryExportSymbolFragment"
             classNameByTag[TabTags.TAB_STRINGS] = "StringFragment"
             classNameByTag[TabTags.TAB_DETAILS] = "BinaryDetailFragment"
         }

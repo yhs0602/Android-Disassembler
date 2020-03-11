@@ -157,7 +157,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
 			{
 				Log.e(TAG, "", e);
 			}*/sb.append(System.lineSeparator()).append("syms;").append(System.lineSeparator())
-            symbols.clear()
+            exportSymbols.clear()
             // if (dynsyms != null)
 // symbols.addAll(dynsyms);//I hope this statement be no longer needed in the future, as they may contain duplicates
 //            //First, Analyze Symbol table
@@ -167,12 +167,12 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
 //            ParseRela(relas);
             loadBinary(path)
             // sort it? this should be after plt parse
-            Collections.sort(symbols, Comparator { p1, p2 ->
+            Collections.sort(exportSymbols, Comparator { p1, p2 ->
                 if (p1.type == p2.type) return@Comparator 0
                 if (p1.type == Symbol.Type.STT_FUNC) return@Comparator -1
                 if (p2.type == Symbol.Type.STT_FUNC) 1 else 0
             })
-            for (sym in symbols) {
+            for (sym in exportSymbols) {
                 sb.append(sym.toString())
             }
             /*https://docs.oracle.com/cd/E19683-01/816-1386/6m7qcoblj/index.html#chapter6-35166
@@ -385,7 +385,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
                 val r_offset = relaBuf.long // unsigned, byte offset from targetSection
                 val r_info = relaBuf.long // unsigned, index to sourceSymtab
                 val index = (r_info shr 32 and -0x1).toInt()
-                val symbol = symbols[index]
+                val symbol = exportSymbols[index]
                 val r_addend = relaBuf.long // signed, delta
                 val rela = Rela()
                 rela.targetSection = targetSection
@@ -406,7 +406,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
         try {
             symbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.SYMTAB))
             val elfClass = elf.header.elfClass
-            symbols.clear()
+            exportSymbols.clear()
             if (elfClass == ElfClass.CLASS_32) {
                 while (symbuffer.hasRemaining()) {
                     val name = symbuffer.int
@@ -426,7 +426,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
                     symbol.st_size = size.toLong()
                     symbol.st_value = value.toLong()
                     symbol.analyze()
-                    symbols.add(symbol)
+                    exportSymbols.add(symbol)
                     /*sb.append(sym_name).append("=").append(Integer.toHexString(value))
                      .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
                      */sb.append(symbol.toString()).append(System.lineSeparator())
@@ -450,7 +450,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
                     symbol.st_size = size
                     symbol.st_value = value
                     symbol.analyze()
-                    symbols.add(symbol)
+                    exportSymbols.add(symbol)
                     /*	sb.append(sym_name).append("=").append(Integer.toHexString(value))
                      .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
                      */sb.append(symbol.toString()).append(System.lineSeparator())
@@ -468,14 +468,19 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
     external fun loadBinary(path: String?)
     fun addSymbol(symbol: Symbol) {
         symbol.analyze()
-        symbols.add(symbol)
+        exportSymbols.add(symbol)
+    }
+
+    fun addImportSymbol(symbol:ImportSymbol) {
+        symbol.analyze()
+        importSymbols.add(symbol)
     }
 
     companion object {
         @JvmStatic
         external fun Demangle(mangled: String?): String?
         @JvmStatic
-        external fun ParsePLT(filepath: String?): List<PLT?>?
+        external fun ParsePLT(filepath: String?): List<ImportSymbol?>?
     }
 
     init {

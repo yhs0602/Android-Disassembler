@@ -159,7 +159,22 @@ class relocation_section_accessor_template
                                          size, bind, symbolType, section, other );
 
         if ( ret ) { // Was it successful?
-            switch ( type ) {
+            switch(elf_file.get_machine()) {
+                case EM_386:
+                    calcValue386(calcValue, offset, symbolValue, type, addend, symbolType);
+                    break;
+                case EM_ARM:
+                    calcValueARM(calcValue, offset, symbolValue, type, addend, symbolType);
+                    break;
+            }
+        }
+
+        return ret;
+    }
+
+    void calcValue386(Elf_Sxword &calcValue, const Elf64_Addr &offset, Elf64_Addr &symbolValue, const Elf_Word &type,
+                      Elf_Sxword &addend, unsigned char symbolType) const {
+        switch ( type ) {
             case R_386_NONE:        // none
                 calcValue = 0;
                 break;
@@ -194,10 +209,40 @@ class relocation_section_accessor_template
             default:                // Not recognized symbol!
                 calcValue = 0;
                 break;
-            }
         }
+    }
 
-        return ret;
+    void calcValueARM(Elf_Sxword &calcValue, const Elf64_Addr &offset, Elf64_Addr &symbolValue, const Elf_Word &type,
+                      Elf_Sxword &addend, unsigned char symbolType) const{
+        int t = 0;
+        if(symbolType == STT_FUNC) {
+            //IF type is thumb, t= 1
+        }
+        switch(type) {
+            case R_ARM_COPY:
+                calcValue = 0;
+                break;
+            case R_ARM_RELATIVE:
+            case R_ARM_GLOB_DAT:
+            case R_ARM_JUMP_SLOT:
+                calcValue = (symbolValue + addend) | t;
+                break;
+//            case R_ARM_RELATIVE:                // B(S) + A
+//                if(symbolValue == 0) {
+//                    // B(S) resolves to the difference between the address at
+//                    // which the segment being relocated was loaded and the address
+//                    // at which it was linked.
+//
+//                } else {
+//                    // B(S) resolves to the difference between the address at
+//                    // which the segment defining the symbol S was loaded and the
+//                    // address at which it was linked.
+//                }
+//                break;
+            default:
+                calcValue = 0;
+                break;
+        }
     }
 
 //------------------------------------------------------------------------------

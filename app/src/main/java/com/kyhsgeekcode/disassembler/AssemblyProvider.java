@@ -22,7 +22,7 @@ public abstract class AssemblyProvider {
     public void AddItem(final DisassemblyListItem lvi) {
         new Handler(Looper.getMainLooper()).post(() -> {
             long addr = lvi.disasmResult.address;
-            List<Symbol> syms = adapter.getFile().getSymbols();
+            List<Symbol> syms = adapter.getFile().getExportSymbols();
             for (Symbol sym : syms) {
                 if (sym.st_value == addr) {
                     lvi.comments = sym.demangled;

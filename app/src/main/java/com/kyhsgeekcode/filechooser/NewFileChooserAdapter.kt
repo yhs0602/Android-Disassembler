@@ -24,6 +24,7 @@ class NewFileChooserAdapter(
     val TAG = "Adapter"
     private val values: MutableList<FileItem> = ArrayList()
     val onClickListener: View.OnClickListener
+    val onLongClickListener : View.OnLongClickListener
     val backStack = Stack<FileItem>()
     var currentParentItem: FileItem = FileItem.rootItem
 
@@ -43,6 +44,50 @@ class NewFileChooserAdapter(
                     navigateInto(item)
                     return@OnClickListener
                 }
+                Toast.makeText(parentActivity, "Long press to see advanced options",Toast.LENGTH_SHORT).show()
+                navigateInto(item)
+//                AlertDialog.Builder(parentActivity)
+//                        .setTitle("Choose Action")
+//                        .also {
+//                            if (item.isProjectAble()) {
+//                                it.setPositiveButton("Open as project") { _: DialogInterface, _: Int ->
+//                                    parentActivity.openAsProject(item)
+//                                }
+//                            }
+//                        }.also {
+//                            if (item.isRawAvailable()) {
+//                                it.setNeutralButton("Open raw") { _, _ ->
+//                                    parentActivity.openRaw(item)
+//                                }
+//                            }
+//                        }
+//                        .setNegativeButton("Navigate into") { _, _ ->
+//
+//                        }.show()
+            } else {
+                // 물어보고 진행한다.
+                AlertDialog.Builder(parentActivity)
+                        .setTitle("Open the file ${item.text}?")
+                        .setPositiveButton("Open") { _, _ ->
+                            parentActivity.openRaw(item)
+                        }.setNegativeButton("No") { dialog, _ ->
+                            dialog.cancel()
+                        }.show()
+            }
+        }
+
+        onLongClickListener = View.OnLongClickListener { v ->
+            val item = v.tag as FileItem
+            if (!item.isAccessible()) {
+                Toast.makeText(parentActivity, "the file is inaccessible", Toast.LENGTH_SHORT).show()
+                return@OnLongClickListener true
+            }
+            if (item.canExpand()) {
+                // 물어본다.
+                if (!item.isProjectAble() && !item.isRawAvailable()) {
+                    Toast.makeText(parentActivity, "The file/directory cannot be opened as project", Toast.LENGTH_SHORT).show()
+                    return@OnLongClickListener true
+                }
                 AlertDialog.Builder(parentActivity)
                         .setTitle("Choose Action")
                         .also {
@@ -57,9 +102,6 @@ class NewFileChooserAdapter(
                                     parentActivity.openRaw(item)
                                 }
                             }
-                        }
-                        .setNegativeButton("Navigate into") { _, _ ->
-                            navigateInto(item)
                         }.show()
             } else {
                 // 물어보고 진행한다.
@@ -70,7 +112,9 @@ class NewFileChooserAdapter(
                         }.setNegativeButton("No") { dialog, _ ->
                             dialog.cancel()
                         }.show()
+
             }
+            true
         }
         values.addAll(FileItem.rootItem.listSubItems())
     }
@@ -95,6 +139,7 @@ class NewFileChooserAdapter(
         with(holder.itemView) {
             tag = item
             setOnClickListener(onClickListener)
+            setOnLongClickListener(onLongClickListener)
         }
         with(holder.tvName) {
             text = item.text

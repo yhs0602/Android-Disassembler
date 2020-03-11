@@ -150,7 +150,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.chooserow -> {
+            R.id.choosecolumns -> {
                 mCustomDialog = ChooseColumnDialog(activity,
                         "Select columns to view", // Title
                         "Choose columns", // Content
@@ -179,7 +179,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                         val address = dest.toLong(16)
                         jumpto(address)
                     } catch (nfe: NumberFormatException) { // not a number, lookup symbol table
-                        val syms = parsedFile.symbols
+                        val syms = parsedFile.exportSymbols
                         for (sym in syms) {
                             if (sym.name != null && sym.name == dest) {
                                 if (sym.type != Symbol.Type.STT_FUNC) {

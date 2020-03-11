@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/importsymbolrowTVOwner"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/cell_shape"
+        android:padding="10dp"
+        android:text="Owner" />
+
+    <TextView
+        android:id="@+id/importsymbolrowTVmangled"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/cell_shape"
+        android:padding="10dp"
+        android:text="Mangled" />
+
+    <TextView
+        android:id="@+id/importsymbolrowTVdemangled"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/cell_shape"
+        android:padding="10dp"
+        android:text="Demangled" />
+
+    <TextView
+        android:id="@+id/importsymbolrowTVaddress"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/cell_shape"
+        android:padding="10dp"
+        android:text="@string/address" />
+
+    <TextView
+        android:id="@+id/importsymbolrowTVValue"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/cell_shape"
+        android:padding="10dp"
+        android:text="@string/property" />
+
+    <TextView
+        android:id="@+id/importsymbolrowTVOffset"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/cell_shape"
+        android:padding="10dp"
+        android:text="Offset" />
+
+    <TextView
+        android:id="@+id/importsymbolrowTVType"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/cell_shape"
+        android:padding="10dp"
+        android:text="Type" />
+
+    <TextView
+        android:id="@+id/importsymbolrowTVAddEnd"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/cell_shape"
+        android:padding="10dp"
+        android:text="Addend" />
+
+    <TextView
+        android:id="@+id/importsymbolrowTCalcValue"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/cell_shape"
+        android:padding="10dp"
+        android:text="CalcValue" />
+</LinearLayout>
+

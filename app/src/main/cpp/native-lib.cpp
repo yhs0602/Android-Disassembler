@@ -497,7 +497,7 @@ Java_com_kyhsgeekcode_disassembler_ELFUtil_Demangle(JNIEnv *env, jclass thiz, js
 JNIEXPORT jobject JNICALL
 Java_com_kyhsgeekcode_disassembler_ELFUtil_ParsePLT(JNIEnv *env, jclass thiz, jstring filepath) {
     const char *filename = env->GetStringUTFChars(filepath, NULL);
-    jclass pltcls = env->FindClass("com/kyhsgeekcode/disassembler/PLT");
+    jclass pltcls = env->FindClass("com/kyhsgeekcode/disassembler/ImportSymbol");
     __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "PLT");
     jclass listcls = env->FindClass("java/util/ArrayList");
     __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "ArrayList");
@@ -770,6 +770,17 @@ void loadSymbols(const elfio &reader, JNIEnv *env, jobject thiz) {
 //    jfieldID fieldType = env->GetFieldID(symbolcls, "type","J");
     jfieldID fieldSection = env->GetFieldID(symbolcls, "st_shndx", "S");
     jfieldID fieldOther = env->GetFieldID(symbolcls, "st_other", "S");
+
+    jclass importSymbolClass = env->FindClass("com/kyhsgeekcode/disassembler/ImportSymbol");
+    jmethodID ctorImport = env->GetMethodID(importSymbolClass, "<init>","()V");
+    jmethodID addImportSymbol = env->GetMethodID(thecls,"addImportSymbol","(Lcom/kyhsgeekcode/disassembler/ImportSymbol;)V");
+    jfieldID fieldOffset = env->GetFieldID(importSymbolClass, "offset", "J");
+    jfieldID fieldSymbolValue = env->GetFieldID(importSymbolClass, "value", "J");
+    jfieldID fieldSymbolName = env->GetFieldID(importSymbolClass, "name", "Ljava/lang/String;");
+    jfieldID fieldSymbolType = env->GetFieldID(importSymbolClass, "type", "I");
+    jfieldID fieldSymbolAddEnd = env->GetFieldID(importSymbolClass, "addend", "J");
+    jfieldID fieldSymbolCalcValue = env->GetFieldID(importSymbolClass, "calcValue", "J");
+
 //    disassemblerSymbolsList.clear();
     Elf_Half n = reader.sections.size();
     for (Elf_Half i = 0; i < n; ++i) {
@@ -794,6 +805,33 @@ void loadSymbols(const elfio &reader, JNIEnv *env, jobject thiz) {
                     env->SetShortField(sym, fieldSection, symbol_disassembler.section);
                     env->SetShortField(sym, fieldOther, symbol_disassembler.other);
                     env->CallVoidMethod(thiz, addSymbol, sym);
+                    env->DeleteLocalRef(sym);
+                    env->DeleteLocalRef(jname);
+//                    disassemblerSymbolsList.push_back(symbol_disassembler);
+                }
+            }
+        } else if(SHT_REL == sec->get_type() || SHT_RELA == sec->get_type()) {
+            relocation_section_accessor relocations(reader, sec);
+            long long rel_no = relocations.get_entries_num();
+            if (rel_no > 0) {
+                for (long long i = 0; i < rel_no; ++i) {
+                    Elf64_Addr offset;
+                    Elf64_Addr symbolValue;
+                    std::string symbolName;
+                    Elf_Word type;
+                    Elf_Sxword addend;
+                    Elf_Sxword calcValue;
+                    relocations.get_entry(static_cast<Elf_Xword>(i), offset,
+                            symbolValue, symbolName, type, addend, calcValue);
+                    jobject sym = env->NewObject(importSymbolClass, ctorImport);
+                    jstring jname = env->NewStringUTF(symbolName.c_str());
+                    env->SetLongField(sym, fieldOffset, offset);
+                    env->SetLongField(sym, fieldSymbolValue, symbolValue);
+                    env->SetObjectField(sym, fieldSymbolName, jname);
+                    env->SetIntField(sym, fieldSymbolType, type);
+                    env->SetLongField(sym, fieldSymbolAddEnd, addend);
+                    env->SetLongField(sym, fieldSymbolCalcValue, calcValue);
+                    env->CallVoidMethod(thiz, addImportSymbol, sym);
                     env->DeleteLocalRef(sym);
                     env->DeleteLocalRef(jname);
 //                    disassemblerSymbolsList.push_back(symbol_disassembler);
