@@ -351,7 +351,8 @@ class MainActivity : AppCompatActivity(),
                 } else {
                     val file = File(abspath)
                     try {
-                        (BitmapFactory.decodeStream(file.inputStream())?:throw Exception()).recycle()
+                        (BitmapFactory.decodeStream(file.inputStream())
+                                ?: throw Exception()).recycle()
                         ImageFragment.newInstance(relPath)
                     } catch (e: Exception) {
                         BinaryFragment.newInstance(relPath)
@@ -378,7 +379,7 @@ class MainActivity : AppCompatActivity(),
 
     private fun setupUncaughtException() {
         Thread.setDefaultUncaughtExceptionHandler { p1: Thread?, p2: Throwable ->
-            runOnUiThread{
+            runOnUiThread {
                 Toast.makeText(this@MainActivity, Log.getStackTraceString(p2), Toast.LENGTH_SHORT).show()
             }
             if (p2 is SecurityException) {
@@ -444,8 +445,13 @@ class MainActivity : AppCompatActivity(),
                 showEditDialog(this, getString(R.string.calculator), "Enter an expression to measure", et, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 -> Toast.makeText(this@MainActivity, Calculator.Calc(et.text.toString()).toString(), Toast.LENGTH_SHORT).show() }, getString(R.string.cancel), null)
             }
             R.id.donate -> {
-                val intent = Intent(this, DonateActivity::class.java)
-                startActivity(intent)
+                val url = "https://www.buymeacoffee.com/i4QJKbC"
+                val i = Intent(Intent.ACTION_VIEW)
+                i.data = Uri.parse(url)
+                Toast.makeText(this, "Thank you for your appreciate for this app!", Toast.LENGTH_SHORT).show()
+                startActivity(i)
+//                val intent = Intent(this, DonateActivity::class.java)
+//                startActivity(intent)
             }
         }
         return super.onOptionsItemSelected(item)
@@ -1084,7 +1090,7 @@ class MainActivity : AppCompatActivity(),
                 horizontal.setMessage(message)
             snackProgressBarManager.updateTo(horizontal)
         }
-        if(snackProgressBarManager.getLastShown() != null)
+        if (snackProgressBarManager.getLastShown() != null)
             snackProgressBarManager.show(horizontal, SnackProgressBarManager.LENGTH_INDEFINITE)
     }
 

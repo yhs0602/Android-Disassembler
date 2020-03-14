@@ -1,1 +1,1 @@
-include ':app', ':libaxml', ':AsmInterpreter'
+include ':app', ':libaxml'
