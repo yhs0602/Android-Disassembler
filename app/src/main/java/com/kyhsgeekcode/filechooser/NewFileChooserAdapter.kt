@@ -4,16 +4,19 @@ import android.content.DialogInterface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.kyhsgeekcode.disassembler.R
+import com.kyhsgeekcode.disassembler.showEditDialog
 import com.kyhsgeekcode.filechooser.model.FileItem
 import kotlinx.android.synthetic.main.new_file_chooser_row.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import splitties.init.appCtx
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -24,7 +27,7 @@ class NewFileChooserAdapter(
     val TAG = "Adapter"
     private val values: MutableList<FileItem> = ArrayList()
     val onClickListener: View.OnClickListener
-    val onLongClickListener : View.OnLongClickListener
+    val onLongClickListener: View.OnLongClickListener
     val backStack = Stack<FileItem>()
     var currentParentItem: FileItem = FileItem.rootItem
 
@@ -38,18 +41,31 @@ class NewFileChooserAdapter(
                 Toast.makeText(parentActivity, "the file is inaccessible", Toast.LENGTH_SHORT).show()
                 return@OnClickListener
             }
-            if(item == FileItem.others) {
+            if (item == FileItem.others) {
                 parentActivity.showOtherChooser()
                 return@OnClickListener
             }
-
+            if (item == FileItem.zoo) {
+                parentActivity.showZoo()
+                return@OnClickListener
+            }
+            if (item == FileItem.hash) {
+                val editText = EditText(parentActivity)
+                showEditDialog(parentActivity, "Search from infosec", "Enter hash", editText,
+                        appCtx.getString(android.R.string.ok), DialogInterface.OnClickListener { dialog, which ->
+                    val hash = editText.text.toString()
+                    parentActivity.showHashSite(hash)
+                }, null, null)
+                // https://infosec.cert-pa.it/analyze/7b3491e0028d443f11989efaeb0fbec2.html
+                return@OnClickListener
+            }
             if (item.canExpand()) {
                 // 물어본다.
                 if (!item.isProjectAble() && !item.isRawAvailable()) {
                     navigateInto(item)
                     return@OnClickListener
                 }
-                Toast.makeText(parentActivity, "Long press to see advanced options",Toast.LENGTH_SHORT).show()
+                Toast.makeText(parentActivity, "Long press to see advanced options", Toast.LENGTH_SHORT).show()
                 navigateInto(item)
 //                AlertDialog.Builder(parentActivity)
 //                        .setTitle("Choose Action")

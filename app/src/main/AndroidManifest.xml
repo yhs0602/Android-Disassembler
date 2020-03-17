@@ -16,6 +16,7 @@
         android:name="android.permission.ACCESS_NETWORK_STATE"
         tools:remove="android:maxSdkVersion" />
 
+
     <application
         android:name=".EnableMultidex"
         android:allowBackup="true"
@@ -25,7 +26,8 @@
         android:largeHeap="true"
         android:resizeableActivity="true"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".preference.SettingsActivity"
             android:label="@string/title_activity_settings" />

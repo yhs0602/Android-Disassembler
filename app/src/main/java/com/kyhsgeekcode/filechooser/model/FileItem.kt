@@ -130,7 +130,7 @@ open class FileItem : Serializable {
     companion object {
         val rootItem = object : FileItem("Main") {
             override fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
-                return listOf(fileRoot, fileSdcard, apps, processes, others)
+                return listOf(fileRoot, fileSdcard, apps, processes, others, zoo, hash)
             }
 
             override fun canExpand(): Boolean = true
@@ -187,6 +187,18 @@ open class FileItem : Serializable {
         }
 
         val others = object : FileItem("Other sources") {
+            override fun canExpand(): Boolean = false
+            override fun isRawAvailable(): Boolean = true
+            override fun isProjectAble(): Boolean = false
+        }
+
+        val zoo = object : FileItem("LIVE malware Zoo") {
+            override fun canExpand(): Boolean = false
+            override fun isRawAvailable(): Boolean = true
+            override fun isProjectAble(): Boolean = false
+        }
+
+        val hash = object : FileItem("Malware sample by hash from infosec") {
             override fun canExpand(): Boolean = false
             override fun isRawAvailable(): Boolean = true
             override fun isProjectAble(): Boolean = false
