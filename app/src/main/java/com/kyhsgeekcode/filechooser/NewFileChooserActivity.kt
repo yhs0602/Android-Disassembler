@@ -12,7 +12,7 @@ import com.kyhsgeekcode.filechooser.model.FileItem
 import com.tingyik90.snackprogressbar.SnackProgressBar
 import com.tingyik90.snackprogressbar.SnackProgressBarManager
 import kotlinx.android.synthetic.main.activity_new_file_chooser.*
-import kotlinx.android.synthetic.main.main.*
+
 
 class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
     private val snackProgressBarManager by lazy { SnackProgressBarManager(fileChooserMainLayout, lifecycleOwner = this) }
@@ -65,7 +65,7 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
                 circularType.setProgressMax(total)
             if (message != null)
                 circularType.setMessage(message)
-            if(snackProgressBarManager.getLastShown()==null)
+            if (snackProgressBarManager.getLastShown() == null)
                 snackProgressBarManager.show(circularType, SnackProgressBarManager.LENGTH_INDEFINITE)
             snackProgressBarManager.updateTo(circularType)
         }
@@ -77,5 +77,36 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
 
     override fun finishProgress() {
         snackProgressBarManager.dismiss()
+    }
+
+    fun showOtherChooser() {
+        val intent = Intent()
+        intent.type = "*/*"
+        intent.action = Intent.ACTION_GET_CONTENT
+        startActivityForResult(Intent.createChooser(intent, "Choose Content"), 1)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
+            val selectedUri = data.data
+            val resultIntent = Intent()
+//            resultIntent.putExtra("fileItem", FileItem())
+            Log.e(TAG, "selecteduri:${data.data}")
+            Log.e("intent URI", intent.toUri(0));
+            val bundle = data.extras
+            if (bundle != null) {
+                for (key in bundle.keySet()) {
+                    Log.e(TAG, key + " : " + if (bundle[key] != null) bundle[key] else "NULL")
+                }
+            } else {
+                Log.e(TAG,"Bundle is null")
+            }
+            resultIntent.putExtra("uri", selectedUri)
+            resultIntent.putExtra("extras", data.extras)
+            resultIntent.putExtra("openProject", false)
+            setResult(Activity.RESULT_OK, resultIntent)
+            finish()
+        }
     }
 }

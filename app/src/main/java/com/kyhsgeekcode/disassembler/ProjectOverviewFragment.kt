@@ -3,10 +3,12 @@ package com.kyhsgeekcode.disassembler
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.kyhsgeekcode.TAG
 import com.kyhsgeekcode.disassembler.project.ProjectManager
@@ -52,13 +54,25 @@ class ProjectOverviewFragment : Fragment() {
             if (resultCode == Activity.RESULT_OK) {
                 Log.d(TAG, "onActivityResultOk")
 
-                val fi = data!!.getSerializableExtra("fileItem") as FileItem
-                val openAsProject = data.getBooleanExtra("openProject", false)
-                Log.v(TAG, "FileItem.text:" + fi.text)
-                Log.v(TAG, "Open as project$openAsProject")
-                if (fi.file?.isArchive() == true) {
+                val openAsProject = data!!.getBooleanExtra("openProject", false)
+                val fi = data.getSerializableExtra("fileItem")
+                if (fi == null) {
+                    val uri = data.getParcelableExtra("uri") as Uri?
+                            ?: data.getBundleExtra("extras")?.get(Intent.EXTRA_STREAM) as Uri?
+                            ?: run {
+                                Toast.makeText(activity, "Could not get data", Toast.LENGTH_SHORT).show()
+                                return@onActivityResult
+                            }
+                    (activity as MainActivity).onChoosePathNew(uri)
+                    return
                 }
-                onChoosePathNew(fi)
+
+                val fileItem = data!!.getSerializableExtra("fileItem") as FileItem
+                Log.v(TAG, "FileItem.text:" + fileItem.text)
+                Log.v(TAG, "Open as project$openAsProject")
+                if (fileItem.file?.isArchive() == true) {
+                }
+                onChoosePathNew(fileItem)
 //                val project = ProjectManager.newProject(fi.file!!, ProjectType.APK, if(openAsProject) fi.file?.name else null)
 //                initializeDrawer(project)
             }

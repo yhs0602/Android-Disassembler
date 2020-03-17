@@ -256,6 +256,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    @UnstableDefault
     private fun handleViewActionIntent() {
         // https://www.androidpub.com/1351553
         val intent = intent
@@ -719,7 +720,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     @UnstableDefault
-    private fun onChoosePathNew(uri: Uri) {
+    public fun onChoosePathNew(uri: Uri) {
         if (uri.scheme == "content") {
             contentResolver.openInputStream(uri).use { inStream ->
                 val file = getExternalFilesDir(null)?.resolve("tmp")?.resolve("openDirect")

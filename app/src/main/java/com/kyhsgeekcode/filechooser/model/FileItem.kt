@@ -130,7 +130,7 @@ open class FileItem : Serializable {
     companion object {
         val rootItem = object : FileItem("Main") {
             override fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
-                return listOf(fileRoot, fileSdcard, apps, processes)
+                return listOf(fileRoot, fileSdcard, apps, processes, others)
             }
 
             override fun canExpand(): Boolean = true
@@ -184,6 +184,12 @@ open class FileItem : Serializable {
             override fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
                 return listOf(FileItem("Currently unavailable"))
             }
+        }
+
+        val others = object : FileItem("Other sources") {
+            override fun canExpand(): Boolean = false
+            override fun isRawAvailable(): Boolean = true
+            override fun isProjectAble(): Boolean = false
         }
     }
 }

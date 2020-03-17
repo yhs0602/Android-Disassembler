@@ -38,6 +38,11 @@ class NewFileChooserAdapter(
                 Toast.makeText(parentActivity, "the file is inaccessible", Toast.LENGTH_SHORT).show()
                 return@OnClickListener
             }
+            if(item == FileItem.others) {
+                parentActivity.showOtherChooser()
+                return@OnClickListener
+            }
+
             if (item.canExpand()) {
                 // 물어본다.
                 if (!item.isProjectAble() && !item.isRawAvailable()) {
