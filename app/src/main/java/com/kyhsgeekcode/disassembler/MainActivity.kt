@@ -189,6 +189,7 @@ class MainActivity : AppCompatActivity(),
         setContentView(R.layout.main)
         pagerAdapter = ViewPagerAdapter(this)
         pagerMain.adapter = pagerAdapter
+        pagerMain.isUserInputEnabled = false
 //        tablayout.setupWithViewPager(pagerMain)
         TabLayoutMediator(tablayout, pagerMain) { tab, position ->
             tab.text = pagerAdapter.getTitle(position)
