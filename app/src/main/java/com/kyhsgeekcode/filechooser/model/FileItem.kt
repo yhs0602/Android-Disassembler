@@ -180,25 +180,28 @@ open class FileItem : Serializable {
             }
         }
 
-        val processes = object : FileItem("Processes") {
+        val processes = object : FileItem("Processes", getDrawable(R.drawable.fileitem_processes)) {
             override fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
                 return listOf(FileItem("Currently unavailable"))
             }
+
+            override fun isRawAvailable(): Boolean = false
+            override fun isProjectAble(): Boolean = false
         }
 
-        val others = object : FileItem("Other sources") {
+        val others = object : FileItem("Other sources", getDrawable(R.drawable.fileitem_etc_google_drive)) {
             override fun canExpand(): Boolean = false
             override fun isRawAvailable(): Boolean = true
             override fun isProjectAble(): Boolean = false
         }
 
-        val zoo = object : FileItem("LIVE malware Zoo") {
+        val zoo = object : FileItem("LIVE malware Zoo", getDrawable(R.drawable.fileitem_zoo_github_mark)) {
             override fun canExpand(): Boolean = false
             override fun isRawAvailable(): Boolean = true
             override fun isProjectAble(): Boolean = false
         }
 
-        val hash = object : FileItem("Malware sample by hash from infosec") {
+        val hash = object : FileItem("Malware sample by hash from infosec", getDrawable(R.drawable.fileitem_hash_icons8_website)) {
             override fun canExpand(): Boolean = false
             override fun isRawAvailable(): Boolean = true
             override fun isProjectAble(): Boolean = false
