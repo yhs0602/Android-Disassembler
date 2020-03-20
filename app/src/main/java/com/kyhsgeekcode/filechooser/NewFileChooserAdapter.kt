@@ -54,6 +54,10 @@ class NewFileChooserAdapter(
                 showEditDialog(parentActivity, "Search from infosec", "Enter hash", editText,
                         appCtx.getString(android.R.string.ok), DialogInterface.OnClickListener { dialog, which ->
                     val hash = editText.text.toString()
+                    if(hash.isEmpty()) {
+                        Toast.makeText(parentActivity, "Please enter a valid hash", Toast.LENGTH_SHORT).show()
+                        return@OnClickListener
+                    }
                     parentActivity.showHashSite(hash)
                 }, null, null)
                 // https://infosec.cert-pa.it/analyze/7b3491e0028d443f11989efaeb0fbec2.html
@@ -188,7 +192,7 @@ class NewFileChooserAdapter(
     private fun addItemsToListSorted(subItems: List<FileItem>) {
         values.clear()
         values.addAll(subItems)
-        values.sortWith(compareBy({ !it.text.endsWith("/") }, { it.text }))
+        values.sortWith(compareBy({ !it.text.endsWith("/") }, { it.text[0].toLowerCase()}, {it.text}))
     }
 
     fun onBackPressedShouldFinish(): Boolean {
