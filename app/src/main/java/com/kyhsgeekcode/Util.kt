@@ -257,6 +257,7 @@ fun sendErrorReport(error: Throwable) {
     emailIntent.putExtra(Intent.EXTRA_SUBJECT,
             "Crash report - " + error.message + "(ver" + ver + ")")
     val content = StringBuilder(Log.getStackTraceString(error))
+    content.append("OS version: ${android.os.Build.VERSION.SDK_INT}")
     emailIntent.putExtra(Intent.EXTRA_TEXT,
             content.toString())
     val resultPath: String?

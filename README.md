@@ -5,9 +5,9 @@
 
 Android Disassembler is an application that is able to analyze several types of files such as APK files, dex files, shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files and much more. These app features are based on [capstone library](https://github.com/aquynh/capstone), [elf](https://github.com/serge1/ELFIO) [parser](https://github.com/jawi/java-binutils), [PE parser](https://github.com/kichik/pecoff4j), [backsmali](https://github.com/JesusFreke/smali), and [facile reflector](https://github.com/TomSmartBishop/facile-api).
 
-# Version 2.0.2 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 2.0.3 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
-## What's new : Tab system renewal, fix several issues
+## What's new : Fix settings bug, more options for selecting files
 # Features
 - Shows details of elf files.
 - Shows symbol table(functions or objects' ,... names) of elf files.
