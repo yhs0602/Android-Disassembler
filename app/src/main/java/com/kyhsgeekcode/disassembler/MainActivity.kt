@@ -484,6 +484,7 @@ class MainActivity : AppCompatActivity(),
                     val showRationalEditor = showRationalSetting.edit()
                     showRationalEditor.putBoolean("show", true)
                     showRationalEditor.apply()
+                    finish();
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
