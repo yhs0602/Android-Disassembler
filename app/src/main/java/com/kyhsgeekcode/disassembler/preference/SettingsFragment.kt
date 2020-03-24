@@ -193,8 +193,8 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClic
             false
         }
         lp.onPreferenceChangeListener = this
-        val lp2 = findPreference<ListPreference>("filepicker")
-        lp2!!.onPreferenceChangeListener = this
+//        val lp2 = findPreference<ListPreference>("filepicker")
+//        lp2!!.onPreferenceChangeListener = this
         val scrn = findPreference<Preference>("openscrn")
         scrn?.setOnPreferenceClickListener {
             LibsBuilder()
