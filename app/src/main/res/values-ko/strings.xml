@@ -21,7 +21,7 @@
     <string name="send_feature_request">새 기능 제안하기</string>
     <string name="send_feature_request_detail">개발자에게 새 기능을 제안합니다.</string>
     <string name="disasmTheme">디스어셈블리의 테마</string>
-    <string name="permission_needed">저장 권한은 당연히 필요합니다1!</string>
+    <string name="permission_needed">저장 권한은 당연히 필요합니다!</string>
     <string name="fail_readfile">파일 읽기에 실패했습니다.</string>
     <string name="fail_exportzip">Zip 파일 네보내기에 실패했습니다,</string>
     <string name="fail_loadraw">Raw 파일에서 로드 실패</string>
