@@ -1,1 +1,1 @@
-include ':app', ':libaxml'
+include ':app'
