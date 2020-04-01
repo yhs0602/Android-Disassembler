@@ -1,19 +1,7 @@
 package com.kyhsgeekcode.disassembler;
 
 public class DisasmIterator extends AssemblyProvider {
-    //<<<<<<< HEAD
-//<<<<<<< HEAD
-    //public DisasmIterator(MainActivity binaryDisasmFragment,
-    //						//NotificationManager mNotifyManager,
-    //						//Notification.Builder mBuilder,
-    //						DisasmListViewAdapter adapter,
-    //						long total)
-//=======
-    //public DisasmIterator(MainActivity binaryDisasmFragment, NotificationManager mNotifyManager, Notification.Builder mBuilder, DisasmListViewAdapter adapter,  long total)
-//>>>>>>> parent of 2644076... Update readme with assembly materials links
-//=======
     public DisasmIterator(/* NotificationManager mNotifyManager, Notification.Builder mBuilder, */DisasmListViewAdapter adapter, long total)
-//>>>>>>> parent of 2644076... Update readme with assembly materials links
     {
         super(adapter, total);
     }
