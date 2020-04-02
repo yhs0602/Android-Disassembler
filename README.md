@@ -3,6 +3,8 @@
 
 # Android-Disassembler - Analyze your malicious app on your phone
 
+[![ci][1]][2]
+
 Android Disassembler is an application that is able to analyze several types of files such as APK files, dex files, shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files and much more. These app features are based on [capstone library](https://github.com/aquynh/capstone), [elf](https://github.com/serge1/ELFIO) [parser](https://github.com/jawi/java-binutils), [PE parser](https://github.com/kichik/pecoff4j), [backsmali](https://github.com/JesusFreke/smali), and [facile reflector](https://github.com/TomSmartBishop/facile-api).
 
 # Version 2.0.3 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
@@ -118,3 +120,6 @@ https://reverseengineering.stackexchange.com/a/18203/23870
 I think I have to notice you that:
 
 - When the crash report with types such as `FileCorruptedException` is sent, the file you are analyzing may be attached to the bug report email, and be uploaded to the repository in `github.com`.
+
+[1]: https://github.com/KYHSGeekCode/Android-Disassembler/workflows/ci/badge.svg
+[2]: https://github.com/KYHSGeekCode/Android-Disassembler/actions
