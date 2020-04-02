@@ -1,11 +1,17 @@
-[![Play Store Info](https://img.shields.io/badge/Play_Store-v2.0.2-36B0C1.svg?style=flat-square)](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler) ![Android CI](https://github.com/KYHSGeekCode/Android-Disassembler/workflows/Android%20CI/badge.svg) [![CodeFactor](https://www.codefactor.io/repository/github/kyhsgeekcode/android-disassembler/badge/master)](https://www.codefactor.io/repository/github/kyhsgeekcode/android-disassembler/overview/master)[![HitCount](http://hits.dwyl.com/KYHSGeekCode/Android-Disassembler.svg)](http://hits.dwyl.com/KYHSGeekCode/Android-Disassembler)[![GitHub stars](https://img.shields.io/github/stars/KYHSGeekCode/Android-Disassembler.svg?style=social&label=Star&maxAge=2592000)](https://github.com/KYHSGeekCode/Android-Disassembler/stargazers/)[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=round)](https://github.com/KYHSGeekCode/Android-Disassembler/issues)[<img src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge-border.png" width="200" alt="Get Android Disassembler on Google Play" />](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler "Get Android Disassembler on Google Play")
-
-
-# Android-Disassembler - Analyze your malicious app on your phone
+# Android-Disassembler
 
 [![ci][1]][2]
+[![CodeFactor](https://www.codefactor.io/repository/github/kyhsgeekcode/android-disassembler/badge/master)](https://www.codefactor.io/repository/github/kyhsgeekcode/android-disassembler/overview/master)
+[![Play Store Info](https://img.shields.io/badge/Play_Store-v2.0.3-36B0C1.svg?style=flat-square)](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler)
+[![HitCount](http://hits.dwyl.com/KYHSGeekCode/Android-Disassembler.svg)](http://hits.dwyl.com/KYHSGeekCode/Android-Disassembler)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=round)](https://github.com/KYHSGeekCode/Android-Disassembler/issues)
+[![GitHub stars](https://img.shields.io/github/stars/KYHSGeekCode/Android-Disassembler.svg?style=social&label=Star&maxAge=2592000)](https://github.com/KYHSGeekCode/Android-Disassembler/stargazers/)
+
+Analyze malicious app on your phone
 
 Android Disassembler is an application that is able to analyze several types of files such as APK files, dex files, shared libraries (aka .so files) (NDK, JNI), windows PE files(EXE, DLLs, SYSs, etc..), linux executables, object files and much more. These app features are based on [capstone library](https://github.com/aquynh/capstone), [elf](https://github.com/serge1/ELFIO) [parser](https://github.com/jawi/java-binutils), [PE parser](https://github.com/kichik/pecoff4j), [backsmali](https://github.com/JesusFreke/smali), and [facile reflector](https://github.com/TomSmartBishop/facile-api).
+
+[<img src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge-border.png" width="200" alt="Get Android Disassembler on Google Play" />](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler "Get Android Disassembler on Google Play")
 
 # Version 2.0.3 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
@@ -57,7 +63,7 @@ Android Disassembler is an application that is able to analyze several types of 
  - The app crashes!
 
    Sorry for inconvenience, please send an error report as an issue. **If you can't wait for the next stable version, please check / grant the read/write permission to the app.**
-   
+
  - NotThisFormatException
 
    Is it a well known executable file? (ELF:`.so, .o, .lib, .a, etc..`, PE:`.exe, .dll, .sys, ...`) Then please report me with the file you tried to disassemble.
@@ -72,7 +78,7 @@ Android Disassembler is an application that is able to analyze several types of 
 
 # Open Source
  This app used
- - [Capstone](https://github.com/aquynh/capstone) 
+ - [Capstone](https://github.com/aquynh/capstone)
  - [Storage-Chooser](https://github.com/codekidX/storage-chooser)
  - [Colorpickerview](https://github.com/skydoves/ColorPickerView)
  - [Java-binutils](https://github.com/jawi/java-binutils)
