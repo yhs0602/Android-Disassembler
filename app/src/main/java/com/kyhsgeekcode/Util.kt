@@ -110,7 +110,7 @@ fun extract(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ ->
         val archi = ArchiveStreamFactory().createArchiveInputStream(BufferedInputStream(from.inputStream()))
         var entry: ArchiveEntry?
         while (archi.nextEntry.also { entry = it } != null) {
-            if(entry!!.name == "")
+            if (entry!!.name == "")
                 continue
             if (!archi.canReadEntryData(entry)) {
                 // log something?
@@ -275,8 +275,13 @@ fun sendErrorReport(error: Throwable) {
             resultPath = path
         }
         if (resultPath != null) {
-            val uri = FileProvider.getUriForFile(appCtx, appCtx.applicationContext.packageName + ".provider", File(resultPath))
-            emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+            try {
+                val uri = FileProvider.getUriForFile(appCtx, appCtx.applicationContext.packageName + ".provider", File(resultPath))
+                emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
+            } catch (e: Exception) {
+                // TODO: Copy resultPath to somewhere accessible from provider and try again
+                Log.e("UtilKt", "Error appending file")
+            }
         }
     }
     val intent = Intent.createChooser(emailIntent, appCtx.getString(R.string.send_crash_via_email))
