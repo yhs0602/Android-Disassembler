@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.util.Log
@@ -724,6 +725,9 @@ class MainActivity : AppCompatActivity(),
     @UnstableDefault
     public fun onChoosePathNew(uri: Uri) {
         if (uri.scheme == "content") {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+//                contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            }
             contentResolver.openInputStream(uri).use { inStream ->
                 val file = getExternalFilesDir(null)?.resolve("tmp")?.resolve("openDirect")
                         ?: return
