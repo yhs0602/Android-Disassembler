@@ -100,7 +100,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.13.1'
 
     // or "kotlin-stdlib-jdk8"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0" // JVM dependency
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0-mpp-dev-1" // JVM dependency
     implementation "androidx.multidex:multidex:2.0.1"
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
