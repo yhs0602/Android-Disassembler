@@ -159,7 +159,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                 mCustomDialog!!.show()
             }
             R.id.jumpto -> run {
-                val autocomplete = object : androidx.appcompat.widget.AppCompatAutoCompleteTextView(activity) {
+                val autocomplete = object : androidx.appcompat.widget.AppCompatAutoCompleteTextView(requireActivity()) {
                     override fun enoughToFilter(): Boolean {
                         return true
                     }
@@ -172,7 +172,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                     }
                 }
                 autocomplete.setAdapter<ArrayAdapter<String>>(autoSymAdapter)
-                val ab = showEditDialog(activity!!, "Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
+                val ab = showEditDialog(requireActivity(), "Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
                         "Go", DialogInterface.OnClickListener { p1, p2 ->
                     val dest = autocomplete.text.toString()
                     try {
@@ -190,7 +190,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                                 return@OnClickListener
                             }
                         }
-                        showToast(activity!!, "No such symbol available")
+                        showToast(requireActivity(), "No such symbol available")
                     }
                 },
                         getString(R.string.cancel) /*R.string.symbol*/, null)
@@ -263,7 +263,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     }
 
     private fun setupSymCompleteAdapter() {
-        autoSymAdapter = ArrayAdapter(activity!!, android.R.layout.select_dialog_item)
+        autoSymAdapter = ArrayAdapter(requireActivity(), android.R.layout.select_dialog_item)
         // autocomplete.setThreshold(2);
         // autocomplete.setAdapter(autoSymAdapter);
     }
