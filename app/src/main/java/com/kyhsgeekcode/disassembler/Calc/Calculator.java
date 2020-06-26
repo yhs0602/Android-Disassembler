@@ -49,47 +49,64 @@ public class Calculator {
         while ((tok = sp.getToken()) != null) {
             Log.v(TAG, "Token=(" + tok + ")");
             if (tok.isOperator()) {
+                final Operator opTok = (Operator) tok;
                 //-,+ are not able to be determined without context.
-                if (prevTok == null || prevTok.isOperator()) {
+                if (prevTok == null || prevTok.isOperator()
+                        || opTok.operation == Operator.Operation.UMINUS || opTok.operation == Operator.Operation.UPLUS) {
                     //unary?
                     Log.v(TAG, tok + " is unary?");
                     operatorStack.push((Operator) tok);
                 } else {
-                    if (operatorStack.isEmpty()) {
-                        Log.v(TAG, "op stack is empty, pushing " + tok);
+//                    if (operatorStack.isEmpty()) {
+//                        Log.v(TAG, "op stack is empty, pushing " + tok);
+//                        operatorStack.push((Operator) tok);
+//                    } else {
+//                    Operator op1 = operatorStack.peek();
+                    if (((Operator) tok).operation == Operator.Operation.LPAR) {
                         operatorStack.push((Operator) tok);
-                    } else {
-                        Operator op1 = operatorStack.peek();
-                        if (((Operator) tok).operation == Operator.Operation.LPAR) {
-                            operatorStack.push((Operator) tok);
-                        } else if (((Operator) tok).operation == Operator.Operation.RPAR) {
-                            while (!operatorStack.isEmpty()) {
-                                Operator pp = operatorStack.pop();
-                                if (pp.operation != Operator.Operation.LPAR)
-                                    postfix.add(pp);
-                                else
-                                    break;
-                            }
-                        } else {
-                            int cmp = op1.compareTo((Operator) tok);
-                            if (cmp >= 0)//op1 priority is higher than this token
-                            {
-                                while (!operatorStack.isEmpty()) {
-                                    Operator pp = operatorStack.peek();
-                                    if (pp.operation != Operator.Operation.LPAR)
-                                        postfix.add(operatorStack.pop());
-                                    else
-                                        break;
+                    } else if (((Operator) tok).operation == Operator.Operation.RPAR) {
+                        while (true) {
+                            Operator pp = operatorStack.pop();
+                            if (pp.operation != Operator.Operation.LPAR) {
+                                postfix.add(pp);
+                                if (operatorStack.isEmpty()) {
+                                    throw new IllegalArgumentException("Not matched parenthesis");
                                 }
-                                operatorStack.push((Operator) tok);
-                            } else// if (cmp < 0) //new token has higher priority
-                            {
-                                operatorStack.push((Operator) tok);
-                            }
+                            } else
+                                break;
                         }
+                    } else {
+                        Operator topOp;
+                        // 우선순위와 associativity 에 따라 연산자를 적당한 위치까지 푸시하며
+                        // 그 과정의 연산자를 팝하여 postfix에 넣는다
+                        while (!operatorStack.isEmpty() && (topOp = operatorStack.peek()) != null &&
+                                topOp.operation != Operator.Operation.LPAR &&
+                                (
+//                                    topOp.operation == Operation.NEG ||
+                                        topOp.compareTo(opTok) > 0 ||
+                                                (topOp.compareTo(opTok) == 0 && !isRightAssociative(opTok.operation))
+                                )) {
+                            topOp = operatorStack.pop();
+                            postfix.add(topOp);
+                        }
+                        operatorStack.push((Operator) tok);
+//                            int cmp = op1.compareTo((Operator) tok);
+//                            if (cmp >= 0)//op1 priority is higher than this token
+//                            {
+//                                while (!operatorStack.isEmpty()) {
+//                                    Operator pp = operatorStack.peek();
+//                                    if (pp.operation != Operator.Operation.LPAR)
+//                                        postfix.add(operatorStack.pop());
+//                                    else
+//                                        break;
+//                                }
+//                                operatorStack.push((Operator) tok);
+//                            } else// if (cmp < 0) //new token has higher priority
+//                            {
+//                                operatorStack.push((Operator) tok);
+//                            }
                     }
                 }
-
             } else/* if ( tok.isOperand())*/ {
                 postfix.add(tok);
             }
@@ -99,6 +116,17 @@ public class Calculator {
             postfix.add(operatorStack.pop());
         }
         return postfix;
+    }
+
+    // 동일 우선순위 연산자가 연속될 때 오른쪽부터 계산하는 연산자인가
+    private static boolean isRightAssociative(Operator.Operation op) {
+        switch (op) {
+            case UMINUS:
+            case POWER:
+                return true;
+            default:
+                return false;
+        }
     }
 }
 
