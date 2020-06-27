@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import com.kyhsgeekcode.TAG
 import com.kyhsgeekcode.disassembler.project.ProjectManager
@@ -19,6 +20,7 @@ import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.filechooser.model.FileItemApp
 import com.kyhsgeekcode.isArchive
 import kotlinx.android.synthetic.main.fragment_project_overview.*
+import kotlinx.android.synthetic.main.main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -113,6 +115,7 @@ class ProjectOverviewFragment : Fragment() {
                     showErrorDialog(requireActivity(), R.string.failCreateProject, e, false)
                 }
                 (activity as ProgressHandler).finishProgress()
+
             }
         }
         showYesNoDialog(

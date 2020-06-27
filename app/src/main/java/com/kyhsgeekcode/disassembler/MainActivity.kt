@@ -18,6 +18,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import at.pollaknet.api.facile.FacileReflector
 import at.pollaknet.api.facile.renderer.ILAsmRenderer
@@ -807,6 +808,7 @@ class MainActivity : AppCompatActivity(),
                         ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, true)
                     overviewFragment.initializeDrawer(project)
                     notifyDataSetChanged()
+
                 }
             } catch (e: Exception) {
                 alertError(R.string.failCreateProject, e, false)
@@ -1158,6 +1160,8 @@ class MainActivity : AppCompatActivity(),
 //        left_drawer.isAlwaysExpanded = orig
         left_drawer.refreshDrawableState()
         left_drawer.requestLayout()
+//        showAlertDialog(this, "Then..", "Swipe from left to right please.")
+        drawer_layout.openDrawer(GravityCompat.START)
     }
 
     override fun publishProgress(current: Int, total: Int?, message: String?) {
