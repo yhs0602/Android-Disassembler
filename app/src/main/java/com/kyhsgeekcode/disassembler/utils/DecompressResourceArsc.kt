@@ -10,11 +10,16 @@ class DecompressResourceArsc {
             val chunkType = buffer.short
             when (chunkType.toInt()) {
                 ResChunkHeader.RES_TABLE_TYPE -> {
-                    val resTableHeader = ResTableHeader(ResChunkHeader(chunkType, buffer.short, buffer.int), buffer.int)
+                    val resTableHeader = ResTableHeader(
+                        ResChunkHeader(chunkType, buffer.short, buffer.int),
+                        buffer.int
+                    )
                 }
                 ResChunkHeader.RES_STRING_POOL_TYPE -> {
-                    val stringPoolHeader = ResStringPoolHeader(ResChunkHeader(chunkType, buffer.short, buffer.int),
-                            buffer.int, buffer.int, buffer.int, buffer.int, buffer.int)
+                    val stringPoolHeader = ResStringPoolHeader(
+                        ResChunkHeader(chunkType, buffer.short, buffer.int),
+                        buffer.int, buffer.int, buffer.int, buffer.int, buffer.int
+                    )
                     for (i in 0 until stringPoolHeader.stringCount) {
                         val relval = buffer.int
                         val offset = stringPoolHeader.stringStart + relval
@@ -24,8 +29,15 @@ class DecompressResourceArsc {
                 }
                 ResChunkHeader.RES_TABLE_PACKAGE_TYPE -> {
                     val nameByteArray = ByteArray(128)
-                    val resTablePackage = ResTablePackage(ResChunkHeader(chunkType, buffer.short, buffer.int),
-                            buffer.int, buffer.get(nameByteArray).toString(), buffer.int, buffer.int, buffer.int, buffer.int)
+                    val resTablePackage = ResTablePackage(
+                        ResChunkHeader(chunkType, buffer.short, buffer.int),
+                        buffer.int,
+                        buffer.get(nameByteArray).toString(),
+                        buffer.int,
+                        buffer.int,
+                        buffer.int,
+                        buffer.int
+                    )
 
                 }
             }
@@ -45,14 +57,18 @@ class DecompressResourceArsc {
     }
 
     class ResTableHeader(val header: ResChunkHeader, val packageCount: Int)
-    class ResStringPoolHeader(val header: ResChunkHeader, val stringCount: Int, val styleCount: Int,
-                              val flags: Int, val stringStart: Int, val styleStart: Int) {
+    class ResStringPoolHeader(
+        val header: ResChunkHeader, val stringCount: Int, val styleCount: Int,
+        val flags: Int, val stringStart: Int, val styleStart: Int
+    ) {
         enum class Flag(val intValue: Int) {
             SORTED_FLAG(1 shl 0),
             UTF8_FLAG(1 shl 8)
         }
     }
 
-    class ResTablePackage(val header: ResChunkHeader, val id: Int, val name: String, val typeStrings: Int,
-                          val lastPublicType: Int, val keyStrings: Int, val lastPublicKey: Int)
+    class ResTablePackage(
+        val header: ResChunkHeader, val id: Int, val name: String, val typeStrings: Int,
+        val lastPublicType: Int, val keyStrings: Int, val lastPublicKey: Int
+    )
 }

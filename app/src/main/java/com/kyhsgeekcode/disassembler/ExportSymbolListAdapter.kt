@@ -7,10 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import java.util.*
 import kotlinx.android.synthetic.main.export_symbol_row.view.*
+import java.util.*
 
-class ExportSymbolListAdapter(val fragmentExport: BinaryExportSymbolFragment) : RecyclerView.Adapter<ExportSymbolListAdapter.ViewHolder>() {
+class ExportSymbolListAdapter(val fragmentExport: BinaryExportSymbolFragment) :
+    RecyclerView.Adapter<ExportSymbolListAdapter.ViewHolder>() {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     private val itemList = ArrayList<Symbol>()
     private val TAG = "Disassembler sym"
@@ -40,7 +41,7 @@ class ExportSymbolListAdapter(val fragmentExport: BinaryExportSymbolFragment) : 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.export_symbol_row, parent, false)
+            .inflate(R.layout.export_symbol_row, parent, false)
 //        listView = parent as RecyclerView
         return ViewHolder(view)
     }
@@ -51,13 +52,24 @@ class ExportSymbolListAdapter(val fragmentExport: BinaryExportSymbolFragment) : 
         val item = itemList[position]
         holder.itemView.setOnLongClickListener {
             if (item.type != Symbol.Type.STT_FUNC) {
-                Toast.makeText(fragmentExport.activity, "This is not a function.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    fragmentExport.activity,
+                    "This is not a function.",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnLongClickListener true
             }
             val address = item.st_value
             // LongSparseArray arr;
-            Toast.makeText(fragmentExport.activity, "Jump to" + java.lang.Long.toHexString(address), Toast.LENGTH_SHORT).show()
-            (fragmentExport.parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_DISASM, true)
+            Toast.makeText(
+                fragmentExport.activity,
+                "Jump to" + java.lang.Long.toHexString(address),
+                Toast.LENGTH_SHORT
+            ).show()
+            (fragmentExport.parentFragment as ITabController).setCurrentTabByTag(
+                TabTags.TAB_DISASM,
+                true
+            )
             (fragmentExport.parentFragment as BinaryFragment).jumpto(address)
             true
         }

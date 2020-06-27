@@ -88,10 +88,10 @@ class DotNetFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(relPath: String) =
-                DotNetFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(ARG_PARAM1, relPath)
-                    }
+            DotNetFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM1, relPath)
                 }
+            }
     }
 }

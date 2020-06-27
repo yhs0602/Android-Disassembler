@@ -18,6 +18,7 @@ class HexFragment : Fragment() {
     val ARG_PARAM = "param"
     private lateinit var fileContent: ByteArray
     private lateinit var relPath: String
+
     @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,8 +30,12 @@ class HexFragment : Fragment() {
         fileContent = ProjectDataStorage.getFileContent(relPath)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-            inflater.inflate(R.layout.fragment_hexview, container, false)!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
+        inflater.inflate(R.layout.fragment_hexview, container, false)!!
 
     var touchSource: View? = null
     var clickSource: View? = null
@@ -48,10 +53,11 @@ class HexFragment : Fragment() {
             }
             false
         }
-        mainGridViewHex.onItemClickListener = AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id: Long ->
-            if (parent === clickSource) { // Do something with the ListView was clicked
-            }
-        } /*
+        mainGridViewHex.onItemClickListener =
+            AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id: Long ->
+                if (parent === clickSource) { // Do something with the ListView was clicked
+                }
+            } /*
 		gvHex.setOnScrollListener(new OnScrollListener() {
 				@Override
 				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
@@ -104,10 +110,10 @@ class HexFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(relPath: String) =
-                HexFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(ARG_PARAM, relPath)
-                    }
+            HexFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM, relPath)
                 }
+            }
     }
 }

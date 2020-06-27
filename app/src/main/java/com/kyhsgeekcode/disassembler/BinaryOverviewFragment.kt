@@ -7,19 +7,24 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import java.util.*
 import kotlinx.android.synthetic.main.fragment_binary_overview.*
 import kotlinx.serialization.UnstableDefault
 import nl.lxtreme.binutils.elf.MachineType
+import java.util.*
 
 class BinaryOverviewFragment : Fragment() {
     val TAG = "BinaryOverviewFragment"
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-            inflater.inflate(R.layout.fragment_binary_overview, container, false)!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
+        inflater.inflate(R.layout.fragment_binary_overview, container, false)!!
 
     private lateinit var relPath: String
     private lateinit var parsedFile: AbstractFile
+
     @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,13 +88,20 @@ class BinaryOverviewFragment : Fragment() {
 //                AfterParse()
             } catch (e: Exception) {
                 Log.e(TAG, "", e)
-                Toast.makeText(context, getString(R.string.err_invalid_value) + e.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    getString(R.string.err_invalid_value) + e.message,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 //        spinnerArch = findViewById(R.id.mainSpinnerArch)
         // https://stackoverflow.com/a/13783744/8614565
-        val items = Arrays.toString(MachineType::class.java.enumConstants).replace("^.|.$".toRegex(), "").split(", ").toTypedArray()
-        val spinnerAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_dropdown_item, items)
+        val items =
+            Arrays.toString(MachineType::class.java.enumConstants).replace("^.|.$".toRegex(), "")
+                .split(", ").toTypedArray()
+        val spinnerAdapter =
+            ArrayAdapter(activity!!, android.R.layout.simple_spinner_dropdown_item, items)
         mainSpinnerArch.adapter = spinnerAdapter
 
         mainETcodeOffset.setText(parsedFile.codeSectionBase.toString(16))

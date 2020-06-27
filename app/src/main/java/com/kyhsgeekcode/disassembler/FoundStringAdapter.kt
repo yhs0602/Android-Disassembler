@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.util.*
 import kotlinx.android.synthetic.main.strings_row.view.*
+import java.util.*
 
 class FoundStringAdapter : RecyclerView.Adapter<FoundStringAdapter.ViewHolder>() {
     private val listViewItemList = ArrayList<FoundString>()
@@ -32,7 +32,7 @@ class FoundStringAdapter : RecyclerView.Adapter<FoundStringAdapter.ViewHolder>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.strings_row, parent, false)
+            .inflate(R.layout.strings_row, parent, false)
         listView = parent as RecyclerView
         return ViewHolder(view)
     }

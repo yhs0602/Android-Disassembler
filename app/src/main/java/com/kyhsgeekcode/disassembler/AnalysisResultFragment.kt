@@ -26,11 +26,16 @@ class AnalysisResultFragment : Fragment() {
     private lateinit var relPath: String
     private lateinit var fileContent: ByteArray
 
-    private val snackProgressBarManager by lazy { SnackProgressBarManager(analysisMain, lifecycleOwner = this) }
+    private val snackProgressBarManager by lazy {
+        SnackProgressBarManager(
+            analysisMain,
+            lifecycleOwner = this
+        )
+    }
     val circularType =
-            SnackProgressBar(SnackProgressBar.TYPE_CIRCULAR, "Loading...")
-                    .setIsIndeterminate(false)
-                    .setAllowUserInput(true)
+        SnackProgressBar(SnackProgressBar.TYPE_CIRCULAR, "Loading...")
+            .setIsIndeterminate(false)
+            .setAllowUserInput(true)
 
     @UnstableDefault
     @ExperimentalUnsignedTypes
@@ -43,8 +48,12 @@ class AnalysisResultFragment : Fragment() {
         fileContent = ProjectDataStorage.getFileContent(relPath)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-            inflater.inflate(R.layout.fragment_analysis_result, container, false)!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
+        inflater.inflate(R.layout.fragment_analysis_result, container, false)!!
 
     @ExperimentalUnsignedTypes
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -59,9 +68,12 @@ class AnalysisResultFragment : Fragment() {
             }
             val imageView: AppCompatImageView = PhotoView(activity)
             imageView.setImageDrawable(imageViewCount!!.drawable)
-            builder.addContentView(imageView, RelativeLayout.LayoutParams(
+            builder.addContentView(
+                imageView, RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT))
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
+            )
             builder.show()
         }
         CoroutineScope(Dispatchers.Main).launch {
@@ -73,7 +85,10 @@ class AnalysisResultFragment : Fragment() {
                     circularType.setMessage(caption)
                     snackProgressBarManager.setProgress(i)
                     activity?.runOnUiThread {
-                        snackProgressBarManager.show(circularType, SnackProgressBarManager.LENGTH_INDEFINITE)
+                        snackProgressBarManager.show(
+                            circularType,
+                            SnackProgressBarManager.LENGTH_INDEFINITE
+                        )
                     }
                     true
                 }
@@ -99,10 +114,10 @@ class AnalysisResultFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(relPath: String) =
-                AnalysisResultFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(ARG_PARAM, relPath)
-                    }
+            AnalysisResultFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM, relPath)
                 }
+            }
     }
 }

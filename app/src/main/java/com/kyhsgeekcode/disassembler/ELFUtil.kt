@@ -1,17 +1,18 @@
 package com.kyhsgeekcode.disassembler
 
 import android.util.Log
+import nl.lxtreme.binutils.elf.Elf
+import nl.lxtreme.binutils.elf.ElfClass
+import nl.lxtreme.binutils.elf.SectionType
 import java.io.File
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.*
-import nl.lxtreme.binutils.elf.Elf
-import nl.lxtreme.binutils.elf.ElfClass
-import nl.lxtreme.binutils.elf.SectionType
 
 class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
     var elf: Elf
     var info = ""
+
     /*
      public void ParseData() throws Exception
      {
@@ -30,6 +31,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
 // private byte [] fileContents;
     var bExecutable = false
     private val TAG = "Disassembler elfutil"
+
     @Throws(IOException::class)
     override fun close() {
         elf.close()
@@ -42,7 +44,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
             sb.append(plt).append(System.lineSeparator())
         }
         sb.append(elf.toString()) // .append(Arrays.toString(symstrings))
-                .append("\n").append(info)
+            .append("\n").append(info)
         return sb.toString()
     }
 
@@ -361,9 +363,11 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
                         codeSectionBase = sh.fileOffset
                         codeSectionLimit = codeSectionBase + sh.size
                         codeVirtAddr = sh.virtualAddress
-                        Log.d(TAG, "CodeSectionBase:${codeSectionBase.toString(16)}," +
-                                " CodeSectionLimit:${codeSectionLimit.toString(16)}," +
-                                " CodeVirtAddr : ${codeVirtAddr.toString(16)}")
+                        Log.d(
+                            TAG, "CodeSectionBase:${codeSectionBase.toString(16)}," +
+                                    " CodeSectionLimit:${codeSectionLimit.toString(16)}," +
+                                    " CodeVirtAddr : ${codeVirtAddr.toString(16)}"
+                        )
                     }
                 }
             }
@@ -471,7 +475,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
         exportSymbols.add(symbol)
     }
 
-    fun addImportSymbol(symbol:ImportSymbol) {
+    fun addImportSymbol(symbol: ImportSymbol) {
         symbol.analyze()
         importSymbols.add(symbol)
     }
@@ -479,6 +483,7 @@ class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
     companion object {
         @JvmStatic
         external fun Demangle(mangled: String?): String?
+
         @JvmStatic
         external fun ParsePLT(filepath: String?): List<ImportSymbol?>?
     }

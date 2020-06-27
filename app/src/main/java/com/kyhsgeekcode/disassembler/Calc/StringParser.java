@@ -11,6 +11,7 @@ public class StringParser {
     private String TAG = "Disassembler parser";
     private String source;
     private char[] chars;
+
     public StringParser(String s) {
         source = s;
         chars = s.toCharArray();

@@ -6,9 +6,11 @@ import at.pollaknet.api.facile.symtab.symbols.Type
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class FileItemDotNetSymbol(text: String, val reflector: FacileReflector, val type: Type) : FileItem(text) {
+class FileItemDotNetSymbol(text: String, val reflector: FacileReflector, val type: Type) :
+    FileItem(text) {
     override fun canExpand(): Boolean = true
     override fun isRawAvailable(): Boolean = false
+
     @ExperimentalUnsignedTypes
     override fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
         val result = ArrayList<FileItem>()

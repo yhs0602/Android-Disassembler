@@ -3,8 +3,6 @@ package com.kyhsgeekcode.disassembler;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
-
-import com.gu.toolargetool.TooLargeTool;
 //import android.support.multidex.*;
 
 public class EnableMultidex extends /*MultiDex*/Application {

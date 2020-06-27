@@ -68,17 +68,29 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
 // private int [] address;
 // position->address
     var address = SparseArray<Long>()
+
     // address->item
     private var itemsNew = LongSparseArray<DisassemblyListItem>()
     var writep = 0
     private var dit: DisasmIterator
+
     // @address eq virtualaddress
     fun loadMore(position: Int, address: Long) { // this.address.clear();
-        Log.d(TAG, "LoadMore position: $position, writep: $writep, virtaddr: ${address.toString(16)}")
+        Log.d(
+            TAG,
+            "LoadMore position: $position, writep: $writep, virtaddr: ${address.toString(16)}"
+        )
         writep = position
-        if(currentAddress == 0L)
+        if (currentAddress == 0L)
             currentAddress = address + file.codeSectionBase - file.codeVirtAddr
-        dit.getSome(handle, file.fileContents, address + file.codeSectionBase - file.codeVirtAddr /*address-file.codeVirtualAddress*/, file.fileContents.size.toLong(), address, INSERT_COUNT)
+        dit.getSome(
+            handle,
+            file.fileContents,
+            address + file.codeSectionBase - file.codeVirtAddr /*address-file.codeVirtualAddress*/,
+            file.fileContents.size.toLong(),
+            address,
+            INSERT_COUNT
+        )
     }
 
 //    // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
@@ -156,7 +168,15 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         dit = DisasmIterator(this, 0)
     }
 
-    fun adjustShow(tvAddr: TextView, tvLabel: TextView, tvBytes: TextView, tvInst: TextView, tvCondition: TextView, tvOperands: TextView, tvComments: TextView) {
+    fun adjustShow(
+        tvAddr: TextView,
+        tvLabel: TextView,
+        tvBytes: TextView,
+        tvInst: TextView,
+        tvCondition: TextView,
+        tvOperands: TextView,
+        tvComments: TextView
+    ) {
         tvAddr.visibility = if (isShowAddress) View.VISIBLE else View.GONE
         tvLabel.visibility = if (isShowLabel) View.VISIBLE else View.GONE
         tvBytes.visibility = if (isShowBytes) View.VISIBLE else View.GONE
@@ -186,7 +206,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.listview_item, parent, false)
+            .inflate(R.layout.listview_item, parent, false)
         listView = parent as RecyclerView
         return ViewHolder(view)
     }
@@ -194,7 +214,8 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     override fun getItemCount(): Int = address.size()
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val disassemblyListItem = getItem(position) as DisassemblyListItem // listViewItemList/ *[position];*/.get(position);
+        val disassemblyListItem =
+            getItem(position) as DisassemblyListItem // listViewItemList/ *[position];*/.get(position);
         val dar = disassemblyListItem.disasmResult
 
         val palette = palette
@@ -205,20 +226,44 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
             val defTxtColor = palette!!.defaultTxtColor
             val defBkColor = palette.defaultBkColor
             // convertView.setBackgroundColor(palette.getDefaultBkColor());
-            tvInst.setBackgroundColor(palette.getBkColorByGrps(dar.groups, dar.groups_count.toInt(), dar.id))
+            tvInst.setBackgroundColor(
+                palette.getBkColorByGrps(
+                    dar.groups,
+                    dar.groups_count.toInt(),
+                    dar.id
+                )
+            )
             tvAddr.setBackgroundColor(defBkColor)
             tvBytes.setBackgroundColor(defBkColor)
             tvComments.setBackgroundColor(defBkColor)
             tvCondition.setBackgroundColor(defBkColor)
             tvLabel.setBackgroundColor(defBkColor)
-            tvOperands.setBackgroundColor(palette.getBkColorByGrps(dar.groups, dar.groups_count.toInt(), dar.id))
-            tvInst.setTextColor(palette.getTxtColorByGrps(dar.groups, dar.groups_count.toInt(), dar.id))
+            tvOperands.setBackgroundColor(
+                palette.getBkColorByGrps(
+                    dar.groups,
+                    dar.groups_count.toInt(),
+                    dar.id
+                )
+            )
+            tvInst.setTextColor(
+                palette.getTxtColorByGrps(
+                    dar.groups,
+                    dar.groups_count.toInt(),
+                    dar.id
+                )
+            )
             tvAddr.setTextColor(defTxtColor)
             tvBytes.setTextColor(defTxtColor)
             tvComments.setTextColor(defTxtColor)
             tvCondition.setTextColor(defTxtColor)
             tvLabel.setTextColor(defTxtColor)
-            tvOperands.setTextColor(palette.getTxtColorByGrps(dar.groups, dar.groups_count.toInt(), dar.id))
+            tvOperands.setTextColor(
+                palette.getTxtColorByGrps(
+                    dar.groups,
+                    dar.groups_count.toInt(),
+                    dar.id
+                )
+            )
             tvAddr.text = disassemblyListItem.getAddress()
             tvBytes.text = disassemblyListItem.getBytes()
             tvComments.text = disassemblyListItem.getComments()
@@ -226,7 +271,13 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
             tvInst.text = disassemblyListItem.getInstruction()
             tvLabel.text = disassemblyListItem.getLabel()
             tvOperands.text = disassemblyListItem.getOperands()
-            view.setOnClickListener(DisasmClickListener(fragment, this@DisasmListViewAdapter, position))
+            view.setOnClickListener(
+                DisasmClickListener(
+                    fragment,
+                    this@DisasmListViewAdapter,
+                    position
+                )
+            )
         }
     }
 
@@ -284,14 +335,20 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
 
         // thanks to http://www.tipssoft.com/bulletin/board.php?bo_table=FAQ&wr_id=1188
         // Smooth, but performance hit
-        fun onScroll(view: RecyclerView, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+        fun onScroll(
+            view: RecyclerView,
+            firstVisibleItem: Int,
+            visibleItemCount: Int,
+            totalItemCount: Int
+        ) {
             if (totalItemCount < 2) return
             currentAddress = (getItem(firstVisibleItem) as DisassemblyListItem).disasmResult.address
             // Log.v(TAG,"onScroll("+firstVisibleItem+","+visibleItemCount+","+totalItemCount);
             // 리스트뷰가 구성이 완료되어 보이는 경우
             if (view.isShown) { // 리스트뷰의 *0* 번 인덱스 항목이 리스트뷰의 상단에 보이고 있는 경우
                 if (firstVisibleItem == totalItemCount - visibleItemCount) { // 항목을 추가한다.
-                    val lvi = getItem(totalItemCount - 1) as DisassemblyListItem // itemsNew.get(totalItemCount-1);
+                    val lvi =
+                        getItem(totalItemCount - 1) as DisassemblyListItem // itemsNew.get(totalItemCount-1);
                     loadMore(totalItemCount, lvi.disasmResult.address + lvi.disasmResult.size)
                     // *0*totalitemcount-1 번 인덱스 항목 *위*below 로 INSERT_COUNT 개수의 항목이 추가되었으므로
                     // //기존의 0 번 인덱스 항목은 INSERT_COUNT 번 인덱스가 되었다.

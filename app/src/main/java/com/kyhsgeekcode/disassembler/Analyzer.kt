@@ -7,11 +7,11 @@ import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.Log
+import splitties.init.appCtx
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
 import kotlin.experimental.and
-import splitties.init.appCtx
 
 @ExperimentalUnsignedTypes
 class Analyzer(private val bytes: ByteArray) {
@@ -30,8 +30,14 @@ class Analyzer(private val bytes: ByteArray) {
     private var MD4Hash = "Unknown"
     private var SHA1Hash = "Unknown"
     private val nums = IntArray(256)
+
     // Search for strings
-    fun /*List<String>*/searchStrings(adapter: FoundStringAdapter, min: Int, max: Int, progress: (Int, Int) -> Boolean) { // List<String> list=new ArrayList<>();
+    fun /*List<String>*/searchStrings(
+        adapter: FoundStringAdapter,
+        min: Int,
+        max: Int,
+        progress: (Int, Int) -> Boolean
+    ) { // List<String> list=new ArrayList<>();
 // char lastch=0;
         var strstart = -1
         adapter.reset()
@@ -81,7 +87,13 @@ class Analyzer(private val bytes: ByteArray) {
         }
         val yPerCount = graphY.toFloat() / max
         // x-axis
-        mCanvas.drawLine(20f, sizeY - 40.toFloat(), sizeX - 20.toFloat(), sizeY - 40.toFloat(), paintLine)
+        mCanvas.drawLine(
+            20f,
+            sizeY - 40.toFloat(),
+            sizeX - 20.toFloat(),
+            sizeY - 40.toFloat(),
+            paintLine
+        )
         paintLine.textSize = 20f
         for (i in 0..15) {
             mCanvas.drawText("" + i * 16, 20 + i * 64.toFloat(), sizeY.toFloat(), paintLine)
@@ -89,7 +101,12 @@ class Analyzer(private val bytes: ByteArray) {
         // y-axis
         mCanvas.drawLine(20f, sizeY - 40.toFloat(), 20f, 0f, paintLine)
         for (i in 0..5) {
-            mCanvas.drawText("" + (max.toFloat() * i / 5.0f).toInt(), 0f, baseY - graphY * i / 5.0f - 10, paintLine)
+            mCanvas.drawText(
+                "" + (max.toFloat() * i / 5.0f).toInt(),
+                0f,
+                baseY - graphY * i / 5.0f - 10,
+                paintLine
+            )
         }
         val paintCount = Paint()
         paintCount.color = Color.MAGENTA
@@ -211,7 +228,8 @@ class Analyzer(private val bytes: ByteArray) {
         var inCircle = 0
         for (i in 0 until uBytes.size - 1) { // a square with a side of length 2 centered at 0 has
 // x and y range of -1 to 1
-            val randX = uBytes[i].toDouble() / 256.0 * 2 - 1 // (Math.random() * 2) - 1;//range -1 to 1
+            val randX =
+                uBytes[i].toDouble() / 256.0 * 2 - 1 // (Math.random() * 2) - 1;//range -1 to 1
             val randY = uBytes[i + 1].toDouble() / 256.0 * 2 - 1 // range -1 to 1
             // distance from (0,0) = sqrt((x-0)^2+(y-0)^2)
             val distFromCenter = Math.sqrt(randX * randX + randY * randY)
@@ -332,6 +350,7 @@ class Analyzer(private val bytes: ByteArray) {
 
     companion object {
         private const val TAG = "Analyzer"
+
         // static double x2Dist(byte[] data) {
 // 	avg;
 // 	double sqs = stream(data).reduce(0, (a, b) -> a + pow((b - avg), 2));

@@ -10,8 +10,12 @@ import kotlinx.android.synthetic.main.fragment_export_symbol.*
 class BinaryExportSymbolFragment : Fragment() {
 
     private lateinit var exportSymbolLvAdapter: ExportSymbolListAdapter
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-            inflater.inflate(R.layout.fragment_export_symbol, container, false)!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
+        inflater.inflate(R.layout.fragment_export_symbol, container, false)!!
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

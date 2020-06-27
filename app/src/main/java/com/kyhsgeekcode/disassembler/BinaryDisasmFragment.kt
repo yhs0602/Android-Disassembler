@@ -55,8 +55,12 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-            inflater.inflate(R.layout.fragment_binary_disasm, container, false)!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
+        inflater.inflate(R.layout.fragment_binary_disasm, container, false)!!
 
     @UnstableDefault
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -71,15 +75,24 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         var mode = 0
         if (archs.size == 2) mode = archs[1]
         if (arch == CS_ARCH_MAX || arch == CS_ARCH_ALL) {
-            Toast.makeText(activity, "Maybe this program don't support this machine:" + type.name, Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                activity,
+                "Maybe this program don't support this machine:" + type.name,
+                Toast.LENGTH_SHORT
+            ).show()
         } else {
 //            var err: Int
             try {
                 MainActivity.Open(arch, /*CS_MODE_LITTLE_ENDIAN =*/mode).also { handle = it }
-                Toast.makeText(activity, "MachineType=${type.name} arch=$arch", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "MachineType=${type.name} arch=$arch", Toast.LENGTH_SHORT)
+                    .show()
             } catch (e: Exception) {
                 Log.e(TAG, "setmode type=${type.name} err=${e}arch${arch}mode=$mode")
-                Toast.makeText(activity, "failed to set architecture${e}arch=$arch", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    activity,
+                    "failed to set architecture${e}arch=$arch",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
         setupListView()
@@ -151,20 +164,27 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.choosecolumns -> {
-                mCustomDialog = ChooseColumnDialog(activity,
-                        "Select columns to view", // Title
-                        "Choose columns", // Content
-                        leftListener, // left
-                        null) // right
+                mCustomDialog = ChooseColumnDialog(
+                    activity,
+                    "Select columns to view", // Title
+                    "Choose columns", // Content
+                    leftListener, // left
+                    null
+                ) // right
                 mCustomDialog!!.show()
             }
             R.id.jumpto -> run {
-                val autocomplete = object : androidx.appcompat.widget.AppCompatAutoCompleteTextView(requireActivity()) {
+                val autocomplete = object :
+                    androidx.appcompat.widget.AppCompatAutoCompleteTextView(requireActivity()) {
                     override fun enoughToFilter(): Boolean {
                         return true
                     }
 
-                    override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
+                    override fun onFocusChanged(
+                        focused: Boolean,
+                        direction: Int,
+                        previouslyFocusedRect: Rect?
+                    ) {
                         super.onFocusChanged(focused, direction, previouslyFocusedRect)
                         if (focused && adapter != null) {
                             performFiltering(text, 0)
@@ -172,28 +192,39 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                     }
                 }
                 autocomplete.setAdapter<ArrayAdapter<String>>(autoSymAdapter)
-                val ab = showEditDialog(requireActivity(), "Goto an address/symbol", "Enter a hex address or a symbol", autocomplete,
-                        "Go", DialogInterface.OnClickListener { p1, p2 ->
-                    val dest = autocomplete.text.toString()
-                    try {
-                        val address = dest.toLong(16)
-                        jumpto(address)
-                    } catch (nfe: NumberFormatException) { // not a number, lookup symbol table
-                        val syms = parsedFile.exportSymbols
-                        for (sym in syms) {
-                            if (sym.name != null && sym.name == dest) {
-                                if (sym.type != Symbol.Type.STT_FUNC) {
-                                    Toast.makeText(activity, "This is not a function.", Toast.LENGTH_SHORT).show()
+                val ab = showEditDialog(
+                    requireActivity(),
+                    "Goto an address/symbol",
+                    "Enter a hex address or a symbol",
+                    autocomplete,
+                    "Go",
+                    DialogInterface.OnClickListener { p1, p2 ->
+                        val dest = autocomplete.text.toString()
+                        try {
+                            val address = dest.toLong(16)
+                            jumpto(address)
+                        } catch (nfe: NumberFormatException) { // not a number, lookup symbol table
+                            val syms = parsedFile.exportSymbols
+                            for (sym in syms) {
+                                if (sym.name != null && sym.name == dest) {
+                                    if (sym.type != Symbol.Type.STT_FUNC) {
+                                        Toast.makeText(
+                                            activity,
+                                            "This is not a function.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        return@OnClickListener
+                                    }
+                                    jumpto(sym.st_value)
                                     return@OnClickListener
                                 }
-                                jumpto(sym.st_value)
-                                return@OnClickListener
                             }
+                            showToast(requireActivity(), "No such symbol available")
                         }
-                        showToast(requireActivity(), "No such symbol available")
-                    }
-                },
-                        getString(R.string.cancel) /*R.string.symbol*/, null)
+                    },
+                    getString(R.string.cancel) /*R.string.symbol*/,
+                    null
+                )
                 ab.window?.setGravity(Gravity.TOP)
             }
         }
@@ -241,7 +272,8 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             adapter.isShowAddress = cs.showAddress // /*v.getTag(CustomDialog.TAGAddress)*/);
             adapter.isShowLabel = cs.showLabel // /*v.getTag(CustomDialog.TAGLabel)*/);
             adapter.isShowBytes = cs.showBytes // /*v.getTag(CustomDialog.TAGBytes)*/);
-            adapter.isShowInstruction = cs.showInstruction // /*v.getTag(CustomDialog.TAGInstruction)*/);
+            adapter.isShowInstruction =
+                cs.showInstruction // /*v.getTag(CustomDialog.TAGInstruction)*/);
             adapter.isShowComment = cs.showComments // /*v.getTag(CustomDialog.TAGComment)*/);
             adapter.isShowOperands = cs.showOperands // /*v.getTag(CustomDialog.TAGOperands)*/);
             adapter.isShowCondition = cs.showConditions // /*v.getTag(CustomDialog.TAGCondition)*/);

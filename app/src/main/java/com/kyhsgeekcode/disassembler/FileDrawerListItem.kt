@@ -10,11 +10,11 @@ import at.pollaknet.api.facile.symtab.symbols.Method
 import at.pollaknet.api.facile.symtab.symbols.TypeRef
 import com.kyhsgeekcode.getDrawable
 import com.kyhsgeekcode.isArchive
+import org.boris.pecoff4j.io.PEParser
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 import java.util.*
-import org.boris.pecoff4j.io.PEParser
 
 class FileDrawerListItem {
     var caption: String
@@ -32,7 +32,8 @@ class FileDrawerListItem {
             // mb.toString();
             val outDir = File(root, "temp-cil/")
             outDir.mkdirs()
-            val outFile = File(outDir, method.name.replace("[^a-zA-Z0-9._]+".toRegex(), "_") + ".il")
+            val outFile =
+                File(outDir, method.name.replace("[^a-zA-Z0-9._]+".toRegex(), "_") + ".il")
             try {
                 val fr = FileWriter(outFile)
                 val buffer = StringBuffer(256)
@@ -70,7 +71,13 @@ class FileDrawerListItem {
                 var5 = 0
                 while (var5 < var11) {
                     val i = var7[var5]
-                    buffer.append(String.format("\nIL_%04x: %s", programCounter, i.render(ILAsmRenderer(reflector))))
+                    buffer.append(
+                        String.format(
+                            "\nIL_%04x: %s",
+                            programCounter,
+                            i.render(ILAsmRenderer(reflector))
+                        )
+                    )
                     programCounter += i.byteSize.toInt()
                     ++var5
                 }
@@ -166,14 +173,15 @@ class FileDrawerListItem {
                     Log.e(TAG, "", e)
                 }
             } else if (lower.endsWith(".so") ||
-                    lower.endsWith(".elf") ||
-                    lower.endsWith(".o") ||
-                    lower.endsWith(".bin") ||
-                    lower.endsWith(".axf") ||
-                    lower.endsWith(".prx") ||
-                    lower.endsWith(".puff") ||
-                    lower.endsWith(".ko") ||
-                    lower.endsWith(".mod"))
+                lower.endsWith(".elf") ||
+                lower.endsWith(".o") ||
+                lower.endsWith(".bin") ||
+                lower.endsWith(".axf") ||
+                lower.endsWith(".prx") ||
+                lower.endsWith(".puff") ||
+                lower.endsWith(".ko") ||
+                lower.endsWith(".mod")
+            )
                 type = DrawerItemType.BINARY
             else if (lower.endsWith(".dex"))
                 type = DrawerItemType.DEX

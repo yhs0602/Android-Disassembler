@@ -20,7 +20,8 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 
 
-class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener {
+class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClickListener,
+    Preference.OnPreferenceChangeListener {
     private lateinit var prefnames: Array<String?>
     private var colorhelper: ColorHelper? = null
     private val TAG = "Disassembler settings"
@@ -30,21 +31,29 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClic
             val value: Int = (p2 as String).toInt()
             if (value == prefnames.size) { //Add new
                 val et = EditText(activity!!)
-                showEditDialog(activity!!, "New theme", "Set name for the theme..", et,
-                        "Create", DialogInterface.OnClickListener { p11: DialogInterface?, p21: Int ->
-                    val nam = et.text.toString()
-                    val palette = Palette(nam, ColorHelper.getPaletteFile(nam))
-                    val cpd = ColorPrefDialog(activity!!, "New theme", View.OnClickListener {
-                        palette.Save()
-                        ColorHelper.addPalette(palette)
-                        val sp = context!!.getSharedPreferences(MainActivity.SETTINGKEY, Context.MODE_PRIVATE)
-                        val ed = sp.edit()
-                        ed.putString("PaletteName", palette.name).apply()
-                        ColorHelper.setPalette(palette.name)
-                    }, palette)
-                    cpd.show()
-                },
-                        "Cancel", DialogInterface.OnClickListener { p112: DialogInterface?, p212: Int -> })
+                showEditDialog(activity!!,
+                    "New theme",
+                    "Set name for the theme..",
+                    et,
+                    "Create",
+                    DialogInterface.OnClickListener { p11: DialogInterface?, p21: Int ->
+                        val nam = et.text.toString()
+                        val palette = Palette(nam, ColorHelper.getPaletteFile(nam))
+                        val cpd = ColorPrefDialog(activity!!, "New theme", View.OnClickListener {
+                            palette.Save()
+                            ColorHelper.addPalette(palette)
+                            val sp = context!!.getSharedPreferences(
+                                MainActivity.SETTINGKEY,
+                                Context.MODE_PRIVATE
+                            )
+                            val ed = sp.edit()
+                            ed.putString("PaletteName", palette.name).apply()
+                            ColorHelper.setPalette(palette.name)
+                        }, palette)
+                        cpd.show()
+                    },
+                    "Cancel",
+                    DialogInterface.OnClickListener { p112: DialogInterface?, p212: Int -> })
                 return false
             }
             val name = prefnames[value - 1]
@@ -188,18 +197,19 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClic
         //colorValues=getResources().getIntArray(R.array.predefinedcolor_values);
         val lp = findPreference<ListPreference>("predefinedcolor")
         setListPreferenceData(lp!!)
-        lp.onPreferenceClickListener = Preference.OnPreferenceClickListener { preference: Preference? ->
-            setListPreferenceData(lp)
-            false
-        }
+        lp.onPreferenceClickListener =
+            Preference.OnPreferenceClickListener { preference: Preference? ->
+                setListPreferenceData(lp)
+                false
+            }
         lp.onPreferenceChangeListener = this
 //        val lp2 = findPreference<ListPreference>("filepicker")
 //        lp2!!.onPreferenceChangeListener = this
         val scrn = findPreference<Preference>("openscrn")
         scrn?.setOnPreferenceClickListener {
             LibsBuilder()
-                    .withFields(string::class.java.fields)
-                    .start(activity!!) // start the activity
+                .withFields(string::class.java.fields)
+                .start(activity!!) // start the activity
             true
         }
         //scrn.setOnPreferenceClickListener(this);

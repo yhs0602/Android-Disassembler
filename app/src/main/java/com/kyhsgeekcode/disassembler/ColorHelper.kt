@@ -1,15 +1,15 @@
 package com.kyhsgeekcode.disassembler
 
 import android.util.Log
+import splitties.init.appCtx
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
-import splitties.init.appCtx
 
-object ColorHelper  {
+object ColorHelper {
     var isUpdatedColor = false
     var architecture = 0
 
@@ -72,6 +72,7 @@ object ColorHelper  {
 // 	public static final int CS_GRP_IRET    = 5;  // all interrupt return instructions
 // 1 2 3 4 5 6 7
     var palette: Palette?
+
     @JvmField
     var palettes = HashMap<String, Palette>()
 
@@ -122,8 +123,10 @@ object ColorHelper  {
                     val outfile = File(themeDir, entry!!.name)
                     val canonicalPath = outfile.canonicalPath
                     if (!canonicalPath.startsWith(themeDir.canonicalPath)) {
-                        throw SecurityException("The theme zip file may have a Zip Path Traversal Vulnerability." +
-                                "Is the theme.zip file trusted?")
+                        throw SecurityException(
+                            "The theme zip file may have a Zip Path Traversal Vulnerability." +
+                                    "Is the theme.zip file trusted?"
+                        )
                     }
                     var output: FileOutputStream? = null
                     try {

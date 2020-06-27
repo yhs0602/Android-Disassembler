@@ -29,16 +29,22 @@ private const val RELPATH = "param1"
  * create an instance of this fragment.
  */
 class StringFragment : Fragment() {
-    private val snackProgressBarManager by lazy { SnackProgressBarManager(stringMain, lifecycleOwner = this) }
+    private val snackProgressBarManager by lazy {
+        SnackProgressBarManager(
+            stringMain,
+            lifecycleOwner = this
+        )
+    }
     val circularType =
-            SnackProgressBar(SnackProgressBar.TYPE_CIRCULAR, "Loading...")
-                    .setIsIndeterminate(false)
-                    .setAllowUserInput(false)
+        SnackProgressBar(SnackProgressBar.TYPE_CIRCULAR, "Loading...")
+            .setIsIndeterminate(false)
+            .setAllowUserInput(false)
     private var listener: OnFragmentInteractionListener? = null
 
     private lateinit var relPath: String
     private lateinit var stringAdapter: FoundStringAdapter
     private lateinit var fileContent: ByteArray
+
     @ExperimentalUnsignedTypes
     @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +85,10 @@ class StringFragment : Fragment() {
 
         buttonStartFindString.setOnClickListener {
             CoroutineScope(Dispatchers.Main).launch {
-                snackProgressBarManager.show(circularType, SnackProgressBarManager.LENGTH_INDEFINITE)
+                snackProgressBarManager.show(
+                    circularType,
+                    SnackProgressBarManager.LENGTH_INDEFINITE
+                )
                 val min = editTextStrFirst.text.toString().toInt()
                 val max = editTextStrEnd.text.toString().toInt()
                 if (min > 1 && min < max) {
@@ -139,10 +148,10 @@ class StringFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(relPath: String) =
-                StringFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(RELPATH, relPath)
-                    }
+            StringFragment().apply {
+                arguments = Bundle().apply {
+                    putString(RELPATH, relPath)
                 }
+            }
     }
 }

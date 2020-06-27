@@ -8,14 +8,14 @@ import com.kyhsgeekcode.extractZip
 import com.kyhsgeekcode.isAccessible
 import com.kyhsgeekcode.saveAsZip
 import com.kyhsgeekcode.toValidFileName
-import java.io.File
-import java.io.IOException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import org.apache.commons.io.FileUtils
 import org.json.JSONException
 import splitties.init.appCtx
+import java.io.File
+import java.io.IOException
 
 /**
  * the list of paths of project_info.json is saved to a SharedPreference.
@@ -82,7 +82,12 @@ object ProjectManager {
      * @throws IOException
      */
     @Throws(IOException::class)
-    fun newProject(targetFileOrFolder: File, projectType: String, projectName: String, copy: Boolean = true): ProjectModel {
+    fun newProject(
+        targetFileOrFolder: File,
+        projectType: String,
+        projectName: String,
+        copy: Boolean = true
+    ): ProjectModel {
 //        require(if (useDefault) true else file.isDirectory)
         val projectModel: ProjectModel
         val projectFolder = rootdir.resolve(projectName.toValidFileName())
@@ -98,14 +103,15 @@ object ProjectManager {
             val copyTargetFileOrFolder = origFolder.resolve(targetFileOrFolder.name)
             if (!targetFileOrFolder.isDirectory && targetFileOrFolder != copyTargetFileOrFolder)
                 FileUtils.copyFile(targetFileOrFolder, copyTargetFileOrFolder)
-            else if(targetFileOrFolder != copyTargetFileOrFolder)
+            else if (targetFileOrFolder != copyTargetFileOrFolder)
                 FileUtils.copyDirectory(targetFileOrFolder, copyTargetFileOrFolder)
             determinedSourceFolder = copyTargetFileOrFolder
         } else {
             determinedSourceFolder = targetFileOrFolder
         }
 
-        projectModel = ProjectModel(projectName, genFolder.path, projectType, determinedSourceFolder.path)
+        projectModel =
+            ProjectModel(projectName, genFolder.path, projectType, determinedSourceFolder.path)
 
         projectModels[projectInfoFile.path] = projectModel
         projectPaths.add(projectInfoFile.absolutePath)
@@ -175,11 +181,14 @@ object ProjectManager {
         // projectModel.sourceFilePath
         // projectModel.baseFolder
         // projectModel itself
-        val outZipFile = outDir.resolve("DisassemblerProject_${projectModel.name.toValidFileName()}.zip")
-        saveAsZip(outZipFile,
-                Pair(projectModel.sourceFilePath, "sourceFilePath"),
-                Pair(projectModel.generatedFolder, "baseFolder"),
-                Pair(projectModelToPath[projectModel]!!, "project_info.json"))
+        val outZipFile =
+            outDir.resolve("DisassemblerProject_${projectModel.name.toValidFileName()}.zip")
+        saveAsZip(
+            outZipFile,
+            Pair(projectModel.sourceFilePath, "sourceFilePath"),
+            Pair(projectModel.generatedFolder, "baseFolder"),
+            Pair(projectModelToPath[projectModel]!!, "project_info.json")
+        )
         return true
     }
 

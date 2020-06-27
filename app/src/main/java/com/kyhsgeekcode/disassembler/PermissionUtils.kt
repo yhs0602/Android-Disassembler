@@ -15,22 +15,28 @@ object PermissionUtils {
     val TAG = "PermissionUtils"
     fun requestAppPermissions(a: Activity) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            (a as MainActivity).onRequestPermissionsResult(MainActivity.REQUEST_WRITE_STORAGE_REQUEST_CODE,
-                    emptyArray(), intArrayOf(PackageManager.PERMISSION_GRANTED))
+            (a as MainActivity).onRequestPermissionsResult(
+                MainActivity.REQUEST_WRITE_STORAGE_REQUEST_CODE,
+                emptyArray(), intArrayOf(PackageManager.PERMISSION_GRANTED)
+            )
             return
         }
 
         if (hasReadPermissions(a) && hasWritePermissions(a) /*&&hasGetAccountPermissions(a)*/) {
             Log.i(TAG, "Has permissions")
-            a.onRequestPermissionsResult(MainActivity.REQUEST_WRITE_STORAGE_REQUEST_CODE,
-                    emptyArray(), intArrayOf(PackageManager.PERMISSION_GRANTED))
+            a.onRequestPermissionsResult(
+                MainActivity.REQUEST_WRITE_STORAGE_REQUEST_CODE,
+                emptyArray(), intArrayOf(PackageManager.PERMISSION_GRANTED)
+            )
             return
         }
         showPermissionRationales(a, Runnable {
-            a.requestPermissions(arrayOf(
+            a.requestPermissions(
+                arrayOf(
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE // ,Mani fest.permission.GET_ACCOUNTS
-            ), MainActivity.REQUEST_WRITE_STORAGE_REQUEST_CODE) // your request code
+                ), MainActivity.REQUEST_WRITE_STORAGE_REQUEST_CODE
+            ) // your request code
         })
     }
 
@@ -57,11 +63,11 @@ object PermissionUtils {
 
     fun showPermissionRationales(a: Activity, run: Runnable?) {
         showAlertDialog(a, a.getString(R.string.permissions),
-                a.getString(R.string.permissionMsg),
-                DialogInterface.OnClickListener { p1, p2 ->
-                    run?.run()
-                    // requestAppPermissions(a);
-                })
+            a.getString(R.string.permissionMsg),
+            DialogInterface.OnClickListener { p1, p2 ->
+                run?.run()
+                // requestAppPermissions(a);
+            })
     }
 
 }

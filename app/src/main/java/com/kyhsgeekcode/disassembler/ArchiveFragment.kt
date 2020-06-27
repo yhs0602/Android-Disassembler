@@ -88,10 +88,10 @@ class ArchiveFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(relPath: String) =
-                ArchiveFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(ARG_PARAM1, relPath)
-                    }
+            ArchiveFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM1, relPath)
                 }
+            }
     }
 }

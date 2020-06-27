@@ -1,11 +1,12 @@
 package com.kyhsgeekcode.disassembler.project
 
 import android.util.Log
-import java.io.File
 import kotlinx.serialization.UnstableDefault
+import java.io.File
 
 object ProjectDataStorage {
     val TAG = "ProjectDataStorage"
+
     // Pair of relPath and dataType
     val data: MutableMap<Pair<String, DataType>, Any> = HashMap()
 
@@ -18,7 +19,7 @@ object ProjectDataStorage {
         return data[key] as ByteArray
     }
 
-    fun getExtension(relPath: String) : String {
+    fun getExtension(relPath: String): String {
         return resolveToRead(relPath)?.extension ?: ""
     }
 
@@ -50,9 +51,9 @@ object ProjectDataStorage {
         }
         Log.d(TAG, "Could not find from orig:$relPath")
         file = projectOrig.parentFile.resolve(relPath)
-        if(file.exists() && !file.isDirectory)
+        if (file.exists() && !file.isDirectory)
             return file
-        Log.d(TAG,"Could not find from libs: $file")
+        Log.d(TAG, "Could not find from libs: $file")
         // Search in gen
         val generated = ProjectManager.currentProject!!.rootFile.resolve("generated")
         file = generated
@@ -82,7 +83,11 @@ object ProjectDataStorage {
     // Append "_gen" if already exists to the path
     // if it is final, overwrite if exists else append _gen
     @UnstableDefault
-    fun resolveToWrite(relPath: String, isDirectory: Boolean = false, overwrite: Boolean = false): File {
+    fun resolveToWrite(
+        relPath: String,
+        isDirectory: Boolean = false,
+        overwrite: Boolean = false
+    ): File {
         requireNotNull(ProjectManager.currentProject)
         Log.d(TAG, "resolveToWrite relPath : $relPath, overwrite: $overwrite")
         val rootFile = ProjectManager.currentProject!!.rootFile
@@ -131,7 +136,7 @@ object ProjectDataStorage {
     }
 
     fun putFileContent(keykey: String, datadata: ByteArray) {
-         val key = Pair(keykey, DataType.FileContent)
+        val key = Pair(keykey, DataType.FileContent)
         data[key] = datadata
     }
 }

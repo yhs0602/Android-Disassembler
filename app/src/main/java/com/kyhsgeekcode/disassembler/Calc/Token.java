@@ -49,10 +49,12 @@ public class Token {
 
         type = Type.OPERAND;
     }
+
     public Token(String s, Type t) {
         name = s;
         type = t;
     }
+
     public Token(Data data) {
         this.data = data;
     }

@@ -21,7 +21,8 @@ fun decompressXML(xml: ByteArray): SpannableStringBuilder {
     // WARNING: Sometime I indiscriminately display or refer to word in
     //   little endian storage format, or in integer format (ie MSB first).
     if (xml[0].toInt() != 3 || xml[1].toInt() != 0 ||
-            xml[2].toInt() != 8 || xml[3].toInt() != 0) {
+        xml[2].toInt() != 8 || xml[3].toInt() != 0
+    ) {
         throw NotThisFormatException()
     }
 
@@ -108,22 +109,36 @@ fun decompressXML(xml: ByteArray): SpannableStringBuilder {
                 val attrNameSi = LEW(xml, off + 1 * 4) // AttrName String Index
                 val attrValueSi = LEW(xml, off + 2 * 4) // AttrValue Str Ind, or FFFFFFFF
                 val attrFlags = LEW(xml, off + 3 * 4)
-                val attrResId = LEW(xml, off + 4 * 4) // AttrValue ResourceId or dup AttrValue StrInd
+                val attrResId =
+                    LEW(xml, off + 4 * 4) // AttrValue ResourceId or dup AttrValue StrInd
                 off += 5 * 4 // Skip over the 5 words of an attribute
                 val attrName = compXmlString(xml, sitOff, stOff, attrNameSi)
-                val attrValue = if (attrValueSi != -1) compXmlString(xml, sitOff, stOff, attrValueSi) else "resourceID 0x" + Integer.toHexString(attrResId)
-                appendSpanned(sb, " $attrName", ForegroundColorSpan(PrettifyHighlighter.getColor("kwd")))
+                val attrValue = if (attrValueSi != -1) compXmlString(
+                    xml,
+                    sitOff,
+                    stOff,
+                    attrValueSi
+                ) else "resourceID 0x" + Integer.toHexString(attrResId)
+                appendSpanned(
+                    sb,
+                    " $attrName",
+                    ForegroundColorSpan(PrettifyHighlighter.getColor("kwd"))
+                )
                 appendSpanned(sb, "=\"", ForegroundColorSpan(PrettifyHighlighter.getColor("pun")))
-                appendSpanned(sb, "$attrValue", ForegroundColorSpan(PrettifyHighlighter.getColor("lit")))
+                appendSpanned(
+                    sb,
+                    "$attrValue",
+                    ForegroundColorSpan(PrettifyHighlighter.getColor("lit"))
+                )
                 appendSpanned(sb, "\"", ForegroundColorSpan(PrettifyHighlighter.getColor("pun")))
                 sb.append(System.lineSeparator())
                 //tr.add(attrName, attrValue);
             }
             prtIndent(buffer, indent, "")
-            appendSpanned(buffer,"<", ForegroundColorSpan(PrettifyHighlighter.getColor("pun")))
+            appendSpanned(buffer, "<", ForegroundColorSpan(PrettifyHighlighter.getColor("pun")))
             appendSpanned(buffer, "$name", ForegroundColorSpan(PrettifyHighlighter.getColor("typ")))
             buffer.append(sb)
-            appendSpanned(buffer,">", ForegroundColorSpan(PrettifyHighlighter.getColor("pun")))
+            appendSpanned(buffer, ">", ForegroundColorSpan(PrettifyHighlighter.getColor("pun")))
             buffer.append(System.lineSeparator())
             indent++
         } else if (tag0 == endTag) { // XML END TAG
@@ -132,22 +147,32 @@ fun decompressXML(xml: ByteArray): SpannableStringBuilder {
             val name = compXmlString(xml, sitOff, stOff, nameSi)
 
             prtIndent(buffer, indent, "") //  (line $startTagLineNo-$lineNo)
-            appendSpanned(buffer,"</", ForegroundColorSpan(PrettifyHighlighter.getColor("pun")))
+            appendSpanned(buffer, "</", ForegroundColorSpan(PrettifyHighlighter.getColor("pun")))
             appendSpanned(buffer, "$name", ForegroundColorSpan(PrettifyHighlighter.getColor("typ")))
-            appendSpanned(buffer,">  ", ForegroundColorSpan(PrettifyHighlighter.getColor("pun")))
-            appendSpanned(buffer,"(line $startTagLineNo-$lineNo)", ForegroundColorSpan(PrettifyHighlighter.getColor("com")))
+            appendSpanned(buffer, ">  ", ForegroundColorSpan(PrettifyHighlighter.getColor("pun")))
+            appendSpanned(
+                buffer,
+                "(line $startTagLineNo-$lineNo)",
+                ForegroundColorSpan(PrettifyHighlighter.getColor("com"))
+            )
             buffer.append(System.lineSeparator())
             //tr.parent();  // Step back up the NobTree
         } else if (tag0 == endDocTag) {  // END OF XML DOC TAG
             break
         } else {
-            appendSpanned(buffer, "  Unrecognized tag code '${Integer.toHexString(tag0)}' at offset $off",
-                    ForegroundColorSpan(PrettifyHighlighter.getColor("com")))
+            appendSpanned(
+                buffer, "  Unrecognized tag code '${Integer.toHexString(tag0)}' at offset $off",
+                ForegroundColorSpan(PrettifyHighlighter.getColor("com"))
+            )
             buffer.append(System.lineSeparator())
             break
         }
     } // end of while loop scanning tags and attributes of XML tree
-    appendSpanned(buffer, "    end at offset $off",  ForegroundColorSpan(PrettifyHighlighter.getColor("com")))
+    appendSpanned(
+        buffer,
+        "    end at offset $off",
+        ForegroundColorSpan(PrettifyHighlighter.getColor("com"))
+    )
     return buffer
 } // end of decompressXML
 
@@ -190,5 +215,5 @@ infix fun Byte.shl(that: Int): Int = this.toInt().shl(that)
 fun appendSpanned(builder: SpannableStringBuilder, text: String, what: Any) {
     val length: Int = builder.length
     builder.append(text)
-    builder.setSpan(what, length, builder.length,  Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+    builder.setSpan(what, length, builder.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 }

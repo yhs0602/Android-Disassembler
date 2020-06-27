@@ -1,14 +1,15 @@
 package com.kyhsgeekcode.disassembler
 
 import com.kyhsgeekcode.disassembler.ELFUtil.Companion.Demangle
-import com.kyhsgeekcode.disassembler.Symbol.Bind
 
 class ImportSymbol {
     @JvmField
     var owner = ""
+
     @JvmField
     var name = ""
     var demangled: String? = ""
+
     @JvmField
     var address // address of got
             : Long = 0

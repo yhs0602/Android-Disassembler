@@ -1,9 +1,10 @@
 package com.kyhsgeekcode
 
-import java.util.HashSet
+import java.util.*
 
 object FileExtensions {
     val textFileExts: MutableSet<String> = HashSet()
+
     init {
         textFileExts.add("xml")
         textFileExts.add("txt")
@@ -15,7 +16,8 @@ object FileExtensions {
         textFileExts.add("properties")
     }
 
-    val peFileExts : MutableSet<String> = HashSet()
+    val peFileExts: MutableSet<String> = HashSet()
+
     init {
         peFileExts.add("acm")
         peFileExts.add("ax")

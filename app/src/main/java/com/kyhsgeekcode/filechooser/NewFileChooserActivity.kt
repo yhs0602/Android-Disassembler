@@ -28,13 +28,18 @@ import java.net.URL
 
 
 class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
-    private val snackProgressBarManager by lazy { SnackProgressBarManager(fileChooserMainLayout, lifecycleOwner = this) }
+    private val snackProgressBarManager by lazy {
+        SnackProgressBarManager(
+            fileChooserMainLayout,
+            lifecycleOwner = this
+        )
+    }
     private val circularType = SnackProgressBar(SnackProgressBar.TYPE_HORIZONTAL, "Loading...")
-            .setIsIndeterminate(false)
-            .setAllowUserInput(false)
+        .setIsIndeterminate(false)
+        .setAllowUserInput(false)
     private val indeterminate = SnackProgressBar(SnackProgressBar.TYPE_CIRCULAR, "Loading...")
-            .setIsIndeterminate(true)
-            .setAllowUserInput(false)
+        .setIsIndeterminate(true)
+        .setAllowUserInput(false)
     lateinit var adapter: NewFileChooserAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
     val TAG = "NewFileChooserA"
@@ -79,7 +84,10 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
             if (message != null)
                 circularType.setMessage(message)
             if (snackProgressBarManager.getLastShown() == null)
-                snackProgressBarManager.show(circularType, SnackProgressBarManager.LENGTH_INDEFINITE)
+                snackProgressBarManager.show(
+                    circularType,
+                    SnackProgressBarManager.LENGTH_INDEFINITE
+                )
             snackProgressBarManager.updateTo(circularType)
         }
     }
@@ -124,7 +132,11 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
     }
 
     fun showZoo() {
-        Toast.makeText(this, "Download a sample from the zoo and open it with this app", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            this,
+            "Download a sample from the zoo and open it with this app",
+            Toast.LENGTH_SHORT
+        ).show()
         val url = "https://github.com/ytisf/theZoo/tree/master/malwares"
         val i = Intent(Intent.ACTION_VIEW)
         i.data = Uri.parse(url)
@@ -133,37 +145,49 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
     }
 
     fun showHashSite(hash: String) {
-        showYesNoDialog(this, "Danger alert", "The file you are trying to download may harm your device. Proceed?",
-                DialogInterface.OnClickListener { dlg, which ->
-                    val url = "https://infosec.cert-pa.it/analyze/$hash.html"
-                    val i = Intent(Intent.ACTION_VIEW)
-                    i.data = Uri.parse(url)
-                    startActivity(i)
-                    Toast.makeText(this, "Downloading...", Toast.LENGTH_SHORT).show()
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            val document = Jsoup.parse(URL(url), 30000)
-                            val ipaddr = document?.select("[rel=nofollow]")?.first()?.text()
-                            Log.d(TAG, "ipaddr=$ipaddr")
-                            val realAddr = ipaddr?.replace("hXXp", "http") ?: return@launch
-                            Log.d(TAG, "RealAddr:$realAddr")
-                            val targetFile = appCtx.filesDir.resolve("malwareSamples")
-                            download(realAddr, targetFile)
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(this@NewFileChooserActivity, "Download success", Toast.LENGTH_SHORT).show()
-                            }
-                            val resultIntent = Intent()
-                            resultIntent.putExtra("malwareFile",targetFile)
-                            setResult(Activity.RESULT_OK, resultIntent)
-                            finish()
-                        } catch (e: Exception) {
-                            Log.e(TAG, "Failed downloading from $url", e)
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(this@NewFileChooserActivity, "Download failed", Toast.LENGTH_SHORT).show()
-                            }
+        showYesNoDialog(this,
+            "Danger alert",
+            "The file you are trying to download may harm your device. Proceed?",
+            DialogInterface.OnClickListener { dlg, which ->
+                val url = "https://infosec.cert-pa.it/analyze/$hash.html"
+                val i = Intent(Intent.ACTION_VIEW)
+                i.data = Uri.parse(url)
+                startActivity(i)
+                Toast.makeText(this, "Downloading...", Toast.LENGTH_SHORT).show()
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val document = Jsoup.parse(URL(url), 30000)
+                        val ipaddr = document?.select("[rel=nofollow]")?.first()?.text()
+                        Log.d(TAG, "ipaddr=$ipaddr")
+                        val realAddr = ipaddr?.replace("hXXp", "http") ?: return@launch
+                        Log.d(TAG, "RealAddr:$realAddr")
+                        val targetFile = appCtx.filesDir.resolve("malwareSamples")
+                        download(realAddr, targetFile)
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@NewFileChooserActivity,
+                                "Download success",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        val resultIntent = Intent()
+                        resultIntent.putExtra("malwareFile", targetFile)
+                        setResult(Activity.RESULT_OK, resultIntent)
+                        finish()
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed downloading from $url", e)
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@NewFileChooserActivity,
+                                "Download failed",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
-                }, null)
+                }
+            },
+            null
+        )
 
 
     }

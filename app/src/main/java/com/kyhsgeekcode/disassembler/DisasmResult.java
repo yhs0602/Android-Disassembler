@@ -21,11 +21,11 @@ public class DisasmResult implements Serializable {
             CS_GRP_RET = 3,     // all return instructions
             CS_GRP_INT = 4,     // all interrupt instructions (int+syscall)
             CS_GRP_IRET = 5;    // all interrupt return instructions
-	/*	public DisasmResult(byte [] bytes,long address)
-	 {
-	 this();
-	 DisasmOne(bytes,address);
-	 }*/
+    /*	public DisasmResult(byte [] bytes,long address)
+     {
+     this();
+     DisasmOne(bytes,address);
+     }*/
     ////////DATABASE UNIT ////////
     public static final String TABLE_NAME = "disasms";
     public static final String COLUMN_ID = "id";

@@ -5,8 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import java.util.*
 import kotlinx.android.synthetic.main.logview_item.view.*
+import java.util.*
 
 class LogAdapter : RecyclerView.Adapter<LogAdapter.ViewHolder>() {
     companion object {
@@ -29,7 +29,7 @@ class LogAdapter : RecyclerView.Adapter<LogAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.logview_item, parent, false)
+            .inflate(R.layout.logview_item, parent, false)
         listView = parent as RecyclerView
         return ViewHolder(view)
     }

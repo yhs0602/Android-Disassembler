@@ -4,18 +4,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import kotlin.reflect.KClass
 
-class ViewPagerAdapter : FragmentStateAdapter  {
+class ViewPagerAdapter : FragmentStateAdapter {
 
     constructor(fragmentActivity: FragmentActivity) : super(fragmentActivity)
 
-    constructor(fragmentmanager: FragmentManager, lifecycle: Lifecycle) : super(fragmentmanager, lifecycle)
+    constructor(fragmentmanager: FragmentManager, lifecycle: Lifecycle) : super(
+        fragmentmanager,
+        lifecycle
+    )
 
     val mFragmentList = ArrayList<Fragment>()
-    private val pageIds= mFragmentList.map { it.hashCode().toLong() }
+    private val pageIds = mFragmentList.map { it.hashCode().toLong() }
     private val mFragmentTitleList = ArrayList<String>()
 
     fun getTitle(pos: Int): String {

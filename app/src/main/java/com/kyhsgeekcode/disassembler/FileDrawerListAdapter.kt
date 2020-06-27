@@ -53,8 +53,12 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
                 if (curProj == null) {
                     items.add(FileDrawerListItem("Nothing opened", newLevel))
                 } else {
-                    items.add(FileDrawerListItem(curProj.name, newLevel, DrawerItemType.PROJECT,
-                            curProj, getDrawable(android.R.drawable.ic_secure)))
+                    items.add(
+                        FileDrawerListItem(
+                            curProj.name, newLevel, DrawerItemType.PROJECT,
+                            curProj, getDrawable(android.R.drawable.ic_secure)
+                        )
+                    )
                 }
             }
             DrawerItemType.PROJECT -> {
@@ -79,7 +83,10 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
                                 items.add(FileDrawerListItem(file, newLevel))
                             }
                             Collections.sort(items, object : Comparator<FileDrawerListItem> {
-                                override fun compare(p1: FileDrawerListItem, p2: FileDrawerListItem): Int {
+                                override fun compare(
+                                    p1: FileDrawerListItem,
+                                    p2: FileDrawerListItem
+                                ): Int {
                                     val cdir = compareDir(p1, p2)
                                     return if (cdir == 0) {
                                         if (p1.caption.endsWith("/")) {
@@ -103,7 +110,10 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
                                     }
                                 }
 
-                                fun compareDir(p1: FileDrawerListItem, p2: FileDrawerListItem): Int {
+                                fun compareDir(
+                                    p1: FileDrawerListItem,
+                                    p2: FileDrawerListItem
+                                ): Int {
                                     if (p1.caption.endsWith("/")) {
                                         return if (p2.caption.endsWith("/")) {
                                             0
@@ -126,7 +136,8 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
             }
             DrawerItemType.ARCHIVE, DrawerItemType.APK -> {
                 val path = item.tag as String
-                val targetDirectory = ProjectDataStorage.resolveToWrite(ProjectManager.getRelPath(path), true)
+                val targetDirectory =
+                    ProjectDataStorage.resolveToWrite(ProjectManager.getRelPath(path), true)
                 Log.d(TAG, "Target directory $targetDirectory")
 //                        File(File(appCtx.filesDir, "/extracted/"), File(path).name + "/")
 //                appCtx.filesDir.resolve("extracted").resolve()
@@ -143,13 +154,15 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
                         val outfile = File(targetDirectory, entry!!.name)
                         val canonicalPath = outfile.canonicalPath
                         if (!canonicalPath.startsWith(targetDirectory.canonicalPath)) {
-                            throw SecurityException("The file may have a Zip Path Traversal Vulnerability." +
-                                    "Is the file trusted?")
+                            throw SecurityException(
+                                "The file may have a Zip Path Traversal Vulnerability." +
+                                        "Is the file trusted?"
+                            )
                         }
                         outfile.parentFile.mkdirs()
                         var output: FileOutputStream? = null
                         try {
-                            if(entry!!.name=="")
+                            if (entry!!.name == "")
                                 continue
                             Log.d(TAG, "entry: $entry, outfile:$outfile")
                             output = FileOutputStream(outfile)
@@ -173,7 +186,8 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
             DrawerItemType.DEX -> {
                 progressHandler.startProgress()
                 val filename = item.tag as String
-                val targetDirectory = ProjectDataStorage.resolveToWrite(ProjectManager.getRelPath(filename), true)
+                val targetDirectory =
+                    ProjectDataStorage.resolveToWrite(ProjectManager.getRelPath(filename), true)
 //                val targetDirectory = File(File(appCtx.filesDir, "/dex-decompiled/"), File(filename).name + "/")
                 targetDirectory.mkdirs()
                 Main.main(arrayOf("d", "-o", targetDirectory.absolutePath, filename))
@@ -187,7 +201,14 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
                 val assembly = facileReflector.loadAssembly()
                 val types = assembly.allTypes
                 for (type in types) {
-                    items.add(FileDrawerListItem("${type.namespace}.${type.name}", newLevel, DrawerItemType.PE_IL_TYPE, arrayOf(facileReflector, type)))
+                    items.add(
+                        FileDrawerListItem(
+                            "${type.namespace}.${type.name}",
+                            newLevel,
+                            DrawerItemType.PE_IL_TYPE,
+                            arrayOf(facileReflector, type)
+                        )
+                    )
                 }
             } catch (e: Exception) {
                 Logger.e("FileAdapter", "", e)
@@ -214,10 +235,14 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
                     items.add(FileDrawerListItem(fieldDesc, newLevel, DrawerItemType.FIELD))
                 }
                 for (method in methods) {
-                    items.add(FileDrawerListItem("${method.name}${method.methodSignature}",
+                    items.add(
+                        FileDrawerListItem(
+                            "${method.name}${method.methodSignature}",
                             newLevel,
                             DrawerItemType.METHOD,
-                            arrayOf(fr, method)))
+                            arrayOf(fr, method)
+                        )
+                    )
                 }
             }
             else -> {
@@ -272,7 +297,8 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
         viewHolder.nameView!!.text = item.caption
         val compounds = arrayOfNulls<Drawable>(4)
         if (itemInfo.isExpandable && !mAlwaysExpandend) {
-            compounds[0] = getDrawable(if (itemInfo.isExpanded) android.R.drawable.arrow_up_float else android.R.drawable.arrow_down_float)
+            compounds[0] =
+                getDrawable(if (itemInfo.isExpanded) android.R.drawable.arrow_up_float else android.R.drawable.arrow_down_float)
         } else {
             compounds[0] = null
         }
@@ -280,7 +306,12 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
         for (drawable in compounds) {
             drawable?.setBounds(0, 0, 40, 40)
         }
-        viewHolder.nameView!!.setCompoundDrawablesRelative(compounds[0], compounds[1], compounds[2], compounds[3])
+        viewHolder.nameView!!.setCompoundDrawablesRelative(
+            compounds[0],
+            compounds[1],
+            compounds[2],
+            compounds[3]
+        )
         // viewHolder.levelBeamView.setLevel(itemInfo.getLevel());
 // Log.d("FileAdapter", "Level:" + item.level);
         viewHolder.nameView!!.setPaddingRelative(item.level * 30, 0, 0, 0)

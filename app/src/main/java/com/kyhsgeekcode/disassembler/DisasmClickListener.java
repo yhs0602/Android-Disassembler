@@ -21,6 +21,7 @@ public class DisasmClickListener implements View.OnClickListener {
     private String TAG = "Disassembler";
     private int position;
     private DisasmListViewAdapter adapter;
+
     public DisasmClickListener(BinaryDisasmFragment fragment, DisasmListViewAdapter adapter, int position) {
         this.binaryDisasmFragment = fragment;
         this.position = position;

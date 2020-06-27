@@ -39,10 +39,9 @@ public class FileSelectorActivity extends ListActivity {
     /*private List<String> item = (List<String>) null;
      private List<String> path = (List<String>) null;*/
     List<Item> items = new ArrayList<>();
+    String lspath = "";
     private String root = "/";
     private TextView mPath;
-    String lspath = "";
-
     private String TAG = "RootPicker";
 
     @Override
@@ -50,7 +49,7 @@ public class FileSelectorActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fileaselactivity);
         mPath = findViewById(R.id.path);
-        String[] abis = Build.VERSION.SDK_INT<Build.VERSION_CODES.LOLLIPOP? new String[]{"x86","armeabi-v7a"}: android.os.Build.SUPPORTED_ABIS;
+        String[] abis = Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP ? new String[]{"x86", "armeabi-v7a"} : android.os.Build.SUPPORTED_ABIS;
         String binary = null;
         AssetManager asm = getAssets();
         for (String abi : abis) {
@@ -413,19 +412,6 @@ public class FileSelectorActivity extends ListActivity {
         return ents;
     }
 
-    class DirEnt {
-        String name;
-        int type;
-
-        public boolean isDirectory() {
-            return (type & 4) != 0;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
-
     @Override
     public void onBackPressed() {
         String path = mPath.getText().toString().replaceAll(getString(R.string.location), "");
@@ -444,6 +430,19 @@ public class FileSelectorActivity extends ListActivity {
             }
         }
         return;
+    }
+
+    class DirEnt {
+        String name;
+        int type;
+
+        public boolean isDirectory() {
+            return (type & 4) != 0;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
     class Item {

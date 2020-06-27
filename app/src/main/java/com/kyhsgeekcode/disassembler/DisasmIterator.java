@@ -1,8 +1,7 @@
 package com.kyhsgeekcode.disassembler;
 
 public class DisasmIterator extends AssemblyProvider {
-    public DisasmIterator(/* NotificationManager mNotifyManager, Notification.Builder mBuilder, */DisasmListViewAdapter adapter, long total)
-    {
+    public DisasmIterator(/* NotificationManager mNotifyManager, Notification.Builder mBuilder, */DisasmListViewAdapter adapter, long total) {
         super(adapter, total);
     }
 

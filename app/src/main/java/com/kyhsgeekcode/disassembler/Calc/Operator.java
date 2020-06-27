@@ -161,6 +161,7 @@ public class Operator extends Token implements Comparable<Operator> {
         if (operation == null)
             operation = Operation.MULT;
     }
+
     public Operator(char[] src, int start, int n) {
         this(new String(src, start, n));
         //type=Type.OPERATOR;

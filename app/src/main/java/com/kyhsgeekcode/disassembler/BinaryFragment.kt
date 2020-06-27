@@ -30,8 +30,12 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-            inflater.inflate(R.layout.fragment_binary, container, false)!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
+        inflater.inflate(R.layout.fragment_binary, container, false)!!
 
     @UnstableDefault
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -47,7 +51,12 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
         setHasOptionsMenu(true)
         pagerBinary.offscreenPageLimit = 5
         pagerAdapter.addFragment(BinaryOverviewFragment.newInstance(relPath), "Overview")
-        pagerAdapter.addFragment(BinaryDisasmFragment.newInstance(relPath, BinaryDisasmFragment.ViewMode.Binary), "Disassembly")
+        pagerAdapter.addFragment(
+            BinaryDisasmFragment.newInstance(
+                relPath,
+                BinaryDisasmFragment.ViewMode.Binary
+            ), "Disassembly"
+        )
         pagerAdapter.addFragment(BinaryExportSymbolFragment.newInstance(relPath), "Export Symbols")
         pagerAdapter.addFragment(BinaryImportSymbolFragment.newInstance(relPath), "Import Symbols")
         pagerAdapter.addFragment(BinaryDetailFragment.newInstance(relPath), "Details")
@@ -91,11 +100,11 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(relPath: String) =
-                BinaryFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(ARG_PARAM1, relPath)
-                    }
+            BinaryFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM1, relPath)
                 }
+            }
 
         val classNameByTag = HashMap<String, String>()
 
@@ -122,7 +131,8 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
             pagerAdapter.findFragmentByType(clas)
         } ?: if (!openNew) return false else {
             Log.d(TAG, "Open new")
-            val frag = clas.companionObject!!.functions.single { it.name == "newInstance" }.call(clas.companionObjectInstance, relPath) as Fragment
+            val frag = clas.companionObject!!.functions.single { it.name == "newInstance" }
+                .call(clas.companionObjectInstance, relPath) as Fragment
             pagerAdapter.addFragment(frag, tag)
         }
         pagerBinary.setCurrentItem(fragment, true)
@@ -130,14 +140,16 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
     }
 
     override fun findTabByTag(tag: String): Int? =
-            classNameByTag[tag]?.let {
-                val clas = Class.forName("com.kyhsgeekcode.disassembler.$it").kotlin
-                pagerAdapter.findFragmentByType(clas)
-            }
+        classNameByTag[tag]?.let {
+            val clas = Class.forName("com.kyhsgeekcode.disassembler.$it").kotlin
+            pagerAdapter.findFragmentByType(clas)
+        }
 
     fun jumpto(address: Long) {
         setCurrentTabByTag(TabTags.TAB_DISASM, true)
-        (pagerAdapter.createFragment(findTabByTag(TabTags.TAB_DISASM)!!) as BinaryDisasmFragment).jumpto(address)
+        (pagerAdapter.createFragment(findTabByTag(TabTags.TAB_DISASM)!!) as BinaryDisasmFragment).jumpto(
+            address
+        )
     }
 
     override fun onBackPressed(): Boolean {

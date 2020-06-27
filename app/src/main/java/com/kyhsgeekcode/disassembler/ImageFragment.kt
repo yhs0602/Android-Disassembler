@@ -30,8 +30,12 @@ class ImageFragment : Fragment() {
         bitmap = BitmapFactory.decodeFile(ProjectDataStorage.resolveToRead(relPath)?.absolutePath)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-            inflater.inflate(R.layout.fragment_image, container, false)!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
+        inflater.inflate(R.layout.fragment_image, container, false)!!
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -54,10 +58,10 @@ class ImageFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(relPath: String) =
-                ImageFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(ARG_PARAM, relPath)
-                    }
+            ImageFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM, relPath)
                 }
+            }
     }
 }

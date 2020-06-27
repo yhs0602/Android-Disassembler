@@ -18,8 +18,10 @@ object RealPathUtils {
         val column = arrayOf(MediaStore.Images.Media.DATA)
         // where id is equal to
         val sel = MediaStore.Images.Media._ID + "=?"
-        val cursor = appCtx.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                column, sel, arrayOf(id), null)
+        val cursor = appCtx.contentResolver.query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            column, sel, arrayOf(id), null
+        )
         val columnIndex = cursor!!.getColumnIndex(column[0])
         if (cursor.moveToFirst()) {
             filePath = cursor.getString(columnIndex)
@@ -33,8 +35,9 @@ object RealPathUtils {
         val proj = arrayOf(MediaStore.Images.Media.DATA)
         var result: String? = null
         val cursorLoader = CursorLoader(
-                appCtx,
-                contentUri, proj, null, null, null)
+            appCtx,
+            contentUri, proj, null, null, null
+        )
         val cursor = cursorLoader.loadInBackground()
         if (cursor != null) {
             val column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
@@ -49,7 +52,7 @@ object RealPathUtils {
         val cursor = appCtx.contentResolver.query(contentUri!!, proj, null, null, null)
         val column_index = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
         cursor.moveToFirst()
-        val res =  cursor.getString(column_index)
+        val res = cursor.getString(column_index)
         cursor.close()
         return res
     }

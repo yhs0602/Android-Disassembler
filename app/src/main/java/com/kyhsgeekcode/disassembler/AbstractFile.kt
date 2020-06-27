@@ -5,11 +5,11 @@ import at.pollaknet.api.facile.Facile
 import at.pollaknet.api.facile.exception.CoffPeDataNotFoundException
 import at.pollaknet.api.facile.exception.SizeMismatchException
 import at.pollaknet.api.facile.exception.UnexpectedHeaderDataException
+import nl.lxtreme.binutils.elf.MachineType
+import splitties.init.appCtx
 import java.io.Closeable
 import java.io.File
 import java.io.IOException
-import nl.lxtreme.binutils.elf.MachineType
-import splitties.init.appCtx
 
 // represents a raw file and interface
 abstract class AbstractFile : Closeable {
@@ -23,21 +23,30 @@ abstract class AbstractFile : Closeable {
         if (fileContents == null) {
             return "The file has not been configured. You should setup manually in the first page before you can see the details."
         }
-        val builder = StringBuilder(if (this is RawFile) "The file has not been configured. You should setup manually in the first page before you can see the details." +
-                System.lineSeparator() else "")
-        builder.append(/*R.getString(R.string.FileSize)*/"File Size:").append(Integer.toHexString(fileContents.size))
-                .append(ls)
-        builder.append(appCtx.getString(R.string.FoffsCS)).append(java.lang.Long.toHexString(codeSectionBase))
-                .append(ls)
-        builder.append(appCtx.getString(R.string.FoffsCSEd)).append(java.lang.Long.toHexString(codeSectionLimit))
-                .append(ls)
-        builder.append(appCtx.getString(R.string.FoffsEP)).append(java.lang.Long.toHexString(codeSectionBase + entryPoint))
-                .append(ls)
-        builder.append(appCtx.getString(R.string.VAofCS)).append(java.lang.Long.toHexString(codeVirtAddr))
-                .append(ls)
-        builder.append(appCtx.getString(R.string.VAofCSE)).append(java.lang.Long.toHexString(codeSectionLimit + codeVirtAddr))
-                .append(ls)
-        builder.append(appCtx.getString(R.string.VAofEP)).append(java.lang.Long.toHexString(entryPoint + codeVirtAddr))
+        val builder = StringBuilder(
+            if (this is RawFile) "The file has not been configured. You should setup manually in the first page before you can see the details." +
+                    System.lineSeparator() else ""
+        )
+        builder.append(/*R.getString(R.string.FileSize)*/"File Size:")
+            .append(Integer.toHexString(fileContents.size))
+            .append(ls)
+        builder.append(appCtx.getString(R.string.FoffsCS))
+            .append(java.lang.Long.toHexString(codeSectionBase))
+            .append(ls)
+        builder.append(appCtx.getString(R.string.FoffsCSEd))
+            .append(java.lang.Long.toHexString(codeSectionLimit))
+            .append(ls)
+        builder.append(appCtx.getString(R.string.FoffsEP))
+            .append(java.lang.Long.toHexString(codeSectionBase + entryPoint))
+            .append(ls)
+        builder.append(appCtx.getString(R.string.VAofCS))
+            .append(java.lang.Long.toHexString(codeVirtAddr))
+            .append(ls)
+        builder.append(appCtx.getString(R.string.VAofCSE))
+            .append(java.lang.Long.toHexString(codeSectionLimit + codeVirtAddr))
+            .append(ls)
+        builder.append(appCtx.getString(R.string.VAofEP))
+            .append(java.lang.Long.toHexString(entryPoint + codeVirtAddr))
         return builder.toString()
     }
 
@@ -60,11 +69,13 @@ abstract class AbstractFile : Closeable {
     open var entryPoint: Long = 0
     open var codeVirtAddr: Long = 0
     open var machineType: MachineType = MachineType.AARCH64
+
     @JvmField
     var path = ""
 
     companion object {
         private const val TAG = "AbstractFile"
+
         @JvmStatic
         @Throws(IOException::class)
         fun createInstance(file: File): AbstractFile {

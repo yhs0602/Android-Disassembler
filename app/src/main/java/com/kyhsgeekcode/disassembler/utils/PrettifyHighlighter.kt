@@ -23,7 +23,12 @@ object PrettifyHighlighter {
         val results: List<ParseResult> = parser.parse(fileExtension, sourceCode)
         for (result in results) {
             val type: String = result.styleKeys[0]
-            highlighted.setSpan(ForegroundColorSpan(getColor(type)), result.offset, result.offset + result.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            highlighted.setSpan(
+                ForegroundColorSpan(getColor(type)),
+                result.offset,
+                result.offset + result.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
 //            val content = sourceCode.substring(result.offset, result.offset + result.length)
 //            highlighted.append(String.format(FONT_PATTERN, getColor(type), content))
 //            highlighted.append("<br>")

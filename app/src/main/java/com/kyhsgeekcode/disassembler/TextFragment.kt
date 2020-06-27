@@ -41,8 +41,12 @@ class TextFragment : Fragment() {
         fileContent = ProjectDataStorage.getFileContent(relPath)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-            inflater.inflate(R.layout.fragment_text, container, false)!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
+        inflater.inflate(R.layout.fragment_text, container, false)!!
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -62,12 +66,14 @@ class TextFragment : Fragment() {
         } else {
             strContent = fileContent.toString(Charsets.UTF_8)
         }
-        if(strContent!=null) {
-            highlighted = PrettifyHighlighter.highlight(if (ext == "smali") {
-                "java"
-            } else {
-                ext
-            }, strContent)
+        if (strContent != null) {
+            highlighted = PrettifyHighlighter.highlight(
+                if (ext == "smali") {
+                    "java"
+                } else {
+                    ext
+                }, strContent
+            )
         }
 //        val ssb = readAndColorize()
         textFragmentTextView.setText(highlighted, TextView.BufferType.SPANNABLE)
@@ -80,7 +86,9 @@ class TextFragment : Fragment() {
 
         val br = BufferedReader(InputStreamReader(ByteArrayInputStream(fileContent)))
         var line: String?
-        while (br.readLine().also { line = it } != null) { // https://stackoverflow.com/a/46390973/8614565
+        while (br.readLine()
+                .also { line = it } != null
+        ) { // https://stackoverflow.com/a/46390973/8614565
             val ss = SpannableString(line)
             if (terms != null) {
                 for (term in terms) {
@@ -91,7 +99,12 @@ class TextFragment : Fragment() {
                     while (ofs < line!!.length && ofe != -1) {
                         ofe = line!!.indexOf(term, ofs)
                         if (ofe == -1) break else {
-                            ss.setSpan(CharacterStyle.wrap(spanBlue), ofe, ofe + term.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            ss.setSpan(
+                                CharacterStyle.wrap(spanBlue),
+                                ofe,
+                                ofe + term.length,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
                         }
                         ofs = ofe + 1
                     }
@@ -116,11 +129,11 @@ class TextFragment : Fragment() {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(relPath: String) =
-                TextFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(ARG_PARAM, relPath)
-                    }
+            TextFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM, relPath)
                 }
+            }
 
         val TermList: MutableMap<String, List<String>> = HashMap()
         fun loadTerms() {

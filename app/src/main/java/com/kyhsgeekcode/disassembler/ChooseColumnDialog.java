@@ -40,6 +40,7 @@ public class ChooseColumnDialog extends Dialog {
     private View.OnClickListener mLeftClickListener;
     private View.OnClickListener mRightClickListener;
     private String TAG = "Disassembler dialog";
+
     // 클릭버튼이 하나일때 생성자 함수로 클릭이벤트를 받는다.
     public ChooseColumnDialog(Context context, String title,
                               View.OnClickListener singleListener) {
@@ -51,6 +52,7 @@ public class ChooseColumnDialog extends Dialog {
         //	ma=(MainActivity) context;
         //}
     }
+
     // 클릭버튼이 확인과 취소 두개일때 생성자 함수로 이벤트를 받는다
     public ChooseColumnDialog(Context context, String title,
                               String content, View.OnClickListener leftListener,

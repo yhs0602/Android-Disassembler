@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.import_symbol_row.view.*
 import java.util.*
 
-class ImportSymbolListAdapter(val fragmentImport: BinaryImportSymbolFragment) : RecyclerView.Adapter<ImportSymbolListAdapter.ViewHolder>() {
+class ImportSymbolListAdapter(val fragmentImport: BinaryImportSymbolFragment) :
+    RecyclerView.Adapter<ImportSymbolListAdapter.ViewHolder>() {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     private val itemList = ArrayList<ImportSymbol>()
     private val TAG = "Disassembler sym"
@@ -44,7 +45,7 @@ class ImportSymbolListAdapter(val fragmentImport: BinaryImportSymbolFragment) : 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.import_symbol_row, parent, false)
+            .inflate(R.layout.import_symbol_row, parent, false)
 //        listView = parent as RecyclerView
         return ViewHolder(view)
     }
