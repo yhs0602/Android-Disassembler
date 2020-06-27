@@ -29,15 +29,22 @@ import java.io.File
 
 class ProjectOverviewFragment : Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
-            inflater.inflate(R.layout.fragment_project_overview, container, false)!!
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) =
+        inflater.inflate(R.layout.fragment_project_overview, container, false)!!
 
     @UnstableDefault
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         selFile.setOnClickListener {
             val j = Intent(activity, NewFileChooserActivity::class.java)
-            startActivityForResult(j, MainActivity.REQUEST_SELECT_FILE_NEW) // Control goes to binaryDisasmFragment
+            startActivityForResult(
+                j,
+                MainActivity.REQUEST_SELECT_FILE_NEW
+            ) // Control goes to binaryDisasmFragment
         }
         fileNameText.isFocusable = false
         fileNameText.isEnabled = false
@@ -58,11 +65,12 @@ class ProjectOverviewFragment : Fragment() {
                 val fi = data.getSerializableExtra("fileItem")
                 if (fi == null) {
                     val uri = data.getParcelableExtra("uri") as Uri?
-                            ?: data.getBundleExtra("extras")?.get(Intent.EXTRA_STREAM) as Uri?
-                            ?: run {
-                                Toast.makeText(activity, "Could not get data", Toast.LENGTH_SHORT).show()
-                                return@onActivityResult
-                            }
+                        ?: data.getBundleExtra("extras")?.get(Intent.EXTRA_STREAM) as Uri?
+                        ?: run {
+                            Toast.makeText(activity, "Could not get data", Toast.LENGTH_SHORT)
+                                .show()
+                            return@onActivityResult
+                        }
                     (activity as MainActivity).onChoosePathNew(uri)
                     return
                 }
@@ -91,22 +99,37 @@ class ProjectOverviewFragment : Fragment() {
         val dialogOnClickListener = DialogInterface.OnClickListener { dlg, which ->
             CoroutineScope(Dispatchers.Main).launch {
                 (activity as ProgressHandler).startProgress()
-                val project = withContext(Dispatchers.IO) {
-                    onClickCopyDialog(file, projectType, nativeFile, which == DialogInterface.BUTTON_POSITIVE)
+                try {
+                    val project = withContext(Dispatchers.IO) {
+                        onClickCopyDialog(
+                            file,
+                            projectType,
+                            nativeFile,
+                            which == DialogInterface.BUTTON_POSITIVE
+                        )
+                    }
+                    initializeDrawer(project)
+                } catch (e: Exception) {
+                    showErrorDialog(requireActivity(), R.string.failCreateProject, e, false)
                 }
-                initializeDrawer(project)
                 (activity as ProgressHandler).finishProgress()
             }
         }
-        showYesNoDialog(activity!!, "Copy contents",
-                getString(R.string.askCopy),
-                dialogOnClickListener, dialogOnClickListener
+        showYesNoDialog(
+            requireActivity(), "Copy contents",
+            getString(R.string.askCopy),
+            dialogOnClickListener, dialogOnClickListener
         )
     }
 
 
     @UnstableDefault
-    private fun onClickCopyDialog(file: File, projectType: String, nativeFile: File?, copy: Boolean): ProjectModel {
+    private fun onClickCopyDialog(
+        file: File,
+        projectType: String,
+        nativeFile: File?,
+        copy: Boolean
+    ): ProjectModel {
         val project = ProjectManager.newProject(file, projectType, file.name, copy)
         if (copy) {
             copyNativeDirToProject(nativeFile, project)

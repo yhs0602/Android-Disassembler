@@ -79,7 +79,9 @@ object ProjectManager {
      * @param projectName the name of project. should be valid file name
      * @author KYHSGeekCode
      * @return the project model created
+     * @throws IOException
      */
+    @Throws(IOException::class)
     fun newProject(targetFileOrFolder: File, projectType: String, projectName: String, copy: Boolean = true): ProjectModel {
 //        require(if (useDefault) true else file.isDirectory)
         val projectModel: ProjectModel
