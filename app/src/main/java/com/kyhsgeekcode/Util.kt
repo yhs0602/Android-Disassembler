@@ -17,6 +17,7 @@ import com.kyhsgeekcode.disassembler.project.ProjectManager
 import kotlinx.serialization.UnstableDefault
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveException
+import org.apache.commons.compress.archivers.ArchiveInputStream
 import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
@@ -109,8 +110,9 @@ fun File.isAccessible(): Boolean = exists() && canRead()
 @Throws(IOException::class, SecurityException::class)
 fun extract(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ -> }) {
     Log.v("extract", "File:${from.path}")
+    var archi: ArchiveInputStream? = null
     try {
-        val archi =
+        archi =
             ArchiveStreamFactory().createArchiveInputStream(BufferedInputStream(from.inputStream()))
         var entry: ArchiveEntry?
         while (archi.nextEntry.also { entry = it } != null) {
@@ -139,12 +141,15 @@ fun extract(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ ->
                 }
                 val o = f.outputStream()
                 IOUtils.copy(archi, o)
+                o.close()
             }
         }
     } catch (e: ArchiveException) {
         Log.e("Extract archive", "error inflating", e)
     } catch (e: ZipException) {
         Log.e("Extract archive", "error inflating", e)
+    } finally {
+        archi?.close()
     }
 }
 
@@ -187,6 +192,8 @@ fun saveAsZip(dest: File, vararg sources: Pair<String, String>) {
             archive.closeArchiveEntry()
         }
     }
+    archive.close()
+    archiveStream.close()
 }
 
 /**
