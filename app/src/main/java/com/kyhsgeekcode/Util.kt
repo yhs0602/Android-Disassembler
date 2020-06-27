@@ -51,8 +51,10 @@ fun extractZip(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _
         outfile.parentFile.mkdirs()
         val canonicalPath: String = outfile.canonicalPath
         if (!canonicalPath.startsWith(toDir.canonicalPath)) {
-            throw SecurityException("The zip/apk file may have a Zip Path Traversal Vulnerability." +
-                    "Is the zip/apk file trusted?")
+            throw SecurityException(
+                "The zip/apk file may have a Zip Path Traversal Vulnerability." +
+                        "Is the zip/apk file trusted?"
+            )
         }
         var output: FileOutputStream? = null
         try {
@@ -104,10 +106,12 @@ fun File.isDexFile(): Boolean = extension.toLowerCase() == "dex"
 
 fun File.isAccessible(): Boolean = exists() && canRead()
 
+@Throws(IOException::class, SecurityException::class)
 fun extract(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ -> }) {
     Log.v("extract", "File:${from.path}")
     try {
-        val archi = ArchiveStreamFactory().createArchiveInputStream(BufferedInputStream(from.inputStream()))
+        val archi =
+            ArchiveStreamFactory().createArchiveInputStream(BufferedInputStream(from.inputStream()))
         var entry: ArchiveEntry?
         while (archi.nextEntry.also { entry = it } != null) {
             if (entry!!.name == "")
@@ -128,8 +132,10 @@ fun extract(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ ->
                     throw IOException("failed to create directory $parent")
                 }
                 if (!f.canonicalPath.startsWith(toDir.canonicalPath)) {
-                    throw SecurityException("The zip/apk file may have a Zip Path Traversal Vulnerability." +
-                            "Is the zip/apk file trusted?")
+                    throw SecurityException(
+                        "The zip/apk file may have a Zip Path Traversal Vulnerability." +
+                                "Is the zip/apk file trusted?"
+                    )
                 }
                 val o = f.outputStream()
                 IOUtils.copy(archi, o)
@@ -149,7 +155,8 @@ fun String.toValidFileName(): String {
 // MAYBE BUG : relName to entry name
 fun saveAsZip(dest: File, vararg sources: Pair<String, String>) {
     val archiveStream: OutputStream = FileOutputStream(dest)
-    val archive = ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, archiveStream)
+    val archive =
+        ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, archiveStream)
     for (source in sources) {
         val from = source.first
         val to = source.second
@@ -160,7 +167,9 @@ fun saveAsZip(dest: File, vararg sources: Pair<String, String>) {
             for (file in fileList) {
                 val relName: String = getEntryName(fromFile, file)
                 val splitName = relName.split(File.separatorChar)
-                val entryName = toFile.resolve(splitName.subList(1, splitName.size - 1).joinToString(File.separator)).absolutePath
+                val entryName = toFile.resolve(
+                    splitName.subList(1, splitName.size - 1).joinToString(File.separator)
+                ).absolutePath
                 val entry = ZipArchiveEntry(entryName)
                 archive.putArchiveEntry(entry)
                 val input = BufferedInputStream(FileInputStream(file))
@@ -198,7 +207,9 @@ fun getEntryName(source: File, file: File): String {
 
 // https://stackoverflow.com/a/6425744/8614565
 fun deleteRecursive(fileOrDirectory: File) {
-    if (fileOrDirectory.isDirectory) for (child in fileOrDirectory.listFiles()) deleteRecursive(child)
+    if (fileOrDirectory.isDirectory) for (child in fileOrDirectory.listFiles()) deleteRecursive(
+        child
+    )
     fileOrDirectory.delete()
 }
 
@@ -221,8 +232,14 @@ private fun getRealPathFromURI(uri: Uri): String {
     // 파일의 이름을 통해 where 조건식을 만듭니다.
     val sel = MediaStore.Files.FileColumns.DATA + " LIKE '%" + id + "%'"
     // External storage에 있는 파일의 DB를 접근하는 방법 입니다.
-    val cursor = appCtx.contentResolver.query(MediaStore.Files.getContentUri("external"), column, sel, null, null)
-            ?: return ""
+    val cursor = appCtx.contentResolver.query(
+        MediaStore.Files.getContentUri("external"),
+        column,
+        sel,
+        null,
+        null
+    )
+        ?: return ""
     // SQL문으로 표현하면 아래와 같이 되겠죠????
 // SELECT _dtat FROM files WHERE _data LIKE '%selected file name%'
     val columnIndex = cursor.getColumnIndex(column[0])
@@ -254,12 +271,17 @@ fun sendErrorReport(error: Throwable) {
     } catch (e: PackageManager.NameNotFoundException) {
         e.printStackTrace()
     }
-    emailIntent.putExtra(Intent.EXTRA_SUBJECT,
-            "Crash report - " + error.message + "(ver" + ver + ")")
+    emailIntent.putExtra(
+        Intent.EXTRA_SUBJECT,
+        "Crash report - " + error.message + "(ver" + ver + ")"
+    )
     val content = StringBuilder(Log.getStackTraceString(error))
     content.append("OS version: ${android.os.Build.VERSION.SDK_INT}")
-    emailIntent.putExtra(Intent.EXTRA_TEXT,
-            content.toString())
+    content.append("\nHello, thank you for sending crash report!\n\n\n============================")
+    emailIntent.putExtra(
+        Intent.EXTRA_TEXT,
+        content.toString()
+    )
     val resultPath: String?
     if (error is RuntimeException) {
         val path = ProjectManager.currentProject?.sourceFilePath
@@ -276,7 +298,11 @@ fun sendErrorReport(error: Throwable) {
         }
         if (resultPath != null) {
             try {
-                val uri = FileProvider.getUriForFile(appCtx, appCtx.applicationContext.packageName + ".provider", File(resultPath))
+                val uri = FileProvider.getUriForFile(
+                    appCtx,
+                    appCtx.applicationContext.packageName + ".provider",
+                    File(resultPath)
+                )
                 emailIntent.putExtra(Intent.EXTRA_STREAM, uri)
             } catch (e: Exception) {
                 // TODO: Copy resultPath to somewhere accessible from provider and try again
@@ -334,18 +360,18 @@ fun addFileToTarGz(tOut: TarArchiveOutputStream, path: String, base: String) {
 
 // https://stackoverflow.com/a/59509302/8614565
 inline fun <reified T> T.callPrivateFunc(name: String, vararg args: Any?): Any? =
-        T::class
-                .declaredMemberFunctions
-                .firstOrNull { it.name == name }
-                ?.apply { isAccessible = true }
-                ?.call(this, *args)
+    T::class
+        .declaredMemberFunctions
+        .firstOrNull { it.name == name }
+        ?.apply { isAccessible = true }
+        ?.call(this, *args)
 
 inline fun <reified T : Any, R> T.getPrivateProperty(name: String): R? =
-        T::class
-                .memberProperties
-                .firstOrNull { it.name == name }
-                ?.apply { isAccessible = true }
-                ?.get(this) as? R
+    T::class
+        .memberProperties
+        .firstOrNull { it.name == name }
+        ?.apply { isAccessible = true }
+        ?.get(this) as? R
 
 val Any.TAG: String
     get() {
@@ -354,6 +380,9 @@ val Any.TAG: String
             if (name.length <= 23) name else name.substring(0, 23)// first 23 chars
         } else {
             val name = javaClass.name
-            if (name.length <= 23) name else name.substring(name.length - 23, name.length)// last 23 chars
+            if (name.length <= 23) name else name.substring(
+                name.length - 23,
+                name.length
+            )// last 23 chars
         }
     }

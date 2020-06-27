@@ -88,9 +88,13 @@ open class FileItem : Serializable {
             if (backFile?.exists() == true) {
                 backFile!!.delete()
             }
-            extract(file!!, backFile!!) { tot, don -> publisher(tot.toInt(), don.toInt()) }
-            for (childFile in backFile!!.listFiles()) {
-                result.add(FileItem(file = childFile))
+            try {
+                extract(file!!, backFile!!) { tot, don -> publisher(tot.toInt(), don.toInt()) }
+                for (childFile in backFile!!.listFiles()) {
+                    result.add(FileItem(file = childFile))
+                }
+            } catch (e: Exception) {
+                result.add(FileItem(e.message ?: ""))
             }
             return result
         } else if (file?.isDexFile() == true) {
@@ -112,7 +116,13 @@ open class FileItem : Serializable {
             val assembly = facileReflector.loadAssembly()
             val types = assembly.allTypes
             for (type in types) {
-                result.add(FileItemDotNetSymbol(type.namespace + "." + type.name, facileReflector, type))
+                result.add(
+                    FileItemDotNetSymbol(
+                        type.namespace + "." + type.name,
+                        facileReflector,
+                        type
+                    )
+                )
             }
             return result
         }
@@ -170,7 +180,14 @@ open class FileItem : Serializable {
                         Log.e(TAG, "", e)
                     }
                     val label = applabel + "(" + packageInfo.packageName + ")"
-                    result.add(FileItemApp(label, File(packageInfo.sourceDir), File(packageInfo.nativeLibraryDir), icon))
+                    result.add(
+                        FileItemApp(
+                            label,
+                            File(packageInfo.sourceDir),
+                            File(packageInfo.nativeLibraryDir),
+                            icon
+                        )
+                    )
                     i++
                     if (i % 10 == 0) {
                         publisher(numpkg * 2, i + numpkg)
@@ -189,19 +206,24 @@ open class FileItem : Serializable {
             override fun isProjectAble(): Boolean = false
         }
 
-        val others = object : FileItem("Other sources", getDrawable(R.drawable.fileitem_etc_google_drive)) {
+        val others =
+            object : FileItem("Other sources", getDrawable(R.drawable.fileitem_etc_google_drive)) {
+                override fun canExpand(): Boolean = false
+                override fun isRawAvailable(): Boolean = true
+                override fun isProjectAble(): Boolean = false
+            }
+
+        val zoo = object :
+            FileItem("LIVE malware Zoo", getDrawable(R.drawable.fileitem_zoo_github_mark)) {
             override fun canExpand(): Boolean = false
             override fun isRawAvailable(): Boolean = true
             override fun isProjectAble(): Boolean = false
         }
 
-        val zoo = object : FileItem("LIVE malware Zoo", getDrawable(R.drawable.fileitem_zoo_github_mark)) {
-            override fun canExpand(): Boolean = false
-            override fun isRawAvailable(): Boolean = true
-            override fun isProjectAble(): Boolean = false
-        }
-
-        val hash = object : FileItem("Malware sample by hash from infosec", getDrawable(R.drawable.fileitem_hash_icons8_website)) {
+        val hash = object : FileItem(
+            "Malware sample by hash from infosec",
+            getDrawable(R.drawable.fileitem_hash_icons8_website)
+        ) {
             override fun canExpand(): Boolean = false
             override fun isRawAvailable(): Boolean = true
             override fun isProjectAble(): Boolean = false

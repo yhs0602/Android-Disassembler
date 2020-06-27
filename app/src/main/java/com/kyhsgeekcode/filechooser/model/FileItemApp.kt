@@ -7,7 +7,8 @@ import org.apache.commons.io.FileUtils
 import splitties.init.appCtx
 import java.io.File
 
-class FileItemApp(label: String, val realFile: File, val nativeFile: File, icon: Drawable?) : FileItem(label, realFile, icon) {
+class FileItemApp(label: String, val realFile: File, val nativeFile: File, icon: Drawable?) :
+    FileItem(label, realFile, icon) {
     //    override val TAG = FileItemApp::class.java.simpleName
     override fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
         backFile = File(appCtx.cacheDir, realFile.name)
@@ -20,7 +21,7 @@ class FileItemApp(label: String, val realFile: File, val nativeFile: File, icon:
             if (nativeFile.canRead()) {
                 val targetFolder = backFile!!.resolve("libs")
                 val targetFile = targetFolder.resolve(nativeFile.name)
-                var madetargetFile= targetFile
+                var madetargetFile = targetFile
                 var i = 0
                 while (targetFile.exists()) {
                     madetargetFile = File(targetFile.absolutePath + "_extractedLibs$i")

@@ -58,22 +58,27 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.regex.Pattern
 
 class MainActivity : AppCompatActivity(),
-        ITabController,
-        ArchiveFragment.OnFragmentInteractionListener,
-        APKFragment.OnFragmentInteractionListener,
-        DexFragment.OnFragmentInteractionListener,
-        DotNetFragment.OnFragmentInteractionListener,
-        StringFragment.OnFragmentInteractionListener,
-        IDrawerManager,
-        ProgressHandler {
+    ITabController,
+    ArchiveFragment.OnFragmentInteractionListener,
+    APKFragment.OnFragmentInteractionListener,
+    DexFragment.OnFragmentInteractionListener,
+    DotNetFragment.OnFragmentInteractionListener,
+    StringFragment.OnFragmentInteractionListener,
+    IDrawerManager,
+    ProgressHandler {
 
-    private val snackProgressBarManager by lazy { SnackProgressBarManager(mainLayout, lifecycleOwner = this) }
+    private val snackProgressBarManager by lazy {
+        SnackProgressBarManager(
+            mainLayout,
+            lifecycleOwner = this
+        )
+    }
     private val horizontal = SnackProgressBar(SnackProgressBar.TYPE_HORIZONTAL, "Loading...")
-            .setIsIndeterminate(false)
-            .setAllowUserInput(false)
+        .setIsIndeterminate(false)
+        .setAllowUserInput(false)
     private val indeterminate = SnackProgressBar(SnackProgressBar.TYPE_CIRCULAR, "Loading...")
-            .setIsIndeterminate(true)
-            .setAllowUserInput(false)
+        .setIsIndeterminate(true)
+        .setAllowUserInput(false)
 
     companion object {
         const val SETTINGKEY = "setting"
@@ -292,29 +297,57 @@ class MainActivity : AppCompatActivity(),
     private fun setupLeftDrawer() {
         // mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         // Set the adapter for the list view
-        left_drawer.setAdapter(FileDrawerListAdapter(this).also { mDrawerAdapter = it }) // new ArrayAdapter<String>(MainActivity.this,
+        left_drawer.setAdapter(FileDrawerListAdapter(this).also {
+            mDrawerAdapter = it
+        }) // new ArrayAdapter<String>(MainActivity.this,
         // R.layout.row, mProjNames));
         val initialDrawers: MutableList<FileDrawerListItem> = ArrayList()
-        initialDrawers.add(FileDrawerListItem("Projects", 0, FileDrawerListItem.DrawerItemType.PROJECTS))
+        initialDrawers.add(
+            FileDrawerListItem(
+                "Projects",
+                0,
+                FileDrawerListItem.DrawerItemType.PROJECTS
+            )
+        )
         mDrawerAdapter.setDataItems(initialDrawers)
         mDrawerAdapter.notifyDataSetChanged()
         left_drawer.setOnItemClickListener(object : OnItemClickListener {
-            override fun onItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) {
+            override fun onItemClicked(
+                parent: MultiLevelListView,
+                view: View,
+                item: Any,
+                itemInfo: ItemInfo
+            ) {
                 val fitem = item as FileDrawerListItem
                 Toast.makeText(this@MainActivity, fitem.caption, Toast.LENGTH_SHORT).show()
                 if (!fitem.isOpenable)
                     return
-                showYesNoCancelDialog(this@MainActivity, "Open file", "Open " + fitem.caption + "?", DialogInterface.OnClickListener { dialog, which ->
-                    //                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
+                showYesNoCancelDialog(
+                    this@MainActivity,
+                    "Open file",
+                    "Open " + fitem.caption + "?",
+                    DialogInterface.OnClickListener { dialog, which ->
+                        //                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
 //                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
 //                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
 //                    }
-                    val fragmentDataToOpen = determineFragmentToOpen(fitem)
-                    pagerAdapter.addFragment(fragmentDataToOpen.first, fragmentDataToOpen.second)
-                }, null, null)
+                        val fragmentDataToOpen = determineFragmentToOpen(fitem)
+                        pagerAdapter.addFragment(
+                            fragmentDataToOpen.first,
+                            fragmentDataToOpen.second
+                        )
+                    },
+                    null,
+                    null
+                )
             }
 
-            override fun onGroupItemClicked(parent: MultiLevelListView, view: View, item: Any, itemInfo: ItemInfo) { // Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
+            override fun onGroupItemClicked(
+                parent: MultiLevelListView,
+                view: View,
+                item: Any,
+                itemInfo: ItemInfo
+            ) { // Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
                 if ((item as FileDrawerListItem).isOpenable)
                     onItemClicked(parent, view, item, itemInfo)
             }
@@ -355,7 +388,7 @@ class MainActivity : AppCompatActivity(),
                     val file = File(abspath)
                     try {
                         (BitmapFactory.decodeStream(file.inputStream())
-                                ?: throw Exception()).recycle()
+                            ?: throw Exception()).recycle()
                         ImageFragment.newInstance(relPath)
                     } catch (e: Exception) {
                         BinaryFragment.newInstance(relPath)
@@ -383,7 +416,8 @@ class MainActivity : AppCompatActivity(),
     private fun setupUncaughtException() {
         Thread.setDefaultUncaughtExceptionHandler { p1: Thread?, p2: Throwable ->
             runOnUiThread {
-                Toast.makeText(this@MainActivity, Log.getStackTraceString(p2), Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, Log.getStackTraceString(p2), Toast.LENGTH_SHORT)
+                    .show()
             }
             if (p2 is SecurityException) {
                 Toast.makeText(this@MainActivity, R.string.didUgrant, Toast.LENGTH_SHORT).show()
@@ -407,7 +441,11 @@ class MainActivity : AppCompatActivity(),
                 throw RuntimeException()
             }
         } catch (e: Exception) {
-            Toast.makeText(this, "Failed to initialize the native engine: " + Log.getStackTraceString(e), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                "Failed to initialize the native engine: " + Log.getStackTraceString(e),
+                Toast.LENGTH_LONG
+            ).show()
             Process.killProcess(Process.getGidForName(null))
         }
     }
@@ -445,13 +483,32 @@ class MainActivity : AppCompatActivity(),
 //            }
             R.id.calc -> {
                 val et = EditText(this)
-                showEditDialog(this, getString(R.string.calculator), "Enter an expression to measure", et, getString(R.string.ok), DialogInterface.OnClickListener { p1, p2 -> Toast.makeText(this@MainActivity, Calculator.Calc(et.text.toString()).toString(), Toast.LENGTH_SHORT).show() }, getString(R.string.cancel), null)
+                showEditDialog(
+                    this,
+                    getString(R.string.calculator),
+                    "Enter an expression to measure",
+                    et,
+                    getString(R.string.ok),
+                    DialogInterface.OnClickListener { p1, p2 ->
+                        Toast.makeText(
+                            this@MainActivity,
+                            Calculator.Calc(et.text.toString()).toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    getString(R.string.cancel),
+                    null
+                )
             }
             R.id.donate -> {
                 val url = "https://www.buymeacoffee.com/i4QJKbC"
                 val i = Intent(Intent.ACTION_VIEW)
                 i.data = Uri.parse(url)
-                Toast.makeText(this, "Thank you for your appreciate for this app!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Thank you for your appreciate for this app!",
+                    Toast.LENGTH_SHORT
+                ).show()
                 startActivity(i)
 //                val intent = Intent(this, DonateActivity::class.java)
 //                startActivity(intent)
@@ -460,20 +517,25 @@ class MainActivity : AppCompatActivity(),
         return super.onOptionsItemSelected(item)
     }
 
-    private fun showSelDialog(ListItems: List<String>?, title: String?, listener: DialogInterface.OnClickListener?) {
+    private fun showSelDialog(
+        ListItems: List<String>?,
+        title: String?,
+        listener: DialogInterface.OnClickListener?
+    ) {
         showSelDialog(this, ListItems!!, title, listener)
     }
 
     override fun onRequestPermissionsResult(
-            requestCode: Int,
-            permissions: Array<String>,
-            grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
     ) {
         when (requestCode) {
             REQUEST_WRITE_STORAGE_REQUEST_CODE -> {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) { // permission was granted, yay! Do the
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+                ) { // permission was granted, yay! Do the
 // contacts-related task you need to do.
                     while (!toDoAfterPermQueue.isEmpty()) {
                         val run = toDoAfterPermQueue.remove()
@@ -481,7 +543,8 @@ class MainActivity : AppCompatActivity(),
                     }
                 } else {
                     Toast.makeText(this, R.string.permission_needed, Toast.LENGTH_LONG).show()
-                    val showRationalSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
+                    val showRationalSetting =
+                        getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
                     val showRationalEditor = showRationalSetting.edit()
                     showRationalEditor.putBoolean("show", true)
                     showRationalEditor.apply()
@@ -650,16 +713,16 @@ class MainActivity : AppCompatActivity(),
         when (picker) {
             0 -> try {
                 val chooser = StorageChooser.Builder()
-                        .withActivity(this@MainActivity)
-                        .withFragmentManager(fragmentManager)
-                        .withMemoryBar(true)
-                        .allowCustomPath(true)
-                        .setType(StorageChooser.FILE_PICKER)
-                        .actionSave(true) // .withPreference(settingPath)
+                    .withActivity(this@MainActivity)
+                    .withFragmentManager(fragmentManager)
+                    .withMemoryBar(true)
+                    .allowCustomPath(true)
+                    .setType(StorageChooser.FILE_PICKER)
+                    .actionSave(true) // .withPreference(settingPath)
 // 	.withPredefinedPath(prepath)
-                        .shouldResumeSession(true)
-                        .showHidden(true)
-                        .build()
+                    .shouldResumeSession(true)
+                    .showHidden(true)
+                    .build()
                 // Show dialog whenever you want by
 // chooser.getsConfig().setPrimaryPath(prepath);
                 chooser.show()
@@ -673,7 +736,11 @@ class MainActivity : AppCompatActivity(),
                     // Log.e("SELECTED_PATH", path);
                 }
             } catch (e: Exception) {
-                Toast.makeText(this, "An error happened using the external file choosing library. Please choose another file chooser in settings.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "An error happened using the external file choosing library. Please choose another file chooser in settings.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             1 -> {
                 val i = Intent(this, FileSelectorActivity::class.java)
@@ -728,16 +795,21 @@ class MainActivity : AppCompatActivity(),
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 //                contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
             }
-            contentResolver.openInputStream(uri).use { inStream ->
-                val file = getExternalFilesDir(null)?.resolve("tmp")?.resolve("openDirect")
+            try {
+                contentResolver.openInputStream(uri).use { inStream ->
+                    val file = getExternalFilesDir(null)?.resolve("tmp")?.resolve("openDirect")
                         ?: return
-                file.parentFile.mkdirs()
-                file.outputStream().use { fileOut ->
-                    inStream?.copyTo(fileOut)
+                    file.parentFile.mkdirs()
+                    file.outputStream().use { fileOut ->
+                        inStream?.copyTo(fileOut)
+                    }
+                    val project =
+                        ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, true)
+                    overviewFragment.initializeDrawer(project)
+                    notifyDataSetChanged()
                 }
-                val project = ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, true)
-                overviewFragment.initializeDrawer(project)
-                notifyDataSetChanged()
+            } catch (e: Exception) {
+                alertError(R.string.failCreateProject, e, false)
             }
         }
     }
