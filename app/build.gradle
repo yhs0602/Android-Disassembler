@@ -96,7 +96,7 @@ dependencies {
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
     implementation("com.louiscad.splitties:splitties-appctx:$splitties_version")
     implementation 'org.apache.commons:commons-compress:1.20'
-    implementation("com.google.guava:guava:29.0-android")
+    // implementation("com.google.guava:guava:29.0-android")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'org.jsoup:jsoup:1.13.1'

@@ -75,7 +75,7 @@ class ProjectOverviewFragment : Fragment() {
                     return
                 }
 
-                val fileItem = data!!.getSerializableExtra("fileItem") as FileItem
+                val fileItem = fi as FileItem
                 Log.v(TAG, "FileItem.text:" + fileItem.text)
                 Log.v(TAG, "Open as project$openAsProject")
                 if (fileItem.file?.isArchive() == true) {
@@ -89,7 +89,10 @@ class ProjectOverviewFragment : Fragment() {
 
     @UnstableDefault
     private fun onChoosePathNew(fileItem: FileItem) {
-        val file = fileItem.file!!
+        val file = fileItem.file ?: run {
+            Logger.e(TAG, "Failed to load fileItem: $fileItem")
+            return@onChoosePathNew
+        }
         val nativeFile: File? = if (fileItem is FileItemApp) {
             fileItem.nativeFile
         } else {
@@ -113,7 +116,6 @@ class ProjectOverviewFragment : Fragment() {
                     showErrorDialog(requireActivity(), R.string.failCreateProject, e, false)
                 }
                 (activity as ProgressHandler).finishProgress()
-
             }
         }
         showYesNoDialog(
