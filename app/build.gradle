@@ -87,7 +87,7 @@ dependencies {
     // https://mvnrepository.com/artifact/commons-io/commons-io
     implementation group: 'commons-io', name: 'commons-io', version: '2.5'
     implementation 'com.android.support.constraint:constraint-layout:2.0.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
 
     //implementation 'dotnet.msil.decompiler:+'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
