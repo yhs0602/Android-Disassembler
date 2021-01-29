@@ -3,9 +3,8 @@ package com.kyhsgeekcode.disassembler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.logview_item.view.*
+import com.kyhsgeekcode.disassembler.databinding.LogviewItemBinding
 import java.util.*
 
 class LogAdapter : RecyclerView.Adapter<LogAdapter.ViewHolder>() {
@@ -21,15 +20,12 @@ class LogAdapter : RecyclerView.Adapter<LogAdapter.ViewHolder>() {
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvLogLevel: TextView = itemView.textViewLogLevel
-        val tvLogTime: TextView = itemView.textViewLogTime
-        val tvLogTag: TextView = itemView.textViewLogTag
-        val tvLogDesc: TextView = itemView.textViewLogDesc
+        val binding = LogviewItemBinding.bind(itemView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.logview_item, parent, false)
+        val binding = LogviewItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val view = binding.root
         listView = parent as RecyclerView
         return ViewHolder(view)
     }
@@ -38,11 +34,11 @@ class LogAdapter : RecyclerView.Adapter<LogAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = itemList[position]
-        with(holder) {
-            tvLogTag.text = item.TAG
-            tvLogLevel.text = "${item.level[0]}"
-            tvLogTime.text = item.time
-            tvLogDesc.text = item.description
+        with(holder.binding) {
+            textViewLogTag.text = item.TAG
+            textViewLogLevel.text = "${item.level[0]}"
+            textViewLogTime.text = item.time
+            textViewLogDesc.text = item.description
         }
     }
 

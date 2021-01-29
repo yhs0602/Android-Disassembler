@@ -32,6 +32,7 @@ import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.PermissionUtils.requestAppPermissions
+import com.kyhsgeekcode.disassembler.databinding.MainBinding
 import com.kyhsgeekcode.disassembler.preference.SettingsActivity
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.project.ProjectManager
@@ -44,9 +45,6 @@ import com.kyhsgeekcode.rootpicker.FileSelectorActivity
 import com.kyhsgeekcode.sendErrorReport
 import com.tingyik90.snackprogressbar.SnackProgressBar
 import com.tingyik90.snackprogressbar.SnackProgressBarManager
-import kotlinx.android.synthetic.main.main.*
-import kotlinx.serialization.UnstableDefault
-import kotlinx.serialization.toUtf8Bytes
 import pl.openrnd.multilevellistview.ItemInfo
 import pl.openrnd.multilevellistview.MultiLevelListView
 import pl.openrnd.multilevellistview.OnItemClickListener
@@ -67,10 +65,12 @@ class MainActivity : AppCompatActivity(),
     StringFragment.OnFragmentInteractionListener,
     IDrawerManager,
     ProgressHandler {
+    private var _binding: MainBinding? = null
+    private val binding get() = _binding!!
 
     private val snackProgressBarManager by lazy {
         SnackProgressBarManager(
-            mainLayout,
+            binding.mainLayout,
             lifecycleOwner = this
         )
     }
@@ -195,14 +195,14 @@ class MainActivity : AppCompatActivity(),
         initNative()
         setContentView(R.layout.main)
         pagerAdapter = ViewPagerAdapter(this)
-        pagerMain.adapter = pagerAdapter
-        pagerMain.isUserInputEnabled = false
+        binding.pagerMain.adapter = pagerAdapter
+        binding.pagerMain.isUserInputEnabled = false
 //        tablayout.setupWithViewPager(pagerMain)
-        TabLayoutMediator(tablayout, pagerMain) { tab, position ->
+        TabLayoutMediator(binding.tablayout, binding.pagerMain) { tab, position ->
             tab.text = pagerAdapter.getTitle(position)
-            pagerMain.setCurrentItem(tab.position, true)
+            binding.pagerMain.setCurrentItem(tab.position, true)
         }.attach()
-        pagerMain.offscreenPageLimit = 20
+        binding.pagerMain.offscreenPageLimit = 20
         overviewFragment = ProjectOverviewFragment.newInstance()
         pagerAdapter.addFragment(overviewFragment, "Overview")
 
@@ -264,7 +264,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    @UnstableDefault
     private fun handleViewActionIntent() {
         // https://www.androidpub.com/1351553
         val intent = intent
@@ -298,7 +297,7 @@ class MainActivity : AppCompatActivity(),
     private fun setupLeftDrawer() {
         // mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         // Set the adapter for the list view
-        left_drawer.setAdapter(FileDrawerListAdapter(this).also {
+        binding.leftDrawer.setAdapter(FileDrawerListAdapter(this).also {
             mDrawerAdapter = it
         }) // new ArrayAdapter<String>(MainActivity.this,
         // R.layout.row, mProjNames));
@@ -312,7 +311,7 @@ class MainActivity : AppCompatActivity(),
         )
         mDrawerAdapter.setDataItems(initialDrawers)
         mDrawerAdapter.notifyDataSetChanged()
-        left_drawer.setOnItemClickListener(object : OnItemClickListener {
+        binding.leftDrawer.setOnItemClickListener(object : OnItemClickListener {
             override fun onItemClicked(
                 parent: MultiLevelListView,
                 view: View,
@@ -355,7 +354,6 @@ class MainActivity : AppCompatActivity(),
         })
     }
 
-    @UnstableDefault
     fun determineFragmentToOpen(item: FileDrawerListItem): Pair<Fragment, String> {
         var title = "${item.caption} as ${item.type}"
 //        val rootPath = ProjectManager.getOriginal("").absolutePath
@@ -364,7 +362,7 @@ class MainActivity : AppCompatActivity(),
             val method = (item.tag as Array<*>)[1] as Method
             val renderedStr = ILAsmRenderer(reflector).render(method)
             val key = "${method.owner.name}.${method.name}_${method.methodSignature}"
-            ProjectDataStorage.putFileContent(key, renderedStr.toUtf8Bytes())
+            ProjectDataStorage.putFileContent(key, renderedStr.encodeToByteArray())
             return Pair(TextFragment.newInstance(key), key)
         }
         val abspath = (item.tag as String)
@@ -452,7 +450,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
-        val fragment = pagerAdapter.createFragment(pagerMain.currentItem)
+        val fragment = pagerAdapter.createFragment(binding.pagerMain.currentItem)
         if ((fragment as? IOnBackPressed)?.onBackPressed() != true) {
             super.onBackPressed()
         }
@@ -754,7 +752,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    @UnstableDefault
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d(TAG, "onActivityResult")
@@ -790,7 +787,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    @UnstableDefault
     public fun onChoosePathNew(uri: Uri) {
         if (uri.scheme == "content") {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -1130,14 +1126,14 @@ class MainActivity : AppCompatActivity(),
     external fun Init(): Int
 
     override fun setCurrentTab(index: Int): Boolean {
-        val tab = tablayout.getTabAt(index) ?: return false
+        val tab = binding.tablayout.getTabAt(index) ?: return false
         tab.select()
-        pagerMain.setCurrentItem(index, true)
+        binding.pagerMain.setCurrentItem(index, true)
         return true
     }
 
     override fun getCurrentTab(): Int {
-        return pagerMain.currentItem
+        return binding.pagerMain.currentItem
     }
 
     override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
@@ -1158,10 +1154,10 @@ class MainActivity : AppCompatActivity(),
 //        val orig = left_drawer.isAlwaysExpanded
 //        left_drawer.isAlwaysExpanded = !orig
 //        left_drawer.isAlwaysExpanded = orig
-        left_drawer.refreshDrawableState()
-        left_drawer.requestLayout()
+        binding.leftDrawer.refreshDrawableState()
+        binding.leftDrawer.requestLayout()
 //        showAlertDialog(this, "Then..", "Swipe from left to right please.")
-        drawer_layout.openDrawer(GravityCompat.START)
+        binding.drawerLayout.openDrawer(GravityCompat.START)
     }
 
     override fun publishProgress(current: Int, total: Int?, message: String?) {

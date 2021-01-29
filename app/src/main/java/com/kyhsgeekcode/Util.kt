@@ -14,7 +14,6 @@ import androidx.core.content.FileProvider
 import com.kyhsgeekcode.FileExtensions.peFileExts
 import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.disassembler.project.ProjectManager
-import kotlinx.serialization.UnstableDefault
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveException
 import org.apache.commons.compress.archivers.ArchiveInputStream
@@ -266,7 +265,6 @@ fun convertDpToPixel(dp: Float): Int {
 
 fun getDrawable(id: Int) = ContextCompat.getDrawable(appCtx, id)
 
-@UnstableDefault
 fun sendErrorReport(error: Throwable) {
     val emailIntent = Intent(Intent.ACTION_SEND)
     emailIntent.type = "plain/text"

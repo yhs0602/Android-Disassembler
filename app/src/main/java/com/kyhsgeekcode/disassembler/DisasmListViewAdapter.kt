@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kyhsgeekcode.convertDpToPixel
 import com.kyhsgeekcode.disassembler.ColorHelper.palette
-import kotlinx.android.synthetic.main.listview_item.view.*
+import com.kyhsgeekcode.disassembler.databinding.ListviewItemBinding
 
 class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     var file: AbstractFile,
@@ -195,20 +195,14 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     var isShowComment = true
 
     inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val tvAddr: TextView = view.tvAddr
-        val tvCondition = view.tvCond
-        val tvLabel = view.tvLabel
-        val tvComments = view.tvComment
-        val tvBytes = view.tvBytes
-        val tvOperands = view.tvOperand
-        val tvInst = view.tvInst
+        val binding = ListviewItemBinding.bind(view)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.listview_item, parent, false)
+        val binding =
+            ListviewItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         listView = parent as RecyclerView
-        return ViewHolder(view)
+        return ViewHolder(binding.root)
     }
 
     override fun getItemCount(): Int = address.size()
@@ -220,57 +214,65 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
 
         val palette = palette
         with(holder) {
-            adjustShow(tvAddr, tvLabel, tvBytes, tvInst, tvCondition, tvOperands, tvComments)
-            tvOperands.layoutParams.width = if (architecture == 1) dp260 else dp180
-            tvOperands.requestLayout()
+            adjustShow(
+                binding.tvAddr,
+                binding.tvLabel,
+                binding.tvBytes,
+                binding.tvInst,
+                binding.tvCond,
+                binding.tvOperand,
+                binding.tvComment
+            )
+            binding.tvOperand.layoutParams.width = if (architecture == 1) dp260 else dp180
+            binding.tvOperand.requestLayout()
             val defTxtColor = palette!!.defaultTxtColor
             val defBkColor = palette.defaultBkColor
             // convertView.setBackgroundColor(palette.getDefaultBkColor());
-            tvInst.setBackgroundColor(
+            binding.tvInst.setBackgroundColor(
                 palette.getBkColorByGrps(
                     dar.groups,
                     dar.groups_count.toInt(),
                     dar.id
                 )
             )
-            tvAddr.setBackgroundColor(defBkColor)
-            tvBytes.setBackgroundColor(defBkColor)
-            tvComments.setBackgroundColor(defBkColor)
-            tvCondition.setBackgroundColor(defBkColor)
-            tvLabel.setBackgroundColor(defBkColor)
-            tvOperands.setBackgroundColor(
+            binding.tvAddr.setBackgroundColor(defBkColor)
+            binding.tvBytes.setBackgroundColor(defBkColor)
+            binding.tvComment.setBackgroundColor(defBkColor)
+            binding.tvCond.setBackgroundColor(defBkColor)
+            binding.tvLabel.setBackgroundColor(defBkColor)
+            binding.tvOperand.setBackgroundColor(
                 palette.getBkColorByGrps(
                     dar.groups,
                     dar.groups_count.toInt(),
                     dar.id
                 )
             )
-            tvInst.setTextColor(
+            binding.tvInst.setTextColor(
                 palette.getTxtColorByGrps(
                     dar.groups,
                     dar.groups_count.toInt(),
                     dar.id
                 )
             )
-            tvAddr.setTextColor(defTxtColor)
-            tvBytes.setTextColor(defTxtColor)
-            tvComments.setTextColor(defTxtColor)
-            tvCondition.setTextColor(defTxtColor)
-            tvLabel.setTextColor(defTxtColor)
-            tvOperands.setTextColor(
+            binding.tvAddr.setTextColor(defTxtColor)
+            binding.tvBytes.setTextColor(defTxtColor)
+            binding.tvComment.setTextColor(defTxtColor)
+            binding.tvCond.setTextColor(defTxtColor)
+            binding.tvLabel.setTextColor(defTxtColor)
+            binding.tvOperand.setTextColor(
                 palette.getTxtColorByGrps(
                     dar.groups,
                     dar.groups_count.toInt(),
                     dar.id
                 )
             )
-            tvAddr.text = disassemblyListItem.getAddress()
-            tvBytes.text = disassemblyListItem.getBytes()
-            tvComments.text = disassemblyListItem.getComments()
-            tvCondition.text = disassemblyListItem.getCondition()
-            tvInst.text = disassemblyListItem.getInstruction()
-            tvLabel.text = disassemblyListItem.getLabel()
-            tvOperands.text = disassemblyListItem.getOperands()
+            binding.tvAddr.text = disassemblyListItem.getAddress()
+            binding.tvBytes.text = disassemblyListItem.getBytes()
+            binding.tvComment.text = disassemblyListItem.getComments()
+            binding.tvCond.text = disassemblyListItem.getCondition()
+            binding.tvInst.text = disassemblyListItem.getInstruction()
+            binding.tvLabel.text = disassemblyListItem.getLabel()
+            binding.tvOperand.text = disassemblyListItem.getOperands()
             view.setOnClickListener(
                 DisasmClickListener(
                     fragment,

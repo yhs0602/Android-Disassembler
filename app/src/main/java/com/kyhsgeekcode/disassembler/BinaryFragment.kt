@@ -6,15 +6,16 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayoutMediator
+import com.kyhsgeekcode.disassembler.databinding.FragmentBinaryBinding
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
-import kotlinx.android.synthetic.main.fragment_binary.*
-import kotlinx.serialization.UnstableDefault
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.functions
 
 class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackPressed {
+    private var _binding: FragmentBinaryBinding? = null
+    private val binding get() = _binding!!
     val TAG = "BinaryFragment"
 
     val ARG_PARAM1 = "RELPATH"
@@ -34,22 +35,29 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) =
-        inflater.inflate(R.layout.fragment_binary, container, false)!!
+    ): View {
+        _binding = FragmentBinaryBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
 
-    @UnstableDefault
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         pagerAdapter = ViewPagerAdapter(childFragmentManager, lifecycle)
-        pagerBinary.adapter = pagerAdapter
-        TabLayoutMediator(binaryTabLayout, pagerBinary) { tab, position ->
+        binding.pagerBinary.adapter = pagerAdapter
+        TabLayoutMediator(binding.binaryTabLayout, binding.pagerBinary) { tab, position ->
             tab.text = pagerAdapter.getTitle(position)
-            pagerBinary.setCurrentItem(tab.position, true)
+            binding.pagerBinary.setCurrentItem(tab.position, true)
         }.attach()
 //        binaryTabLayout.setupWithViewPager(pagerBinary)
         parsedFile = AbstractFile.createInstance(ProjectDataStorage.resolveToRead(relPath)!!)
         setHasOptionsMenu(true)
-        pagerBinary.offscreenPageLimit = 5
+        binding.pagerBinary.offscreenPageLimit = 5
         pagerAdapter.addFragment(BinaryOverviewFragment.newInstance(relPath), "Overview")
         pagerAdapter.addFragment(
             BinaryDisasmFragment.newInstance(
@@ -118,11 +126,11 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
     }
 
     override fun setCurrentTab(index: Int): Boolean {
-        pagerBinary.setCurrentItem(index, true)
-        return pagerBinary.currentItem == index
+        binding.pagerBinary.setCurrentItem(index, true)
+        return binding.pagerBinary.currentItem == index
     }
 
-    override fun getCurrentTab(): Int = pagerBinary.currentItem
+    override fun getCurrentTab(): Int = binding.pagerBinary.currentItem
 
     override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
         val clas: KClass<out Any>
@@ -135,7 +143,7 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
                 .call(clas.companionObjectInstance, relPath) as Fragment
             pagerAdapter.addFragment(frag, tag)
         }
-        pagerBinary.setCurrentItem(fragment, true)
+        binding.pagerBinary.setCurrentItem(fragment, true)
         return true
     }
 
@@ -153,7 +161,7 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
     }
 
     override fun onBackPressed(): Boolean {
-        val fragment = pagerAdapter.createFragment(pagerBinary.currentItem)
+        val fragment = pagerAdapter.createFragment(binding.pagerBinary.currentItem)
         if ((fragment as? IOnBackPressed)?.onBackPressed() != true) {
             return false
         }

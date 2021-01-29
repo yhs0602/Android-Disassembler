@@ -6,20 +6,22 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.kyhsgeekcode.disassembler.databinding.FragmentImageBinding
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
-import kotlinx.android.synthetic.main.fragment_image.*
-import kotlinx.serialization.UnstableDefault
 
 class ImageFragment : Fragment() {
+    private var _binding: FragmentImageBinding? = null
+    private val binding get() = _binding!!
+
     val TAG = "TextFragment"
     val ARG_PARAM = "param"
     private lateinit var relPath: String
     private var bitmap: Bitmap? = null
 
-    @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -34,16 +36,30 @@ class ImageFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) =
-        inflater.inflate(R.layout.fragment_image, container, false)!!
+    ): View {
+        _binding = FragmentImageBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         if (bitmap != null) {
-            imageFragmentView.setImageDrawable(BitmapDrawable(context!!.resources, bitmap))
+            binding.imageFragmentView.setImageDrawable(
+                BitmapDrawable(
+                    requireContext().resources,
+                    bitmap
+                )
+            )
         } else {
-            Toast.makeText(activity!!, "The image could not be decoded!", Toast.LENGTH_SHORT).show()
-            imageFragmentView.setImageResource(R.drawable.ic_launcher)
+            Toast.makeText(requireActivity(), "The image could not be decoded!", Toast.LENGTH_SHORT)
+                .show()
+            binding.imageFragmentView.setImageResource(R.drawable.ic_launcher)
         }
     }
 

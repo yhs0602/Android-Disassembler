@@ -1,7 +1,6 @@
 package com.kyhsgeekcode.disassembler.project
 
 import android.util.Log
-import kotlinx.serialization.UnstableDefault
 import java.io.File
 
 object ProjectDataStorage {
@@ -10,7 +9,6 @@ object ProjectDataStorage {
     // Pair of relPath and dataType
     val data: MutableMap<Pair<String, DataType>, Any> = HashMap()
 
-    @UnstableDefault
     fun getFileContent(relPath: String): ByteArray {
         val key = Pair(relPath, DataType.FileContent)
         if (!data.containsKey(key)) {
@@ -35,7 +33,6 @@ object ProjectDataStorage {
     // 중간 것의 original을 얻는 게 아니라면 반드시 전개된 것이 있다.
     // 우선 열기시도하고 directory가 아니라면 gen 붙여 찾기
     // Objective: given Key relPath, get writable/readable file
-    @UnstableDefault
     fun resolveToRead(relPath: String): File? {
         requireNotNull(ProjectManager.currentProject)
         val paths = relPath.split("/")
@@ -82,7 +79,6 @@ object ProjectDataStorage {
 
     // Append "_gen" if already exists to the path
     // if it is final, overwrite if exists else append _gen
-    @UnstableDefault
     fun resolveToWrite(
         relPath: String,
         isDirectory: Boolean = false,

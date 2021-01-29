@@ -5,6 +5,7 @@ apply plugin: 'de.mannodermaus.android-junit5'
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
 apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 
+
 android {
     compileSdkVersion 29
     compileOptions {
@@ -107,6 +108,8 @@ dependencies {
 
     // or "kotlin-stdlib-jdk8"
 //    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:1.0.1" // JVM dependency
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
+
     implementation "androidx.multidex:multidex:2.0.1"
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'

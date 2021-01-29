@@ -8,10 +8,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
-import com.kyhsgeekcode.disassembler.R
+import com.kyhsgeekcode.disassembler.databinding.NewFileChooserRowBinding
 import com.kyhsgeekcode.disassembler.showEditDialog
 import com.kyhsgeekcode.filechooser.model.FileItem
-import kotlinx.android.synthetic.main.new_file_chooser_row.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -177,16 +176,15 @@ class NewFileChooserAdapter(
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvName = view.textViewNewItemName
-        val ivIcon = view.imageViewFileIcon
+        val binding = NewFileChooserRowBinding.bind(view)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // Log.d(TAG,"onCreateViewHolder")
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.new_file_chooser_row, parent, false)
+        val binding =
+            NewFileChooserRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 //        listView = parent as RecyclerView
-        return ViewHolder(view)
+        return ViewHolder(binding.root)
     }
 
     override fun getItemCount(): Int = values.size
@@ -198,10 +196,10 @@ class NewFileChooserAdapter(
             setOnClickListener(onClickListener)
             setOnLongClickListener(onLongClickListener)
         }
-        with(holder.tvName) {
+        with(holder.binding.textViewNewItemName) {
             text = item.text
         }
-        holder.ivIcon.setImageDrawable(item.drawable)
+        holder.binding.imageViewFileIcon.setImageDrawable(item.drawable)
     }
 
     private fun navigateInto(item: FileItem) {

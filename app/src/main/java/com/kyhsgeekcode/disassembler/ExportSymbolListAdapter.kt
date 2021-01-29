@@ -4,10 +4,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.export_symbol_row.view.*
+import com.kyhsgeekcode.disassembler.databinding.ExportSymbolRowBinding
 import java.util.*
 
 class ExportSymbolListAdapter(val fragmentExport: BinaryExportSymbolFragment) :
@@ -33,15 +32,13 @@ class ExportSymbolListAdapter(val fragmentExport: BinaryExportSymbolFragment) :
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvMangled: TextView = view.symbolrowTVmangled
-        val tvDemangled: TextView = view.symbolrowTVdemangled
-        val tvAddress: TextView = view.symbolrowTVaddress
-        val tvProperty: TextView = view.symbolrowTVprop
+        val binding = ExportSymbolRowBinding.bind(view)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.export_symbol_row, parent, false)
+        val binding =
+            ExportSymbolRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val view = binding.root
 //        listView = parent as RecyclerView
         return ViewHolder(view)
     }
@@ -74,10 +71,10 @@ class ExportSymbolListAdapter(val fragmentExport: BinaryExportSymbolFragment) :
             true
         }
         with(holder) {
-            tvMangled.text = item.name
-            tvDemangled.text = item.demangled
-            tvAddress.text = java.lang.Long.toHexString(item.st_value)
-            tvProperty.text = "${item.bind} / ${item.type}"
+            binding.symbolrowTVmangled.text = item.name
+            binding.symbolrowTVdemangled.text = item.demangled
+            binding.symbolrowTVaddress.text = java.lang.Long.toHexString(item.st_value)
+            binding.symbolrowTVprop.text = "${item.bind} / ${item.type}"
         }
     }
 }

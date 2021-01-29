@@ -2,25 +2,37 @@ package com.kyhsgeekcode.disassembler
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.fragment_log.*
+import com.kyhsgeekcode.disassembler.databinding.FragmentLogBinding
 
 class LogFragment : Fragment() {
+    private var _binding: FragmentLogBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) =
-        inflater.inflate(R.layout.fragment_log, container, false)!!
+    ): View {
+        _binding = FragmentLogBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        logRefresh.setOnRefreshListener {
+        binding.logRefresh.setOnRefreshListener {
             logAdapter!!.refresh()
-            logRefresh.isRefreshing = false
+            binding.logRefresh.isRefreshing = false
         }
-        loglistView.adapter = LogAdapter().also { logAdapter = it }
+        binding.loglistView.adapter = LogAdapter().also { logAdapter = it }
     }
 
     var logAdapter: LogAdapter? = null

@@ -4,9 +4,8 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.strings_row.view.*
+import com.kyhsgeekcode.disassembler.databinding.StringsRowBinding
 import java.util.*
 
 class FoundStringAdapter : RecyclerView.Adapter<FoundStringAdapter.ViewHolder>() {
@@ -25,14 +24,12 @@ class FoundStringAdapter : RecyclerView.Adapter<FoundStringAdapter.ViewHolder>()
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvStringOffset: TextView = view.textViewStringOffset
-        val tvStringLength: TextView = view.textViewStringLength
-        val tvString: TextView = view.textViewString
+        val binding = StringsRowBinding.bind(view)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.strings_row, parent, false)
+        val binding = StringsRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val view = binding.root
         listView = parent as RecyclerView
         return ViewHolder(view)
     }
@@ -42,30 +39,30 @@ class FoundStringAdapter : RecyclerView.Adapter<FoundStringAdapter.ViewHolder>()
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = listViewItemList[position]
-        with(holder) {
-            tvStringOffset.text = item.offset.toString(16)
-            tvStringLength.text = item.length.toString()
-            tvString.text = item.string
+        with(holder.binding) {
+            textViewStringOffset.text = item.offset.toString(16)
+            textViewStringLength.text = item.length.toString()
+            textViewString.text = item.string
             val str = item.string
             if (str.startsWith(".")) { // section name?
-                tvString.setTextColor(Color.WHITE)
-                tvString.setBackgroundColor(Color.BLACK)
+                textViewString.setTextColor(Color.WHITE)
+                textViewString.setBackgroundColor(Color.BLACK)
             }
             if (str.contains("/")) { // path/url
-                tvString.setTextColor(Color.BLUE)
-                tvString.setBackgroundColor(Color.WHITE)
+                textViewString.setTextColor(Color.BLUE)
+                textViewString.setBackgroundColor(Color.WHITE)
             }
             if (str.contains("\\")) { // path
-                tvString.setTextColor(Color.CYAN)
-                tvString.setBackgroundColor(Color.WHITE)
+                textViewString.setTextColor(Color.CYAN)
+                textViewString.setBackgroundColor(Color.WHITE)
             }
             if (str.contains("@")) {
-                tvString.setTextColor(Color.RED)
-                tvString.setBackgroundColor(Color.WHITE)
+                textViewString.setTextColor(Color.RED)
+                textViewString.setBackgroundColor(Color.WHITE)
             }
             if (str.startsWith("Java_")) {
-                tvString.setTextColor(Color.BLUE)
-                tvString.setBackgroundColor(Color.GREEN)
+                textViewString.setTextColor(Color.BLUE)
+                textViewString.setBackgroundColor(Color.GREEN)
             }
         }
     }

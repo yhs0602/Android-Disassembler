@@ -9,17 +9,18 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import com.kyhsgeekcode.TAG
+import com.kyhsgeekcode.disassembler.databinding.FragmentHexviewBinding
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
-import kotlinx.android.synthetic.main.fragment_hexview.*
-import kotlinx.serialization.UnstableDefault
 
 // TODO: Add a cusom HEX view
 class HexFragment : Fragment() {
+    private var _binding: FragmentHexviewBinding? = null
+    private val binding get() = _binding!!
+
     val ARG_PARAM = "param"
     private lateinit var fileContent: ByteArray
     private lateinit var relPath: String
 
-    @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -34,18 +35,25 @@ class HexFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) =
-        inflater.inflate(R.layout.fragment_hexview, container, false)!!
+    ): View {
+        _binding = FragmentHexviewBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     var touchSource: View? = null
     var clickSource: View? = null
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        mainGridViewHex.setOnTouchListener { v: View, event: MotionEvent ->
+        binding.mainGridViewHex.setOnTouchListener { v: View, event: MotionEvent ->
             if (touchSource == null) touchSource = v
             if (v === touchSource) {
-                mainGridViewAscii.dispatchTouchEvent(event)
+                binding.mainGridViewAscii.dispatchTouchEvent(event)
                 if (event.action == MotionEvent.ACTION_UP) {
                     clickSource = v
                     touchSource = null
@@ -53,7 +61,7 @@ class HexFragment : Fragment() {
             }
             false
         }
-        mainGridViewHex.onItemClickListener =
+        binding.mainGridViewHex.onItemClickListener =
             AdapterView.OnItemClickListener { parent: AdapterView<*>, view: View?, position: Int, id: Long ->
                 if (parent === clickSource) { // Do something with the ListView was clicked
                 }
@@ -68,10 +76,10 @@ class HexFragment : Fragment() {
 				@Override
 				public void onScrollStateChanged(AbsListView view, int scrollState) {}
 			});*/
-        mainGridViewAscii.setOnTouchListener { v, event ->
+        binding.mainGridViewAscii.setOnTouchListener { v, event ->
             if (touchSource == null) touchSource = v
             if (v === touchSource) {
-                mainGridViewHex.dispatchTouchEvent(event)
+                binding.mainGridViewHex.dispatchTouchEvent(event)
                 if (event.action == MotionEvent.ACTION_UP) {
                     clickSource = v
                     touchSource = null
@@ -79,7 +87,7 @@ class HexFragment : Fragment() {
             }
             false
         }
-        mainGridViewAscii.setOnItemClickListener { parent, view, position, id ->
+        binding.mainGridViewAscii.setOnItemClickListener { parent, view, position, id ->
             if (parent === clickSource) { // Do something with the ListView was clicked
             }
         }
@@ -95,8 +103,8 @@ class HexFragment : Fragment() {
 				public void onScrollStateChanged(AbsListView view, int scrollState) {}
 			});
 			*/
-        mainGridViewHex.adapter = HexGridAdapter(fileContent)
-        mainGridViewAscii.adapter = HexAsciiAdapter(fileContent)
+        binding.mainGridViewHex.adapter = HexGridAdapter(fileContent)
+        binding.mainGridViewAscii.adapter = HexAsciiAdapter(fileContent)
     }
 
     companion object {

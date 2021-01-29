@@ -9,14 +9,14 @@ import android.text.style.CharacterStyle
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.kyhsgeekcode.disassembler.databinding.FragmentTextBinding
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.utils.PrettifyHighlighter
 import com.kyhsgeekcode.disassembler.utils.decompressXML
-import kotlinx.android.synthetic.main.fragment_text.*
-import kotlinx.serialization.UnstableDefault
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -24,13 +24,15 @@ import java.io.InputStreamReader
 import java.util.*
 
 class TextFragment : Fragment() {
+    private var _binding: FragmentTextBinding? = null
+    private val binding get() = _binding!!
+
     val TAG = "TextFragment"
     val ARG_PARAM = "param"
     private lateinit var fileContent: ByteArray
     private lateinit var relPath: String
     val spanBlue = ForegroundColorSpan(Color.BLUE)
 
-    @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -45,8 +47,11 @@ class TextFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) =
-        inflater.inflate(R.layout.fragment_text, container, false)!!
+    ): View {
+        _binding = FragmentTextBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -76,8 +81,8 @@ class TextFragment : Fragment() {
             )
         }
 //        val ssb = readAndColorize()
-        textFragmentTextView.setText(highlighted, TextView.BufferType.SPANNABLE)
-        textFragmentTextView.setBackgroundColor(Color.BLACK)
+        binding.textFragmentTextView.setText(highlighted, TextView.BufferType.SPANNABLE)
+        binding.textFragmentTextView.setBackgroundColor(Color.BLACK)
     }
 
     private fun readAndColorize(): SpannableStringBuilder {

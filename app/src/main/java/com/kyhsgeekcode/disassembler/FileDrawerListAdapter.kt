@@ -15,7 +15,6 @@ import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.getDrawable
-import kotlinx.serialization.UnstableDefault
 import org.jf.baksmali.Main
 import pl.openrnd.multilevellistview.ItemInfo
 import pl.openrnd.multilevellistview.MultiLevelListAdapter
@@ -38,7 +37,6 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
         return item.isExpandable
     }
 
-    @UnstableDefault
     override fun getSubObjects(anObject: Any): List<*> {
         val items: MutableList<FileDrawerListItem> = ArrayList()
         val item = anObject as FileDrawerListItem

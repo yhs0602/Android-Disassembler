@@ -2,27 +2,38 @@ package com.kyhsgeekcode.disassembler
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.fragment_export_symbol.*
+import com.kyhsgeekcode.disassembler.databinding.FragmentExportSymbolBinding
 
 class BinaryExportSymbolFragment : Fragment() {
+    private var _binding: FragmentExportSymbolBinding? = null
+    private val binding get() = _binding!!
 
     private lateinit var exportSymbolLvAdapter: ExportSymbolListAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) =
-        inflater.inflate(R.layout.fragment_export_symbol, container, false)!!
+    ): View {
+        _binding = FragmentExportSymbolBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val mLayoutManager = LinearLayoutManager(context)
         exportSymbolLvAdapter = ExportSymbolListAdapter(this)
-        exportSymbolListView.layoutManager = mLayoutManager
-        exportSymbolListView.adapter = exportSymbolLvAdapter
+        binding.exportSymbolListView.layoutManager = mLayoutManager
+        binding.exportSymbolListView.adapter = exportSymbolLvAdapter
         exportSymbolLvAdapter.addAll((parentFragment as IParsedFileProvider).parsedFile.exportSymbols)
     }
 

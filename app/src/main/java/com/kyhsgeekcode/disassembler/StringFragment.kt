@@ -9,15 +9,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.kyhsgeekcode.disassembler.databinding.FragmentStringBinding
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.tingyik90.snackprogressbar.SnackProgressBar
 import com.tingyik90.snackprogressbar.SnackProgressBarManager
-import kotlinx.android.synthetic.main.fragment_string.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.UnstableDefault
 
 private const val RELPATH = "param1"
 
@@ -29,9 +28,12 @@ private const val RELPATH = "param1"
  * create an instance of this fragment.
  */
 class StringFragment : Fragment() {
+    private var _binding: FragmentStringBinding? = null
+    private val binding get() = _binding!!
+
     private val snackProgressBarManager by lazy {
         SnackProgressBarManager(
-            stringMain,
+            binding.stringMain,
             lifecycleOwner = this
         )
     }
@@ -46,7 +48,6 @@ class StringFragment : Fragment() {
     private lateinit var fileContent: ByteArray
 
     @ExperimentalUnsignedTypes
-    @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -61,8 +62,15 @@ class StringFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _binding = FragmentStringBinding.inflate(inflater, container, false)
+        val view = binding.root
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_string, container, false)
+        return view
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onAttach(context: Context) {
@@ -80,18 +88,18 @@ class StringFragment : Fragment() {
         stringAdapter = FoundStringAdapter()
         val llm = LinearLayoutManager(activity)
         llm.orientation = LinearLayoutManager.VERTICAL
-        stringListVIew.layoutManager = llm
-        stringListVIew.adapter = stringAdapter
+        binding.stringListVIew.layoutManager = llm
+        binding.stringListVIew.adapter = stringAdapter
 
-        buttonStartFindString.setOnClickListener {
+        binding.buttonStartFindString.setOnClickListener {
             CoroutineScope(Dispatchers.Main).launch {
                 snackProgressBarManager.show(
                     circularType,
                     SnackProgressBarManager.LENGTH_INDEFINITE
                 )
-                val min = editTextStrFirst.text.toString().toInt()
-                val max = editTextStrEnd.text.toString().toInt()
-                if (min > 1 && min < max) {
+                val min = binding.editTextStrFirst.text.toString().toInt()
+                val max = binding.editTextStrEnd.text.toString().toInt()
+                if (min in 2 until max) {
                     withContext(Dispatchers.Default) {
                         val analyzer = Analyzer(fileContent)
                         var oldTot = 100

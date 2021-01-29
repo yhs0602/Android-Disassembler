@@ -13,14 +13,15 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kyhsgeekcode.TAG
+import com.kyhsgeekcode.disassembler.databinding.FragmentBinaryDisasmBinding
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_ALL
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_MAX
 import com.kyhsgeekcode.disassembler.models.Architecture.getArchitecture
-import kotlinx.android.synthetic.main.fragment_binary_disasm.*
-import kotlinx.serialization.UnstableDefault
 import java.util.*
 
 class BinaryDisasmFragment : Fragment(), IOnBackPressed {
+    private var _binding: FragmentBinaryDisasmBinding? = null
+    private val binding get() = _binding!!
 
     enum class ViewMode {
         Binary, Text
@@ -45,7 +46,6 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     var columns = ColumnSetting()
         private set
 
-    @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -59,10 +59,17 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) =
-        inflater.inflate(R.layout.fragment_binary_disasm, container, false)!!
+    ): View {
+        _binding = FragmentBinaryDisasmBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
 
-    @UnstableDefault
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -99,20 +106,19 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         disassemble()
     }
 
-    @UnstableDefault
     private fun setupListView() { // moved to onCreate for avoiding NPE
         val mLayoutManager: LinearLayoutManager = LinearLayoutManager(context)
         adapter = DisasmListViewAdapter(parsedFile, handle, this, mLayoutManager)
-        disasmTabListview.adapter = adapter
-        disasmTabListview.layoutManager = mLayoutManager
+        binding.disasmTabListview.adapter = adapter
+        binding.disasmTabListview.layoutManager = mLayoutManager
 //        adapter.addAll(disasmManager!!.getItems(), disasmManager!!.address)
-        disasmTabListview.addOnScrollListener(adapter.OnScrollListener())
+        binding.disasmTabListview.addOnScrollListener(adapter.OnScrollListener())
     }
 
     fun disassemble() {
         Log.v(TAG, "Strted disasm")
         // NOW there's no notion of pause or resume
-        workerThread = Thread(Runnable {
+        workerThread = Thread {
             val codesection = parsedFile.codeSectionBase
             val start = codesection // elfUtil.getCodeSectionOffset();
 //            val limit = parsedFile.codeSectionLimit
@@ -139,12 +145,12 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             // final int len=disasmResults.size();
             // add xrefs
             activity?.runOnUiThread {
-                disasmTabListview.requestLayout()
+                binding.disasmTabListview.requestLayout()
                 //                tab2!!.invalidate()
                 Toast.makeText(activity, "done", Toast.LENGTH_SHORT).show()
             }
             Log.v(TAG, "disassembly done")
-        })
+        }
         workerThread!!.start()
     }
 
@@ -251,7 +257,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             (parentFragment as ITabController).setCurrentTabByTag(TabTags.TAB_DISASM, true)
             jmpBackstack.push(java.lang.Long.valueOf(adapter.currentAddress))
             adapter.onJumpTo(address)
-            disasmTabListview.scrollToPosition(0)
+            binding.disasmTabListview.scrollToPosition(0)
         } else {
             Toast.makeText(activity, R.string.validaddress, Toast.LENGTH_SHORT).show()
         }
@@ -277,14 +283,14 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
             adapter.isShowComment = cs.showComments // /*v.getTag(CustomDialog.TAGComment)*/);
             adapter.isShowOperands = cs.showOperands // /*v.getTag(CustomDialog.TAGOperands)*/);
             adapter.isShowCondition = cs.showConditions // /*v.getTag(CustomDialog.TAGCondition)*/);
-            disasmTabListview.requestLayout()
+            binding.disasmTabListview.requestLayout()
         }
     }
 
     override fun onResume() {
         super.onResume()
         if (ColorHelper.isUpdatedColor) {
-            disasmTabListview.refreshDrawableState()
+            binding.disasmTabListview.refreshDrawableState()
             ColorHelper.isUpdatedColor = false
         }
     }

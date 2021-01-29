@@ -7,10 +7,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.kyhsgeekcode.TAG
+import com.kyhsgeekcode.disassembler.databinding.FragmentProjectOverviewBinding
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
@@ -18,42 +20,48 @@ import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.filechooser.model.FileItemApp
 import com.kyhsgeekcode.isArchive
-import kotlinx.android.synthetic.main.fragment_project_overview.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.UnstableDefault
 import org.apache.commons.io.FileUtils
 import java.io.File
 
 class ProjectOverviewFragment : Fragment() {
+    private var _binding: FragmentProjectOverviewBinding? = null
+    private val binding = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) =
-        inflater.inflate(R.layout.fragment_project_overview, container, false)!!
+    ): View {
+        _binding = FragmentProjectOverviewBinding.inflate(inflater, container, false)
+        val view = binding.root
+        return view
+    }
 
-    @UnstableDefault
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        selFile.setOnClickListener {
+        binding.selFile.setOnClickListener {
             val j = Intent(activity, NewFileChooserActivity::class.java)
             startActivityForResult(
                 j,
                 MainActivity.REQUEST_SELECT_FILE_NEW
             ) // Control goes to binaryDisasmFragment
         }
-        fileNameText.isFocusable = false
-        fileNameText.isEnabled = false
+        binding.fileNameText.isFocusable = false
+        binding.fileNameText.isEnabled = false
         if (ProjectManager.currentProject != null) {
-            fileNameText.setText("Launched directly from external source")
+            binding.fileNameText.setText("Launched directly from external source")
         }
     }
 
-    @UnstableDefault
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == MainActivity.REQUEST_SELECT_FILE_NEW) {
@@ -87,7 +95,6 @@ class ProjectOverviewFragment : Fragment() {
         }
     }
 
-    @UnstableDefault
     private fun onChoosePathNew(fileItem: FileItem) {
         val file = fileItem.file ?: run {
             Logger.e(TAG, "Failed to load fileItem: $fileItem")
@@ -126,7 +133,6 @@ class ProjectOverviewFragment : Fragment() {
     }
 
 
-    @UnstableDefault
     private fun onClickCopyDialog(
         file: File,
         projectType: String,
@@ -158,7 +164,7 @@ class ProjectOverviewFragment : Fragment() {
     fun initializeDrawer(project: ProjectModel) {
         // project.sourceFilePath
         val sourceFileOrFolder = File(project.sourceFilePath)
-        fileNameText?.setText(sourceFileOrFolder.absolutePath)
+        binding.fileNameText.setText(sourceFileOrFolder.absolutePath)
         (activity as? IDrawerManager)?.notifyDataSetChanged()
 
 //        mDrawerAdapter.

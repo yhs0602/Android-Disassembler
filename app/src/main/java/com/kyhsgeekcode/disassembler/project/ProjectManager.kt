@@ -9,7 +9,7 @@ import com.kyhsgeekcode.isAccessible
 import com.kyhsgeekcode.saveAsZip
 import com.kyhsgeekcode.toValidFileName
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.UnstableDefault
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.apache.commons.io.FileUtils
 import org.json.JSONException
@@ -28,7 +28,6 @@ import java.io.IOException
  * <li> open: open the project and load the info.
  */
 
-@UnstableDefault
 object ProjectManager {
     val TAG = "ProjectManager"
 
@@ -48,7 +47,7 @@ object ProjectManager {
                 continue
             projectPaths.add(path)
             val jsonString = file.inputStream().bufferedReader().use { it.readText() }
-            projectModels[path] = Json.parse(ProjectModel.serializer(), jsonString)
+            projectModels[path] = Json.decodeFromString(ProjectModel.serializer(), jsonString)
             projectModelToPath[projectModels[path]!!] = path
         }
 
@@ -62,7 +61,7 @@ object ProjectManager {
     fun close() {
         projectPaths.clear()
         for (projectModel in projectModels) {
-            val jsonString = Json.stringify(ProjectModel.serializer(), projectModel.value)
+            val jsonString = Json.encodeToString(ProjectModel.serializer(), projectModel.value)
             val file = File(projectModel.key)
             file.outputStream().bufferedWriter().use { it.write(jsonString) }
             projectPaths.add(file.absolutePath)
@@ -142,7 +141,8 @@ object ProjectManager {
             val jsonFile = File(path)
             try {
                 val jsonString = jsonFile.inputStream().bufferedReader().use { it.readText() }
-                projectModel = Json.parse(ProjectModel.serializer(), jsonString)
+                projectModel =
+                    Json.decodeFromString<ProjectModel>(ProjectModel.serializer(), jsonString)
             } catch (e: Exception) {
                 when (e) {
                     is SerializationException,
@@ -165,7 +165,7 @@ object ProjectManager {
      */
     fun save(projectModel: ProjectModel) {
         require(projectModelToPath.contains(projectModel))
-        val jsonString = Json.stringify(ProjectModel.serializer(), projectModel)
+        val jsonString = Json.encodeToString(projectModel)
         val file = File(projectModelToPath[projectModel])
         file.outputStream().bufferedWriter().use { it.write(jsonString) }
     }

@@ -10,12 +10,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kyhsgeekcode.disassembler.ProgressHandler
-import com.kyhsgeekcode.disassembler.R
+import com.kyhsgeekcode.disassembler.databinding.ActivityNewFileChooserBinding
 import com.kyhsgeekcode.disassembler.showYesNoDialog
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.tingyik90.snackprogressbar.SnackProgressBar
 import com.tingyik90.snackprogressbar.SnackProgressBarManager
-import kotlinx.android.synthetic.main.activity_new_file_chooser.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,9 +27,12 @@ import java.net.URL
 
 
 class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
+    private var _binding: ActivityNewFileChooserBinding? = null
+    private val binding get() = _binding!!
+
     private val snackProgressBarManager by lazy {
         SnackProgressBarManager(
-            fileChooserMainLayout,
+            binding.fileChooserMainLayout,
             lifecycleOwner = this
         )
     }
@@ -43,14 +45,16 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
     lateinit var adapter: NewFileChooserAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
     val TAG = "NewFileChooserA"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.v(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_new_file_chooser)
+        _binding = ActivityNewFileChooserBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         adapter = NewFileChooserAdapter(this)
         linearLayoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = linearLayoutManager
-        recyclerView.adapter = adapter
+        binding.recyclerView.layoutManager = linearLayoutManager
+        binding.recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
 
@@ -145,7 +149,8 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
     }
 
     fun showHashSite(hash: String) {
-        showYesNoDialog(this,
+        showYesNoDialog(
+            this,
             "Danger alert",
             "The file you are trying to download may harm your device. Proceed?",
             DialogInterface.OnClickListener { dlg, which ->
