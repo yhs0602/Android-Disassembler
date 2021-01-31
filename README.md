@@ -13,7 +13,7 @@ Android Disassembler is an application that is able to analyze several types of 
 
 [<img src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge-border.png" width="200" alt="Get Android Disassembler on Google Play" />](https://play.google.com/store/apps/details?id=com.kyhsgeekcode.disassembler "Get Android Disassembler on Google Play")
 
-# Version 2.0.4 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
+# Version 2.1.0 [release](https://github.com/KYHSGeekCode/Android-Disassembler/releases)!
 
 ## What's new : Fix several minor bug, improve UX
 # Features
