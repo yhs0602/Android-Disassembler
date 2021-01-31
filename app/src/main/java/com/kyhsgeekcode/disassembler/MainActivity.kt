@@ -193,7 +193,8 @@ class MainActivity : AppCompatActivity(),
         TooLargeTool.startLogging(application)
         setupUncaughtException()
         initNative()
-        setContentView(R.layout.main)
+        _binding = MainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         pagerAdapter = ViewPagerAdapter(this)
         binding.pagerMain.adapter = pagerAdapter
         binding.pagerMain.isUserInputEnabled = false
