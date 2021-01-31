@@ -7,7 +7,7 @@ apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -15,9 +15,9 @@ android {
     defaultConfig {
         applicationId "com.kyhsgeekcode.disassembler"
         minSdkVersion 19
-        targetSdkVersion 28
-        versionCode 12
-        versionName "2.0.4"
+        targetSdkVersion 30
+        versionCode 13
+        versionName "2.1.0"
         multiDexEnabled true
         //testInstrumentationRunner "android.support.test.runner.   AndroidJUnitRunner"
         externalNativeBuild {
