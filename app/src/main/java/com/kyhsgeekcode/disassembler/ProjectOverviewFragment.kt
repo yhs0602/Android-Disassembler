@@ -29,7 +29,7 @@ import java.io.File
 
 class ProjectOverviewFragment : Fragment() {
     private var _binding: FragmentProjectOverviewBinding? = null
-    private val binding = _binding!!
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
