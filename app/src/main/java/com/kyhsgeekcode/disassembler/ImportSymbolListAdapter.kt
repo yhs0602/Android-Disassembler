@@ -1,11 +1,14 @@
 package com.kyhsgeekcode.disassembler
 
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.kyhsgeekcode.disassembler.databinding.ImportSymbolRowBinding
+import com.kyhsgeekcode.disassembler.utils.NDKRefUrlMatcher
 import java.util.*
 
 class ImportSymbolListAdapter(val fragmentImport: BinaryImportSymbolFragment) :
@@ -61,7 +64,19 @@ class ImportSymbolListAdapter(val fragmentImport: BinaryImportSymbolFragment) :
         with(holder) {
             binding.importsymbolrowTVOwner.text = item.owner
             binding.importsymbolrowTVmangled.text = item.name
-            binding.importsymbolrowTVdemangled.text = item.demangled
+            with(binding.importsymbolrowTVdemangled) {
+                val url = item.demangled?.run { NDKRefUrlMatcher.getURL(this) }
+                if (url != null) {
+                    text = HtmlCompat.fromHtml(
+                        "<a href=\"${url}\">${item.demangled}</a> ",
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    )
+                    movementMethod = LinkMovementMethod.getInstance()
+                } else {
+                    Log.e(TAG, "Failed to find url for: ${item.demangled}")
+                    text = item.demangled
+                }
+            }
             binding.importsymbolrowTVaddress.text = item.address.toString(16)
             binding.importsymbolrowTVValue.text = "${item.value}"
             binding.importsymbolrowTVOffset.text = item.offset.toString(16)
@@ -72,6 +87,7 @@ class ImportSymbolListAdapter(val fragmentImport: BinaryImportSymbolFragment) :
 //            tvCalcValue.visibility = View.GONE
 //            tvValue.visibility = View.GONE
 //            tvAddress.visibility = View.GONE
+
         }
     }
 }
