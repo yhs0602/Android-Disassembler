@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,36 +32,36 @@ public class Palette {
     private String TAG = "Disassembler palette";
 
     {
-        ArmCallIns.add(Integer.valueOf(Arm_const.ARM_INS_BL));
-        ArmCallIns.add(Integer.valueOf(Arm_const.ARM_INS_BLX));
-        Arm64CallIns.add(Integer.valueOf(Arm64_const.ARM64_INS_BL));
-        Arm64CallIns.add(Integer.valueOf(Arm64_const.ARM64_INS_BR));
+        ArmCallIns.add(Arm_const.ARM_INS_BL);
+        ArmCallIns.add(Arm_const.ARM_INS_BLX);
+        Arm64CallIns.add(Arm64_const.ARM64_INS_BL);
+        Arm64CallIns.add(Arm64_const.ARM64_INS_BR);
     }
 
     {
-        ArmPushIns.add(Integer.valueOf(Arm_const.ARM_INS_PUSH));
+        ArmPushIns.add(Arm_const.ARM_INS_PUSH);
     }
 
     {
-        X86PushIns.add(Integer.valueOf(X86_const.X86_INS_PUSH));
-        X86PushIns.add(Integer.valueOf(X86_const.X86_INS_PUSHAW));
-        X86PushIns.add(Integer.valueOf(X86_const.X86_INS_PUSHAL));
-        X86PushIns.add(Integer.valueOf(X86_const.X86_INS_PUSHF));
-        X86PushIns.add(Integer.valueOf(X86_const.X86_INS_PUSHFD));
-        X86PushIns.add(Integer.valueOf(X86_const.X86_INS_PUSHFQ));
+        X86PushIns.add(X86_const.X86_INS_PUSH);
+        X86PushIns.add(X86_const.X86_INS_PUSHAW);
+        X86PushIns.add(X86_const.X86_INS_PUSHAL);
+        X86PushIns.add(X86_const.X86_INS_PUSHF);
+        X86PushIns.add(X86_const.X86_INS_PUSHFD);
+        X86PushIns.add(X86_const.X86_INS_PUSHFQ);
     }
 
     {
-        ArmPopIns.add(Integer.valueOf(Arm_const.ARM_INS_POP));
+        ArmPopIns.add(Arm_const.ARM_INS_POP);
     }
 
     {
-        X86PopIns.add(Integer.valueOf(X86_const.X86_INS_POP));
-        X86PopIns.add(Integer.valueOf(X86_const.X86_INS_POPAL));
-        X86PopIns.add(Integer.valueOf(X86_const.X86_INS_POPF));
-        X86PopIns.add(Integer.valueOf(X86_const.X86_INS_POPFD));
-        X86PopIns.add(Integer.valueOf(X86_const.X86_INS_POPFQ));
-        X86PopIns.add(Integer.valueOf(X86_const.X86_INS_POPAW));
+        X86PopIns.add(X86_const.X86_INS_POP);
+        X86PopIns.add(X86_const.X86_INS_POPAL);
+        X86PopIns.add(X86_const.X86_INS_POPF);
+        X86PopIns.add(X86_const.X86_INS_POPFD);
+        X86PopIns.add(X86_const.X86_INS_POPFQ);
+        X86PopIns.add(X86_const.X86_INS_POPAW);
     }
 
     public Palette(String name, File src) {
@@ -96,9 +97,9 @@ public class Palette {
         return name;
     }
 
-    public int getTxtColorByGrps(byte[] groups, int cnt, int id) {
+    public int getTxtColorByGrps(byte[] groups, int cnt, int id, byte[] opcodes) {
         int color = getDefaultTxtColor();
-        Integer ID = Integer.valueOf(id);
+        Integer ID = id;
         switch (arch) {
             case Capstone.CS_ARCH_ARM: {
                 if (ArmCallIns.contains(ID)) {
@@ -109,6 +110,16 @@ public class Palette {
                 }
                 if (ArmPopIns.contains(ID)) {
                     return getTxtColor(7);
+                }
+                if (id == Arm_const.ARM_INS_BX) {
+                    Log.d(TAG, "OpCodes: " + Arrays.toString(opcodes));
+                    if (opcodes[0] == (byte) 0x1E
+                            && opcodes[1] == (byte) 0xFF
+                            && opcodes[2] == (byte) 0x2F
+                            && opcodes[3] == (byte) 0xE1
+                    ) {
+                        return getTxtColor(5);
+                    }
                 }
                 break;
             }
@@ -141,7 +152,7 @@ public class Palette {
 
     public int getBkColorByGrps(byte[] groups, int cnt, int id) {
         int color = getDefaultBkColor();
-        Integer ID = Integer.valueOf(id);
+        Integer ID = id;
         switch (arch) {
             case Capstone.CS_ARCH_ARM: {
                 if (ArmCallIns.contains(ID)) {

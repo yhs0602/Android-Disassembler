@@ -228,44 +228,35 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
             val defTxtColor = palette!!.defaultTxtColor
             val defBkColor = palette.defaultBkColor
             // convertView.setBackgroundColor(palette.getDefaultBkColor());
-            binding.tvInst.setBackgroundColor(
-                palette.getBkColorByGrps(
-                    dar.groups,
-                    dar.groups_count.toInt(),
-                    dar.id
-                )
+            val bkColor = palette.getBkColorByGrps(
+                dar.groups,
+                dar.groups_count.toInt(),
+                dar.id
             )
+            binding.tvInst.setBackgroundColor(bkColor)
             binding.tvAddr.setBackgroundColor(defBkColor)
             binding.tvBytes.setBackgroundColor(defBkColor)
             binding.tvComment.setBackgroundColor(defBkColor)
             binding.tvCond.setBackgroundColor(defBkColor)
             binding.tvLabel.setBackgroundColor(defBkColor)
-            binding.tvOperand.setBackgroundColor(
-                palette.getBkColorByGrps(
-                    dar.groups,
-                    dar.groups_count.toInt(),
-                    dar.id
-                )
+            binding.tvOperand.setBackgroundColor(bkColor)
+//            Log.d(TAG, "Address: ${dar.address.toString(16)} Bytes: ${dar.bytes.joinToString(", ") {
+//                it.toString(16)
+//            }}")
+            val txtColor = palette.getTxtColorByGrps(
+                dar.groups,
+                dar.groups_count.toInt(),
+                dar.id,
+                dar.bytes
             )
-            binding.tvInst.setTextColor(
-                palette.getTxtColorByGrps(
-                    dar.groups,
-                    dar.groups_count.toInt(),
-                    dar.id
-                )
-            )
+            binding.tvInst.setTextColor(txtColor)
             binding.tvAddr.setTextColor(defTxtColor)
             binding.tvBytes.setTextColor(defTxtColor)
             binding.tvComment.setTextColor(defTxtColor)
             binding.tvCond.setTextColor(defTxtColor)
             binding.tvLabel.setTextColor(defTxtColor)
-            binding.tvOperand.setTextColor(
-                palette.getTxtColorByGrps(
-                    dar.groups,
-                    dar.groups_count.toInt(),
-                    dar.id
-                )
-            )
+            binding.tvOperand.setTextColor(txtColor)
+
             binding.tvAddr.text = disassemblyListItem.getAddress()
             binding.tvBytes.text = disassemblyListItem.getBytes()
             binding.tvComment.text = disassemblyListItem.getComments()
