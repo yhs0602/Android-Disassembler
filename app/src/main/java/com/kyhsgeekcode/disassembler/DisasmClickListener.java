@@ -56,7 +56,7 @@ public class DisasmClickListener implements View.OnClickListener {
                     setClipBoard(lvi.toCodeString(binaryDisasmFragment.getColumns()));//toString());
                     UIUtilsKt.showToast(binaryDisasmFragment.getActivity(), R.string.copied);
                 } else if (JUMP.equals(item)) {
-                    long target = dar.address + dar.jumpOffset;//NOT an offset?? FIXME
+                    long target = dar.getJumpOffset();// address + dar.jumpOffset;//NOT an offset?? FIXME
                     Log.d(TAG, "jump" + Long.toHexString(dar.address) + "," + Long.toHexString(dar.jumpOffset) + "," + Long.toHexString(target));
                     binaryDisasmFragment.jumpto(target);
                 }

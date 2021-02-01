@@ -307,6 +307,12 @@ public class DisasmResult implements Serializable {
         }
         return false;
     }
+
+    public long getJumpOffset() {
+        return address + jumpOffset;
+    }
+
+
     // public static final String COLUMN_TIMESTAMP = "bytes";
 
     @Override

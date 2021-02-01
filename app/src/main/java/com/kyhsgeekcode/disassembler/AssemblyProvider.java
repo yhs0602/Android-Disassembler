@@ -22,16 +22,28 @@ public abstract class AssemblyProvider {
     public void AddItem(final DisassemblyListItem lvi) {
         new Handler(Looper.getMainLooper()).post(() -> {
             long addr = lvi.disasmResult.address;
-            List<Symbol> syms = adapter.getFile().getExportSymbols();
+            AbstractFile theFile = adapter.getFile();
+            List<Symbol> syms = theFile.getExportSymbols();
             for (Symbol sym : syms) {
                 if (sym.st_value == addr) {
-                    lvi.comments = sym.demangled;
+                    lvi.AddComment(sym.demangled);
                     break;
+                }
+            }
+
+            if (lvi.disasmResult.isCall()) {
+                if (theFile instanceof ElfFile) {
+                    ElfFile theElfFile = (ElfFile) theFile;
+                    long target = lvi.disasmResult.getJumpOffset();
+                    int pltIndex = theElfFile.getPltIndexFromJumpAddress(target);
+                    if (pltIndex > 0) {
+                        ImportSymbol theSym = theFile.getImportSymbols().get(pltIndex);
+                        lvi.AddComment(theSym.getDemangled() + "@plt");
+                    }
                 }
             }
             adapter.addItem(lvi);
             adapter.notifyDataSetChanged();
-            return;
         });
     }
 }

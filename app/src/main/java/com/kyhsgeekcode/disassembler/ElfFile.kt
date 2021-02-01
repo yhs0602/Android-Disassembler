@@ -10,6 +10,21 @@ import java.nio.ByteBuffer
 import java.util.*
 
 class ElfFile(file: File, filec: ByteArray) : AbstractFile() {
+    fun getPltIndexFromJumpAddress(address: Long): Int {
+        Log.d(TAG, "GetPltIndexFromJumpAddress $address")
+        pltRange?.let {
+            if (address in it) {
+                val offset = address - it.first
+                if (offset % 16 == 0L) {
+                    val index = offset / 16;
+                    return (index - 1L).toInt();
+                }
+            }
+        }
+        return -1
+    }
+
+    private var pltRange: LongRange? = 0L..0L
     var elf: Elf
     var info = ""
 
@@ -331,8 +346,8 @@ class ElfFile(file: File, filec: ByteArray) : AbstractFile() {
 //            }
 // Now prepare IAT(PLT/GOT)
 // get .got
-//            for (SectionHeader hdr : sections) {
-//                if (".plt".equalsIgnoreCase(hdr.getName())) {
+            for (hdr in sections) {
+                if (".plt".equals(hdr.name, true)) {
 // plt is code
 // 					 000173ec __android_log_print@plt:
 // 					 173ec:       e28fc600        add     ip, pc, #0, 12  ; ip!=pc?
@@ -348,8 +363,11 @@ class ElfFile(file: File, filec: ByteArray) : AbstractFile() {
 //            }
 //            dynsymbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.PROGBITS));
 // importSymbols=ParsePLT(path);
-            info = sb.toString()
-            // Log.i(TAG, "info=" + info);
+//                    info = sb.toString()
+                    // Log.i(TAG, "info=" + info);
+                    pltRange = hdr.virtualAddress..(hdr.virtualAddress + hdr.size)
+                }
+            }
         }
         Log.v(TAG, "Checking code section")
         for (sh in elf.sectionHeaders) {
@@ -495,3 +513,4 @@ class ElfFile(file: File, filec: ByteArray) : AbstractFile() {
         afterConstructor()
     }
 }
+
