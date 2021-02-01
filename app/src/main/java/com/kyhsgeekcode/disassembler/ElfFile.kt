@@ -9,7 +9,7 @@ import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.*
 
-class ELFUtil(file: File, filec: ByteArray) : AbstractFile() {
+class ElfFile(file: File, filec: ByteArray) : AbstractFile() {
     var elf: Elf
     var info = ""
 

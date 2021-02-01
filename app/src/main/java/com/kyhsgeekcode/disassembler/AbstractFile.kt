@@ -110,7 +110,7 @@ abstract class AbstractFile : Closeable {
                 }
             } else {
                 return try {
-                    ELFUtil(file, content)
+                    ElfFile(file, content)
                 } catch (e: Exception) { // not an elf file. try PE parser
                     Log.d(TAG, "Fail elfutil", e)
                     try {

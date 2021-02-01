@@ -481,7 +481,7 @@ CAPSTONE_EXPORT size_t CAPSTONE_API cs_disasm2(csh handle, const uint8_t *code, 
                      address, count, insn);
 }
 JNIEXPORT jstring JNICALL
-Java_com_kyhsgeekcode_disassembler_ELFUtil_Demangle(JNIEnv *env, jclass thiz, jstring mangled) {
+Java_com_kyhsgeekcode_disassembler_ElfFile_Demangle(JNIEnv *env, jclass thiz, jstring mangled) {
     const char *cstr = env->GetStringUTFChars(mangled, NULL);
     char *demangled_name;
     int status = -1;
@@ -495,7 +495,7 @@ Java_com_kyhsgeekcode_disassembler_ELFUtil_Demangle(JNIEnv *env, jclass thiz, js
 
 //#include"plthook/plthook.h"
 JNIEXPORT jobject JNICALL
-Java_com_kyhsgeekcode_disassembler_ELFUtil_ParsePLT(JNIEnv *env, jclass thiz, jstring filepath) {
+Java_com_kyhsgeekcode_disassembler_ElfFile_ParsePLT(JNIEnv *env, jclass thiz, jstring filepath) {
     const char *filename = env->GetStringUTFChars(filepath, NULL);
     jclass pltcls = env->FindClass("com/kyhsgeekcode/disassembler/ImportSymbol");
     __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "PLT");
@@ -843,7 +843,7 @@ void loadSymbols(const elfio &reader, JNIEnv *env, jobject thiz) {
 
 extern "C" {
 JNIEXPORT void JNICALL
-Java_com_kyhsgeekcode_disassembler_ELFUtil_loadBinary(JNIEnv *env, jobject thiz, jstring path) {
+Java_com_kyhsgeekcode_disassembler_ElfFile_loadBinary(JNIEnv *env, jobject thiz, jstring path) {
     elfio reader;
     const char *filename = env->GetStringUTFChars(path, NULL);
     reader.load(filename);

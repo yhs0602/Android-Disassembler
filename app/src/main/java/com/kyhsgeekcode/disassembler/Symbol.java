@@ -16,7 +16,7 @@ public class Symbol {
     public void analyze() {
         bind = Bind.values()[st_info >> 4];
         type = Type.values()[st_info & 0xf];
-        demangled = ELFUtil.Demangle(name);
+        demangled = ElfFile.Demangle(name);
         if ("".equals(demangled) || demangled == null)
             demangled = name;
         return;
