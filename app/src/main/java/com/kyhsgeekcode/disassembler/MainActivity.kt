@@ -319,6 +319,7 @@ class MainActivity : AppCompatActivity(),
                 item: Any,
                 itemInfo: ItemInfo
             ) {
+                android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
                 val fitem = item as FileDrawerListItem
                 Toast.makeText(this@MainActivity, fitem.caption, Toast.LENGTH_SHORT).show()
                 if (!fitem.isOpenable)
