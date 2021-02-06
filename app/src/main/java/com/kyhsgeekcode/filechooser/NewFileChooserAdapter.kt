@@ -205,9 +205,25 @@ class NewFileChooserAdapter(
     private fun navigateInto(item: FileItem) {
         CoroutineScope(Dispatchers.Default).launch {
             val subItems = listSubItems(item)
+            if (!subItems.any { it.file?.isFile != false }) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        parentActivity,
+                        "Please try granting file permissions in the settings," +
+                                " if you cannot see any files after Android 30" +
+                                " even if there really exists files!",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
+                }
+            }
             if (subItems.isEmpty()) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(parentActivity, "The item has no children", Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        parentActivity,
+                        "The item has no children",
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
             }
