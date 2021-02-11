@@ -30,6 +30,7 @@ import org.boris.pecoff4j.io.PEParser
 import splitties.init.appCtx
 import splitties.systemservices.clipboardManager
 import java.io.*
+import java.net.URL
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
@@ -391,3 +392,11 @@ val Any.TAG: String
             )// last 23 chars
         }
     }
+
+fun download(link: String, file: File) {
+    URL(link).openStream().use { input ->
+        FileOutputStream(file).use { output ->
+            input.copyTo(output)
+        }
+    }
+}

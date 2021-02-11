@@ -52,7 +52,7 @@ open class FileItem : Serializable {
     var file: File? = null // 항목이 의미하는 파일 자체
     var backFile: File? = null // 항목이 전개되었을 때 나타낼 디렉토리
 
-    val isExpandable: Boolean by lazy {
+    private val isExpandable: Boolean by lazy {
         file?.isDirectory == true ||
                 file?.isArchive() == true ||
                 file == null ||
@@ -73,60 +73,65 @@ open class FileItem : Serializable {
     open fun listSubItems(publisher: (Int, Int) -> Unit = { _, _ -> }): List<FileItem> {
         if (!canExpand())
             return emptyList()
-        if (file?.isDirectory == true) {
-            val result = ArrayList<FileItem>()
-            val children = file!!.listFiles()
-            val total = children.size
-            for (childFile in children.withIndex()) {
-                result.add(FileItem(file = childFile.value))
-                publisher(childFile.index, total)
+        when {
+            file?.isDirectory == true -> {
+                val result = ArrayList<FileItem>()
+                val children = file!!.listFiles()
+                val total = children.size
+                for (childFile in children.withIndex()) {
+                    result.add(FileItem(file = childFile.value))
+                    publisher(childFile.index, total)
+                }
+                return result
             }
-            return result
-        } else if (file?.isArchive() == true) {
-            val result = ArrayList<FileItem>()
-            backFile = appCtx.getExternalFilesDir("extracted")?.resolve(file?.name!!)
-            if (backFile?.exists() == true) {
-                backFile!!.delete()
+            file?.isArchive() == true -> {
+                val result = ArrayList<FileItem>()
+                backFile = appCtx.getExternalFilesDir("extracted")?.resolve(file?.name!!)
+                if (backFile?.exists() == true) {
+                    backFile!!.delete()
+                }
+                try {
+                    extract(file!!, backFile!!) { tot, don -> publisher(tot.toInt(), don.toInt()) }
+                    for (childFile in backFile!!.listFiles()) {
+                        result.add(FileItem(file = childFile))
+                    }
+                } catch (e: Exception) {
+                    result.add(FileItem(e.message ?: ""))
+                }
+                return result
             }
-            try {
-                extract(file!!, backFile!!) { tot, don -> publisher(tot.toInt(), don.toInt()) }
+            file?.isDexFile() == true -> {
+                val result = ArrayList<FileItem>()
+                backFile = appCtx.getExternalFilesDir("dex-decompiled")?.resolve(file?.name!!)
+                if (backFile?.exists() == true) {
+                    backFile!!.delete()
+                }
+                org.jf.baksmali.Main.main(arrayOf("d", "-o", backFile!!.absolutePath, file!!.path))
                 for (childFile in backFile!!.listFiles()) {
                     result.add(FileItem(file = childFile))
                 }
-            } catch (e: Exception) {
-                result.add(FileItem(e.message ?: ""))
+                return result
             }
-            return result
-        } else if (file?.isDexFile() == true) {
-            val result = ArrayList<FileItem>()
-            backFile = appCtx.getExternalFilesDir("dex-decompiled")?.resolve(file?.name!!)
-            if (backFile?.exists() == true) {
-                backFile!!.delete()
-            }
-            org.jf.baksmali.Main.main(arrayOf("d", "-o", backFile!!.absolutePath, file!!.path))
-            for (childFile in backFile!!.listFiles()) {
-                result.add(FileItem(file = childFile))
-            }
-            return result
-        } else if (file?.isDotnetFile() == true) {
-            val result = ArrayList<FileItem>()
-            val facileReflector = Facile.load(file!!.path)
-            // load the assembly
-            // load the assembly
-            val assembly = facileReflector.loadAssembly()
-            val types = assembly.allTypes
-            for (type in types) {
-                result.add(
-                    FileItemDotNetSymbol(
-                        type.namespace + "." + type.name,
-                        facileReflector,
-                        type
+            file?.isDotnetFile() == true -> {
+                val result = ArrayList<FileItem>()
+                val facileReflector = Facile.load(file!!.path)
+                // load the assembly
+                // load the assembly
+                val assembly = facileReflector.loadAssembly()
+                val types = assembly.allTypes
+                for (type in types) {
+                    result.add(
+                        FileItemDotNetSymbol(
+                            type.namespace + "." + type.name,
+                            facileReflector,
+                            type
+                        )
                     )
-                )
+                }
+                return result
             }
-            return result
+            else -> return emptyList()
         }
-        return emptyList()
     }
 
     fun listSubItemsFile(parent: File): List<FileItem> {
