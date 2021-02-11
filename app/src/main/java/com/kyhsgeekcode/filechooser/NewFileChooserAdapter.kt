@@ -11,10 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kyhsgeekcode.disassembler.databinding.NewFileChooserRowBinding
 import com.kyhsgeekcode.disassembler.showEditDialog
 import com.kyhsgeekcode.filechooser.model.FileItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import splitties.init.appCtx
 import java.util.*
 import kotlin.collections.ArrayList
@@ -162,15 +159,16 @@ class NewFileChooserAdapter(
             }
             true
         }
-        tryAddRootItems()
+//        viewModelScope.launch {
+//            tryAddRootItems()
+//        }
     }
 
-    private fun tryAddRootItems() {
-        var items: List<FileItem>
-        try {
-            items = FileItem.rootItem.listSubItems()
+    suspend fun tryAddRootItems() {
+        val items: List<FileItem> = try {
+            FileItem.rootItem.listSubItems()
         } catch (e: Exception) {
-            items = arrayListOf(FileItem(e.message ?: ""))
+            arrayListOf(FileItem(e.message ?: ""))
         }
         values.addAll(items)
     }
@@ -271,7 +269,7 @@ class NewFileChooserAdapter(
                         showedTotal = true
                     }
                 }
-                CoroutineScope(Dispatchers.Main).launch {
+                withContext(Dispatchers.Main) {
                     parentActivity.finishProgress()
                 }
                 ret

@@ -5,15 +5,14 @@ import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.net.Uri
-import android.provider.DocumentsContract
-import android.provider.MediaStore
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.kyhsgeekcode.FileExtensions.peFileExts
 import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.disassembler.project.ProjectManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.apache.commons.compress.archivers.ArchiveEntry
 import org.apache.commons.compress.archivers.ArchiveException
 import org.apache.commons.compress.archivers.ArchiveInputStream
@@ -108,50 +107,60 @@ fun File.isDexFile(): Boolean = extension.toLowerCase() == "dex"
 fun File.isAccessible(): Boolean = exists() && canRead()
 
 @Throws(IOException::class, SecurityException::class)
-fun extract(from: File, toDir: File, publisher: (Long, Long) -> Unit = { _, _ -> }) {
-    Log.v("extract", "File:${from.path}")
-    var archi: ArchiveInputStream? = null
-    try {
-        archi =
-            ArchiveStreamFactory().createArchiveInputStream(BufferedInputStream(from.inputStream()))
-        var entry: ArchiveEntry?
-        while (archi.nextEntry.also { entry = it } != null) {
-            if (entry!!.name == "")
-                continue
-            if (!archi.canReadEntryData(entry)) {
-                // log something?
-                Log.e("Extract archive", "Cannot read entry data")
-                continue
+suspend fun extract(
+    from: File,
+    toDir: File,
+    publisher: (Long, Long) -> Unit = { current, total -> }
+) =
+    withContext(Dispatchers.IO) {
+        Log.v("extract", "File:${from.path}")
+        var archi: ArchiveInputStream? = null
+        val totalSize = from.length()
+        try {
+            archi =
+                ArchiveStreamFactory().createArchiveInputStream(BufferedInputStream(from.inputStream()))
+            var entry: ArchiveEntry?
+
+            while (archi.nextEntry.also { entry = it } != null) {
+                if (entry!!.name == "")
+                    continue
+                if (!archi.canReadEntryData(entry)) {
+                    // log something?
+                    Log.e("Extract archive", "Cannot read entry data")
+                    continue
+                }
+                val f = toDir.resolve(entry?.name!!)
+                if (entry!!.isDirectory) {
+                    if (!f.isDirectory && !f.mkdirs()) {
+                        throw IOException("failed to create directory $f")
+                    }
+                } else {
+                    val parent = f.parentFile
+                    if (!parent.isDirectory && !parent.mkdirs()) {
+                        throw IOException("failed to create directory $parent")
+                    }
+                    if (!f.canonicalPath.startsWith(toDir.canonicalPath)) {
+                        throw SecurityException(
+                            "The zip/apk file may have a Zip Path Traversal Vulnerability." +
+                                    "Is the zip/apk file trusted?"
+                        )
+                    }
+                    val o = f.outputStream()
+                    IOUtils.copy(archi, o)
+                    o.close()
+                }
+                withContext(Dispatchers.Main) {
+                    publisher(archi.bytesRead, totalSize)
+                }
             }
-            val f = toDir.resolve(entry?.name!!)
-            if (entry!!.isDirectory) {
-                if (!f.isDirectory && !f.mkdirs()) {
-                    throw IOException("failed to create directory $f")
-                }
-            } else {
-                val parent = f.parentFile
-                if (!parent.isDirectory && !parent.mkdirs()) {
-                    throw IOException("failed to create directory $parent")
-                }
-                if (!f.canonicalPath.startsWith(toDir.canonicalPath)) {
-                    throw SecurityException(
-                        "The zip/apk file may have a Zip Path Traversal Vulnerability." +
-                                "Is the zip/apk file trusted?"
-                    )
-                }
-                val o = f.outputStream()
-                IOUtils.copy(archi, o)
-                o.close()
-            }
+        } catch (e: ArchiveException) {
+            Log.e("Extract archive", "error inflating", e)
+        } catch (e: ZipException) {
+            Log.e("Extract archive", "error inflating", e)
+        } finally {
+            archi?.close()
         }
-    } catch (e: ArchiveException) {
-        Log.e("Extract archive", "error inflating", e)
-    } catch (e: ZipException) {
-        Log.e("Extract archive", "error inflating", e)
-    } finally {
-        archi?.close()
     }
-}
 
 fun String.toValidFileName(): String {
     return this.replace("[\\\\/:*?\"<>|]", "")
@@ -400,3 +409,5 @@ fun download(link: String, file: File) {
         }
     }
 }
+
+typealias Publisher = (current: Int, total: Int) -> Unit

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kyhsgeekcode.disassembler.ProgressHandler
 import com.kyhsgeekcode.disassembler.databinding.ActivityNewFileChooserBinding
@@ -50,6 +51,9 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
         _binding = ActivityNewFileChooserBinding.inflate(layoutInflater)
         setContentView(binding.root)
         adapter = NewFileChooserAdapter(this)
+        lifecycleScope.launch {
+            adapter.tryAddRootItems()
+        }
         linearLayoutManager = LinearLayoutManager(this)
         binding.recyclerView.layoutManager = linearLayoutManager
         binding.recyclerView.adapter = adapter

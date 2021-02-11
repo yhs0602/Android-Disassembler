@@ -12,11 +12,12 @@ class FileItemDotNetSymbol(text: String, val reflector: FacileReflector, val typ
     override fun isRawAvailable(): Boolean = false
 
     @ExperimentalUnsignedTypes
-    override fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
+    override suspend fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
         val result = ArrayList<FileItem>()
         val fields = type.fields
         val methods = type.methods
-        for (field in fields) {
+        val total = fields.size
+        for ((index, field) in fields.withIndex()) {
             val c = field.constant
             var fieldDesc: String? = field.name + ":" + field.typeRef.name
             if (c != null) {
@@ -28,6 +29,7 @@ class FileItemDotNetSymbol(text: String, val reflector: FacileReflector, val typ
                 fieldDesc += ")"
             }
             result.add(FileItemFinal(fieldDesc ?: "?"))
+            publisher(index + 1, total)
         }
         for (method in methods) {
             result.add(FileItemMethod(method.name + method.methodSignature, reflector, method))
