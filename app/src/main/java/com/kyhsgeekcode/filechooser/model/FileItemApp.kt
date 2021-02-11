@@ -44,4 +44,10 @@ class FileItemApp(label: String, val realFile: File, val nativeFile: File, icon:
     }
 
     override fun canExpand() = true
+    override fun cachedSubItems(): List<FileItem>? {
+        backFile = File(appCtx.cacheDir, realFile.name)
+        return if (backFile!!.exists()) {
+            listSubItemsFile(backFile!!)
+        } else null
+    }
 }

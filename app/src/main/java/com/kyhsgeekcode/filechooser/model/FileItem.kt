@@ -165,6 +165,38 @@ open class FileItem : Serializable {
         return result
     }
 
+    open fun cachedSubItems(): List<FileItem>? {
+        when {
+            file?.isDirectory == true -> {
+                return null
+            }
+            file?.isArchive() == true -> {
+                val result = ArrayList<FileItem>()
+                backFile = appCtx.getExternalFilesDir("extracted")?.resolve(file?.name!!)
+                return if (backFile?.exists() == true) {
+                    for (childFile in backFile!!.listFiles()) {
+                        result.add(FileItem(file = childFile))
+                    }
+                    result
+                } else null
+            }
+            file?.isDexFile() == true -> {
+                val result = ArrayList<FileItem>()
+                backFile = appCtx.getExternalFilesDir("dex-decompiled")?.resolve(file?.name!!)
+                return if (backFile?.exists() == true) {
+                    for (childFile in backFile!!.listFiles()) {
+                        result.add(FileItem(file = childFile))
+                    }
+                    result
+                } else null
+            }
+            file?.isDotnetFile() == true -> {
+                return null
+            }
+            else -> return null
+        }
+    }
+
     companion object {
         val rootItem = object : FileItem("Main") {
             override suspend fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
