@@ -78,7 +78,7 @@ open class FileItem : Serializable {
         file?.run run1@{ ->
             when {
                 isDirectory -> {
-                    return listSubItemsFile(this)
+                    return listSubItemsFile(this, publisher)
                 }
                 isArchive() -> {
                     getExpandedFile(appCtx.externalCacheDir ?: appCtx.cacheDir, this)
@@ -98,13 +98,14 @@ open class FileItem : Serializable {
                                     return result
                                 }
                             }
-                            return listSubItemsFile(it)
+                            return listSubItemsFile(it, publisher)
                         }
                 }
                 isDexFile() -> {
                     getExpandedFile(appCtx.externalCacheDir ?: appCtx.cacheDir, this)
                         .also {
 //                            backFile = it
+                            publisher(3, 10)
                             if (!it.exists()) {
                                 withContext(Dispatchers.IO) {
                                     org.jf.baksmali.Main.main(
@@ -117,7 +118,8 @@ open class FileItem : Serializable {
                                     )
                                 }
                             }
-                            return listSubItemsFile(it)
+                            publisher(9, 10)
+                            return listSubItemsFile(it, publisher)
                         }
                 }
                 isDotnetFile() -> {
@@ -150,10 +152,17 @@ open class FileItem : Serializable {
         return emptyList()
     }
 
-    fun listSubItemsFile(parent: File): List<FileItem> {
+    fun listSubItemsFile(
+        parent: File,
+        publisher: (current: Int, total: Int) -> Unit = { _, _ -> }
+    ): List<FileItem> {
         val result = ArrayList<FileItem>()
-        parent.listFiles()?.forEach {
-            result.add(FileItem(file = it))
+        parent.listFiles()?.run {
+            val total = size
+            withIndex().forEach {
+                result.add(FileItem(file = it.value))
+                publisher(it.index + 1, total)
+            }
         }
         return result
     }
