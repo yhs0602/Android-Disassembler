@@ -29,7 +29,6 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.gu.toolargetool.TooLargeTool
 import com.kyhsgeekcode.FileExtensions.textFileExts
 import com.kyhsgeekcode.callPrivateFunc
-import com.kyhsgeekcode.deleteRecursive
 import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.PermissionUtils.requestAppPermissions
 import com.kyhsgeekcode.disassembler.databinding.MainBinding
@@ -221,7 +220,6 @@ class MainActivity : AppCompatActivity(),
         })
         requestAppPermissions(this)
         manageShowRational()
-        clearCache()
     }
 
 //    private fun handleDataFragment() {
@@ -254,14 +252,6 @@ class MainActivity : AppCompatActivity(),
             val editorShowPermission = showRationalSetting.edit()
             editorShowPermission.putBoolean("show", false)
             editorShowPermission.apply()
-        }
-    }
-
-    private fun clearCache() {
-        val filesDir = filesDir
-        val files = filesDir.listFiles()
-        for (file in files) {
-            deleteRecursive(file)
         }
     }
 

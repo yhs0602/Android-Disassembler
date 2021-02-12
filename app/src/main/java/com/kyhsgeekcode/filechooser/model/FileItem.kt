@@ -52,7 +52,7 @@ open class FileItem : Serializable {
     var drawable: Drawable? = null
 
     var file: File? = null // 항목이 의미하는 파일 자체
-    var backFile: File? = null // 항목이 전개되었을 때 나타낼 디렉토리
+//    protected var backFile: File? = null // 항목이 전개되었을 때 나타낼 디렉토리
 
     private val isExpandable: Boolean by lazy {
         file?.isDirectory == true ||
@@ -75,95 +75,133 @@ open class FileItem : Serializable {
     open suspend fun listSubItems(publisher: (current: Int, total: Int) -> Unit = { _, _ -> }): List<FileItem> {
         if (!canExpand())
             return emptyList()
-        when {
-            file?.isDirectory == true -> {
-                val result = ArrayList<FileItem>()
-                val children = file!!.listFiles()
-                val total = children.size
-                for (childFile in children.withIndex()) {
-                    result.add(FileItem(file = childFile.value))
-                    publisher(childFile.index, total)
+        file?.run run1@{ ->
+            when {
+                isDirectory -> {
+                    return listSubItemsFile(this, publisher)
                 }
-                return result
-            }
-            file?.isArchive() == true -> {
-                val result = ArrayList<FileItem>()
-                backFile = appCtx.getExternalFilesDir("extracted")?.resolve(file?.name!!)
-                if (backFile?.exists() == true) {
-                    backFile!!.delete()
+                isArchive() -> {
+                    getExpandedFile(appCtx.externalCacheDir ?: appCtx.cacheDir, this)
+                        .also {
+//                            backFile = it
+                            if (!it.exists()) {
+                                try {
+                                    extract(this@run1, it) { current, total ->
+                                        publisher(
+                                            current.toInt(),
+                                            total.toInt()
+                                        )
+                                    }
+                                } catch (e: Exception) {
+                                    val result = listSubItemsFile(it) as MutableList
+                                    result.add(FileItem("Exception ${e.message}"))
+                                    return result
+                                }
+                            }
+                            return listSubItemsFile(it, publisher)
+                        }
                 }
-                try {
-                    extract(file!!, backFile!!) { current, total ->
-                        publisher(
-                            current.toInt(),
-                            total.toInt()
+                isDexFile() -> {
+                    getExpandedFile(appCtx.externalCacheDir ?: appCtx.cacheDir, this)
+                        .also {
+//                            backFile = it
+                            publisher(3, 10)
+                            if (!it.exists()) {
+                                withContext(Dispatchers.IO) {
+                                    org.jf.baksmali.Main.main(
+                                        arrayOf(
+                                            "d",
+                                            "-o",
+                                            it.absolutePath,
+                                            this@run1.path
+                                        )
+                                    )
+                                }
+                            }
+                            publisher(9, 10)
+                            return listSubItemsFile(it, publisher)
+                        }
+                }
+                isDotnetFile() -> {
+                    val result = ArrayList<FileItem>()
+                    publisher(1, 10)
+                    val facileReflector = withContext(Dispatchers.IO) {
+                        Facile.load(this@run1.path)
+                    }
+                    publisher(9, 10)
+                    // load the assembly
+                    // load the assembly
+                    val assembly = facileReflector.loadAssembly()
+                    val types = assembly.allTypes
+                    for (type in types) {
+                        result.add(
+                            FileItemDotNetSymbol(
+                                type.namespace + "." + type.name,
+                                facileReflector,
+                                type
+                            )
                         )
                     }
-                    for (childFile in backFile!!.listFiles()) {
-                        result.add(FileItem(file = childFile))
-                    }
-                } catch (e: Exception) {
-                    result.add(FileItem(e.message ?: ""))
+                    publisher(10, 10)
+                    return result
                 }
-                return result
+                else -> return emptyList()
             }
-            file?.isDexFile() == true -> {
-                val result = ArrayList<FileItem>()
-                backFile = appCtx.getExternalFilesDir("dex-decompiled")?.resolve(file?.name!!)
-                if (backFile?.exists() == true) {
-                    backFile!!.delete()
-                }
-                publisher(1, 10)
-                withContext(Dispatchers.IO) {
-                    org.jf.baksmali.Main.main(
-                        arrayOf(
-                            "d",
-                            "-o",
-                            backFile!!.absolutePath,
-                            file!!.path
-                        )
-                    )
-                }
-                for (childFile in backFile!!.listFiles()) {
-                    result.add(FileItem(file = childFile))
-                }
-                publisher(10, 10)
-                return result
-            }
-            file?.isDotnetFile() == true -> {
-                val result = ArrayList<FileItem>()
-                publisher(1, 10)
-                val facileReflector = withContext(Dispatchers.IO) {
-                    Facile.load(file!!.path)
-                }
-                publisher(9, 10)
-                // load the assembly
-                // load the assembly
-                val assembly = facileReflector.loadAssembly()
-                val types = assembly.allTypes
-                for (type in types) {
-                    result.add(
-                        FileItemDotNetSymbol(
-                            type.namespace + "." + type.name,
-                            facileReflector,
-                            type
-                        )
-                    )
-                }
-                publisher(10, 10)
-                return result
-            }
-            else -> return emptyList()
+
         }
+        return emptyList()
     }
 
-    fun listSubItemsFile(parent: File): List<FileItem> {
+    fun listSubItemsFile(
+        parent: File,
+        publisher: (current: Int, total: Int) -> Unit = { _, _ -> }
+    ): List<FileItem> {
         val result = ArrayList<FileItem>()
-        for (file: File in parent.listFiles()) {
-            result.add(FileItem(file = file))
+        parent.listFiles()?.run {
+            val total = size
+            withIndex().forEach {
+                result.add(FileItem(file = it.value))
+                publisher(it.index + 1, total)
+            }
         }
         return result
     }
+
+//    open suspend fun cachedSubItems(): List<FileItem>? {
+//        file?.run {
+//            when {
+//                isDirectory -> {
+//                    return null
+//                }
+//                isArchive() -> {
+//                    val result = ArrayList<FileItem>()
+//                    backFile = getExpandedFile(appCtx.externalCacheDir ?: appCtx.cacheDir, this)
+//                    // ?: appCtx.getExternalFilesDir("extracted")?.resolve(name)
+//                    return if (backFile?.exists() == true) {
+//                        backFile?.listFiles()?.forEach {
+//                            result.add(FileItem(file = it))
+//                        }
+//                        result
+//                    } else null
+//                }
+//                isDexFile() -> {
+//                    val result = ArrayList<FileItem>()
+//                    backFile = appCtx.getExternalFilesDir("dex-decompiled")?.resolve(name)
+//                    return if (backFile?.exists() == true) {
+//                        backFile?.listFiles()?.forEach {
+//                            result.add(FileItem(file = it))
+//                        }
+//                        result
+//                    } else null
+//                }
+//                isDotnetFile() -> {
+//                    return null
+//                }
+//                else -> return null
+//            }
+//        }
+//        return null
+//    }
 
     companion object {
         val rootItem = object : FileItem("Main") {

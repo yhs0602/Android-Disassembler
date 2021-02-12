@@ -1,6 +1,7 @@
 package com.kyhsgeekcode
 
 import android.content.ClipData
+import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.content.pm.PackageManager
@@ -102,7 +103,7 @@ fun File.isDotnetFile(): Boolean {
     return false
 }
 
-fun File.isDexFile(): Boolean = extension.toLowerCase() == "dex"
+fun File.isDexFile(): Boolean = extension.equals("dex", true)
 
 fun File.isAccessible(): Boolean = exists() && canRead()
 
@@ -222,7 +223,7 @@ fun getEntryName(source: File, file: File): String {
 }
 
 // https://stackoverflow.com/a/6425744/8614565
-fun deleteRecursive(fileOrDirectory: File) {
+suspend fun deleteRecursive(fileOrDirectory: File): Unit = withContext(Dispatchers.IO) {
     if (fileOrDirectory.isDirectory) for (child in fileOrDirectory.listFiles()) deleteRecursive(
         child
     )
@@ -411,3 +412,11 @@ fun download(link: String, file: File) {
 }
 
 typealias Publisher = (current: Int, total: Int) -> Unit
+
+suspend fun Context.clearCache() {
+    val filesDir = filesDir
+    val files = filesDir.listFiles()
+    for (file in files) {
+        deleteRecursive(file)
+    }
+}
