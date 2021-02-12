@@ -280,6 +280,6 @@ class NewFileChooserAdapter(
     }
 
     private suspend fun listSubItemsCached(item: FileItem): List<FileItem> {
-        return item.cachedSubItems() ?: listSubItems(item)
+        return listSubItems(item) // item.cachedSubItems() ?:
     }
 }
