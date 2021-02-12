@@ -12,7 +12,7 @@ suspend fun getExpandedFile(cacheDir: File, sourceFile: File): File {
             sourceFile.readBytes()
         })
     }
-    val title = hash.joinToString {
+    val title = hash.joinToString("") {
         it.toString(16)
     }
     return File(cacheDir, title)
