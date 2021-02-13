@@ -14,7 +14,7 @@ class LogAdapter : RecyclerView.Adapter<LogAdapter.ViewHolder>() {
 
     private var itemList = ArrayList<LogData>()
     fun refresh() {
-        val data = Logger.getLogData()
+        val data = Logger.logData
         itemList = ArrayList(data)
         notifyDataSetChanged()
     }

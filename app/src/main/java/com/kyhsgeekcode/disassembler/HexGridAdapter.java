@@ -16,7 +16,7 @@ public class HexGridAdapter extends BaseAdapter {
     /**
      * Default constructor
      *
-     * @param items to fill data to
+     * @param bytes to fill data to
      */
     public HexGridAdapter(final byte[] bytes) {
 

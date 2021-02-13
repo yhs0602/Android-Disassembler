@@ -49,12 +49,9 @@ class Analyzer(private val bytes: ByteArray) {
             } else if (strstart != -1) {
                 val length = i - strstart
                 val offset = strstart
-                if (length >= min && length <= max) {
+                if (length in min..max) {
                     val str = String(bytes, strstart, length)
-                    val fs = FoundString()
-                    fs.length = length
-                    fs.offset = offset.toLong()
-                    fs.string = str
+                    val fs = FoundString(length, offset.toLong(), str)
                     // Log.v(TAG,str);
                     adapter.addItem(fs)
                 } else { // Logger.v(TAG,"Ignoring short string at:"+offset);
@@ -256,10 +253,10 @@ class Analyzer(private val bytes: ByteArray) {
         corel /= sumsq
 
         progress(7, 7, "Hashing")
-        MD4Hash = Hash("MD4", bytes)
-        MD5Hash = Hash("MD5", bytes)
-        SHA1Hash = Hash("SHA-1", bytes)
-        SHA256Hash = Hash("SHA-256", bytes)
+        MD4Hash = hash("MD4", bytes)
+        MD5Hash = hash("MD5", bytes)
+        SHA1Hash = hash("SHA-1", bytes)
+        SHA256Hash = hash("SHA-256", bytes)
         Logger.v(TAG, "Saving results")
         mean = avg
         this.entropy = entropy
@@ -386,7 +383,7 @@ class Analyzer(private val bytes: ByteArray) {
             return Math.log(a) / Math.log(2.0)
         }
 
-        fun Hash(algorithm: String, bytes: ByteArray?): String {
+        fun hash(algorithm: String, bytes: ByteArray?): String {
             var shash = "Unknown"
             try {
                 val digest = MessageDigest.getInstance(algorithm)
