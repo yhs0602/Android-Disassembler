@@ -13,10 +13,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.kyhsgeekcode.disassembler.databinding.FragmentTextBinding
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.utils.PrettifyHighlighter
 import com.kyhsgeekcode.disassembler.utils.decompressXML
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -55,6 +59,12 @@ class TextFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        lifecycleScope.launch {
+            highlightContents()
+        }
+    }
+
+    private suspend fun highlightContents() {
         val ext = ProjectDataStorage.getExtension(relPath) // File(relPath).extension.toLowerCase()
         var highlighted = SpannableStringBuilder()
         var strContent: String?
@@ -80,12 +90,12 @@ class TextFragment : Fragment() {
                 }, strContent
             )
         }
-//        val ssb = readAndColorize()
+        //        val ssb = readAndColorize()
         binding.textFragmentTextView.setText(highlighted, TextView.BufferType.SPANNABLE)
         binding.textFragmentTextView.setBackgroundColor(Color.BLACK)
     }
 
-    private fun readAndColorize(): SpannableStringBuilder {
+    private suspend fun readAndColorize(): SpannableStringBuilder = withContext(Dispatchers.IO) {
         val ssb = SpannableStringBuilder()
         val terms: List<String>? = TermList[File(relPath).extension.toLowerCase()]
 
@@ -120,7 +130,7 @@ class TextFragment : Fragment() {
             Log.d(TAG, "ss:$ss")
         }
         Log.d(TAG, "ss:$ssb")
-        return ssb
+        ssb
     }
 
     companion object {

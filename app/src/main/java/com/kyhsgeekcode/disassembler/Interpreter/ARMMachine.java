@@ -9,7 +9,7 @@ public class ARMMachine {
         //instruction.
         switch (instruction.getId()) {
             case Arm_const.ARM_INS_ADC:
-
+//                instruction.get
         }
         //ARMCommand cmd = cmdMap.get(instruction.id);
     }

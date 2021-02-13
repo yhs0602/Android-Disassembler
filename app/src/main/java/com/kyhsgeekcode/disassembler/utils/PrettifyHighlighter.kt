@@ -4,6 +4,8 @@ import android.graphics.Color
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import prettify.PrettifyParser
 import syntaxhighlight.ParseResult
 import syntaxhighlight.Parser
@@ -11,7 +13,8 @@ import syntaxhighlight.Parser
 // https://stackoverflow.com/a/19787125/8614565
 object PrettifyHighlighter {
     private val parser: Parser = PrettifyParser()
-    fun highlight(fileExtension: String?, sourceCode: String): SpannableStringBuilder {
+    suspend fun highlight(fileExtension: String?, sourceCode: String): SpannableStringBuilder =
+        withContext(Dispatchers.Default) {
 //        val whitespace: Pattern = Pattern.compile("\\s+")
 //        val matcher = whitespace.matcher(sourceCode)
 //        val spaces = ArrayList<MatchedSpace>()
@@ -19,24 +22,24 @@ object PrettifyHighlighter {
 //            spaces.add(MatchedSpace(matcher.start(), matcher.end(), matcher.group()))
 //        }
 
-        val highlighted = SpannableStringBuilder(sourceCode)
-        val results: List<ParseResult> = parser.parse(fileExtension, sourceCode)
-        for (result in results) {
-            val type: String = result.styleKeys[0]
-            highlighted.setSpan(
-                ForegroundColorSpan(getColor(type)),
-                result.offset,
-                result.offset + result.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+            val highlighted = SpannableStringBuilder(sourceCode)
+            val results: List<ParseResult> = parser.parse(fileExtension, sourceCode)
+            for (result in results) {
+                val type: String = result.styleKeys[0]
+                highlighted.setSpan(
+                    ForegroundColorSpan(getColor(type)),
+                    result.offset,
+                    result.offset + result.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
 //            val content = sourceCode.substring(result.offset, result.offset + result.length)
 //            highlighted.append(String.format(FONT_PATTERN, getColor(type), content))
 //            highlighted.append("<br>")
+            }
+            highlighted
         }
-        return highlighted
-    }
 
-    public fun getColor(type: String): Int {
+    private fun getColor(type: String): Int {
         return Color.parseColor("#${if (COLORS.containsKey(type)) COLORS[type] else COLORS["pln"]}")
     }
 
