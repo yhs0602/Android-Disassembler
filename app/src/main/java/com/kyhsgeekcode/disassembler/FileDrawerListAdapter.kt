@@ -75,57 +75,15 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
                 val thisFolder = File(path)
                 if (thisFolder.isDirectory) {
                     if (thisFolder.canRead()) {
-                        val files = thisFolder.listFiles()
-                        if (files.isNotEmpty()) {
-                            for (file in files) {
+                        thisFolder.listFiles()?.let {
+                            if (it.isEmpty()) {
+                                items.add(FileDrawerListItem("The folder is empty", newLevel))
+                                return@let
+                            }
+                            for (file in it) {
                                 items.add(FileDrawerListItem(file, newLevel))
                             }
-                            Collections.sort(items, object : Comparator<FileDrawerListItem> {
-                                override fun compare(
-                                    p1: FileDrawerListItem,
-                                    p2: FileDrawerListItem
-                                ): Int {
-                                    val cdir = compareDir(p1, p2)
-                                    return if (cdir == 0) {
-                                        if (p1.caption.endsWith("/")) {
-                                            if (p1.caption == "/") {
-                                                return -1
-                                            }
-                                            if (p2.caption == "/") {
-                                                return 1
-                                            }
-                                            if (p1.caption == "../") {
-                                                return -1
-                                            }
-                                            if (p2.caption == "../") {
-                                                1
-                                            } else p1.caption.compareTo(p2.caption)
-                                        } else {
-                                            p1.caption.compareTo(p2.caption)
-                                        }
-                                    } else {
-                                        cdir
-                                    }
-                                }
-
-                                fun compareDir(
-                                    p1: FileDrawerListItem,
-                                    p2: FileDrawerListItem
-                                ): Int {
-                                    if (p1.caption.endsWith("/")) {
-                                        return if (p2.caption.endsWith("/")) {
-                                            0
-                                        } else {
-                                            -1
-                                        }
-                                    } else if (p2.caption.endsWith("/")) {
-                                        return 1
-                                    }
-                                    return p1.caption.compareTo(p2.caption)
-                                }
-                            })
-                        } else {
-                            items.add(FileDrawerListItem("The folder is empty", newLevel))
+                            Collections.sort(items, FileNameComparator)
                         }
                     } else {
                         items.add(FileDrawerListItem("Could not be read!", newLevel))
@@ -344,5 +302,50 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
             iconTable[DrawerItemType.METHOD] = R.drawable.ic_method
             iconTable[DrawerItemType.PROJECTS] = R.drawable.ic_folder_icon
         }
+    }
+}
+
+object FileNameComparator : Comparator<FileDrawerListItem> {
+    override fun compare(
+        p1: FileDrawerListItem,
+        p2: FileDrawerListItem
+    ): Int {
+        val cdir = compareDir(p1, p2)
+        return if (cdir == 0) {
+            if (p1.caption.endsWith("/")) {
+                if (p1.caption == "/") {
+                    return -1
+                }
+                if (p2.caption == "/") {
+                    return 1
+                }
+                if (p1.caption == "../") {
+                    return -1
+                }
+                if (p2.caption == "../") {
+                    1
+                } else p1.caption.compareTo(p2.caption)
+            } else {
+                p1.caption.compareTo(p2.caption)
+            }
+        } else {
+            cdir
+        }
+    }
+
+    private fun compareDir(
+        p1: FileDrawerListItem,
+        p2: FileDrawerListItem
+    ): Int {
+        if (p1.caption.endsWith("/")) {
+            return if (p2.caption.endsWith("/")) {
+                0
+            } else {
+                -1
+            }
+        } else if (p2.caption.endsWith("/")) {
+            return 1
+        }
+        return p1.caption.compareTo(p2.caption)
     }
 }
