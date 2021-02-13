@@ -250,7 +250,7 @@ class NewFileChooserAdapter(
         val lastItem = backStack.pop()
         currentParentItem = lastItem
         CoroutineScope(Dispatchers.Default).launch {
-            val items = listSubItems(currentParentItem)
+            val items = listSubItemsCached(currentParentItem)
             addItemsToListSorted(items)
             withContext(Dispatchers.Main) {
                 notifyDataSetChanged()
@@ -277,5 +277,9 @@ class NewFileChooserAdapter(
                 arrayListOf(FileItem(e.message ?: ""))
             }
         }
+    }
+
+    private suspend fun listSubItemsCached(item: FileItem): List<FileItem> {
+        return listSubItems(item) // item.cachedSubItems() ?:
     }
 }

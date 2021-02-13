@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.kyhsgeekcode.TAG
+import com.kyhsgeekcode.clearCache
 import com.kyhsgeekcode.disassembler.databinding.FragmentProjectOverviewBinding
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
@@ -20,10 +21,7 @@ import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.filechooser.model.FileItemApp
 import com.kyhsgeekcode.isArchive
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.apache.commons.io.FileUtils
 import java.io.File
 
@@ -54,6 +52,13 @@ class ProjectOverviewFragment : Fragment() {
                 j,
                 MainActivity.REQUEST_SELECT_FILE_NEW
             ) // Control goes to binaryDisasmFragment
+        }
+        binding.selFile.isEnabled = false
+        GlobalScope.launch {
+            requireContext().clearCache()
+            withContext(Dispatchers.Main) {
+                binding.selFile.isEnabled = true
+            }
         }
         binding.fileNameText.isFocusable = false
         binding.fileNameText.isEnabled = false
