@@ -39,7 +39,7 @@ object PrettifyHighlighter {
             highlighted
         }
 
-    private fun getColor(type: String): Int {
+    fun getColor(type: String): Int {
         return Color.parseColor("#${if (COLORS.containsKey(type)) COLORS[type] else COLORS["pln"]}")
     }
 
