@@ -22,7 +22,6 @@ import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.filechooser.model.FileItemApp
 import com.kyhsgeekcode.isArchive
 import kotlinx.coroutines.*
-import org.apache.commons.io.FileUtils
 import java.io.File
 
 class ProjectOverviewFragment : Fragment() {
@@ -161,9 +160,12 @@ class ProjectOverviewFragment : Fragment() {
                 targetFile = File(targetFile.absolutePath + "_extracted_$i.so")
                 i++
             }
-            FileUtils.copyDirectory(nativeFile, targetFile)
+            // FileUtils.copyDirectory(nativeFile, targetFile)
+            copyDirectory(nativeFile, targetFile)
         }
     }
+
+
 
     // Actually, currentProject is set and automatically figured out
     fun initializeDrawer(project: ProjectModel) {
