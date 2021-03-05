@@ -107,7 +107,7 @@ fun showYesNoDialog(
     builder.setTitle(title)
     builder.setCancelable(false)
     builder.setMessage(content)
-    builder.setPositiveButton(android.R.string.ok, pos).setNegativeButton(android.R.string.no, neg)
+    builder.setPositiveButton(android.R.string.ok, pos).setNegativeButton(android.R.string.cancel, neg)
     builder.show()
 }
 

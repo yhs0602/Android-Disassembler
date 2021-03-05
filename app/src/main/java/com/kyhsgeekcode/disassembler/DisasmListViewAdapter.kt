@@ -23,41 +23,21 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     private lateinit var listView: RecyclerView
     private val TAG = "Disassembler LV"
 
-    // 	public void setAddress(SparseArray<Long> address)
-// 	{
-// 		this.address = address;
-// 	}
-//
     var currentAddress: Long = 0
-//    private val mainactivity: MainActivity? = null
 
-    fun clear() {
-        address.clear()
-        itemsNew.clear()
-    }
-
-//    @Deprecated("")
-//    fun setDit(dit: DisasmIterator) {
-//        this.dit = dit
+//    fun clear() {
+//        address.clear()
+//        itemsNew.clear()
 //    }
-
-    // private / *ListViewItem[]*/LongSparseArray<ListViewItem> listViewItemList=new LongSparseArray<>();
-// private long lvLength=0;
-// LinkedList ll;
-    fun addAll(/*ArrayList*/
-        data: LongSparseArray<DisassemblyListItem>,
-        addr: SparseArray<Long>
-    ) {
-        itemsNew = data // .clone();
-        address = addr // .clone();
-        // for(;;)
-// {
-// 	break;
-// }
-// listViewItemList.addAll(data);
-// itemsNew=data;
-        notifyDataSetChanged()
-    }
+//
+//    fun addAll(/*ArrayList*/
+//        data: LongSparseArray<DisassemblyListItem>,
+//        addr: SparseArray<Long>
+//    ) {
+//        itemsNew = data // .clone();
+//        address = addr // .clone();
+//        notifyDataSetChanged()
+//    }
 
     // You should not modify
     /*ArrayList*/
@@ -126,20 +106,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         currentAddress = address
     }
 
-    /*
-	 public void addAll(ArrayList/ *LongSparseArra <ListViewItem> data)
-	{
-		listViewItemList.addAll(data);
-		notifyDataSetChanged();
-	}
 
-
-    public void addItem(ListViewItem item)
-	{
-        listViewItemList.add(item);
-		//notifyDataSetChanged();
-    }
-	*/
 // ?!!!
 // 지정한 위치(position)에 있는 데이터와 관계된 아이템(row)의 ID를 리턴. : 필수 구현
     override fun getItemId(position: Int): Long {
@@ -275,40 +242,6 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         }
     }
 
-    // private ArrayList<ListViewItem> listViewItemList = new ArrayList<ListViewItem>(100) ;
-    // Lazy, efficient
-/*
-	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
-	{
-	}
-
-	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState)
-	{
-		// 리스트뷰가 구성이 완료되어 보이는 경우
-		if(view.isShown()){
-			if(scrollState == SCROLL_STATE_IDLE) {
-				// 리스트뷰의 0 번 인덱스 항목이 리스트뷰의 상단에 보이고 있는 경우
-				if(view.getFirstVisiblePosition() == 0) {
-					// 항목을 추가한다.
-					String str;
-					for(int i = 0; i < INSERT_COUNT; i++) {
-						str = "리스트뷰 항목 - " + (m_list_count + i + 1);
-						m_adapter.insert(str, 0);
-					}
-					m_list_count += INSERT_COUNT;
-					// 0 번 인덱스 항목 위로 INSERT_COUNT 개수의 항목이 추가되었으므로
-					// 기존의 0 번 인덱스 항목은 INSERT_COUNT 번 인덱스가 되었다.
-					// 호출 빈도가 매우 적은 onScrollStateChanged 에서는 기존 0번 항목이 보여져서
-					// 항목이 추가될때 해당 항목의 모든 영역이 보였을 가능성이 크므로
-					// 해당 항목을 보이도록 설정한다.
-					view.setSelection(INSERT_COUNT);
-				}
-			}
-		}
-	}
-	*/
     inner class OnScrollListener : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             super.onScrolled(recyclerView, dx, dy)
@@ -316,20 +249,13 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
                 val visibleItemCount = mLayoutManager.childCount
                 val totalItemCount = mLayoutManager.itemCount
                 val pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition()
-// //                if (loading)
-// //                {
-//                if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
-// //                        loading = false;
-//                    Log.v("...", "Last Item Wow !");
-//                    //Do pagination.. i.e. fetch new data
-//                }
                 onScroll(recyclerView, pastVisiblesItems, visibleItemCount, totalItemCount)
             }
         }
 
         // thanks to http://www.tipssoft.com/bulletin/board.php?bo_table=FAQ&wr_id=1188
         // Smooth, but performance hit
-        fun onScroll(
+        private fun onScroll(
             view: RecyclerView,
             firstVisibleItem: Int,
             visibleItemCount: Int,
