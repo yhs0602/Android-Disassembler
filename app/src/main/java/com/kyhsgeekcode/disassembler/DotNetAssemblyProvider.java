@@ -13,7 +13,7 @@ public class DotNetAssemblyProvider extends AssemblyProvider {
     //Not implemented
 
     public DotNetAssemblyProvider(MainActivity activity, DisasmListViewAdapter adapter, long total, Assembly assembly) {
-        super(adapter, total);
+        super(adapter);
         this.assembly = assembly;
         Type[] types = assembly.getAllTypes();
         for (Type t : types) {

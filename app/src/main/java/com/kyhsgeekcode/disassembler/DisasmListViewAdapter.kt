@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kyhsgeekcode.convertDpToPixel
@@ -165,7 +166,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         // address=//new long[file.fileContents.length];//Use sparseArray if oom
 //        mainactivity = ma;
 // IMPORTANT Note: total arg is unused
-        dit = DisasmIterator(this, 0)
+        dit = DisasmIterator(this)
     }
 
     fun adjustShow(
@@ -177,13 +178,13 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         tvOperands: TextView,
         tvComments: TextView
     ) {
-        tvAddr.visibility = if (isShowAddress) View.VISIBLE else View.GONE
-        tvLabel.visibility = if (isShowLabel) View.VISIBLE else View.GONE
-        tvBytes.visibility = if (isShowBytes) View.VISIBLE else View.GONE
-        tvInst.visibility = if (isShowInstruction) View.VISIBLE else View.GONE
-        tvCondition.visibility = if (isShowCondition) View.VISIBLE else View.GONE
-        tvOperands.visibility = if (isShowOperands) View.VISIBLE else View.GONE
-        tvComments.visibility = if (isShowComment) View.VISIBLE else View.GONE
+        tvAddr.isVisible = isShowAddress
+        tvLabel.isVisible = isShowLabel
+        tvBytes.isVisible = isShowBytes
+        tvInst.isVisible = isShowInstruction
+        tvCondition.isVisible = isShowCondition
+        tvOperands.isVisible = isShowOperands
+        tvComments.isVisible = isShowComment
     }
 
     var isShowAddress = true
