@@ -3,6 +3,7 @@ package com.kyhsgeekcode.disassembler.project
 import android.content.Context
 import android.util.Log
 import com.kyhsgeekcode.disassembler.Logger
+import com.kyhsgeekcode.disassembler.copyDirectory
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.extractZip
 import com.kyhsgeekcode.isAccessible
@@ -11,7 +12,6 @@ import com.kyhsgeekcode.toValidFileName
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.apache.commons.io.FileUtils
 import org.json.JSONException
 import splitties.init.appCtx
 import java.io.File
@@ -100,10 +100,13 @@ object ProjectManager {
         val determinedSourceFolder: File
         if (copy) {
             val copyTargetFileOrFolder = origFolder.resolve(targetFileOrFolder.name)
-            if (!targetFileOrFolder.isDirectory && targetFileOrFolder != copyTargetFileOrFolder)
-                FileUtils.copyFile(targetFileOrFolder, copyTargetFileOrFolder)
-            else if (targetFileOrFolder != copyTargetFileOrFolder)
-                FileUtils.copyDirectory(targetFileOrFolder, copyTargetFileOrFolder)
+            if (!targetFileOrFolder.isDirectory && targetFileOrFolder != copyTargetFileOrFolder) {
+                // FileUtils.copyFile(targetFileOrFolder, copyTargetFileOrFolder)
+                targetFileOrFolder.copyTo(copyTargetFileOrFolder)
+            } else if (targetFileOrFolder != copyTargetFileOrFolder) {
+//                FileUtils.copyDirectory(targetFileOrFolder, copyTargetFileOrFolder)
+                copyDirectory(targetFileOrFolder, copyTargetFileOrFolder)
+            }
             determinedSourceFolder = copyTargetFileOrFolder
         } else {
             determinedSourceFolder = targetFileOrFolder
@@ -205,7 +208,9 @@ object ProjectManager {
         val projectModel = openProject(infoFile.absolutePath)
         val projectDir = rootdir.resolve(projectModel.name.toValidFileName())
         projectDir.mkdirs()
-        FileUtils.moveDirectory(dest, projectDir)
+        dest.copyRecursively(projectDir)
+        dest.deleteRecursively()
+//        FileUtils.moveDirectory(dest, projectDir)
         return projectModel
         //        FileUtils.moveDirectory(dest.resolve("baseFolder"), projectDir.resolve("baseFolder"))
         //        FileUtils.moveDirectory(dest.resolve("sourceFilePath"), projectDir.resolve())
