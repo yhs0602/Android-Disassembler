@@ -3,10 +3,10 @@ package com.kyhsgeekcode.filechooser.model
 import android.graphics.drawable.Drawable
 import com.kyhsgeekcode.Publisher
 import com.kyhsgeekcode.disassembler.Logger
+import com.kyhsgeekcode.disassembler.copyDirectory
 import com.kyhsgeekcode.extract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.apache.commons.io.FileUtils
 import splitties.init.appCtx
 import java.io.File
 
@@ -32,7 +32,7 @@ class FileItemApp(label: String, val realFile: File, val nativeFile: File, icon:
                         }
                         targetFolder.mkdirs()
                         withContext(Dispatchers.IO) {
-                            FileUtils.copyDirectory(nativeFile, madetargetFile)
+                            copyDirectory(nativeFile, madetargetFile)
                         }
                     } else {
                         Logger.e(TAG, "Native file $nativeFile could not be read")

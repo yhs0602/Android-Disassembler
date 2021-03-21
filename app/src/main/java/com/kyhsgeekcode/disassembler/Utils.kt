@@ -1,5 +1,7 @@
 package com.kyhsgeekcode.disassembler
 
+import java.io.File
+
 val hexArray = "0123456789ABCDEF".toCharArray()
 fun bytesToHex(bytes: ByteArray): String? {
     val hexChars = CharArray(bytes.size * 2)
@@ -12,4 +14,9 @@ fun bytesToHex(bytes: ByteArray): String? {
         j++
     }
     return String(hexChars)
+}
+
+
+fun copyDirectory(fromDir: File, toDir: File) {
+    fromDir.copyRecursively(toDir)
 }

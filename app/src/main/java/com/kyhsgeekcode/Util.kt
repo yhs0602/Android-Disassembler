@@ -23,7 +23,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream
 import org.apache.commons.compress.utils.IOUtils
-import org.apache.commons.io.FileUtils
 import org.boris.pecoff4j.ImageDataDirectory
 import org.boris.pecoff4j.PE
 import org.boris.pecoff4j.io.PEParser
@@ -178,7 +177,7 @@ fun saveAsZip(dest: File, vararg sources: Pair<String, String>) {
         val fromFile = File(from)
         val toFile = File(to)
         if (fromFile.isDirectory) {
-            val fileList = FileUtils.listFiles(fromFile, null, true)
+            val fileList = fromFile.listFiles() // .listOrEmpty(fromFile, null, true)
             for (file in fileList) {
                 val relName: String = getEntryName(fromFile, file)
                 val splitName = relName.split(File.separatorChar)
