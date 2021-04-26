@@ -64,7 +64,7 @@
     <string name="property">Property</string>
     <string name="open_calculator">Calculator</string>
     <string name="save">save</string>
-    <string name="donate_see_ad">Buy developer a coffee</string>
+    <string name="donate_see_ad">See ad</string>
     <string name="settings_help">Settings / Help</string>
     <string name="NoRoot_GoDefault">Unable to get root access. Going to default directory</string>
     <string name="location">Location: </string>

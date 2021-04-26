@@ -51,7 +51,7 @@
     <string name="property">속성</string>
     <string name="open_calculator">계산기</string>
     <string name="save">저장</string>
-    <string name="donate_see_ad">개발자에게 커피 사기</string>
+    <string name="donate_see_ad">광고 보기</string>
     <string name="settings_help">설정 / 도움말</string>
     <string name="location">"위치: "</string>
     <string name="cannot_be_read">[%1$s] 폴더 읽기에 실패했습니다!</string>

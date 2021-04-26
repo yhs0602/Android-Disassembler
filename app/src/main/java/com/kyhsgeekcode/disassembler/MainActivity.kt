@@ -490,19 +490,19 @@ class MainActivity : AppCompatActivity(),
                     null
                 )
             }
-            R.id.donate -> {
-                val url = "https://www.buymeacoffee.com/i4QJKbC"
-                val i = Intent(Intent.ACTION_VIEW)
-                i.data = Uri.parse(url)
-                Toast.makeText(
-                    this,
-                    "Thank you for your appreciate for this app!",
-                    Toast.LENGTH_SHORT
-                ).show()
-                startActivity(i)
+//            R.id.donate -> {
+////                val url = "https://www.buymeacoffee.com/i4QJKbC"
+////                val i = Intent(Intent.ACTION_VIEW)
+////                i.data = Uri.parse(url)
+//                Toast.makeText(
+//                    this,
+//                    "Thank you for your appreciate for this app!",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+////                startActivity(i)
 //                val intent = Intent(this, DonateActivity::class.java)
 //                startActivity(intent)
-            }
+//            }
         }
         return super.onOptionsItemSelected(item)
     }

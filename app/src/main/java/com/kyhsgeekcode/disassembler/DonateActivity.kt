@@ -4,8 +4,8 @@ import android.app.Activity
 import android.os.Bundle
 
 class DonateActivity : Activity() {
-    //private InterstitialAd mInterstitialAd;
-    //private RewardedVideoAd mRewardedVideoAd;
+    //    val mInterstitialAd: InterstitialAd
+//    val mRewardedVideoAd: RewardedVideoAd
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_donate)
@@ -13,17 +13,17 @@ class DonateActivity : Activity() {
     }
 
     public override fun onResume() {
-        //mRewardedVideoAd.resume(this);
+//        mRewardedVideoAd.resume(this);
         super.onResume()
     }
 
     public override fun onPause() {
-        //mRewardedVideoAd.pause(this);
+//        mRewardedVideoAd.pause(this);
         super.onPause()
     }
 
     public override fun onDestroy() {
-        //mRewardedVideoAd.destroy(this);
+//        mRewardedVideoAd.destroy(this);
         super.onDestroy()
     }
 }

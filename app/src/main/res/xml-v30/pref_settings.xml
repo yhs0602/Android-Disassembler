@@ -29,11 +29,11 @@
         app:preference_selector="wheel"
         app:default_color="colorPrimary"/-->
     </PreferenceCategory>
-<!--    <PreferenceCategory android:title="Security configuration">-->
-<!--        <Preference android:title="Manage this app\'s all storage access">-->
-<!--            <intent android:action="android.settings.MANAGE_ALL_FILES_ACCESS_PERMISSION" />-->
-<!--        </Preference>-->
-<!--    </PreferenceCategory>-->
+    <PreferenceCategory android:title="Security configuration">
+        <Preference android:title="Manage this app\'s all storage access">
+            <intent android:action="android.settings.MANAGE_ALL_FILES_ACCESS_PERMISSION" />
+        </Preference>
+    </PreferenceCategory>
     <PreferenceCategory android:title="@string/app_info">
         <Preference
             android:fragment="com.kyhsgeekcode.disassembler.preference.DeveloperInfoFragment"
