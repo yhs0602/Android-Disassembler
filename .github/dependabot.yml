@@ -1,0 +1,34 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "20:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: org.jetbrains.kotlin:kotlin-stdlib-jdk7
+    versions:
+    - 1.4.32
+  - dependency-name: com.google.android.gms:play-services-ads
+    versions:
+    - 20.0.0
+  - dependency-name: com.mikepenz:aboutlibraries
+    versions:
+    - 8.6.9
+    - 8.7.1
+    - 8.8.4
+  - dependency-name: org.jetbrains.kotlin:kotlin-stdlib-jdk8
+    versions:
+    - 1.4.32
+  - dependency-name: com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin
+    versions:
+    - 8.6.9
+    - 8.7.1
+    - 8.8.3
+  - dependency-name: org.jetbrains.kotlinx:kotlinx-coroutines-core
+    versions:
+    - 1.4.2-native-mt
+  - dependency-name: org.jetbrains.kotlinx:kotlinx-coroutines-android
+    versions:
+    - 1.4.2-native-mt
