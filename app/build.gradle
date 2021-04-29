@@ -126,7 +126,7 @@ dependencies {
 //    implementation 'mnemonik:mnemonik:2.0.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-    implementation 'com.github.tingyik90:snackprogressbar:6.2.0'
+    implementation 'com.github.tingyik90:snackprogressbar:6.4.2'
 
     implementation 'commons-codec:commons-codec:1.15'
 
