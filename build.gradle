@@ -16,7 +16,7 @@ buildscript {
         classpath "de.mannodermaus.gradle.plugins:android-junit5:1.7.0.0"
         classpath "org.jacoco:org.jacoco.core:0.8.6"
 
-        classpath "org.jlleitschuh.gradle:ktlint-gradle:10.0.0"
+        classpath "org.jlleitschuh.gradle:ktlint-gradle:10.1.0"
         classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:8.8.4"
     }
 }
