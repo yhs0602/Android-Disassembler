@@ -130,7 +130,7 @@ dependencies {
 
     implementation 'commons-codec:commons-codec:1.15'
 
-    testImplementation "org.junit.jupiter:junit-jupiter:5.7.1"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.7.2"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit5:$kotlin_version"
     testImplementation "org.spekframework.spek2:spek-dsl-jvm:$spek_version"
     testImplementation "org.spekframework.spek2:spek-runner-junit5:$spek_version"
