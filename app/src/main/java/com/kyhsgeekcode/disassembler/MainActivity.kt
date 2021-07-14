@@ -26,7 +26,7 @@ import at.pollaknet.api.facile.symtab.symbols.Method
 import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
 import com.google.android.material.tabs.TabLayoutMediator
-import com.gu.toolargetool.TooLargeTool
+//import com.gu.toolargetool.TooLargeTool
 import com.kyhsgeekcode.FileExtensions.textFileExts
 import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.disassembler.Calc.Calculator
@@ -189,7 +189,7 @@ class MainActivity : AppCompatActivity(),
     lateinit var overviewFragment: ProjectOverviewFragment
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        TooLargeTool.startLogging(application)
+//        TooLargeTool.startLogging(application)
         setupUncaughtException()
         initNative()
         _binding = MainBinding.inflate(layoutInflater)
