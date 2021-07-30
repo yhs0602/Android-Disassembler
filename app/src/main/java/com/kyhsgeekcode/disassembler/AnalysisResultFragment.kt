@@ -103,8 +103,8 @@ class AnalysisResultFragment : Fragment() {
                     }
                     true
                 }
-                activity?.runOnUiThread {
-                    snackProgressBarManager.dismiss()
+                withContext(Dispatchers.Main) {
+                    snackProgressBarManager.dismissAll()
                     val drawable = analyzer.getImage()
                     binding.tvAnalRes.text = analyzer.result
                     binding.imageViewCount.setImageDrawable(drawable)
