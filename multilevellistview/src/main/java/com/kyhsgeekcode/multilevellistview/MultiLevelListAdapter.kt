@@ -56,7 +56,7 @@ abstract class MultiLevelListAdapter<T> {
      * @param object
      * @return
      */
-    protected abstract fun getParent(anObject: T): T
+//    protected abstract fun getParent(anObject: T): T
 
     /**
      * Gets view configured to display the object.
@@ -132,9 +132,9 @@ abstract class MultiLevelListAdapter<T> {
         val result: MutableList<Node<T>> = ArrayList()
         if (dataItems != null) {
             for (dataItem in dataItems) {
-                if (parent === mRoot) {
-                    mRoot.mObject = getParent(dataItem)
-                }
+//                if (parent === mRoot) {
+//                    mRoot.mObject = getParent(dataItem)
+//                }
                 val isExpandable = isExpandable(dataItem)
                 val node = Node(dataItem, parent)
                 node.isExpandable = isExpandable
@@ -170,9 +170,9 @@ abstract class MultiLevelListAdapter<T> {
         val result: MutableList<Node<T>> = ArrayList()
         if (dataItems != null) {
             for (dataItem in dataItems) {
-                if (parent === mRoot) {
-                    mRoot.mObject = getParent(dataItem)
-                }
+//                if (parent === mRoot) {
+//                    mRoot.mObject = getParent(dataItem)
+//                }
                 val isExpandable = isExpandable(dataItem!!)
                 val node = Node(dataItem, parent)
                 node.isExpandable = isExpandable
@@ -324,41 +324,41 @@ abstract class MultiLevelListAdapter<T> {
         }
     }
 
-    fun extendToNode(nodeObj: T?, expandItems: Stack<T?>?): Int {
-        var expandItems = expandItems
-        if (nodeObj == null) {
-            return -1
-        }
-        if (nodeObj === mRoot.mObject) {
-            return -2
-        }
-        if (expandItems == null) {
-            expandItems = Stack()
-        }
-        val nextNodeObj: T?
-        val flatPos = getPosFromObject(nodeObj)
-        if (flatPos < 0) {
-            // add to stack
-            expandItems.push(nodeObj)
-            nextNodeObj = getParent(nodeObj)
-        } else {
-            if (expandItems.size == 0) {
-                // finish
-                mProxyAdapter.notifyDataSetChanged()
-                return flatPos
-            } else {
-                // expand node
-                val node: Node<T> = mFlatItems!![flatPos]
-                node.setSubNodes(createNodeListFromDataItems(getSubObjects(node.mObject), node))
-
-                // update flat list (add new node subnodes)
-                mFlatItems = createItemsForCurrentStat()
-                // get from stack
-                nextNodeObj = expandItems.pop()
-            }
-        }
-        return extendToNode(nextNodeObj, expandItems)
-    }
+//    fun extendToNode(nodeObj: T?, expandItems: Stack<T?>?): Int {
+//        var expandItems = expandItems
+//        if (nodeObj == null) {
+//            return -1
+//        }
+//        if (nodeObj === mRoot.mObject) {
+//            return -2
+//        }
+//        if (expandItems == null) {
+//            expandItems = Stack()
+//        }
+//        val nextNodeObj: T?
+//        val flatPos = getPosFromObject(nodeObj)
+//        if (flatPos < 0) {
+//            // add to stack
+//            expandItems.push(nodeObj)
+//            nextNodeObj = getParent(nodeObj)
+//        } else {
+//            if (expandItems.size == 0) {
+//                // finish
+//                mProxyAdapter.notifyDataSetChanged()
+//                return flatPos
+//            } else {
+//                // expand node
+//                val node: Node<T> = mFlatItems!![flatPos]
+//                node.setSubNodes(createNodeListFromDataItems(getSubObjects(node.mObject), node))
+//
+//                // update flat list (add new node subnodes)
+//                mFlatItems = createItemsForCurrentStat()
+//                // get from stack
+//                nextNodeObj = expandItems.pop()
+//            }
+//        }
+//        return extendToNode(nextNodeObj, expandItems)
+//    }
 
     /**
      * Collapse node.
@@ -396,12 +396,13 @@ abstract class MultiLevelListAdapter<T> {
         val nodes: List<Node<T>>? = parent?.subNodes
         if (nodes != null) {
             for (sibling in nodes) {
-                if (sibling !== node) {
+                if (sibling != node) {
                     sibling.clearSubNodes()
                 }
             }
         }
-        clearPathToNode(parent)
+        if (parent != null)
+            clearPathToNode(parent)
     }
 
     /**
@@ -445,13 +446,13 @@ abstract class MultiLevelListAdapter<T> {
         return addItem(parentNode)
     }
 
-    fun addItem(parentNodeObj: T?): Boolean {
-        val expandHierarchy = Stack<T?>()
-        val flatPos = extendToNode(parentNodeObj, expandHierarchy)
-        return if (flatPos == -2) {
-            addItem(mRoot)
-        } else addItem(flatPos, true)
-    }
+//    fun addItem(parentNodeObj: T?): Boolean {
+//        val expandHierarchy = Stack<T?>()
+//        val flatPos = extendToNode(parentNodeObj, expandHierarchy)
+//        return if (flatPos == -2) {
+//            addItem(mRoot)
+//        } else addItem(flatPos, true)
+//    }
     /**
      * Update the subNodes list of {@param parentNode} to add the new node and expand it.
      * @param parentNode
@@ -545,7 +546,7 @@ abstract class MultiLevelListAdapter<T> {
             return i.toLong()
         }
 
-        override fun getView(i: Int, convertView: View, viewGroup: ViewGroup): View {
+        override fun getView(i: Int, convertView: View?, viewGroup: ViewGroup): View {
             val node: Node<T> = mFlatItems!![i]
             return getViewForObject(node.mObject!!, convertView, node.itemInfo, i)
         }

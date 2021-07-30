@@ -212,9 +212,9 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) :
         return items
     }
 
-    override fun getParent(anObject: FileDrawerListItem): FileDrawerListItem {
-        TODO()
-    }
+//    override fun getParent(anObject: FileDrawerListItem): FileDrawerListItem {
+//        return anObject
+//    }
 
     private fun getValueFromTypeKindAndBytes(bytes: ByteArray, kind: Int): Any {
         val bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)

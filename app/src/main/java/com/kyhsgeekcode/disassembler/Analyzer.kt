@@ -166,7 +166,7 @@ class Analyzer(private val bytes: ByteArray) {
             return sb.toString()
         }
 
-    fun analyze(progress: (Int, Int, String) -> Boolean) { // Count shorts, calculate average, ...
+    suspend fun analyze(progress: suspend (Int, Int, String) -> Boolean) { // Count shorts, calculate average, ...
         Logger.v(TAG, "Counting numbers")
         Arrays.fill(nums, 0)
         for (i in uBytes.indices) {

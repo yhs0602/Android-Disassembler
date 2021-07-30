@@ -93,9 +93,9 @@ class AnalysisResultFragment : Fragment() {
             val analyzer = Analyzer(fileContent)
             withContext(Dispatchers.Default) {
                 analyzer.analyze { i, total, caption ->
-                    circularType.setMessage(caption)
-                    snackProgressBarManager.setProgress(i)
-                    activity?.runOnUiThread {
+                    withContext(Dispatchers.Main) {
+                        circularType.setMessage(caption)
+                        snackProgressBarManager.setProgress(i)
                         snackProgressBarManager.show(
                             circularType,
                             SnackProgressBarManager.LENGTH_INDEFINITE
