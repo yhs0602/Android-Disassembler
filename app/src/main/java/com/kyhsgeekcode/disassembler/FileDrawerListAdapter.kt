@@ -15,9 +15,9 @@ import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.getDrawable
+import com.kyhsgeekcode.multilevellistview.ItemInfo
+import com.kyhsgeekcode.multilevellistview.MultiLevelListAdapter
 import org.jf.baksmali.Main
-import pl.openrnd.multilevellistview.ItemInfo
-import pl.openrnd.multilevellistview.MultiLevelListAdapter
 import splitties.init.appCtx
 import java.io.File
 import java.io.FileInputStream
@@ -30,14 +30,15 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import kotlin.experimental.and
 
-class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelListAdapter() {
+class FileDrawerListAdapter(val progressHandler: ProgressHandler) :
+    MultiLevelListAdapter<FileDrawerListItem>() {
     var mAlwaysExpandend = false
-    override fun isExpandable(anObject: Any): Boolean {
+    override fun isExpandable(anObject: FileDrawerListItem): Boolean {
         val item = anObject as FileDrawerListItem
         return item.isExpandable
     }
 
-    override fun getSubObjects(anObject: Any): List<*> {
+    override fun getSubObjects(anObject: FileDrawerListItem?): List<FileDrawerListItem> {
         val items: MutableList<FileDrawerListItem> = ArrayList()
         val item = anObject as FileDrawerListItem
         // Moved From MainActivity.java
@@ -211,6 +212,10 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
         return items
     }
 
+    override fun getParent(anObject: FileDrawerListItem): FileDrawerListItem {
+        TODO()
+    }
+
     private fun getValueFromTypeKindAndBytes(bytes: ByteArray, kind: Int): Any {
         val bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
         return when (kind) {
@@ -237,7 +242,12 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) : MultiLevelLi
         var nameView: TextView? = null // ImageView arrowView;
     }
 
-    override fun getViewForObject(anObject: Any, convertView: View?, itemInfo: ItemInfo): View {
+    override fun getViewForObject(
+        anObject: FileDrawerListItem,
+        convertView: View?,
+        itemInfo: ItemInfo,
+        pos: Int
+    ): View {
         var convertView2 = convertView
         val viewHolder: ViewHolder
         if (convertView2 == null) {

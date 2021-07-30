@@ -40,13 +40,14 @@ import com.kyhsgeekcode.disassembler.utils.ProjectManager_OLD
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.isArchive
+import com.kyhsgeekcode.multilevellistview.ItemInfo
+import com.kyhsgeekcode.multilevellistview.MLLVOnItemClickListener
+import com.kyhsgeekcode.multilevellistview.MultiLevelListAdapter
+import com.kyhsgeekcode.multilevellistview.MultiLevelListView
 import com.kyhsgeekcode.rootpicker.FileSelectorActivity
 import com.kyhsgeekcode.sendErrorReport
 import com.tingyik90.snackprogressbar.SnackProgressBar
 import com.tingyik90.snackprogressbar.SnackProgressBarManager
-import pl.openrnd.multilevellistview.ItemInfo
-import pl.openrnd.multilevellistview.MultiLevelListView
-import pl.openrnd.multilevellistview.OnItemClickListener
 import java.io.DataInputStream
 import java.io.File
 import java.io.IOException
@@ -302,11 +303,11 @@ class MainActivity : AppCompatActivity(),
         )
         mDrawerAdapter.setDataItems(initialDrawers)
         mDrawerAdapter.notifyDataSetChanged()
-        binding.leftDrawer.setOnItemClickListener(object : OnItemClickListener {
+        binding.leftDrawer.setOnItemClickListener(object : MLLVOnItemClickListener<FileDrawerListItem> {
             override fun onItemClicked(
-                parent: MultiLevelListView,
+                parent: MultiLevelListView<FileDrawerListItem>,
                 view: View,
-                item: Any,
+                item: FileDrawerListItem?,
                 itemInfo: ItemInfo
             ) {
                 val fitem = item as FileDrawerListItem
@@ -334,9 +335,9 @@ class MainActivity : AppCompatActivity(),
             }
 
             override fun onGroupItemClicked(
-                parent: MultiLevelListView,
+                parent: MultiLevelListView<FileDrawerListItem>,
                 view: View,
-                item: Any,
+                item: FileDrawerListItem?,
                 itemInfo: ItemInfo
             ) { // Toast.makeText(MainActivity.this,((FileDrawerListItem)item).caption,Toast.LENGTH_SHORT).show();
                 if ((item as FileDrawerListItem).isOpenable)
@@ -520,6 +521,7 @@ class MainActivity : AppCompatActivity(),
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             REQUEST_WRITE_STORAGE_REQUEST_CODE -> {
                 // If request is cancelled, the result arrays are empty.
