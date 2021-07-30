@@ -112,7 +112,7 @@ dependencies {
 
     // or "kotlin-stdlib-jdk8"
 //    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:1.0.1" // JVM dependency
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
 
     implementation "androidx.multidex:multidex:2.0.1"
     implementation 'com.google.android.material:material:1.4.0'
