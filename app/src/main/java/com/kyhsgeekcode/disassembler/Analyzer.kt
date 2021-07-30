@@ -387,17 +387,19 @@ class Analyzer(private val bytes: ByteArray) {
             var shash = "Unknown"
             try {
                 val digest = MessageDigest.getInstance(algorithm)
-                val hash = digest.digest(bytes)
-                shash = ""
-                for (b in hash) {
-                    shash += Integer.toHexString((b and 0xFF.toByte()).toInt())
-                }
+                shash = bytes?.digestString(digest)?:shash
+//                val hash = digest.digest(bytes)
+//                shash = ""
+//                for (b in hash) {
+//                    shash += Integer.toHexString((b and 0xFF.toByte()).toInt())
+//                }
             } catch (e: NoSuchAlgorithmException) {
-                Logger.e(TAG, "Faied to get $algorithm hash;", e)
+                Logger.e(TAG, "Failed to get $algorithm hash;", e)
             }
             return shash
         }
     }
+
 
     // Analyzes code, strings, etc
     init {

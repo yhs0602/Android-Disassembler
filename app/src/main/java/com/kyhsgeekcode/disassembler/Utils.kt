@@ -1,6 +1,8 @@
 package com.kyhsgeekcode.disassembler
 
 import java.io.File
+import java.math.BigInteger
+import java.security.MessageDigest
 
 val hexArray = "0123456789ABCDEF".toCharArray()
 fun bytesToHex(bytes: ByteArray): String? {
@@ -20,3 +22,11 @@ fun bytesToHex(bytes: ByteArray): String? {
 fun copyDirectory(fromDir: File, toDir: File) {
     fromDir.copyRecursively(toDir)
 }
+
+
+fun ByteArray.digestString(digester: MessageDigest): String =
+    BigInteger(1, digester.digest(this)).toString(16).padStart(32, '0')
+
+
+fun String.digest(digester: MessageDigest): String =
+    this.toByteArray().digestString(digester)
