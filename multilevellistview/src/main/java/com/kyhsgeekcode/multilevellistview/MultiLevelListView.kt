@@ -102,11 +102,12 @@ class MultiLevelListView<T> : FrameLayout {
     var nestType: NestType
         get() = mNestType
         set(nestType) {
-            if (mNestType === nestType) {
+            if (::mNestType.isInitialized && mNestType == nestType) {
                 return
             }
             mNestType = nestType
-            notifyDataSetChanged()
+            if (::mAdapter.isInitialized)
+                notifyDataSetChanged()
         }
 
     /**
@@ -163,11 +164,9 @@ class MultiLevelListView<T> : FrameLayout {
      * @param adapter Used adapter.
      */
     fun setAdapter(adapter: MultiLevelListAdapter<T>) {
-        mAdapter.unregisterView(this)
+        if (::mAdapter.isInitialized)
+            mAdapter.unregisterView(this)
         mAdapter = adapter
-        if (adapter == null) {
-            return
-        }
         adapter.registerView(this)
     }
 
