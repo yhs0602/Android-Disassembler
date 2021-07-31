@@ -102,7 +102,7 @@ object ProjectManager {
             val copyTargetFileOrFolder = origFolder.resolve(targetFileOrFolder.name)
             if (!targetFileOrFolder.isDirectory && targetFileOrFolder != copyTargetFileOrFolder) {
                 // FileUtils.copyFile(targetFileOrFolder, copyTargetFileOrFolder)
-                targetFileOrFolder.copyTo(copyTargetFileOrFolder)
+                targetFileOrFolder.copyTo(copyTargetFileOrFolder, true)
             } else if (targetFileOrFolder != copyTargetFileOrFolder) {
 //                FileUtils.copyDirectory(targetFileOrFolder, copyTargetFileOrFolder)
                 copyDirectory(targetFileOrFolder, copyTargetFileOrFolder)
