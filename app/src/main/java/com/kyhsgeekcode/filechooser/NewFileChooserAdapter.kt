@@ -240,7 +240,7 @@ class NewFileChooserAdapter(
         values.sortWith(
             compareBy(
                 { !it.text.endsWith("/") },
-                { it.text[0].toLowerCase() },
+                { it.text[0].lowercaseChar() },
                 { it.text })
         )
     }
