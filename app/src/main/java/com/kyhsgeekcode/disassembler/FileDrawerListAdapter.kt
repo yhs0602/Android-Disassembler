@@ -4,7 +4,10 @@ import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.updateLayoutParams
 import at.pollaknet.api.facile.Facile
 import at.pollaknet.api.facile.FacileReflector
 import at.pollaknet.api.facile.symtab.TypeKind
@@ -29,6 +32,7 @@ import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 import kotlin.experimental.and
+import kotlin.math.roundToInt
 
 class FileDrawerListAdapter(val progressHandler: ProgressHandler) :
     MultiLevelListAdapter<FileDrawerListItem>() {
@@ -239,6 +243,8 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) :
     }
 
     private inner class ViewHolder {
+        var expanderView: ImageView? = null
+        var iconView: ImageView? = null
         var nameView: TextView? = null // ImageView arrowView;
     }
 
@@ -254,6 +260,8 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) :
             viewHolder = ViewHolder()
             convertView2 = LayoutInflater.from(appCtx).inflate(R.layout.filedraweritem, null)
             viewHolder.nameView = convertView2.findViewById(R.id.fileDrawerTextView)
+            viewHolder.expanderView = convertView2.findViewById(R.id.iv_fdi_expand)
+            viewHolder.iconView = convertView2.findViewById(R.id.iv_fdi_icon)
             // viewHolder.levelBeamView = (LevelBeamView) convertView.findViewById(R.id.dataItemLevelBeam);
             convertView2.tag = viewHolder
         } else {
@@ -261,26 +269,46 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) :
         }
         val item = anObject as FileDrawerListItem
         viewHolder.nameView!!.text = item.caption
-        val compounds = arrayOfNulls<Drawable>(4)
+        viewHolder.nameView!!.isSelected = true
+//        val compounds = arrayOfNulls<Drawable>(4)
         if (itemInfo.isExpandable && !mAlwaysExpandend) {
-            compounds[0] =
-                getDrawable(if (itemInfo.isExpanded) android.R.drawable.arrow_up_float else android.R.drawable.arrow_down_float)
+            viewHolder.expanderView?.setImageResource(
+                if (itemInfo.isExpanded)
+                    android.R.drawable.arrow_up_float
+                else
+                    android.R.drawable.arrow_down_float
+            )
+//            compounds[0] =
+//                getDrawable()
         } else {
-            compounds[0] = null
+            viewHolder.expanderView?.setImageResource(
+                android.R.color.transparent
+            )
+//            compounds[0] = null
         }
-        compounds[3] = if (item.drawable == null) getDrawableFromType(item.type) else item.drawable
-        for (drawable in compounds) {
-            drawable?.setBounds(0, 0, 40, 40)
-        }
-        viewHolder.nameView!!.setCompoundDrawablesRelative(
-            compounds[0],
-            compounds[1],
-            compounds[2],
-            compounds[3]
+        viewHolder.iconView?.setImageDrawable(
+            if (item.drawable == null)
+                getDrawableFromType(item.type)
+            else item.drawable
         )
+//        compounds[3] =
+//        for (drawable in compounds) {
+//            drawable?.setBounds(0, 0, 40, 40)
+//        }
+//        viewHolder.nameView!!.setCompoundDrawablesRelative(
+//            compounds[0],
+//            compounds[1],
+//            compounds[2],
+//            compounds[3]
+//        )
         // viewHolder.levelBeamView.setLevel(itemInfo.getLevel());
 // Log.d("FileAdapter", "Level:" + item.level);
-        viewHolder.nameView!!.setPaddingRelative(item.level * 30, 0, 0, 0)
+
+        viewHolder.expanderView!!.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+            marginStart = dpToPx(item.level * 20)
+        }
+//        setPaddingDp(item.level * 30, 0, 0, 0)
+//        viewHolder.nameView!!
         return convertView2 as View
     }
 
@@ -358,4 +386,10 @@ object FileNameComparator : Comparator<FileDrawerListItem> {
         }
         return p1.caption.compareTo(p2.caption)
     }
+}
+
+
+fun dpToPx(dp: Int): Int {
+    val density = appCtx.resources.displayMetrics.density
+    return (dp * density).roundToInt()
 }
