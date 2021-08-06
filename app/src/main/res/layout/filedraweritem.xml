@@ -7,7 +7,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_width="20dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_width="16dp"
         android:layout_height="20dp"
         android:src="@android:drawable/arrow_down_float"
         android:id="@+id/iv_fdi_expand"/>
@@ -27,7 +29,6 @@
         android:id="@+id/fileDrawerTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:ellipsize="marquee"
+        android:layout_marginStart="5dp"
         android:text="TextView" />
 </androidx.constraintlayout.widget.ConstraintLayout>
