@@ -108,7 +108,7 @@ dependencies {
     // implementation("com.google.guava:guava:29.0-android")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21"
-    implementation 'org.jsoup:jsoup:1.14.1'
+    implementation 'org.jsoup:jsoup:1.14.2'
 
     // or "kotlin-stdlib-jdk8"
 //    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:1.0.1" // JVM dependency
