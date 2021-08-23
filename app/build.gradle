@@ -100,7 +100,7 @@ dependencies {
     implementation "androidx.core:core-ktx:1.6.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation("com.louiscad.splitties:splitties-fun-pack-android-base:3.0.0-beta03")
+    implementation("com.louiscad.splitties:splitties-fun-pack-android-base:3.0.0")
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
     implementation("com.louiscad.splitties:splitties-appctx:$splitties_version")
     implementation 'org.apache.commons:commons-compress:1.21'
