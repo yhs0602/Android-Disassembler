@@ -31,7 +31,7 @@ allprojects {
 //        maven { url 'http://dev.open-rnd.net:30844/content/groups/public/' }
     }
     ext {
-        splitties_version = "3.0.0-alpha06"
+        splitties_version = "3.0.0"
     }
 }
 
