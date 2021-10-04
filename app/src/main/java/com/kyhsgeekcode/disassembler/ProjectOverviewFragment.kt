@@ -16,7 +16,8 @@ import com.kyhsgeekcode.clearCache
 import com.kyhsgeekcode.disassembler.databinding.FragmentProjectOverviewBinding
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
-import com.kyhsgeekcode.disassembler.project.models.ProjectType
+import com.kyhsgeekcode.disassembler.viewmodel.copyNativeDirToProject
+import com.kyhsgeekcode.disassembler.viewmodel.fileItemTypeToProjectType
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.filechooser.model.FileItemApp
@@ -150,22 +151,6 @@ class ProjectOverviewFragment : Fragment() {
         return project
     }
 
-    private fun copyNativeDirToProject(nativeFile: File?, project: ProjectModel) {
-        if (nativeFile != null && nativeFile.exists() && nativeFile.canRead()) {
-            val targetFolder = File(project.sourceFilePath + "_libs")
-            targetFolder.mkdirs()
-            var targetFile = targetFolder.resolve(nativeFile.name)
-            var i = 0
-            while (targetFile.exists()) {
-                targetFile = File(targetFile.absolutePath + "_extracted_$i.so")
-                i++
-            }
-            // FileUtils.copyDirectory(nativeFile, targetFile)
-            copyDirectory(nativeFile, targetFile)
-        }
-    }
-
-
 
     // Actually, currentProject is set and automatically figured out
     fun initializeDrawer(project: ProjectModel) {
@@ -183,9 +168,6 @@ class ProjectOverviewFragment : Fragment() {
         }
     }
 
-    fun fileItemTypeToProjectType(fileItem: FileItem): String {
-        if (fileItem is FileItemApp)
-            return ProjectType.APK
-        return ProjectType.UNKNOWN
-    }
+
 }
+
