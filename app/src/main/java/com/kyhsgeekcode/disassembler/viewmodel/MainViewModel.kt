@@ -15,9 +15,7 @@ import com.kyhsgeekcode.filechooser.model.FileItemApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -41,6 +39,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _askCopy = MutableStateFlow(false)
     val askCopy = _askCopy as StateFlow<Boolean>
 
+    private val _askOpen = MutableStateFlow<FileDrawerListItem?>(null)
+    val askOpen = _askOpen as StateFlow<FileDrawerListItem?>
+
     private val _file = MutableStateFlow<File>(File("/"))
     val file = _file as StateFlow<File>
 
@@ -55,6 +56,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _selectedFilePath = MutableStateFlow("")
     val selectedFilePath = _selectedFilePath as StateFlow<String>
+
+    private val _fileDrawerItems = MutableStateFlow<List<FileDrawerListItem>>(listOf())
+    val fileDrawerItems = _fileDrawerItems as StateFlow<List<FileDrawerListItem>>
+
+    private val _currentProject = MutableStateFlow<ProjectModel?>(null)
+    val currentProject = _currentProject as StateFlow<ProjectModel?>
+
+    init {
+        viewModelScope.launch {
+            currentProject.filterNotNull().collect { pm ->
+                _fileDrawerItems.value = listOf(FileDrawerListItem(pm.rootFile, 0))
+            }
+        }
+    }
 
     fun onSelectIntent(intent: Intent) {
         Timber.d("onActivityResultOk")
@@ -98,18 +113,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     val project =
                         ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, true)
                     _selectedFilePath.value = project.sourceFilePath
+                    _currentProject.value = project
                 }
             } catch (e: Exception) {
                 viewModelScope.launch {
                     eventChannel.send(Event.FinishProgress())
                     eventChannel.send(Event.AlertError("Failed to create project"))
                 }
-
             }
         }
     }
 
     fun onCopy(copy: Boolean) {
+        _askCopy.value = false
         CoroutineScope(Dispatchers.Main).launch {
             eventChannel.send(Event.StartProgress())
             try {
@@ -117,6 +133,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     onClickCopyDialog(copy)
                 }
                 _selectedFilePath.value = project.sourceFilePath
+                _currentProject.value = project
             } catch (e: Exception) {
                 eventChannel.send(Event.AlertError("Failed to create project"))
             }
@@ -133,6 +150,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             copyNativeDirToProject(nativeFile.value, project)
         }
         return project
+    }
+
+    fun onDrawerItemClick(item: FileDrawerListItem) {
+        // Ask to open raw or not. not -> expand only.
+        // ask opening. ok -> open.
+        if (item.isOpenable) {
+            _askOpen.value = item
+        } else if (item.isExpandable) {
+            expandDrawerItem(item)
+        }
+    }
+
+    private fun expandDrawerItem(item: FileDrawerListItem) {
+        item.getSubObjects()
+    }
+
+    fun onOpen(open: Boolean, item: FileDrawerListItem) {
+        _askOpen.value = null
+        if (open) {
+            openDrawerItem(item)
+        } else if (item.isExpandable) {
+            expandDrawerItem(item)
+        }
+    }
+
+    private fun openDrawerItem(item: FileDrawerListItem) {
+
     }
 
     private val _parsedFile: StateFlow<AbstractFile?> = MutableStateFlow<AbstractFile?>(null)
