@@ -39,8 +39,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _askCopy = MutableStateFlow(false)
     val askCopy = _askCopy as StateFlow<Boolean>
 
-    private val _askOpen = MutableStateFlow<FileDrawerListItem?>(null)
-    val askOpen = _askOpen as StateFlow<FileDrawerListItem?>
+    private val _askOpen = MutableStateFlow<Pair<Int, FileDrawerListItem>?>(null)
+    val askOpen = _askOpen as StateFlow<Pair<Int, FileDrawerListItem>?>
 
     private val _file = MutableStateFlow<File>(File("/"))
     val file = _file as StateFlow<File>
@@ -152,26 +152,29 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return project
     }
 
-    fun onDrawerItemClick(item: FileDrawerListItem) {
+    fun onDrawerItemClick(index: Int, item: FileDrawerListItem) {
         // Ask to open raw or not. not -> expand only.
         // ask opening. ok -> open.
         if (item.isOpenable) {
-            _askOpen.value = item
+            _askOpen.value = Pair(index, item)
         } else if (item.isExpandable) {
-            expandDrawerItem(item)
+            expandDrawerItem(index, item)
         }
     }
 
-    private fun expandDrawerItem(item: FileDrawerListItem) {
-        item.getSubObjects()
+    private fun expandDrawerItem(index: Int, item: FileDrawerListItem) {
+        val subItems = item.getSubObjects()
+        val newList = ArrayList(fileDrawerItems.value)
+        newList.addAll(index + 1, subItems)
+        _fileDrawerItems.value = newList
     }
 
-    fun onOpen(open: Boolean, item: FileDrawerListItem) {
+    fun onOpen(open: Boolean, item: Pair<Int, FileDrawerListItem>) {
         _askOpen.value = null
         if (open) {
-            openDrawerItem(item)
-        } else if (item.isExpandable) {
-            expandDrawerItem(item)
+            openDrawerItem(item.second)
+        } else if (item.second.isExpandable) {
+            expandDrawerItem(item.first, item.second)
         }
     }
 

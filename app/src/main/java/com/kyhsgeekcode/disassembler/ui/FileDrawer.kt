@@ -3,7 +3,7 @@ package com.kyhsgeekcode.disassembler.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
@@ -15,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
+import timber.log.Timber
 
 @Composable
 fun FileDrawer(viewModel: MainViewModel) {
@@ -24,10 +25,10 @@ fun FileDrawer(viewModel: MainViewModel) {
         val fileItems = viewModel.fileDrawerItems.collectAsState()
         if (fileItems.value.isNotEmpty()) {
             LazyColumn(modifier = Modifier.fillMaxHeight()) {
-                items(items = fileItems.value) { item ->
+                itemsIndexed(items = fileItems.value) { index, item ->
                     Row(modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { viewModel.onDrawerItemClick(item) }) {
+                        .clickable { viewModel.onDrawerItemClick(index, item) }) {
                         Icon(
                             imageVector = Icons.Outlined.ArrowDropDown,
                             contentDescription = "expand"
@@ -44,6 +45,7 @@ fun FileDrawer(viewModel: MainViewModel) {
             Text("Select a source by clicking the button in main page.")
         }
     }
+    Timber.d("askOpen: ${askOpen.value}")
     if (askOpen.value != null) {
         AlertDialog(
             onDismissRequest = {
