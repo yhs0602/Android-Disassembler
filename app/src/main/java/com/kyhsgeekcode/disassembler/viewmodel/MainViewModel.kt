@@ -41,8 +41,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _askCopy = MutableStateFlow(false)
     val askCopy = _askCopy as StateFlow<Boolean>
 
-    private val _askOpen = MutableStateFlow<Pair<Int, FileDrawerListItem>?>(null)
-    val askOpen = _askOpen as StateFlow<Pair<Int, FileDrawerListItem>?>
+    private val _askOpen = MutableStateFlow<FileDrawerTreeItem?>(null)
+    val askOpen = _askOpen as StateFlow<FileDrawerTreeItem?>
 
     private val _file = MutableStateFlow<File>(File("/"))
     val file = _file as StateFlow<File>
@@ -170,60 +170,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return project
     }
 
-//    fun onDrawerItemClick(index: Int, item: FileDrawerListItem) {
-//        // Ask to open raw or not. not -> expand only.
-//        // ask opening. ok -> open.
-//        if (item.isOpenable) {
-//            _askOpen.value = Pair(index, item)
-//        } else if (item.isExpandable) {
-//            if (isExpanded(item)) {
-//                expandDrawerItem(index, item)
-//            }
-//        }
-//    }
+    // returns whether should expand
+    fun onClickDrawerItem(item: FileDrawerTreeItem): Boolean {
+        return item.isExpandable()
+    }
 
-//    private fun expandDrawerItem(index: Int, item: FileDrawerListItem) {
-//        val subItems = item.getSubObjects()
-//        val newList = ArrayList(fileDrawerItems.value)
-//        newList.addAll(index + 1, subItems)
-//        _fileDrawerItems.value = newList
-//    }
-//
-//    private fun collapseDrawerItem(item: Pair<Int, FileDrawerListItem>) {
-//        val idx = item.first
-//        val level = item.second.level
-//        val items = ArrayList(fileDrawerItems.value)
-//        var start = false
-//        var done = false
-//
-//    }
+    fun onOpenDrawerItem(item: FileDrawerTreeItem) {
+        openDrawerItem(item)
+    }
 
-//    fun onOpen(open: Boolean, item: Pair<Int, FileDrawerListItem>) {
-//        _askOpen.value = null
-//        if (open) {
-//            openDrawerItem(item.second)
-//        } else if (item.second.isExpandable) {
-//            if (isExpanded(item)) {
-//                collapseDrawerItem(item)
-//            } else {
-//                expandDrawerItem(item.first, item.second)
-//            }
-//        }
-//    }
-
-    private fun openDrawerItem(item: FileDrawerListItem) {
+    private fun openDrawerItem(item: FileDrawerTreeItem) {
 
     }
-//
-//    fun isExpanded(item: Pair<Int, FileDrawerListItem>): Boolean {
-//        val items = fileDrawerItems.value
-//        val idx = item.first
-//        if (items.size > idx + 1) {
-//            val nextItem = items[idx + 1]
-//            return nextItem.level == item.second.level + 1
-//        }
-//        return false
-//    }
 
     private val _parsedFile: StateFlow<AbstractFile?> = MutableStateFlow<AbstractFile?>(null)
     val parsedFile: StateFlow<AbstractFile?> = _parsedFile

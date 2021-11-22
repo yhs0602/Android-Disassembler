@@ -1,115 +1,135 @@
 package com.kyhsgeekcode.disassembler.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
-import timber.log.Timber
 
+@ExperimentalFoundationApi
 @Composable
 fun FileDrawer2(viewModel: MainViewModel) {
-    val askOpen = viewModel.askOpen.collectAsState()
-    Column(Modifier.fillMaxWidth(0.8f)) {
-        val rootFileNode = viewModel.fileDrawerRootNode.collectAsState().value
-        if (rootFileNode == null) {
-            Text("Nothing")
-        } else {
-            TreeView(nodeModel = rootFileNode) { node, expanded, onClick ->
-                Text(text = node.caption, modifier = Modifier.clickable(onClick = {
-                    onClick()
-                }))
+//    val askOpen = viewModel.askOpen.collectAsState()
+    Column(
+        Modifier
+            .fillMaxWidth(0.8f)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Column {
+            IconButton(onClick = { }) {
+                Icons.Outlined.Refresh
+            }
+            val rootFileNode = viewModel.fileDrawerRootNode.collectAsState().value
+            if (rootFileNode == null) {
+                Text("Nothing")
+            } else {
+                TreeView(nodeModel = rootFileNode) { node, expanded, handleExpand ->
+                    FileDrawerItemRow(node, expanded, handleExpand, viewModel)
+                }
             }
         }
+    }
+
+//    askOpenDialog(askOpen, viewModel)
+}
+
+@ExperimentalFoundationApi
+@Composable
+private fun FileDrawerItemRow(
+    node: FileDrawerTreeItem,
+    expanded: Boolean,
+    handleExpand: () -> Unit,
+    viewModel: MainViewModel
+) {
+    Row(modifier = Modifier.combinedClickable(
+        onClick = {
+            if (viewModel.onClickDrawerItem(node)) {
+                handleExpand()
+            }
+        },
+        onLongClick = {
+            if (node.isOpenable) {
+                viewModel.onOpenDrawerItem(node)
+            }
+        }
+    )) {
+        Icon(
+            painter = painterResource(
+                id = if (node.isExpandable()) {
+                    if (expanded) {
+                        android.R.drawable.arrow_up_float
+                    } else {
+                        android.R.drawable.arrow_down_float
+                    }
+                } else {
+                    android.R.drawable.star_on
+                }
+            ),
+            contentDescription = "expand",
+            Modifier.width(20.dp),
+            tint = Color.Green
+        )
+        Icon(
+            painter = painterResource(id = R.drawable.ic_folder_icon),
+            contentDescription = "Folder",
+            Modifier.width(20.dp),
+            tint = Color.Blue
+        )
+        Text(text = node.caption)
     }
 }
 
-@Composable
-fun FileDrawer(viewModel: MainViewModel) {
-    val askOpen = viewModel.askOpen.collectAsState()
-    Column(Modifier.fillMaxWidth(0.8f)) {
-        // expandable list view from project.
-        val fileItems = viewModel.fileDrawerListViewModel.items.collectAsState()
-        if (fileItems.value.isNotEmpty()) {
-            LazyColumn(modifier = Modifier.fillMaxHeight()) {
-                itemsIndexed(items = fileItems.value) { index, item ->
-                    Row(modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-//                            viewModel.fileDrawerListViewModel.onClickItem(
-//                                item
-//                            )
-                        }) {
-                        Spacer(modifier = Modifier.width((20 * 0/*item.item.value.level*/).dp))
-                        Icon(
-                            painter = painterResource(
-                                id = if (false/*item.isExpandable*/) {
-                                    if (true/*viewModel.isExpanded(item)*/) {
-                                        android.R.drawable.arrow_up_float
-                                    } else {
-                                        android.R.drawable.arrow_down_float
-                                    }
-                                } else {
-                                    android.R.color.transparent
-                                }
-                            ),
-                            contentDescription = "expand",
-                            Modifier.width(20.dp)
-                        )
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_folder_icon),
-                            contentDescription = "Folder",
-                            Modifier.width(20.dp)
-                        )
-                        Text(text = "item.caption")
-                    }
-                }
-            }
-        } else {
-            Text("Select a source by clicking the button in main page.")
-        }
-    }
-    Timber.d("askOpen: ${askOpen.value}")
-    if (askOpen.value != null) {
-        AlertDialog(
-            onDismissRequest = {
-                // viewModel.onCopyReply(false)
-            },
-            title = {
-                Text(text = "Open?")
-            },
-            text = {
-                Text("Open?")
-            },
-            buttons = {
-                Row(
-                    modifier = Modifier.padding(all = 8.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Button(
-                        modifier = Modifier.weight(1f),
-                        onClick = { /*viewModel.onOpen(false, askOpen.value ?: return@Button) */ }
-                    ) {
-                        Text("No")
-                    }
-                    Button(
-                        modifier = Modifier.weight(1f),
-                        onClick = { /*viewModel.onOpen(true, askOpen.value ?: return@Button) */ }
-                    ) {
-                        Text("Yes")
-                    }
-                }
-            }
-        )
-    }
-}
+//@Composable
+//private fun askOpenDialog(
+//    askOpen: State<FileDrawerTreeItem?>,
+//    viewModel: MainViewModel,
+//) {
+//    if (askOpen.value != null) {
+//        AlertDialog(
+//            onDismissRequest = {
+//                // viewModel.onCopyReply(false)
+//            },
+//            title = {
+//                Text(text = "Open?")
+//            },
+//            text = {
+//                Text("Open?")
+//            },
+//            buttons = {
+//                Row(
+//                    modifier = Modifier.padding(all = 8.dp),
+//                    horizontalArrangement = Arrangement.Center
+//                ) {
+//                    Button(
+//                        modifier = Modifier.weight(1f),
+//                        onClick = { viewModel.onOpenDrawerItem(false, askOpen.value ?: return@Button) }
+//                    ) {
+//                        Text("No")
+//                    }
+//                    Button(
+//                        modifier = Modifier.weight(1f),
+//                        onClick = { viewModel.onOpenDrawerItem(true, askOpen.value ?: return@Button) }
+//                    ) {
+//                        Text("Yes")
+//                    }
+//                }
+//            }
+//        )
+//    }
+//}

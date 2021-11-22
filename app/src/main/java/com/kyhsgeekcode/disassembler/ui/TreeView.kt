@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -21,11 +19,11 @@ interface TreeNode<T : TreeNode<T>> {
 @Composable
 fun <T : TreeNode<T>> TreeView(
     nodeModel: T,
-    NodeBox: @Composable (nodeModel: T, expanded: Boolean, onClick: () -> Unit) -> Unit
+    NodeBox: @Composable (nodeModel: T, expanded: Boolean, handleExpand: () -> Unit) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-        NodeBox(nodeModel, isExpanded, onClick = {
+    Column {
+        NodeBox(nodeModel, isExpanded, handleExpand = {
             if (isExpanded) {
                 isExpanded = false
             } else {
@@ -37,7 +35,7 @@ fun <T : TreeNode<T>> TreeView(
         if (isExpanded) {
             val children = nodeModel.getChildren()
             Row {
-                Spacer(modifier = Modifier.size(8.dp))
+                Spacer(modifier = Modifier.size(20.dp))
                 Column {
                     children.forEach { model ->
                         TreeView(nodeModel = model, NodeBox = NodeBox)

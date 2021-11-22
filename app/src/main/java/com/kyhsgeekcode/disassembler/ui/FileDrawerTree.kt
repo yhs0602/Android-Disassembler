@@ -24,6 +24,7 @@ import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
+// TODO: Cache children before invalidating
 class FileDrawerTreeItem : TreeNode<FileDrawerTreeItem> {
     var caption: String
     var tag: Any? = null // number or path or object
