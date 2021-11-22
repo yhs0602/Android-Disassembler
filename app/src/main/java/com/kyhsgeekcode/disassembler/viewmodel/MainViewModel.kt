@@ -74,7 +74,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _fileDrawerRootNode = MutableStateFlow<FileDrawerTreeItem?>(null)
     val fileDrawerRootNode = _fileDrawerRootNode as StateFlow<FileDrawerTreeItem?>
 
-    private val _openedTabs = MutableStateFlow<List<TabData>>(listOf())
+    private val _openedTabs =
+        MutableStateFlow(listOf(TabData("Overview", TabKind.ProjectOverview())))
     val openedTabs = _openedTabs as StateFlow<List<TabData>>
 
     private val tabDataMap = HashMap<TabData, PreparedTabData>()
@@ -197,6 +198,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             is TabKind.Image -> ImageTabData(tabKind)
             is TabKind.ProjectOverview -> PreparedTabData()
             is TabKind.Text -> TextTabData(tabKind)
+        }
+        viewModelScope.launch {
+            data.prepare()
         }
         tabDataMap[tabData] = data
     }
