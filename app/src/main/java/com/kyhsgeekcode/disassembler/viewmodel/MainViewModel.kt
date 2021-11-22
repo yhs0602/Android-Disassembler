@@ -57,16 +57,28 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _selectedFilePath = MutableStateFlow("")
     val selectedFilePath = _selectedFilePath as StateFlow<String>
 
-    private val _fileDrawerItems = MutableStateFlow<List<FileDrawerListItem>>(listOf())
-    val fileDrawerItems = _fileDrawerItems as StateFlow<List<FileDrawerListItem>>
-
     private val _currentProject = MutableStateFlow<ProjectModel?>(null)
     val currentProject = _currentProject as StateFlow<ProjectModel?>
+
+    val fileDrawerListViewModel =
+        object : ExpandableListViewModel<FileDrawerListItem>() {
+            override fun onClickItem(item: FileDrawerListItem) {
+                TODO("Not yet implemented")
+            }
+        }
+
+//        //{
+//
+//            FileDrawerListItem(
+//                pm.rootFile,
+//                0
+//            )
+//        }
 
     init {
         viewModelScope.launch {
             currentProject.filterNotNull().collect { pm ->
-                _fileDrawerItems.value = listOf(FileDrawerListItem(pm.rootFile, 0))
+//                fileDrawerListViewModel._items.value = listOf()
             }
         }
     }
@@ -152,35 +164,60 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return project
     }
 
-    fun onDrawerItemClick(index: Int, item: FileDrawerListItem) {
-        // Ask to open raw or not. not -> expand only.
-        // ask opening. ok -> open.
-        if (item.isOpenable) {
-            _askOpen.value = Pair(index, item)
-        } else if (item.isExpandable) {
-            expandDrawerItem(index, item)
-        }
-    }
+//    fun onDrawerItemClick(index: Int, item: FileDrawerListItem) {
+//        // Ask to open raw or not. not -> expand only.
+//        // ask opening. ok -> open.
+//        if (item.isOpenable) {
+//            _askOpen.value = Pair(index, item)
+//        } else if (item.isExpandable) {
+//            if (isExpanded(item)) {
+//                expandDrawerItem(index, item)
+//            }
+//        }
+//    }
 
-    private fun expandDrawerItem(index: Int, item: FileDrawerListItem) {
-        val subItems = item.getSubObjects()
-        val newList = ArrayList(fileDrawerItems.value)
-        newList.addAll(index + 1, subItems)
-        _fileDrawerItems.value = newList
-    }
+//    private fun expandDrawerItem(index: Int, item: FileDrawerListItem) {
+//        val subItems = item.getSubObjects()
+//        val newList = ArrayList(fileDrawerItems.value)
+//        newList.addAll(index + 1, subItems)
+//        _fileDrawerItems.value = newList
+//    }
+//
+//    private fun collapseDrawerItem(item: Pair<Int, FileDrawerListItem>) {
+//        val idx = item.first
+//        val level = item.second.level
+//        val items = ArrayList(fileDrawerItems.value)
+//        var start = false
+//        var done = false
+//
+//    }
 
-    fun onOpen(open: Boolean, item: Pair<Int, FileDrawerListItem>) {
-        _askOpen.value = null
-        if (open) {
-            openDrawerItem(item.second)
-        } else if (item.second.isExpandable) {
-            expandDrawerItem(item.first, item.second)
-        }
-    }
+//    fun onOpen(open: Boolean, item: Pair<Int, FileDrawerListItem>) {
+//        _askOpen.value = null
+//        if (open) {
+//            openDrawerItem(item.second)
+//        } else if (item.second.isExpandable) {
+//            if (isExpanded(item)) {
+//                collapseDrawerItem(item)
+//            } else {
+//                expandDrawerItem(item.first, item.second)
+//            }
+//        }
+//    }
 
     private fun openDrawerItem(item: FileDrawerListItem) {
 
     }
+//
+//    fun isExpanded(item: Pair<Int, FileDrawerListItem>): Boolean {
+//        val items = fileDrawerItems.value
+//        val idx = item.first
+//        if (items.size > idx + 1) {
+//            val nextItem = items[idx + 1]
+//            return nextItem.level == item.second.level + 1
+//        }
+//        return false
+//    }
 
     private val _parsedFile: StateFlow<AbstractFile?> = MutableStateFlow<AbstractFile?>(null)
     val parsedFile: StateFlow<AbstractFile?> = _parsedFile

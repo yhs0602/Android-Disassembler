@@ -18,7 +18,7 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.1.0-alpha05'
+        kotlinCompilerExtensionVersion '1.1.0-alpha06'
     }
     defaultConfig {
         applicationId "com.kyhsgeekcode.disassembler"
@@ -100,29 +100,29 @@ dependencies {
 //    implementation group: "pl.openrnd.android", name: "multi-level-listview", version: "1.0.1"
     // https://mvnrepository.com/artifact/commons-io/commons-io
 //    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
 
     //implementation 'dotnet.msil.decompiler:+'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.core:core-ktx:1.6.0"
+    implementation 'androidx.core:core-ktx:1.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation("com.louiscad.splitties:splitties-fun-pack-android-base:3.0.0-beta03")
+    implementation('com.louiscad.splitties:splitties-fun-pack-android-base:3.0.0')
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
     implementation("com.louiscad.splitties:splitties-appctx:$splitties_version")
     implementation 'org.apache.commons:commons-compress:1.21'
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     // implementation("com.google.guava:guava:29.0-android")
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31"
-    implementation 'org.jsoup:jsoup:1.14.1'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.0'
+    implementation 'org.jsoup:jsoup:1.14.3'
 
     implementation 'com.jakewharton.timber:timber:5.0.1'
 
     // or "kotlin-stdlib-jdk8"
 //    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:1.0.1" // JVM dependency
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1'
 
     implementation "androidx.multidex:multidex:2.0.1"
     implementation 'com.google.android.material:material:1.4.0'
@@ -145,10 +145,10 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'com.github.tingyik90:snackprogressbar:6.4.2'
 
-    implementation 'commons-codec:commons-codec:1.15'
+//    implementation 'commons-codec:commons-codec:'
     implementation project(path: ':multilevellistview')
 
-    testImplementation "org.junit.jupiter:junit-jupiter:5.7.2"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit5:$kotlin_version"
     testImplementation "org.spekframework.spek2:spek-dsl-jvm:$spek_version"
     testImplementation "org.spekframework.spek2:spek-runner-junit5:$spek_version"
@@ -157,26 +157,26 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     implementation 'androidx.fragment:fragment-ktx:1.3.6'
-    implementation 'androidx.activity:activity-ktx:1.3.1'
+    implementation 'androidx.activity:activity-ktx:1.4.0'
 
     // Integration with activities
-    implementation 'androidx.activity:activity-compose:1.3.1'
+    implementation 'androidx.activity:activity-compose:1.4.0'
     // Compose Material Design
-    implementation 'androidx.compose.material:material:1.0.2'
+    implementation 'androidx.compose.material:material:1.0.5'
     // Animations
-    implementation 'androidx.compose.animation:animation:1.0.3'
+    implementation 'androidx.compose.animation:animation:1.0.5'
     // Tooling support (Previews, etc.)
-    implementation 'androidx.compose.ui:ui-tooling:1.0.2'
+    implementation 'androidx.compose.ui:ui-tooling:1.0.5'
     // Integration with ViewModels
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0-beta01'
-    implementation "androidx.navigation:navigation-compose:2.4.0-alpha10"
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
+    implementation 'androidx.navigation:navigation-compose:2.4.0-beta02'
 
 
     // When using a AppCompat theme
     implementation "com.google.accompanist:accompanist-appcompat-theme:0.16.0"
 
     // UI Tests
-    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.0.2'
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.0.5'
 
 //    implementation 'com.gu.android:toolargetool:0.3.0@aar'
 }
