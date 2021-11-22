@@ -59,8 +59,10 @@ private fun FileDrawerItemRow(
 ) {
     Row(modifier = Modifier.combinedClickable(
         onClick = {
-            if (viewModel.onClickDrawerItem(node)) {
+            if (node.isExpandable()) {
                 handleExpand()
+            } else if (node.isOpenable) {
+                viewModel.onOpenDrawerItem(node)
             }
         },
         onLongClick = {

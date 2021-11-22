@@ -66,21 +66,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val fileDrawerRootNode = _fileDrawerRootNode as StateFlow<FileDrawerTreeItem?>
     //  FileDrawerTreeItem(pm.rootFile, 0)
 
-    val fileDrawerListViewModel =
-        object : ExpandableListViewModel<FileDrawerListItem>() {
-            override fun onClickItem(item: FileDrawerListItem) {
-                TODO("Not yet implemented")
-            }
-        }
-
-//        //{
-//
-//            FileDrawerListItem(
-//                pm.rootFile,
-//                0
-//            )
-//        }
-
     init {
         viewModelScope.launch {
             currentProject.filterNotNull().collect { pm ->
@@ -170,17 +155,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return project
     }
 
-    // returns whether should expand
-    fun onClickDrawerItem(item: FileDrawerTreeItem): Boolean {
-        return item.isExpandable()
-    }
-
     fun onOpenDrawerItem(item: FileDrawerTreeItem) {
         openDrawerItem(item)
     }
 
     private fun openDrawerItem(item: FileDrawerTreeItem) {
-
+        Timber.d("Opening item: ${item.caption}")
     }
 
     private val _parsedFile: StateFlow<AbstractFile?> = MutableStateFlow<AbstractFile?>(null)
