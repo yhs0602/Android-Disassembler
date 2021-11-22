@@ -10,6 +10,7 @@ import com.kyhsgeekcode.disassembler.*
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
+import com.kyhsgeekcode.disassembler.ui.FileDrawerTreeItem
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.filechooser.model.FileItemApp
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +33,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         data class ShowToast(val text: String) : Event()
     }
+
 
     private val eventChannel = Channel<Event>(Channel.BUFFERED)
     val eventsFlow = eventChannel.receiveAsFlow()
@@ -60,6 +62,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _currentProject = MutableStateFlow<ProjectModel?>(null)
     val currentProject = _currentProject as StateFlow<ProjectModel?>
 
+    private val _fileDrawerRootNode = MutableStateFlow<FileDrawerTreeItem?>(null)
+    val fileDrawerRootNode = _fileDrawerRootNode as StateFlow<FileDrawerTreeItem?>
+    //  FileDrawerTreeItem(pm.rootFile, 0)
+
     val fileDrawerListViewModel =
         object : ExpandableListViewModel<FileDrawerListItem>() {
             override fun onClickItem(item: FileDrawerListItem) {
@@ -78,7 +84,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     init {
         viewModelScope.launch {
             currentProject.filterNotNull().collect { pm ->
-//                fileDrawerListViewModel._items.value = listOf()
+                _fileDrawerRootNode.value = FileDrawerTreeItem(pm.rootFile, 0)
             }
         }
     }

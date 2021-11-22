@@ -5,24 +5,26 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-interface TreeNode {
+interface TreeNode<T : TreeNode<T>> {
     fun isExpandable(): Boolean
-    fun getChildren(): List<TreeNode>
+    fun getChildren(): List<T>
 }
 
 @Composable
-fun TreeView(
-    nodeModel: TreeNode,
-    NodeBox: @Composable (nodeModel: TreeNode, expanded: Boolean, onClick: () -> Unit) -> Unit
+fun <T : TreeNode<T>> TreeView(
+    nodeModel: T,
+    NodeBox: @Composable (nodeModel: T, expanded: Boolean, onClick: () -> Unit) -> Unit
 ) {
     var isExpanded by remember { mutableStateOf(false) }
-    Column {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         NodeBox(nodeModel, isExpanded, onClick = {
             if (isExpanded) {
                 isExpanded = false
@@ -46,12 +48,12 @@ fun TreeView(
     }
 }
 
-class TestTreeNode : TreeNode {
+class TestTreeNode() : TreeNode<TestTreeNode> {
     override fun isExpandable(): Boolean {
         return true
     }
 
-    override fun getChildren(): List<TreeNode> {
+    override fun getChildren(): List<TestTreeNode> {
         return listOf(TestTreeNode(), TestTreeNode())
     }
 }

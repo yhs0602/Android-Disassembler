@@ -18,6 +18,23 @@ import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 import timber.log.Timber
 
 @Composable
+fun FileDrawer2(viewModel: MainViewModel) {
+    val askOpen = viewModel.askOpen.collectAsState()
+    Column(Modifier.fillMaxWidth(0.8f)) {
+        val rootFileNode = viewModel.fileDrawerRootNode.collectAsState().value
+        if (rootFileNode == null) {
+            Text("Nothing")
+        } else {
+            TreeView(nodeModel = rootFileNode) { node, expanded, onClick ->
+                Text(text = node.caption, modifier = Modifier.clickable(onClick = {
+                    onClick()
+                }))
+            }
+        }
+    }
+}
+
+@Composable
 fun FileDrawer(viewModel: MainViewModel) {
     val askOpen = viewModel.askOpen.collectAsState()
     Column(Modifier.fillMaxWidth(0.8f)) {
@@ -37,7 +54,7 @@ fun FileDrawer(viewModel: MainViewModel) {
                         Icon(
                             painter = painterResource(
                                 id = if (false/*item.isExpandable*/) {
-                                    if(true/*viewModel.isExpanded(item)*/){
+                                    if (true/*viewModel.isExpanded(item)*/) {
                                         android.R.drawable.arrow_up_float
                                     } else {
                                         android.R.drawable.arrow_down_float
@@ -81,13 +98,13 @@ fun FileDrawer(viewModel: MainViewModel) {
                 ) {
                     Button(
                         modifier = Modifier.weight(1f),
-                        onClick = { viewModel.onOpen(false, askOpen.value ?: return@Button) }
+                        onClick = { /*viewModel.onOpen(false, askOpen.value ?: return@Button) */ }
                     ) {
                         Text("No")
                     }
                     Button(
                         modifier = Modifier.weight(1f),
-                        onClick = { viewModel.onOpen(true, askOpen.value ?: return@Button) }
+                        onClick = { /*viewModel.onOpen(true, askOpen.value ?: return@Button) */ }
                     ) {
                         Text("Yes")
                     }

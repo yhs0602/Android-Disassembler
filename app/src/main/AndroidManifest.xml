@@ -34,11 +34,13 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".preference.SettingsActivity"
-            android:label="@string/title_activity_settings" />
+            android:label="@string/title_activity_settings"
+            android:exported="false"/>
 
         <activity
             android:name="com.mikepenz.aboutlibraries.ui.LibsActivity"
-            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"
+            android:exported="false"/>
 
         <provider
             android:name=".CrashReportFileProvider"
@@ -51,7 +53,8 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name="com.kyhsgeekcode.filechooser.NewFileChooserActivity" />
+        <activity android:name="com.kyhsgeekcode.filechooser.NewFileChooserActivity"
+            android:exported="false"/>
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
@@ -91,8 +94,10 @@ meta-data android:name="com.google.android.gms.version"
         -->
         <!-- activity android:name=".MadeByActivity"/ -->
         <!-- activity android:name=".OpenSourceActivity"/ -->
-        <activity android:name="com.kyhsgeekcode.rootpicker.FileSelectorActivity" />
-        <activity android:name=".DonateActivity" />
+        <activity android:name="com.kyhsgeekcode.rootpicker.FileSelectorActivity"
+            android:exported="false"/>
+        <activity android:name=".DonateActivity"
+            android:exported="false"/>
 
     </application>
 
