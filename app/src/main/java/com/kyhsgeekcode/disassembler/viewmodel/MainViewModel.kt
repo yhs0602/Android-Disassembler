@@ -41,16 +41,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _askCopy = MutableStateFlow(false)
     val askCopy = _askCopy as StateFlow<Boolean>
 
-    private val _askOpen = MutableStateFlow<FileDrawerTreeItem?>(null)
-    val askOpen = _askOpen as StateFlow<FileDrawerTreeItem?>
-
-    private val _file = MutableStateFlow<File>(File("/"))
+    private val _file = MutableStateFlow(File("/"))
     val file = _file as StateFlow<File>
 
     private val _nativeFile = MutableStateFlow<File?>(null)
     val nativeFile = _nativeFile as StateFlow<File?>
 
-    private val _projectType = MutableStateFlow<String>(ProjectType.UNKNOWN)
+    private val _projectType = MutableStateFlow(ProjectType.UNKNOWN)
     val projectType = _projectType as StateFlow<String>
 
     private val _openAsProject = MutableStateFlow(false)

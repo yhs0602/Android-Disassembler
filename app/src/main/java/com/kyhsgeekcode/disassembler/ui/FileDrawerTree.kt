@@ -96,11 +96,11 @@ class FileDrawerTreeItem : TreeNode<FileDrawerTreeItem> {
                         type = DrawerItemType.PE_IL
                     // }
                 } catch (e: IOException) {
-                    Log.e(TAG, "", e)
+                    Timber.e(e, "")
                 } catch (e: ArrayIndexOutOfBoundsException) {
-                    Log.e(TAG, "", e)
+                    Timber.e(e, "")
                 } catch (e: NullPointerException) {
-                    Log.e(TAG, "", e)
+                    Timber.e(e, "")
                 }
             } else if (lower.endsWith(".so") ||
                 lower.endsWith(".elf") ||
