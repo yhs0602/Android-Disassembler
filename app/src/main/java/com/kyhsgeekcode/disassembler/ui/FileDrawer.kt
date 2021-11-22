@@ -24,7 +24,7 @@ import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 
 @ExperimentalFoundationApi
 @Composable
-fun FileDrawer2(viewModel: MainViewModel) {
+fun FileDrawer(viewModel: MainViewModel) {
 //    val askOpen = viewModel.askOpen.collectAsState()
     Column(
         Modifier

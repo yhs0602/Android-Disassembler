@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
@@ -40,6 +41,7 @@ import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.disassembler.ui.MainScreen
+import com.kyhsgeekcode.disassembler.utils.CrashReportingTree
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
@@ -135,24 +137,8 @@ class MainActivity : AppCompatActivity(),
     private val viewModel by viewModels<MainViewModel>()
 
     /** A tree which logs important information for crash reporting.  */
-    private class CrashReportingTree : Tree() {
-        val crashlytics = FirebaseCrashlytics.getInstance()
 
-        override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-            if (priority == Log.VERBOSE || priority == Log.DEBUG) {
-                return
-            }
-            crashlytics.log(message)
-            if (t != null) {
-                if (priority == Log.ERROR) {
-                    crashlytics.recordException(t)
-                } else if (priority == Log.WARN) {
-                    crashlytics.recordException(t)
-                }
-            }
-        }
-    }
-
+    @ExperimentalFoundationApi
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        TooLargeTool.startLogging(application)
@@ -298,11 +284,11 @@ class MainActivity : AppCompatActivity(),
 //                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
 //                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
 //                    }
-                        val fragmentDataToOpen = determineFragmentToOpen(fitem)
-                        pagerAdapter.addFragment(
-                            fragmentDataToOpen.first,
-                            fragmentDataToOpen.second
-                        )
+//                        val fragmentDataToOpen = determineFragmentToOpen(fitem)
+//                        pagerAdapter.addFragment(
+//                            fragmentDataToOpen.first,
+//                            fragmentDataToOpen.second
+//                        )
                     },
                     null,
                     null
@@ -321,63 +307,6 @@ class MainActivity : AppCompatActivity(),
         })
     }
 
-    fun determineFragmentToOpen(item: FileDrawerListItem): Pair<Fragment, String> {
-        var title = "${item.caption} as ${item.type}"
-//        val rootPath = ProjectManager.getOriginal("").absolutePath
-        if (item.type == FileDrawerListItem.DrawerItemType.METHOD) {
-            val reflector = (item.tag as Array<*>)[0] as FacileReflector
-            val method = (item.tag as Array<*>)[1] as Method
-            val renderedStr = ILAsmRenderer(reflector).render(method)
-            val key = "${method.owner.name}.${method.name}_${method.methodSignature}"
-            ProjectDataStorage.putFileContent(key, renderedStr.encodeToByteArray())
-            return Pair(TextFragment.newInstance(key), key)
-        }
-        val abspath = (item.tag as String)
-//        Log.d(TAG, "rootPath:${rootPath}")
-        Log.d(TAG, "absPath:$abspath")
-        val ext = File(abspath).extension.toLowerCase()
-        val relPath: String = ProjectManager.getRelPath(abspath)
-//        if (abspath.length > rootPath.length)
-//            relPath = abspath.substring(rootPath.length+2)
-//        else
-//            relPath = ""
-        Log.d(TAG, "relPath:$relPath")
-        val fragment = when (item.type) {
-            FileDrawerListItem.DrawerItemType.ARCHIVE -> ArchiveFragment.newInstance(relPath)
-            FileDrawerListItem.DrawerItemType.APK -> APKFragment.newInstance(relPath)
-            FileDrawerListItem.DrawerItemType.NORMAL -> {
-                Log.d(TAG, "ext:$ext")
-                if (textFileExts.contains(ext)) {
-                    title = "${item.caption} as Text"
-                    TextFragment.newInstance(relPath)
-                } else {
-                    val file = File(abspath)
-                    try {
-                        (BitmapFactory.decodeStream(file.inputStream())
-                            ?: throw Exception()).recycle()
-                        ImageFragment.newInstance(relPath)
-                    } catch (e: Exception) {
-                        BinaryFragment.newInstance(relPath)
-                    }
-                }
-            }
-            FileDrawerListItem.DrawerItemType.BINARY -> BinaryFragment.newInstance(relPath)
-            FileDrawerListItem.DrawerItemType.PE -> BinaryFragment.newInstance(relPath)
-            FileDrawerListItem.DrawerItemType.PE_IL -> DotNetFragment.newInstance(relPath)
-//            FileDrawerListItem.DrawerItemType.PE_IL_TYPE -> TODO()
-//            FileDrawerListItem.DrawerItemType.FIELD -> TODO()
-//            FileDrawerListItem.DrawerItemType.METHOD -> TODO()
-            FileDrawerListItem.DrawerItemType.DEX -> DexFragment.newInstance(relPath)
-//            FileDrawerListItem.DrawerItemType.PROJECT -> TODO()
-            FileDrawerListItem.DrawerItemType.DISASSEMBLY ->
-                BinaryDisasmFragment.newInstance(relPath, BinaryDisasmFragment.ViewMode.Text)
-//            FileDrawerListItem.DrawerItemType.HEAD -> TODO()
-//            FileDrawerListItem.DrawerItemType.NONE -> TODO()
-            else -> throw Exception()
-        }
-
-        return Pair(fragment, title)
-    }
 
     private fun setupUncaughtException() {
         Thread.setDefaultUncaughtExceptionHandler { p1: Thread?, p2: Throwable ->

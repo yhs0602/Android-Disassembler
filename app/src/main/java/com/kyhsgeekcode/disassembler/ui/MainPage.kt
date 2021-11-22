@@ -1,5 +1,6 @@
 package com.kyhsgeekcode.disassembler.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -11,6 +12,7 @@ import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
 
+@ExperimentalFoundationApi
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
 //    val navController = rememberNavController()
@@ -19,7 +21,7 @@ fun MainScreen(viewModel: MainViewModel) {
     Scaffold(
         scaffoldState = state,
         drawerContent = {
-            FileDrawer2(viewModel)
+            FileDrawer(viewModel)
         },
         topBar = {
             TopAppBar(

@@ -13,7 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 
@@ -35,15 +37,14 @@ fun ProjectOverview(viewModel: MainViewModel) {
     val askCopy = viewModel.askCopy.collectAsState()
 
     Column(Modifier.fillMaxSize()) {
-        Text(text = "Disassembler")
-        Text(text = "Select any file to disassemble, or oopen sub files from the drawer left")
+        Text(text = stringResource(id = R.string.main_select_source_guide))
         Row(Modifier.fillMaxWidth()) {
             TextField(value = "", onValueChange = {})
             Button(onClick = {
                 val j = Intent(context, NewFileChooserActivity::class.java)
                 launcher.launch(j)
             }) {
-                Text(text = "Select File")
+                Text(text = stringResource(id = R.string.select_file))
             }
         }
     }

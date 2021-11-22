@@ -1,9 +1,13 @@
 package com.kyhsgeekcode.disassembler.utils
 
-import android.graphics.Color
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import prettify.PrettifyParser
@@ -39,8 +43,26 @@ object PrettifyHighlighter {
             highlighted
         }
 
+    suspend fun highlight2(fileExtension: String?, sourceCode: String): AnnotatedString =
+        withContext(Dispatchers.Default) {
+            val results: List<ParseResult> = parser.parse(fileExtension, sourceCode)
+            buildAnnotatedString {
+                for (result in results) {
+                    val type: String = result.styleKeys[0]
+                    withStyle(SpanStyle(Color(getColor(type)))) {
+                        val theStr =
+                            sourceCode.subSequence(result.offset, result.offset + result.length)
+                                .toString()
+                        append(theStr)
+                    }
+                }
+            }
+        }
+
     fun getColor(type: String): Int {
-        return Color.parseColor("#${if (COLORS.containsKey(type)) COLORS[type] else COLORS["pln"]}")
+        return android.graphics.Color.parseColor(
+            "#${if (COLORS.containsKey(type)) COLORS[type] else COLORS["pln"]}"
+        )
     }
 
     //    companion object {

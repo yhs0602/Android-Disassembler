@@ -2,15 +2,27 @@ package com.kyhsgeekcode.disassembler.viewmodel
 
 import android.app.Application
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import at.pollaknet.api.facile.FacileReflector
+import at.pollaknet.api.facile.renderer.ILAsmRenderer
+import at.pollaknet.api.facile.symtab.symbols.Method
+import com.kyhsgeekcode.FileExtensions
 import com.kyhsgeekcode.TAG
 import com.kyhsgeekcode.disassembler.*
+import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.disassembler.ui.FileDrawerTreeItem
+import com.kyhsgeekcode.disassembler.ui.TabData
+import com.kyhsgeekcode.disassembler.ui.TabKind
+import com.kyhsgeekcode.disassembler.ui.ViewMode
+import com.kyhsgeekcode.disassembler.ui.tabs.ImageTabData
+import com.kyhsgeekcode.disassembler.ui.tabs.PreparedTabData
+import com.kyhsgeekcode.disassembler.ui.tabs.TextTabData
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.filechooser.model.FileItemApp
 import kotlinx.coroutines.CoroutineScope
@@ -61,6 +73,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _fileDrawerRootNode = MutableStateFlow<FileDrawerTreeItem?>(null)
     val fileDrawerRootNode = _fileDrawerRootNode as StateFlow<FileDrawerTreeItem?>
+
+    private val _openedTabs = MutableStateFlow<List<TabData>>(listOf())
+    val openedTabs = _openedTabs as StateFlow<List<TabData>>
+
+    private val tabDataMap = HashMap<TabData, PreparedTabData>()
+
     //  FileDrawerTreeItem(pm.rootFile, 0)
 
     init {
@@ -158,10 +176,92 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun openDrawerItem(item: FileDrawerTreeItem) {
         Timber.d("Opening item: ${item.caption}")
+        val tabData = createTabData(item)
+        prepareTabData(tabData)
+        val newList = ArrayList<TabData>()
+        newList.addAll(openedTabs.value)
+        newList.add(tabData)
+        _openedTabs.value = newList
+    }
+
+    private fun prepareTabData(tabData: TabData) {
+        val data = when (val tabKind = tabData.tabKind) {
+            is TabKind.AnalysisResult -> TODO()
+            is TabKind.Apk -> TODO()
+            is TabKind.Archive -> TODO()
+            is TabKind.Binary -> TODO()
+            is TabKind.BinaryDetail -> TODO()
+            is TabKind.BinaryDisasm -> TODO()
+            is TabKind.Dex -> TODO()
+            is TabKind.DotNet -> TODO()
+            is TabKind.Image -> ImageTabData(tabKind)
+            is TabKind.ProjectOverview -> PreparedTabData()
+            is TabKind.Text -> TextTabData(tabKind)
+        }
+        tabDataMap[tabData] = data
+    }
+
+    fun <T : PreparedTabData> getTabData(key: TabData): T {
+        return (tabDataMap[key] as T)
     }
 
     private val _parsedFile: StateFlow<AbstractFile?> = MutableStateFlow<AbstractFile?>(null)
     val parsedFile: StateFlow<AbstractFile?> = _parsedFile
+}
+
+
+private fun createTabData(item: FileDrawerTreeItem): TabData {
+    var title = "${item.caption} as ${item.type}"
+//        val rootPath = ProjectManager.getOriginal("").absolutePath
+    if (item.type == FileDrawerTreeItem.DrawerItemType.METHOD) {
+        val reflector = (item.tag as Array<*>)[0] as FacileReflector
+        val method = (item.tag as Array<*>)[1] as Method
+        val renderedStr = ILAsmRenderer(reflector).render(method)
+        val key = "${method.owner.name}.${method.name}_${method.methodSignature}"
+        ProjectDataStorage.putFileContent(key, renderedStr.encodeToByteArray())
+        return TabData(key, TabKind.Text(key))
+    }
+    val abspath = (item.tag as String)
+//        Log.d(TAG, "rootPath:${rootPath}")
+    Timber.d("absPath:$abspath")
+    val ext = File(abspath).extension.toLowerCase()
+    val relPath: String = ProjectManager.getRelPath(abspath)
+//        if (abspath.length > rootPath.length)
+//            relPath = abspath.substring(rootPath.length+2)
+//        else
+//            relPath = ""
+    Timber.d("relPath:$relPath")
+    val tabkind: TabKind = when (item.type) {
+        FileDrawerTreeItem.DrawerItemType.ARCHIVE -> TabKind.Archive(relPath)
+        FileDrawerTreeItem.DrawerItemType.APK -> TabKind.Apk(relPath)
+        FileDrawerTreeItem.DrawerItemType.NORMAL -> {
+            Timber.d("ext:$ext")
+            if (FileExtensions.textFileExts.contains(ext)) {
+                title = "${item.caption} as Text"
+                TabKind.Text(relPath)
+            } else {
+                val file = File(abspath)
+                try {
+                    (BitmapFactory.decodeStream(file.inputStream())
+                        ?: throw Exception()).recycle()
+                    TabKind.Image(relPath)
+                } catch (e: Exception) {
+                    TabKind.Binary(relPath)
+                }
+            }
+        }
+        FileDrawerTreeItem.DrawerItemType.BINARY -> TabKind.Binary(relPath)
+        FileDrawerTreeItem.DrawerItemType.PE -> TabKind.Binary(relPath)
+        FileDrawerTreeItem.DrawerItemType.PE_IL -> TabKind.DotNet(relPath)
+        FileDrawerTreeItem.DrawerItemType.DEX -> TabKind.Dex(relPath)
+        FileDrawerTreeItem.DrawerItemType.DISASSEMBLY -> TabKind.BinaryDisasm(
+            relPath,
+            ViewMode.Text
+        )
+        else -> throw Exception()
+    }
+
+    return TabData(title, tabkind)
 }
 
 fun fileItemTypeToProjectType(fileItem: FileItem): String {
