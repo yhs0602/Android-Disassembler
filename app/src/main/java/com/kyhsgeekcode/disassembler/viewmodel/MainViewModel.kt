@@ -19,7 +19,6 @@ import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.disassembler.ui.FileDrawerTreeItem
 import com.kyhsgeekcode.disassembler.ui.TabData
 import com.kyhsgeekcode.disassembler.ui.TabKind
-import com.kyhsgeekcode.disassembler.ui.ViewMode
 import com.kyhsgeekcode.disassembler.ui.tabs.ImageTabData
 import com.kyhsgeekcode.disassembler.ui.tabs.PreparedTabData
 import com.kyhsgeekcode.disassembler.ui.tabs.TextTabData
@@ -75,7 +74,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val fileDrawerRootNode = _fileDrawerRootNode as StateFlow<FileDrawerTreeItem?>
 
     private val _openedTabs =
-        MutableStateFlow(listOf(TabData("Overview", TabKind.ProjectOverview())))
+        MutableStateFlow(listOf(TabData("Overview", TabKind.ProjectOverview)))
     val openedTabs = _openedTabs as StateFlow<List<TabData>>
 
     private val tabDataMap = HashMap<TabData, PreparedTabData>()
@@ -191,8 +190,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             is TabKind.Apk -> TODO()
             is TabKind.Archive -> TODO()
             is TabKind.Binary -> TODO()
-            is TabKind.BinaryDetail -> TODO()
-            is TabKind.BinaryDisasm -> TODO()
             is TabKind.Dex -> TODO()
             is TabKind.DotNet -> TODO()
             is TabKind.Image -> ImageTabData(
@@ -201,6 +198,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             )
             is TabKind.ProjectOverview -> PreparedTabData()
             is TabKind.Text -> TextTabData(tabKind)
+            is TabKind.FoundString -> TODO()
+            is TabKind.Hex -> TODO()
+            is TabKind.Log -> TODO()
         }
         viewModelScope.launch {
             data.prepare()
@@ -261,10 +261,10 @@ private fun createTabData(item: FileDrawerTreeItem): TabData {
         FileDrawerTreeItem.DrawerItemType.PE -> TabKind.Binary(relPath)
         FileDrawerTreeItem.DrawerItemType.PE_IL -> TabKind.DotNet(relPath)
         FileDrawerTreeItem.DrawerItemType.DEX -> TabKind.Dex(relPath)
-        FileDrawerTreeItem.DrawerItemType.DISASSEMBLY -> TabKind.BinaryDisasm(
+        /*FileDrawerTreeItem.DrawerItemType.DISASSEMBLY -> TabKind.BinaryDisasm(
             relPath,
             ViewMode.Text
-        )
+        )*/
         else -> throw Exception()
     }
 

@@ -7,6 +7,7 @@ import at.pollaknet.api.facile.exception.SizeMismatchException
 import at.pollaknet.api.facile.exception.UnexpectedHeaderDataException
 import nl.lxtreme.binutils.elf.MachineType
 import splitties.init.appCtx
+import timber.log.Timber
 import java.io.Closeable
 import java.io.File
 import java.io.IOException
@@ -112,7 +113,7 @@ abstract class AbstractFile : Closeable {
                 return try {
                     ElfFile(file, content)
                 } catch (e: Exception) { // not an elf file. try PE parser
-                    Log.d(TAG, "Fail elfutil", e)
+                    Timber.d(e, "Fail elfutil")
                     try {
                         PEFile(file, content)
                     } catch (f: NotThisFormatException) {

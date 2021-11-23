@@ -33,11 +33,11 @@ class ImageTabData(val data: TabKind.Image, var resources: Resources?) : Prepare
 @Composable
 fun ImageTab(data: TabData, viewModel: MainViewModel) {
     val preparedTabData: ImageTabData = viewModel.getTabData(data)
-    val highlighted = preparedTabData.image.collectAsState()
+    val image = preparedTabData.image.collectAsState()
     AndroidView(factory = { context ->
         PhotoView(context)
     }, update = { view ->
-        view.setImageDrawable(highlighted.value)
+        view.setImageDrawable(image.value)
     }, modifier = Modifier.fillMaxSize())
 
 //    binding.textFragmentTextView.setBackgroundColor(Color.BLACK)

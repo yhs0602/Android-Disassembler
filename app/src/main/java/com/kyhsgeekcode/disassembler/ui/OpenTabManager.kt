@@ -44,12 +44,13 @@ fun TabContent(state: Int, viewModel: MainViewModel) {
         is TabKind.Apk -> TODO()
         is TabKind.Archive -> TODO()
         is TabKind.Binary -> TODO()
-        is TabKind.BinaryDetail -> TODO()
-        is TabKind.BinaryDisasm -> TODO()
         is TabKind.Dex -> TODO()
         is TabKind.DotNet -> TODO()
         is TabKind.Image -> ImageTab(theTab, viewModel)
         is TabKind.Text -> TextTab(theTab, viewModel)
         is TabKind.ProjectOverview -> ProjectOverview(viewModel)
+        is TabKind.FoundString -> TODO()
+        is TabKind.Hex -> TODO()
+        is TabKind.Log -> TODO()
     }
 }
