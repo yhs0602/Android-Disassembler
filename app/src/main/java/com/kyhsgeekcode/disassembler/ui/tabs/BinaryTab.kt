@@ -1,5 +1,6 @@
 package com.kyhsgeekcode.disassembler.ui.tabs
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ScrollableTabRow
@@ -51,12 +52,14 @@ class BinaryTabData(val data: TabKind.Binary) : PreparedTabData() {
     }
 }
 
+@ExperimentalFoundationApi
 @Composable
 fun BinaryTab(data: TabData, viewModel: MainViewModel) {
     val preparedTabData: BinaryTabData = viewModel.getTabData(data)
     OpenedBinaryTabs(data = preparedTabData, viewModel = viewModel)
 }
 
+@ExperimentalFoundationApi
 @Composable
 fun OpenedBinaryTabs(data: BinaryTabData, viewModel: MainViewModel) {
     var state by remember { mutableStateOf(0) }
@@ -80,6 +83,7 @@ fun OpenedBinaryTabs(data: BinaryTabData, viewModel: MainViewModel) {
     }
 }
 
+@ExperimentalFoundationApi
 @Composable
 fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) {
     val theTab = data.openedTabs.value[state]
