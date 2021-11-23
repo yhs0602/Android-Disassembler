@@ -39,7 +39,13 @@ sealed class BinaryTabKind {
 }
 
 class BinaryTabData(val data: TabKind.Binary) : PreparedTabData() {
-    private val _openedTabs = MutableStateFlow<List<BinaryInternalTabData>>(listOf())
+    private val _openedTabs = MutableStateFlow(listOf(
+        BinaryInternalTabData("Overview", BinaryTabKind.BinaryOverview()),
+        BinaryInternalTabData("Detail", BinaryTabKind.BinaryDetail()),
+        BinaryInternalTabData("Import Symbol", BinaryTabKind.BinaryImportSymbol()),
+        BinaryInternalTabData("Export Symbol", BinaryTabKind.BinaryExportSymbol()),
+        BinaryInternalTabData("Disassembly", BinaryTabKind.BinaryDisasm(data.relPath, ViewMode.Binary)),
+    ))
     val openedTabs = _openedTabs as StateFlow<List<BinaryInternalTabData>>
 
     private val _parsedFile = MutableStateFlow<DataResult<AbstractFile>>(DataResult.Loading())

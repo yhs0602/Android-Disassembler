@@ -19,6 +19,7 @@ import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.disassembler.ui.FileDrawerTreeItem
 import com.kyhsgeekcode.disassembler.ui.TabData
 import com.kyhsgeekcode.disassembler.ui.TabKind
+import com.kyhsgeekcode.disassembler.ui.tabs.BinaryTabData
 import com.kyhsgeekcode.disassembler.ui.tabs.ImageTabData
 import com.kyhsgeekcode.disassembler.ui.tabs.PreparedTabData
 import com.kyhsgeekcode.disassembler.ui.tabs.TextTabData
@@ -189,7 +190,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             is TabKind.AnalysisResult -> TODO()
             is TabKind.Apk -> TODO()
             is TabKind.Archive -> TODO()
-            is TabKind.Binary -> TODO()
+            is TabKind.Binary -> BinaryTabData(tabKind)
             is TabKind.Dex -> TODO()
             is TabKind.DotNet -> TODO()
             is TabKind.Image -> ImageTabData(
