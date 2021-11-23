@@ -195,7 +195,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             is TabKind.BinaryDisasm -> TODO()
             is TabKind.Dex -> TODO()
             is TabKind.DotNet -> TODO()
-            is TabKind.Image -> ImageTabData(tabKind)
+            is TabKind.Image -> ImageTabData(
+                tabKind,
+                getApplication<Application>().applicationContext.resources
+            )
             is TabKind.ProjectOverview -> PreparedTabData()
             is TabKind.Text -> TextTabData(tabKind)
         }

@@ -7,6 +7,7 @@ import androidx.compose.material.Tab
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import com.kyhsgeekcode.disassembler.ui.tabs.ImageTab
 import com.kyhsgeekcode.disassembler.ui.tabs.TextTab
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 
@@ -47,7 +48,7 @@ fun TabContent(state: Int, viewModel: MainViewModel) {
         is TabKind.BinaryDisasm -> TODO()
         is TabKind.Dex -> TODO()
         is TabKind.DotNet -> TODO()
-        is TabKind.Image -> TODO()
+        is TabKind.Image -> ImageTab(theTab, viewModel)
         is TabKind.Text -> TextTab(theTab, viewModel)
         is TabKind.ProjectOverview -> ProjectOverview(viewModel)
     }
