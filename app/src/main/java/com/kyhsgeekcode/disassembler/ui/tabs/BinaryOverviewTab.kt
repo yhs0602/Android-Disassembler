@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import com.kyhsgeekcode.disassembler.AbstractFile
 import com.kyhsgeekcode.disassembler.R
+import com.kyhsgeekcode.disassembler.ui.HexTextField
 import com.kyhsgeekcode.disassembler.ui.Spinner
 import nl.lxtreme.binutils.elf.MachineType
 import java.util.*
@@ -100,6 +101,6 @@ private fun BinaryOverviewDataRow(
 ) {
     Row {
         Text(caption)
-        TextField(value = data, onValueChange = onValueChange, enabled = enabled)
+        HexTextField(value = data, onValueChange = onValueChange, enabled = enabled)
     }
 }

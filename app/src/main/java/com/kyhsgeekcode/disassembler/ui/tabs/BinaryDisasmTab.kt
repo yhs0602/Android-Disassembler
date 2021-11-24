@@ -1,12 +1,9 @@
 package com.kyhsgeekcode.disassembler.ui.tabs
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -14,11 +11,14 @@ import androidx.compose.ui.unit.dp
 import com.kyhsgeekcode.disassembler.AbstractFile
 import com.kyhsgeekcode.disassembler.DisassemblyListItem
 import com.kyhsgeekcode.disassembler.R
+import com.kyhsgeekcode.disassembler.ui.InfiniteList
 
 @ExperimentalFoundationApi
 @Composable
 fun BinaryDisasmTabContent(data: AbstractFile) {
-    LazyColumn(Modifier.horizontalScroll(rememberScrollState())) {
+    InfiniteList(onLoadMore = { lastVisibleItemIndex ->
+
+    }) {
         stickyHeader {
             BinaryDisasmHeader()
         }
