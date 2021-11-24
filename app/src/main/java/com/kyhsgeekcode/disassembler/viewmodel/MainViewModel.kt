@@ -213,6 +213,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return (tabDataMap[key] as T)
     }
 
+    fun closeCurrentFile() {
+        TODO("Not yet implemented")
+    }
+
     private val _parsedFile: StateFlow<AbstractFile?> = MutableStateFlow<AbstractFile?>(null)
     val parsedFile: StateFlow<AbstractFile?> = _parsedFile
 }
