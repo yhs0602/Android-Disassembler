@@ -42,6 +42,9 @@ fun MainScreen(viewModel: MainViewModel) {
                             }
                         })
                     )
+                },
+                actions = {
+                    ActivatedMenus(viewModel)
                 }
             )
         },
