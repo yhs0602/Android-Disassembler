@@ -107,7 +107,7 @@ dependencies {
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     // implementation("com.google.guava:guava:29.0-android")
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10"
     implementation 'org.jsoup:jsoup:1.14.1'
 
     // or "kotlin-stdlib-jdk8"
