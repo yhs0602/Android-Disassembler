@@ -3,10 +3,12 @@ package com.kyhsgeekcode.disassembler.ui.tabs
 import android.util.LongSparseArray
 import android.util.SparseArray
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
@@ -83,7 +85,7 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
 fun BinaryDisasmTabContent(disasmData: BinaryDisasmData) {
     InfiniteList(onLoadMore = { lastVisibleItemIndex ->
         disasmData.loadMore(lastVisibleItemIndex)
-    }) {
+    }, Modifier.horizontalScroll(rememberScrollState())) {
         stickyHeader {
             BinaryDisasmHeader()
         }
@@ -97,10 +99,10 @@ fun BinaryDisasmTabContent(disasmData: BinaryDisasmData) {
 private fun BinaryDisasmHeader() {
     Row(Modifier.height(IntrinsicSize.Min)) {
         CellText(stringResource(id = R.string.address), Modifier.width(80.dp))
-        CellText(stringResource(id = R.string.label), Modifier.width(40.dp))
-        CellText("Bytes", Modifier.width(80.dp))
+        CellText(stringResource(id = R.string.size_short), Modifier.width(30.dp))
+        CellText("Bytes", Modifier.width(90.dp))
         CellText(stringResource(id = R.string.instruction), Modifier.width(100.dp))
-        CellText(stringResource(id = R.string.condition), Modifier.width(20.dp))
+        CellText(stringResource(id = R.string.condition_short), Modifier.width(20.dp))
         CellText(stringResource(id = R.string.operands), Modifier.width(180.dp))
         CellText(stringResource(id = R.string.comment), Modifier.width(200.dp))
     }
@@ -111,8 +113,8 @@ private fun BinaryDisasmRow(item: DisassemblyListItem) {
     // 7 textviews!
     Row(Modifier.height(IntrinsicSize.Min)) {
         CellText(item.address, Modifier.width(80.dp))
-        CellText(item.label, Modifier.width(40.dp))
-        CellText(item.bytes, Modifier.width(80.dp))
+        CellText(item.label, Modifier.width(30.dp))
+        CellText(item.bytes, Modifier.width(90.dp))
         CellText(item.instruction, Modifier.width(100.dp))
         CellText(item.condition, Modifier.width(20.dp))
         CellText(item.operands, Modifier.width(180.dp))

@@ -310,4 +310,7 @@ Android </string>
     <string name="library_smali_licenseId" translatable="false">apache_2_0 </string>
     <string name="library_smali_isOpenSource" translatable="false"> true </string>
     <string name="library_smali_repositoryLink" translatable="false">https://github.com/JesusFreke/smali </string>
+    <string name="condition_short" translatable="false">C</string>
+    <string name="size">Size</string>
+    <string name="size_short">S</string>
 </resources>

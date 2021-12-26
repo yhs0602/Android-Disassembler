@@ -2,6 +2,7 @@ package com.kyhsgeekcode.disassembler.ui
 
 import androidx.compose.foundation.lazy.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -9,12 +10,14 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun InfiniteList(
     onLoadMore: (Int) -> Unit,
+    modifier: Modifier,
     Content: LazyListScope.() -> Unit
 ) {
     val listState = rememberLazyListState()
 
     LazyColumn(
-        state = listState
+        state = listState,
+        modifier = modifier
     ) {
         Content()
     }
