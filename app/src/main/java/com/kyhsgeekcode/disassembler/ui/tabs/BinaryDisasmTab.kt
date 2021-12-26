@@ -3,7 +3,9 @@ package com.kyhsgeekcode.disassembler.ui.tabs
 import android.util.LongSparseArray
 import android.util.SparseArray
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -93,7 +95,7 @@ fun BinaryDisasmTabContent(disasmData: BinaryDisasmData) {
 
 @Composable
 private fun BinaryDisasmHeader() {
-    Row {
+    Row(Modifier.height(IntrinsicSize.Min)) {
         CellText(stringResource(id = R.string.address), Modifier.width(80.dp))
         CellText(stringResource(id = R.string.label), Modifier.width(40.dp))
         CellText("Bytes", Modifier.width(80.dp))
@@ -107,7 +109,7 @@ private fun BinaryDisasmHeader() {
 @Composable
 private fun BinaryDisasmRow(item: DisassemblyListItem) {
     // 7 textviews!
-    Row {
+    Row(Modifier.height(IntrinsicSize.Min)) {
         CellText(item.address, Modifier.width(80.dp))
         CellText(item.label, Modifier.width(40.dp))
         CellText(item.bytes, Modifier.width(80.dp))

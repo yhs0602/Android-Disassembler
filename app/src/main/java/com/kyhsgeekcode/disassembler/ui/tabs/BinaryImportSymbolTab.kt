@@ -1,14 +1,13 @@
 package com.kyhsgeekcode.disassembler.ui.tabs
 
 import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
@@ -32,7 +31,7 @@ fun BinaryImportSymbolTabContent(data: AbstractFile) {
 
 @Composable
 fun ImportSymbolHeader() {
-    Row {
+    Row(Modifier.height(IntrinsicSize.Min)) {
         CellText("Owner", Modifier.width(100.dp))
         CellText("Name", Modifier.width(300.dp))
         CellText("Demangled", Modifier.width(300.dp))
@@ -49,7 +48,7 @@ fun ImportSymbolHeader() {
 fun ImportSymbolRow(symbol: ImportSymbol) {
     // 9 textviews!
     val uriHandler = LocalUriHandler.current
-    Row {
+    Row(Modifier.height(IntrinsicSize.Min)) {
         CellText(symbol.owner, Modifier.width(100.dp))
         CellText(symbol.name, Modifier.width(300.dp))
         val url = symbol.demangled?.run {
@@ -80,6 +79,8 @@ fun CellText(content: String, modifier: Modifier) {
         modifier = modifier
             .background(Color.White)
             .border(1.dp, Color.Cyan)
+            .padding(8.dp)
+            .fillMaxHeight()
     ) {
         Text(text = content)
     }
