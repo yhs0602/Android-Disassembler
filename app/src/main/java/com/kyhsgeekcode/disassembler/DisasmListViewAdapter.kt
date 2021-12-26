@@ -1,6 +1,5 @@
 package com.kyhsgeekcode.disassembler
 
-import android.util.Log
 import android.util.LongSparseArray
 import android.util.SparseArray
 import android.view.LayoutInflater
@@ -13,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kyhsgeekcode.convertDpToPixel
 import com.kyhsgeekcode.disassembler.ColorHelper.palette
 import com.kyhsgeekcode.disassembler.databinding.ListviewItemBinding
+import timber.log.Timber
 
 class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     var file: AbstractFile,
@@ -21,14 +21,13 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     val mLayoutManager: LinearLayoutManager
 ) : RecyclerView.Adapter<DisasmListViewAdapter.ViewHolder>() {
     private lateinit var listView: RecyclerView
-    private val TAG = "Disassembler LV"
-
     var currentAddress: Long = 0
 
     fun clear() {
         address.clear()
         itemsNew.clear()
     }
+
 
     fun addAll(
         data: LongSparseArray<DisassemblyListItem>,
@@ -45,20 +44,20 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     }
 
     // New method
-// private int [] address;
-// position->address
+    // position->address
     var address = SparseArray<Long>()
 
     // address->item
     private var itemsNew = LongSparseArray<DisassemblyListItem>()
     var writep = 0
-    private var dit: DisasmIterator
+    private var dit: DisasmIterator = DisasmIterator(file, handle)
 
     // @address eq virtualaddress
     fun loadMore(position: Int, address: Long) { // this.address.clear();
-        Log.d(
-            TAG,
-            "LoadMore position: $position, writep: $writep, virtaddr: ${address.toString(16)}"
+        Timber.d(
+            "LoadMore position: $position, writep: $writep, virtaddr: " + address.toString(
+                16
+            )
         )
         writep = position
         if (currentAddress == 0L)
@@ -73,10 +72,6 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         )
     }
 
-//    // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
-//    override fun getCount(): Int {
-//        return address.size() //listViewItemList.size();// lvLength;//listViewItemList//size() ;
-//    }
 
     fun getItem(position: Int): Any {
         val addrl = address[position] ?: return DisassemblyListItem()
@@ -105,21 +100,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         currentAddress = address
     }
 
-    /*
-	 public void addAll(ArrayList/ *LongSparseArra <ListViewItem> data)
-	{
-		listViewItemList.addAll(data);
-		notifyDataSetChanged();
-	}
-
-
-    public void addItem(ListViewItem item)
-	{
-        listViewItemList.add(item);
-		//notifyDataSetChanged();
-    }
-	*/
-// ?!!!
+    // ?!!!
 // 지정한 위치(position)에 있는 데이터와 관계된 아이템(row)의 ID를 리턴. : 필수 구현
     override fun getItemId(position: Int): Long {
         return position.toLong()
@@ -145,7 +126,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         // address=//new long[file.fileContents.length];//Use sparseArray if oom
 //        mainactivity = ma;
 // IMPORTANT Note: total arg is unused
-        dit = DisasmIterator(file)
+        dit = DisasmIterator(file, handle)
     }
 
     fun adjustShow(

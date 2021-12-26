@@ -141,7 +141,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 					 }else{
 					 disasmManager.setResumeOffsetFromCode(toresume);
 					 }*/
-            disasmResults = adapter.itemList()
+//            disasmResults = adapter.itemList()
             // mNotifyManager.cancel(0);
             // final int len=disasmResults.size();
             // add xrefs
@@ -268,24 +268,22 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         return if (address > parsedFile.fileContents.size + parsedFile.codeVirtAddr) false else address >= 0
     }
 
-    private val leftListener: View.OnClickListener = object : View.OnClickListener {
-        override fun onClick(v: View) {
-            val cs = v.tag as ColumnSetting
-            /*String hint=(String) ((Button)v).getHint();
+    private val leftListener: View.OnClickListener = View.OnClickListener { v ->
+        val cs = v.tag as ColumnSetting
+        /*String hint=(String) ((Button)v).getHint();
 			hint=hint.substring(1,hint.length()-1);
 			Log.v(TAG,"Hint="+hint);
 			String [] parsed=hint.split(", ",0);
 			Log.v(TAG,Arrays.toString(parsed));*/columns = cs
-            adapter.isShowAddress = cs.showAddress // /*v.getTag(CustomDialog.TAGAddress)*/);
-            adapter.isShowLabel = cs.showLabel // /*v.getTag(CustomDialog.TAGLabel)*/);
-            adapter.isShowBytes = cs.showBytes // /*v.getTag(CustomDialog.TAGBytes)*/);
-            adapter.isShowInstruction =
-                cs.showInstruction // /*v.getTag(CustomDialog.TAGInstruction)*/);
-            adapter.isShowComment = cs.showComments // /*v.getTag(CustomDialog.TAGComment)*/);
-            adapter.isShowOperands = cs.showOperands // /*v.getTag(CustomDialog.TAGOperands)*/);
-            adapter.isShowCondition = cs.showConditions // /*v.getTag(CustomDialog.TAGCondition)*/);
-            binding.disasmTabListview.requestLayout()
-        }
+        adapter.isShowAddress = cs.showAddress // /*v.getTag(CustomDialog.TAGAddress)*/);
+        adapter.isShowLabel = cs.showLabel // /*v.getTag(CustomDialog.TAGLabel)*/);
+        adapter.isShowBytes = cs.showBytes // /*v.getTag(CustomDialog.TAGBytes)*/);
+        adapter.isShowInstruction =
+            cs.showInstruction // /*v.getTag(CustomDialog.TAGInstruction)*/);
+        adapter.isShowComment = cs.showComments // /*v.getTag(CustomDialog.TAGComment)*/);
+        adapter.isShowOperands = cs.showOperands // /*v.getTag(CustomDialog.TAGOperands)*/);
+        adapter.isShowCondition = cs.showConditions // /*v.getTag(CustomDialog.TAGCondition)*/);
+        binding.disasmTabListview.requestLayout()
     }
 
     override fun onResume() {

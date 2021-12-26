@@ -22,11 +22,11 @@ import java.util.ArrayList;
 
 import nl.lxtreme.binutils.elf.Elf;
 import nl.lxtreme.binutils.elf.MachineType;
+import timber.log.Timber;
 
 public class PEFile extends AbstractFile {
     PE pe;
     ArrayList<TLS> tlss = new ArrayList<>();
-    private String TAG = "Disassembler PE";
 
     public PEFile(File file, byte[] filec) throws IOException, NotThisFormatException {
         path = file.getPath();
@@ -66,7 +66,7 @@ public class PEFile extends AbstractFile {
                 continue;//null dll
 
             String dllname = Elf.getZString(filec, rvc.convertVirtualAddressToRawDataPointer(ide.getNameRVA()));//idir.getName(i);//get dll name? !! Not implemented method!!!!
-            Log.v(TAG, dllname);
+            Timber.v(dllname);
             long originalFirstThunkRaw = rvc.convertVirtualAddressToRawDataPointer(ide.getImportLookupTableRVA());//OriginalFirstThunk
             long firstThunkRaw = rvc.convertVirtualAddressToRawDataPointer(ide.getImportAddressTableRVA());
             ByteBuffer buf = ByteBuffer.wrap(filec, (int) originalFirstThunkRaw, (int) (filec.length - originalFirstThunkRaw)).order(ByteOrder.LITTLE_ENDIAN);
@@ -92,7 +92,7 @@ public class PEFile extends AbstractFile {
                     importSymbol.name = funcname;
                     importSymbol.address = firstThunkRaw + off;
                     getImportSymbols().add(importSymbol);
-                    Log.v(TAG, importSymbol.toString());
+                    Timber.v(importSymbol.toString());
                 }
                 off += 4;
             }
@@ -107,7 +107,7 @@ public class PEFile extends AbstractFile {
             ByteBuffer funcnamePointers = ByteBuffer.wrap(filec, (int) funcNameRaw, (int) (filec.length - funcNameRaw)).order(ByteOrder.LITTLE_ENDIAN);//len eq num of name
             ByteBuffer funcOrdinalPointers = ByteBuffer.wrap(filec, (int) funcOrdinalRaw, (int) (filec.length - funcOrdinalRaw)).order(ByteOrder.LITTLE_ENDIAN);//len eq num of name
             int ordinalbase = (int) edir.getOrdinalBase();
-            Log.v(TAG, "OrdinalBase=" + ordinalbase);
+            Timber.v("OrdinalBase=" + ordinalbase);
             //RVAConverter rvc=pe.getSectionTable().getRVAConverter();
             for (int i = 0; i < numofExports; i++)//iterate over functions
             {
@@ -115,16 +115,16 @@ public class PEFile extends AbstractFile {
                 try {
                     sym.name = Elf.getZString(filec, rvc.convertVirtualAddressToRawDataPointer(funcnamePointers.getInt() & 0x7FFFFFFF));
                 } catch (StringIndexOutOfBoundsException e) {
-                    Log.e(TAG, "", e);
+                    Timber.e(e);
                     sym.name = "ordinal?";
                 }
 
                 //funcnamePointers.getInt();
                 int ordinal = funcOrdinalPointers.getShort() & 0x7FFF;
                 long addraddr = funcAddrRaw + 4 * (ordinal - ordinalbase);
-                Log.v(TAG, "addraddr=" + addraddr);
+                Timber.v("addraddr=" + addraddr);
                 sym.st_value = ByteBuffer.wrap(filec, (int) addraddr, (int) (filec.length - addraddr)).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0x7FFFFFFF;
-                Log.v(TAG, sym.toString());
+                Timber.v(sym.toString());
                 sym.type = Symbol.Type.STT_FUNC;
                 sym.bind = Symbol.Bind.STB_GLOBAL;
                 sym.demangled = sym.name;

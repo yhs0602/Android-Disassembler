@@ -7,13 +7,11 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
@@ -24,20 +22,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
-import androidx.fragment.app.Fragment
-import at.pollaknet.api.facile.FacileReflector
-import at.pollaknet.api.facile.renderer.ILAsmRenderer
-import at.pollaknet.api.facile.symtab.symbols.Method
 import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
-import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.kyhsgeekcode.FileExtensions.textFileExts
 import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.PermissionUtils.requestAppPermissions
 import com.kyhsgeekcode.disassembler.databinding.MainBinding
 import com.kyhsgeekcode.disassembler.preference.SettingsActivity
-import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.disassembler.ui.MainScreen
@@ -127,7 +118,6 @@ class MainActivity : AppCompatActivity(),
 
     @JvmField
     var parsedFile: AbstractFile? = null// Parsed file info
-    private var disasmManager: DisassemblyManager? = null
     private lateinit var mDrawerAdapter: FileDrawerListAdapter
 
     lateinit var pagerAdapter: ViewPagerAdapter
@@ -137,7 +127,6 @@ class MainActivity : AppCompatActivity(),
     private val viewModel by viewModels<MainViewModel>()
 
     /** A tree which logs important information for crash reporting.  */
-
 
     @OptIn(ExperimentalFoundationApi::class)
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -276,24 +265,24 @@ class MainActivity : AppCompatActivity(),
                 Toast.makeText(this@MainActivity, fitem.caption, Toast.LENGTH_SHORT).show()
                 if (!fitem.isOpenable)
                     return
-                showYesNoCancelDialog(
-                    this@MainActivity,
-                    "Open file",
-                    "Open " + fitem.caption + "?",
-                    DialogInterface.OnClickListener { dialog, which ->
-                        //                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
-//                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
-//                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
-//                    }
-//                        val fragmentDataToOpen = determineFragmentToOpen(fitem)
-//                        pagerAdapter.addFragment(
-//                            fragmentDataToOpen.first,
-//                            fragmentDataToOpen.second
-//                        )
-                    },
-                    null,
-                    null
-                )
+//                showYesNoCancelDialog(
+//                    this@MainActivity,
+//                    "Open file",
+//                    "Open " + fitem.caption + "?",
+//                    DialogInterface.OnClickListener { dialog, which ->
+//                        //                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
+////                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
+////                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
+////                    }
+////                        val fragmentDataToOpen = determineFragmentToOpen(fitem)
+////                        pagerAdapter.addFragment(
+////                            fragmentDataToOpen.first,
+////                            fragmentDataToOpen.second
+////                        )
+//                    },
+//                    null,
+//                    null
+//                )
             }
 
             override fun onGroupItemClicked(
@@ -351,11 +340,6 @@ class MainActivity : AppCompatActivity(),
         if ((fragment as? IOnBackPressed)?.onBackPressed() != true) {
             super.onBackPressed()
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

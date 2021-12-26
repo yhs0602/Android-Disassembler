@@ -228,7 +228,7 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "lviinit");
     //	jmethodID java_util_Map_put  = env->GetMethodID(mapcls, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "arraylistaddmethod");
-    jmethodID notify = env->GetMethodID(thecls, "showNoti", "(I)I");
+    jmethodID notify = env->GetMethodID(thecls, "isCancel", "(I)I");
     __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "shownotimethod");
     jmethodID additem = env->GetMethodID(thecls, "AddItem",
                                          "(Lcom/kyhsgeekcode/disassembler/DisassemblyListItem;)V");
