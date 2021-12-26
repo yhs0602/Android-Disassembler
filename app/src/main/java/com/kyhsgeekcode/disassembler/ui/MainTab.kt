@@ -36,7 +36,10 @@ fun ProjectOverview(viewModel: MainViewModel) {
 
     val askCopy = viewModel.askCopy.collectAsState()
 
-    Column(Modifier.fillMaxSize()) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(10.dp)) {
         Text(text = stringResource(id = R.string.main_select_source_guide))
         Row(Modifier.fillMaxWidth()) {
             TextField(value = "", onValueChange = {})

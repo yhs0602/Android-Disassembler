@@ -1,6 +1,7 @@
 package com.kyhsgeekcode.disassembler.ui.tabs
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ScrollableTabRow
@@ -8,6 +9,7 @@ import androidx.compose.material.Tab
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.kyhsgeekcode.disassembler.AbstractFile
 import com.kyhsgeekcode.disassembler.MainActivity
 import com.kyhsgeekcode.disassembler.models.Architecture
@@ -97,7 +99,7 @@ fun OpenedBinaryTabs(data: BinaryTabData, viewModel: MainViewModel) {
     val titles = tabs.value.map {
         it.title
     }
-    Column(Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         ScrollableTabRow(
             selectedTabIndex = state,
         ) {

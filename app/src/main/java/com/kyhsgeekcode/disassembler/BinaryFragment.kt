@@ -60,7 +60,6 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
                 BinaryDisasmFragment.ViewMode.Binary
             ), "Disassembly"
         )
-        pagerAdapter.addFragment(BinaryDetailFragment.newInstance(relPath), "Details")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
