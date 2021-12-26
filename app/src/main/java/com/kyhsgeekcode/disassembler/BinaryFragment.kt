@@ -60,7 +60,6 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
                 BinaryDisasmFragment.ViewMode.Binary
             ), "Disassembly"
         )
-        pagerAdapter.addFragment(BinaryExportSymbolFragment.newInstance(relPath), "Export Symbols")
         pagerAdapter.addFragment(BinaryDetailFragment.newInstance(relPath), "Details")
     }
 
