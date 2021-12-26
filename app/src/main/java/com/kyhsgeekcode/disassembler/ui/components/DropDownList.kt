@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler.ui
+package com.kyhsgeekcode.disassembler.ui.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

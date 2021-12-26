@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler.ui
+package com.kyhsgeekcode.disassembler.ui.components
 
 import androidx.compose.foundation.lazy.*
 import androidx.compose.runtime.*

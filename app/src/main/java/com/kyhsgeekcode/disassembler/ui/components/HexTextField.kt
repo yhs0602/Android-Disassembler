@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler.ui
+package com.kyhsgeekcode.disassembler.ui.components
 
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
