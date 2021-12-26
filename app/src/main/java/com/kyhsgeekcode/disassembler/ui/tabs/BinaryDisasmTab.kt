@@ -23,7 +23,7 @@ fun BinaryDisasmTabContent(data: AbstractFile) {
             BinaryDisasmHeader()
         }
         items(data.importSymbols) { symbol ->
-            BinaryDisasmRow(symbol)
+//            BinaryDisasmRow(symbol)
         }
     }
 }

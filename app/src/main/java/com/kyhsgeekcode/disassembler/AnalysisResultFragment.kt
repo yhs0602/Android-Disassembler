@@ -40,7 +40,6 @@ class AnalysisResultFragment : Fragment() {
             .setIsIndeterminate(false)
             .setAllowUserInput(true)
 
-    @ExperimentalUnsignedTypes
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -65,7 +64,6 @@ class AnalysisResultFragment : Fragment() {
         _binding = null
     }
 
-    @ExperimentalUnsignedTypes
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         binding.imageViewCount.setOnClickListener {

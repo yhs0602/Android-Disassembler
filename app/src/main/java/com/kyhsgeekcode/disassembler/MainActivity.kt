@@ -138,7 +138,8 @@ class MainActivity : AppCompatActivity(),
 
     /** A tree which logs important information for crash reporting.  */
 
-    @ExperimentalFoundationApi
+
+    @OptIn(ExperimentalFoundationApi::class)
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        TooLargeTool.startLogging(application)
