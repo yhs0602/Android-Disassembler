@@ -32,6 +32,10 @@ fun ActivatedMenus(viewModel: MainViewModel) {
             Icon(imageVector = Icons.Filled.Delete, contentDescription = "Close File")
             Text("Close File")
         }
+        if (viewModel.isBinaryTab()) {
+            BinaryMenuItems(viewModel)
+        }
+
         DropdownMenuItem(onClick = { /*TODO*/ }) {
             Icon(imageVector = Icons.Filled.Add, contentDescription = "Calculator")
             Text("Calculator")
@@ -42,6 +46,40 @@ fun ActivatedMenus(viewModel: MainViewModel) {
             Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings / Help")
             Text("Settings / Help")
         }
+    }
+}
+
+@Composable
+fun BinaryMenuItems(viewModel: MainViewModel) {
+    DropdownMenuItem(onClick = {
+        viewModel.closeCurrentFile()
+    }) {
+        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Close File")
+        Text("Close Tab")
+    }
+    DropdownMenuItem(onClick = {
+        viewModel.closeCurrentFile()
+    }) {
+        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Show")
+        Text("Show")
+    }
+    DropdownMenuItem(onClick = {
+        viewModel.closeCurrentFile()
+    }) {
+        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Jump to")
+        Text("Jump to")
+    }
+    DropdownMenuItem(onClick = {
+        viewModel.closeCurrentFile()
+    }) {
+        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Choose columns")
+        Text("Choose columns")
+    }
+    DropdownMenuItem(onClick = {
+        viewModel.closeCurrentFile()
+    }) {
+        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Analyze")
+        Text("Analyze")
     }
 }
 

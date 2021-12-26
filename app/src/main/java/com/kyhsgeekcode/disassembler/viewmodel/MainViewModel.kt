@@ -19,10 +19,7 @@ import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.disassembler.ui.FileDrawerTreeItem
 import com.kyhsgeekcode.disassembler.ui.TabData
 import com.kyhsgeekcode.disassembler.ui.TabKind
-import com.kyhsgeekcode.disassembler.ui.tabs.BinaryTabData
-import com.kyhsgeekcode.disassembler.ui.tabs.ImageTabData
-import com.kyhsgeekcode.disassembler.ui.tabs.PreparedTabData
-import com.kyhsgeekcode.disassembler.ui.tabs.TextTabData
+import com.kyhsgeekcode.disassembler.ui.tabs.*
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.filechooser.model.FileItemApp
 import kotlinx.coroutines.CoroutineScope
@@ -49,6 +46,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val eventChannel = Channel<Event>(Channel.BUFFERED)
     val eventsFlow = eventChannel.receiveAsFlow()
+
+    private val _currentTabIndex = MutableStateFlow(0)
+    val currentTabIndex = _currentTabIndex as StateFlow<Int>
 
     private val _askCopy = MutableStateFlow(false)
     val askCopy = _askCopy as StateFlow<Boolean>
@@ -215,6 +215,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun closeCurrentFile() {
         TODO("Not yet implemented")
+    }
+
+    fun isBinaryTab(): Boolean {
+        return openedTabs.value[currentTabIndex.value].tabKind is TabKind.Binary
+    }
+
+    fun setCurrentTabByIndex(index: Int) {
+        _currentTabIndex.value = index
     }
 
     private val _parsedFile: StateFlow<AbstractFile?> = MutableStateFlow<AbstractFile?>(null)

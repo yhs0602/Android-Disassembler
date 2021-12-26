@@ -17,7 +17,7 @@ import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 @ExperimentalFoundationApi
 @Composable
 fun OpenedTabs(viewModel: MainViewModel) {
-    var state by remember { mutableStateOf(0) }
+    val state = viewModel.currentTabIndex.collectAsState()
 //    val titles = listOf("TAB 1", "TAB 2", "TAB 3")
     val tabs = viewModel.openedTabs.collectAsState()
     val titles = tabs.value.map {
@@ -25,17 +25,17 @@ fun OpenedTabs(viewModel: MainViewModel) {
     }
     Column(Modifier.fillMaxSize()) {
         ScrollableTabRow(
-            selectedTabIndex = state,
+            selectedTabIndex = state.value,
         ) {
             titles.forEachIndexed { index, title ->
                 Tab(
                     text = { Text(title) },
-                    selected = state == index,
-                    onClick = { state = index }
+                    selected = state.value == index,
+                    onClick = { viewModel.setCurrentTabByIndex(index) }
                 )
             }
         }
-        TabContent(state, viewModel)
+        TabContent(state.value, viewModel)
     }
 }
 
