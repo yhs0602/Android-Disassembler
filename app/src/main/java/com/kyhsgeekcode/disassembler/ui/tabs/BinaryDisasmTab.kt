@@ -10,10 +10,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.kyhsgeekcode.disassembler.AbstractFile
-import com.kyhsgeekcode.disassembler.DisasmListViewAdapter
-import com.kyhsgeekcode.disassembler.DisassemblyListItem
-import com.kyhsgeekcode.disassembler.R
+import com.kyhsgeekcode.disassembler.*
 
 import com.kyhsgeekcode.disassembler.ui.InfiniteList
 import timber.log.Timber
@@ -26,14 +23,14 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
     var writep = 0
     var currentAddress: Long = 0
     private val assemblyProvider: AssemblyProvider = DisasmIterator(file, handle)
-    val a = mutableStateListOf<>()
+
+    //    val a = mutableStateListOf<>()
     fun itemCount(): Int {
         return positionToAddress.size()
     }
 
     fun getItem(position: Int): DisassemblyListItem {
         val addrl = positionToAddress[position] ?: return DisassemblyListItem()
-        // ? FIXME. crashes when rotated screen here, NPE.
         val lvi = addressToListItem[addrl]
         if (lvi == null) {
             loadMore(position, addrl)
@@ -85,17 +82,11 @@ fun BinaryDisasmTabContent(disasmData: BinaryDisasmData) {
     InfiniteList(onLoadMore = { lastVisibleItemIndex ->
         disasmData.loadMore(lastVisibleItemIndex)
     }) {
-        val adapter = Disasm
-
         stickyHeader {
             BinaryDisasmHeader()
         }
         items(disasmData.itemCount()) { position ->
             BinaryDisasmRow(disasmData.getItem(position))
-            items(data.) { symbol ->
-                BinaryDisasmRow(symbol)
-
-            }
         }
     }
 }
