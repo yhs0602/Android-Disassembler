@@ -21,6 +21,7 @@ fun <T> TableView(
     titles: List<Pair<String, Dp>>,
     items: List<T>,
     onItemLongClick: (T) -> Unit = {},
+    onItemClick: (T) -> Unit = {},
     column: (item: T, col: Int) -> String
 ) {
     LazyColumn(Modifier.horizontalScroll(rememberScrollState())) {
@@ -31,9 +32,10 @@ fun <T> TableView(
             Row(
                 Modifier
                     .height(IntrinsicSize.Min)
-                    .combinedClickable(onLongClick = {
-                        onItemLongClick(item)
-                    }, onClick = {})
+                    .combinedClickable(
+                        onLongClick = { onItemLongClick(item) },
+                        onClick = { onItemClick(item) }
+                    )
             ) {
                 for ((i, t) in titles.withIndex()) {
                     CellText(content = column(item, i), modifier = Modifier.width(t.second))
