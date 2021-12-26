@@ -127,7 +127,6 @@ class MainActivity : AppCompatActivity(),
 
     @JvmField
     var parsedFile: AbstractFile? = null// Parsed file info
-    private var disasmManager: DisassemblyManager? = null
     private lateinit var mDrawerAdapter: FileDrawerListAdapter
 
     lateinit var pagerAdapter: ViewPagerAdapter
@@ -275,24 +274,24 @@ class MainActivity : AppCompatActivity(),
                 Toast.makeText(this@MainActivity, fitem.caption, Toast.LENGTH_SHORT).show()
                 if (!fitem.isOpenable)
                     return
-                showYesNoCancelDialog(
-                    this@MainActivity,
-                    "Open file",
-                    "Open " + fitem.caption + "?",
-                    DialogInterface.OnClickListener { dialog, which ->
-                        //                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
-//                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
-//                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
-//                    }
-//                        val fragmentDataToOpen = determineFragmentToOpen(fitem)
-//                        pagerAdapter.addFragment(
-//                            fragmentDataToOpen.first,
-//                            fragmentDataToOpen.second
-//                        )
-                    },
-                    null,
-                    null
-                )
+//                showYesNoCancelDialog(
+//                    this@MainActivity,
+//                    "Open file",
+//                    "Open " + fitem.caption + "?",
+//                    DialogInterface.OnClickListener { dialog, which ->
+//                        //                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
+////                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
+////                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
+////                    }
+////                        val fragmentDataToOpen = determineFragmentToOpen(fitem)
+////                        pagerAdapter.addFragment(
+////                            fragmentDataToOpen.first,
+////                            fragmentDataToOpen.second
+////                        )
+//                    },
+//                    null,
+//                    null
+//                )
             }
 
             override fun onGroupItemClicked(
@@ -350,11 +349,6 @@ class MainActivity : AppCompatActivity(),
         if ((fragment as? IOnBackPressed)?.onBackPressed() != true) {
             super.onBackPressed()
         }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

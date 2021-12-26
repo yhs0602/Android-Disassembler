@@ -9,13 +9,15 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.kyhsgeekcode.disassembler.AbstractFile
-import com.kyhsgeekcode.disassembler.BinaryImportSymbolFragment
+import com.kyhsgeekcode.disassembler.MainActivity
+import com.kyhsgeekcode.disassembler.models.Architecture
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.ui.TabData
 import com.kyhsgeekcode.disassembler.ui.TabKind
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import timber.log.Timber
 
 sealed class DataResult<T> {
     class Success<T>(val data: T) : DataResult<T>()
@@ -35,26 +37,48 @@ sealed class BinaryTabKind {
     class BinaryExportSymbol : BinaryTabKind()
     class BinaryImportSymbol : BinaryTabKind()
     class BinaryOverview : BinaryTabKind()
-    class BinaryString: BinaryTabKind()
+    class BinaryString : BinaryTabKind()
 }
 
 class BinaryTabData(val data: TabKind.Binary) : PreparedTabData() {
-    private val _openedTabs = MutableStateFlow(listOf(
-        BinaryInternalTabData("Overview", BinaryTabKind.BinaryOverview()),
-        BinaryInternalTabData("Detail", BinaryTabKind.BinaryDetail()),
-        BinaryInternalTabData("Import Symbol", BinaryTabKind.BinaryImportSymbol()),
-        BinaryInternalTabData("Export Symbol", BinaryTabKind.BinaryExportSymbol()),
-        BinaryInternalTabData("Disassembly", BinaryTabKind.BinaryDisasm(data.relPath, ViewMode.Binary)),
-    ))
+    private val _openedTabs = MutableStateFlow(
+        listOf(
+            BinaryInternalTabData("Overview", BinaryTabKind.BinaryOverview()),
+            BinaryInternalTabData("Detail", BinaryTabKind.BinaryDetail()),
+            BinaryInternalTabData("Import Symbol", BinaryTabKind.BinaryImportSymbol()),
+            BinaryInternalTabData("Export Symbol", BinaryTabKind.BinaryExportSymbol()),
+            BinaryInternalTabData(
+                "Disassembly",
+                BinaryTabKind.BinaryDisasm(data.relPath, ViewMode.Binary)
+            ),
+        )
+    )
     val openedTabs = _openedTabs as StateFlow<List<BinaryInternalTabData>>
 
     private val _parsedFile = MutableStateFlow<DataResult<AbstractFile>>(DataResult.Loading())
     val parsedFile = _parsedFile as StateFlow<DataResult<AbstractFile>>
 
+    lateinit var disasmData: BinaryDisasmData
+        private set
+
     override suspend fun prepare() {
-        _parsedFile.value = DataResult.Success(
+        val abstractFile =
             AbstractFile.createInstance(ProjectDataStorage.resolveToRead(data.relPath)!!)
-        )
+        _parsedFile.value = DataResult.Success(abstractFile)
+        val type = abstractFile.machineType // elf.header.machineType;
+        val archs = Architecture.getArchitecture(type)
+        val arch = archs[0]
+        var mode = 0
+        if (archs.size == 2) mode = archs[1]
+        if (arch == Architecture.CS_ARCH_MAX || arch == Architecture.CS_ARCH_ALL) {
+            throw Exception("No such arch!")
+        } else {
+            Timber.d("OK arch")
+        }
+
+        val handle = MainActivity.Open(arch, mode)
+        disasmData = BinaryDisasmData(abstractFile, handle)
+        disasmData.prepare()
     }
 }
 
@@ -97,10 +121,11 @@ fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) 
     if (parsedFileValue is DataResult.Success) {
         when (val tabKind = theTab.tabKind) {
             is BinaryTabKind.BinaryDetail -> TODO()
-            is BinaryTabKind.BinaryDisasm -> TODO()
+            is BinaryTabKind.BinaryDisasm -> BinaryDisasmTabContent(data.disasmData)
             is BinaryTabKind.BinaryExportSymbol -> TODO()
             is BinaryTabKind.BinaryImportSymbol -> BinaryImportSymbolTabContent(parsedFileValue.data)
             is BinaryTabKind.BinaryOverview -> BinaryOverviewTabContent(parsedFileValue.data)
+            is BinaryTabKind.BinaryString -> TODO()
         }
     } else {
         Text("Parsed file is none!")
