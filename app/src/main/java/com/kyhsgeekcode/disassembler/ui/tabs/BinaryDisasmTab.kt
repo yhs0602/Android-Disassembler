@@ -10,13 +10,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kyhsgeekcode.disassembler.*
-
 import com.kyhsgeekcode.disassembler.ui.InfiniteList
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
 
 // TODO: Search autocomplete
@@ -28,16 +29,25 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
     var currentAddress: Long = 0
     private val assemblyProvider: AssemblyProvider = DisasmIterator(file, handle)
 
+    private val _itemCount = MutableStateFlow(0)
+    val itemCount = _itemCount as StateFlow<Int>
+
     //    val a = mutableStateListOf<>()
-    fun itemCount(): Int {
-        return positionToAddress.size()
-    }
+//    fun itemCount(): StateFlow<Int> {
+//        return itemCount // positionToAddress.size()
+//    }
 
     fun getItem(position: Int): DisassemblyListItem {
-        val addrl = positionToAddress[position] ?: return DisassemblyListItem()
+        Timber.d("getItem $position")
+        val addrl = positionToAddress.get(position, null)
+        if (addrl == null) {
+
+        }
         val lvi = addressToListItem[addrl]
         if (lvi == null) {
+            Timber.d("Lvi is null; load more $position $addrl")
             loadMore(position, addrl)
+            return addressToListItem[positionToAddress[position]]
         }
         return lvi
     }
@@ -62,12 +72,16 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
         for (item in newItems) {
             addressToListItem.put(item.disasmResult.address, item)
             positionToAddress.put(writep, item.disasmResult.address)
+            Timber.d("Putting addr ${item.disasmResult.address} at $writep")
             writep++ // continuously add
         }
+        _itemCount.value = positionToAddress.size()
     }
 
     fun loadMore(lastVisibleItemIndex: Int) {
+        Timber.d("LastVisibleItemIndex: $lastVisibleItemIndex")
         val lvi = getItem(lastVisibleItemIndex)
+
         loadMore(writep, lvi.disasmResult.address + lvi.disasmResult.size)
     }
 
@@ -83,13 +97,14 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
 @ExperimentalFoundationApi
 @Composable
 fun BinaryDisasmTabContent(disasmData: BinaryDisasmData) {
+    val count = disasmData.itemCount.collectAsState()
     InfiniteList(onLoadMore = { lastVisibleItemIndex ->
         disasmData.loadMore(lastVisibleItemIndex)
     }, Modifier.horizontalScroll(rememberScrollState())) {
         stickyHeader {
             BinaryDisasmHeader()
         }
-        items(disasmData.itemCount()) { position ->
+        items(count.value) { position ->
             BinaryDisasmRow(disasmData.getItem(position))
         }
     }
