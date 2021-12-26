@@ -1,30 +1,64 @@
 package com.kyhsgeekcode.disassembler.ui.tabs
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Text
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import com.kyhsgeekcode.disassembler.AbstractFile
 import com.kyhsgeekcode.disassembler.ImportSymbol
+import com.kyhsgeekcode.disassembler.ui.components.CellText
+import com.kyhsgeekcode.disassembler.ui.components.TableView
 import com.kyhsgeekcode.disassembler.utils.NDKRefUrlMatcher
 
 // TODO: Sort, Filter, TransactionLarge
 @ExperimentalFoundationApi
 @Composable
 fun BinaryImportSymbolTabContent(data: AbstractFile) {
-    LazyColumn(Modifier.horizontalScroll(rememberScrollState())) {
-        stickyHeader {
-            ImportSymbolHeader()
+    val uriHandler = LocalUriHandler.current
+    TableView(
+        titles = listOf(
+            Pair("Owner", 100.dp),
+            Pair("Name", 300.dp),
+            Pair("Demangled", 300.dp),
+            Pair("address", 100.dp),
+            Pair("value", 100.dp),
+            Pair("offset", 100.dp),
+            Pair("type", 100.dp),
+            Pair("addend", 100.dp),
+            Pair("calcValue", 100.dp),
+        ), items = data.importSymbols,
+        modifiers = { item, col ->
+            if (col == 2) {
+                val url = item.demangled?.run {
+                    NDKRefUrlMatcher.getURL(this)
+                }
+                if (url == null) {
+                    Modifier
+                } else {
+                    Modifier.clickable { uriHandler.openUri(url) }
+                }
+            } else {
+                Modifier
+            }
         }
-        items(data.importSymbols) { symbol ->
-            ImportSymbolRow(symbol)
+    ) { item, col ->
+        when (col) {
+            0 -> item.owner
+            1 -> item.name
+            2 -> item.demangled ?: ""
+            3 -> item.address.toString(16)
+            4 -> item.value.toString()
+            5 -> item.offset.toString(16)
+            6 -> item.type.toString()
+            7 -> item.addend.toString()
+            8 -> item.calcValue.toString()
+            else -> throw IllegalArgumentException("OOB $col")
         }
     }
 }
@@ -73,15 +107,3 @@ fun ImportSymbolRow(symbol: ImportSymbol) {
     }
 }
 
-@Composable
-fun CellText(content: String, modifier: Modifier) {
-    Box(
-        modifier = modifier
-            .background(Color.White)
-            .border(1.dp, Color.Cyan)
-            .padding(8.dp)
-            .fillMaxHeight()
-    ) {
-        Text(text = content)
-    }
-}

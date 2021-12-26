@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kyhsgeekcode.disassembler.*
 import com.kyhsgeekcode.disassembler.ui.InfiniteList
+import com.kyhsgeekcode.disassembler.ui.components.CellText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
