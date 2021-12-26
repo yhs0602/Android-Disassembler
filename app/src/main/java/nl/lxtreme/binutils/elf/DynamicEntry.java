@@ -47,6 +47,7 @@ public class DynamicEntry {
         public static final Tag ENCODING = new Tag(32, "Start of encoded range");
         public static final Tag PREINIT_ARRAY = new Tag(32, "Array with addresses of preinit fct");
         public static final Tag PREINIT_ARRAYSZ = new Tag(33, "size in bytes of DT_PREINIT_ARRAY");
+        public static final Tag UNKNOWN = new Tag(-1, "Unknown");
 
         public static final Tag GNU_PRELINKED = new Tag(0x6ffffdf5, "Prelinking timestamp");
         public static final Tag GNU_CONFLICTSZ = new Tag(0x6ffffdf6, "Size of conflict section");
@@ -104,7 +105,9 @@ public class DynamicEntry {
             } else if (value >= DT_LOPROC && value <= DT_HIPROC) {
                 return new Tag(value, "Processor-specific tag");
             } else {
-                throw new IllegalArgumentException("Invalid/unknown tag: " + Integer.toHexString(value));
+                System.err.println("Invalid/unknown tag: " + Integer.toHexString(value));
+                return UNKNOWN;
+//                throw new IllegalArgumentException();
             }
         }
 
