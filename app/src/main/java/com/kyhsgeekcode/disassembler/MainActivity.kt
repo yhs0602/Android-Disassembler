@@ -131,13 +131,13 @@ class MainActivity : AppCompatActivity(),
     @OptIn(ExperimentalFoundationApi::class)
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        TooLargeTool.startLogging(application)
+        //        TooLargeTool.startLogging(application)
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
         } else {
             Timber.plant(CrashReportingTree())
         }
-//        setupUncaughtException()
+        //        setupUncaughtException()
         initNative()
 
         setContent {
@@ -336,10 +336,10 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onBackPressed() {
-        val fragment = pagerAdapter.createFragment(binding.pagerMain.currentItem)
-        if ((fragment as? IOnBackPressed)?.onBackPressed() != true) {
-            super.onBackPressed()
-        }
+//        val fragment = pagerAdapter.createFragment(binding.pagerMain.currentItem)
+//        if ((fragment as? IOnBackPressed)?.onBackPressed() != true) {
+        super.onBackPressed()
+//        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
