@@ -17,6 +17,7 @@ import com.kyhsgeekcode.disassembler.databinding.FragmentBinaryDisasmBinding
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_ALL
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_MAX
 import com.kyhsgeekcode.disassembler.models.Architecture.getArchitecture
+import timber.log.Timber
 import java.util.*
 
 class BinaryDisasmFragment : Fragment(), IOnBackPressed {
@@ -116,15 +117,15 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     }
 
     fun disassemble() {
-        Log.v(TAG, "Strted disasm")
+        Timber.v("Strted disasm")
         // NOW there's no notion of pause or resume
         workerThread = Thread {
             val codesection = parsedFile.codeSectionBase
             val start = codesection // elfUtil.getCodeSectionOffset();
 //            val limit = parsedFile.codeSectionLimit
             val addr = parsedFile.codeVirtAddr // + offset
-            Log.v(TAG, "code section point :${start.toString(16)}")
-            Log.d(TAG, "addr : ${addr.toString(16)}")
+            Timber.v("code section point :" + start.toString(16))
+            Timber.d("addr : " + addr.toString(16))
             // ListViewItem lvi;
 // 	getFunctionNames();
 //            val size = limit - start
@@ -149,13 +150,13 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                 //                tab2!!.invalidate()
                 Toast.makeText(activity, "done", Toast.LENGTH_SHORT).show()
             }
-            Log.v(TAG, "disassembly done")
+            Timber.v("disassembly done")
         }
         workerThread!!.start()
     }
 
     override fun onBackPressed(): Boolean {
-        Log.d(TAG, "onBackPressed, ${jmpBackstack.size}")
+        Timber.d("onBackPressed, " + jmpBackstack.size)
         if (!jmpBackstack.empty()) {
             jumpto(jmpBackstack.pop())
             jmpBackstack.pop()

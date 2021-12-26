@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kyhsgeekcode.disassembler.AbstractFile
+import com.kyhsgeekcode.disassembler.DisasmListViewAdapter
 import com.kyhsgeekcode.disassembler.DisassemblyListItem
 import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.disassembler.ui.InfiniteList
@@ -17,13 +18,15 @@ import com.kyhsgeekcode.disassembler.ui.InfiniteList
 @Composable
 fun BinaryDisasmTabContent(data: AbstractFile) {
     InfiniteList(onLoadMore = { lastVisibleItemIndex ->
-
+        // onLoadMore
     }) {
+        val adapter = Disasm
+
         stickyHeader {
             BinaryDisasmHeader()
         }
-        items(data.importSymbols) { symbol ->
-//            BinaryDisasmRow(symbol)
+        items(data.) { symbol ->
+            BinaryDisasmRow(symbol)
         }
     }
 }

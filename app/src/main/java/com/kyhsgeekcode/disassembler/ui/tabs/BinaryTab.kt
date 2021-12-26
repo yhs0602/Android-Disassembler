@@ -35,17 +35,22 @@ sealed class BinaryTabKind {
     class BinaryExportSymbol : BinaryTabKind()
     class BinaryImportSymbol : BinaryTabKind()
     class BinaryOverview : BinaryTabKind()
-    class BinaryString: BinaryTabKind()
+    class BinaryString : BinaryTabKind()
 }
 
 class BinaryTabData(val data: TabKind.Binary) : PreparedTabData() {
-    private val _openedTabs = MutableStateFlow(listOf(
-        BinaryInternalTabData("Overview", BinaryTabKind.BinaryOverview()),
-        BinaryInternalTabData("Detail", BinaryTabKind.BinaryDetail()),
-        BinaryInternalTabData("Import Symbol", BinaryTabKind.BinaryImportSymbol()),
-        BinaryInternalTabData("Export Symbol", BinaryTabKind.BinaryExportSymbol()),
-        BinaryInternalTabData("Disassembly", BinaryTabKind.BinaryDisasm(data.relPath, ViewMode.Binary)),
-    ))
+    private val _openedTabs = MutableStateFlow(
+        listOf(
+            BinaryInternalTabData("Overview", BinaryTabKind.BinaryOverview()),
+            BinaryInternalTabData("Detail", BinaryTabKind.BinaryDetail()),
+            BinaryInternalTabData("Import Symbol", BinaryTabKind.BinaryImportSymbol()),
+            BinaryInternalTabData("Export Symbol", BinaryTabKind.BinaryExportSymbol()),
+            BinaryInternalTabData(
+                "Disassembly",
+                BinaryTabKind.BinaryDisasm(data.relPath, ViewMode.Binary)
+            ),
+        )
+    )
     val openedTabs = _openedTabs as StateFlow<List<BinaryInternalTabData>>
 
     private val _parsedFile = MutableStateFlow<DataResult<AbstractFile>>(DataResult.Loading())
@@ -96,11 +101,12 @@ fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) 
     val parsedFileValue = data.parsedFile.value
     if (parsedFileValue is DataResult.Success) {
         when (val tabKind = theTab.tabKind) {
-            is BinaryTabKind.BinaryDetail -> TODO()
-            is BinaryTabKind.BinaryDisasm -> TODO()
-            is BinaryTabKind.BinaryExportSymbol -> TODO()
+            is BinaryTabKind.BinaryDetail -> BinaryDetailTabContent(data = parsedFileValue.data)
+            is BinaryTabKind.BinaryDisasm -> BinaryDisasmTabContent(data = parsedFileValue.data, tabKind.)
+            is BinaryTabKind.BinaryExportSymbol -> BinaryExportSymbolTabContent(parsedFileValue.data)
             is BinaryTabKind.BinaryImportSymbol -> BinaryImportSymbolTabContent(parsedFileValue.data)
             is BinaryTabKind.BinaryOverview -> BinaryOverviewTabContent(parsedFileValue.data)
+            is BinaryTabKind.BinaryString -> TODO()
         }
     } else {
         Text("Parsed file is none!")

@@ -23,44 +23,23 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     private lateinit var listView: RecyclerView
     private val TAG = "Disassembler LV"
 
-    // 	public void setAddress(SparseArray<Long> address)
-// 	{
-// 		this.address = address;
-// 	}
-//
     var currentAddress: Long = 0
-//    private val mainactivity: MainActivity? = null
 
     fun clear() {
         address.clear()
         itemsNew.clear()
     }
 
-//    @Deprecated("")
-//    fun setDit(dit: DisasmIterator) {
-//        this.dit = dit
-//    }
-
-    // private / *ListViewItem[]*/LongSparseArray<ListViewItem> listViewItemList=new LongSparseArray<>();
-// private long lvLength=0;
-// LinkedList ll;
-    fun addAll(/*ArrayList*/
+    fun addAll(
         data: LongSparseArray<DisassemblyListItem>,
         addr: SparseArray<Long>
     ) {
         itemsNew = data // .clone();
         address = addr // .clone();
-        // for(;;)
-// {
-// 	break;
-// }
-// listViewItemList.addAll(data);
-// itemsNew=data;
         notifyDataSetChanged()
     }
 
     // You should not modify
-    /*ArrayList*/
     fun itemList(): LongSparseArray<DisassemblyListItem> {
         return itemsNew // / *listViewItemList;// */new ArrayList<ListViewItem>().addAll(listViewItemList);
     }
@@ -166,7 +145,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         // address=//new long[file.fileContents.length];//Use sparseArray if oom
 //        mainactivity = ma;
 // IMPORTANT Note: total arg is unused
-        dit = DisasmIterator(this)
+        dit = DisasmIterator(file)
     }
 
     fun adjustShow(
