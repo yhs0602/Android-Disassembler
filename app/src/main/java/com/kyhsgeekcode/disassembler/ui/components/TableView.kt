@@ -1,15 +1,14 @@
 package com.kyhsgeekcode.disassembler.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,6 +20,7 @@ import com.kyhsgeekcode.disassembler.ui.tabs.CellText
 fun <T> TableView(
     titles: List<Pair<String, Dp>>,
     items: List<T>,
+    onItemLongClick: (T) -> Unit = {},
     column: (item: T, col: Int) -> String
 ) {
     LazyColumn(Modifier.horizontalScroll(rememberScrollState())) {
@@ -28,7 +28,13 @@ fun <T> TableView(
             TableViewHeader(titles)
         }
         items(items) { item ->
-            Row(Modifier.height(IntrinsicSize.Min)) {
+            Row(
+                Modifier
+                    .height(IntrinsicSize.Min)
+                    .combinedClickable(onLongClick = {
+                        onItemLongClick(item)
+                    }, onClick = {})
+            ) {
                 for ((i, t) in titles.withIndex()) {
                     CellText(content = column(item, i), modifier = Modifier.width(t.second))
                 }
