@@ -335,13 +335,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onBackPressed() {
-//        val fragment = pagerAdapter.createFragment(binding.pagerMain.currentItem)
-//        if ((fragment as? IOnBackPressed)?.onBackPressed() != true) {
-        super.onBackPressed()
-//        }
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         when (id) {

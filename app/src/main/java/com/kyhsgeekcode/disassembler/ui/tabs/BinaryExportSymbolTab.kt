@@ -10,7 +10,7 @@ import com.kyhsgeekcode.disassembler.ui.components.TableView
 
 @ExperimentalFoundationApi
 @Composable
-fun BinaryExportSymbolTabContent(data: AbstractFile) {
+fun BinaryExportSymbolTabContent(data: AbstractFile, data1: BinaryTabData) {
     val context = LocalContext.current
     TableView(
         titles = listOf(

@@ -9,12 +9,11 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 // https://dev.to/luismierez/infinite-lazycolumn-in-jetpack-compose-44a4
 @Composable
 fun InfiniteList(
-    onLoadMore: (Int) -> Unit,
+    onLoadMore: (Int, Int) -> Unit,
     modifier: Modifier,
+    listState: LazyListState = rememberLazyListState(),
     Content: LazyListScope.() -> Unit
 ) {
-    val listState = rememberLazyListState()
-
     LazyColumn(
         state = listState,
         modifier = modifier
@@ -22,8 +21,8 @@ fun InfiniteList(
         Content()
     }
 
-    InfiniteListHandler(listState = listState) {
-        onLoadMore(it)
+    InfiniteListHandler(listState = listState) { first, last ->
+        onLoadMore(first, last)
     }
 }
 
@@ -36,7 +35,7 @@ fun InfiniteList(
  * @param onLoadMore will notify when we need to load more
  */
 @Composable
-fun InfiniteListHandler(listState: LazyListState, buffer: Int = 2, onLoadMore: (Int) -> Unit) {
+fun InfiniteListHandler(listState: LazyListState, buffer: Int = 2, onLoadMore: (Int, Int) -> Unit) {
     val loadMore = remember {
         derivedStateOf {
             val layoutInfo = listState.layoutInfo
@@ -55,7 +54,9 @@ fun InfiniteListHandler(listState: LazyListState, buffer: Int = 2, onLoadMore: (
                 val totalItemsNumber = layoutInfo.totalItemsCount
                 val lastVisibleItemIndex =
                     (layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0)
-                onLoadMore(lastVisibleItemIndex)
+                val firstVisibleItemIndex =
+                    (layoutInfo.visibleItemsInfo.firstOrNull()?.index ?: 0) + 1
+                onLoadMore(firstVisibleItemIndex, lastVisibleItemIndex)
             }
     }
 }

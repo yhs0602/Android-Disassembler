@@ -2,15 +2,19 @@ package com.kyhsgeekcode.disassembler.ui.tabs
 
 import android.util.LongSparseArray
 import android.util.SparseArray
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -19,7 +23,9 @@ import com.kyhsgeekcode.disassembler.ui.InfiniteList
 import com.kyhsgeekcode.disassembler.ui.components.CellText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.*
 
 // TODO: Search autocomplete
 
@@ -33,10 +39,7 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
     private val _itemCount = MutableStateFlow(0)
     val itemCount = _itemCount as StateFlow<Int>
 
-    //    val a = mutableStateListOf<>()
-//    fun itemCount(): StateFlow<Int> {
-//        return itemCount // positionToAddress.size()
-//    }
+    val backstack = Stack<Long>()
 
     fun getItem(position: Int): DisassemblyListItem {
         Timber.d("getItem $position")
@@ -93,15 +96,44 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
         val addr = file.codeVirtAddr // + offset
         loadMore(0, addr)
     }
+
+    suspend fun returnJump(listState: LazyListState) {
+        val to = backstack.pop()
+        jumpto(to, listState)
+        backstack.pop()
+    }
+
+    suspend fun jumpto(address: Long, listState: LazyListState): Boolean {
+        return if (isValidAddress(address)) {
+            backstack.push(currentAddress)
+            currentAddress = address
+            listState.scrollToItem(0, 0)
+            true
+        } else {
+            false
+        }
+    }
+
+    private fun isValidAddress(address: Long): Boolean {
+        return if (address > file.fileContents.size + file.codeVirtAddr) false else address >= 0
+    }
+
+    fun setCurrentAddressByFirstItemIndex(firstVisibleItemIndex: Int) {
+        currentAddress = positionToAddress.get(firstVisibleItemIndex)
+    }
 }
 
 @ExperimentalFoundationApi
 @Composable
-fun BinaryDisasmTabContent(disasmData: BinaryDisasmData) {
+fun BinaryDisasmTabContent(disasmData: BinaryDisasmData, data: BinaryTabData) {
     val count = disasmData.itemCount.collectAsState()
-    InfiniteList(onLoadMore = { lastVisibleItemIndex ->
+    val backstack = disasmData.backstack
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    InfiniteList(onLoadMore = { firstVisibleItemIndex, lastVisibleItemIndex ->
+        disasmData.setCurrentAddressByFirstItemIndex(firstVisibleItemIndex)
         disasmData.loadMore(lastVisibleItemIndex)
-    }, Modifier.horizontalScroll(rememberScrollState())) {
+    }, modifier = Modifier.horizontalScroll(rememberScrollState()), listState = listState) {
         stickyHeader {
             BinaryDisasmHeader()
         }
@@ -109,7 +141,18 @@ fun BinaryDisasmTabContent(disasmData: BinaryDisasmData) {
             BinaryDisasmRow(disasmData.getItem(position))
         }
     }
+
+    BackHandler {
+        if (!backstack.empty()) {
+            coroutineScope.launch {
+                disasmData.returnJump(listState)
+            }
+        } else {
+            data.setCurrentTab<BinaryTabKind.BinaryExportSymbol>()
+        }
+    }
 }
+
 
 @Composable
 private fun BinaryDisasmHeader() {

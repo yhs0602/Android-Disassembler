@@ -43,6 +43,9 @@ sealed class BinaryTabKind {
 }
 
 class BinaryTabData(val data: TabKind.Binary) : PreparedTabData() {
+    @PublishedApi
+    internal val _currentTabIndex = MutableStateFlow(0)
+    val currentTabIndex = _currentTabIndex as StateFlow<Int>
     private val _openedTabs = MutableStateFlow(
         listOf(
             BinaryInternalTabData("Overview", BinaryTabKind.BinaryOverview()),
@@ -82,6 +85,20 @@ class BinaryTabData(val data: TabKind.Binary) : PreparedTabData() {
         disasmData = BinaryDisasmData(abstractFile, handle)
         disasmData.prepare()
     }
+
+    inline fun <reified T> setCurrentTab() {
+        val tab = openedTabs.value.indexOfFirst {
+            it.tabKind is T
+        }
+        if (tab < 0) {
+            Timber.e("Error: No such tab")
+        }
+        _currentTabIndex.value = tab
+    }
+
+    fun setCurrentTabByIndex(index: Int) {
+        _currentTabIndex.value = index
+    }
 }
 
 @ExperimentalFoundationApi
@@ -94,24 +111,24 @@ fun BinaryTab(data: TabData, viewModel: MainViewModel) {
 @ExperimentalFoundationApi
 @Composable
 fun OpenedBinaryTabs(data: BinaryTabData, viewModel: MainViewModel) {
-    var state by remember { mutableStateOf(0) }
+    val currentTabIndex = data.currentTabIndex.collectAsState()
     val tabs = data.openedTabs.collectAsState()
     val titles = tabs.value.map {
         it.title
     }
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         ScrollableTabRow(
-            selectedTabIndex = state,
+            selectedTabIndex = currentTabIndex.value,
         ) {
             titles.forEachIndexed { index, title ->
                 Tab(
                     text = { Text(title) },
-                    selected = state == index,
-                    onClick = { state = index }
+                    selected = currentTabIndex.value == index,
+                    onClick = { data.setCurrentTabByIndex(index) }
                 )
             }
         }
-        BinaryTabContent(state, data, viewModel)
+        BinaryTabContent(currentTabIndex.value, data, viewModel)
     }
 }
 
@@ -122,9 +139,12 @@ fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) 
     val parsedFileValue = data.parsedFile.value
     if (parsedFileValue is DataResult.Success) {
         when (val tabKind = theTab.tabKind) {
-            is BinaryTabKind.BinaryDisasm -> BinaryDisasmTabContent(data.disasmData)
+            is BinaryTabKind.BinaryDisasm -> BinaryDisasmTabContent(data.disasmData, data)
             is BinaryTabKind.BinaryDetail -> BinaryDetailTabContent(data = parsedFileValue.data)
-            is BinaryTabKind.BinaryExportSymbol -> BinaryExportSymbolTabContent(parsedFileValue.data)
+            is BinaryTabKind.BinaryExportSymbol -> BinaryExportSymbolTabContent(
+                parsedFileValue.data,
+                data
+            )
             is BinaryTabKind.BinaryImportSymbol -> BinaryImportSymbolTabContent(parsedFileValue.data)
             is BinaryTabKind.BinaryOverview -> BinaryOverviewTabContent(parsedFileValue.data)
             is BinaryTabKind.BinaryString -> TODO()
