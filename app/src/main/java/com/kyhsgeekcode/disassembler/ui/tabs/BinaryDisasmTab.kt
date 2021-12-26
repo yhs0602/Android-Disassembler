@@ -10,7 +10,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.kyhsgeekcode.disassembler.*
+import com.kyhsgeekcode.disassembler.AbstractFile
+import com.kyhsgeekcode.disassembler.DisasmListViewAdapter
+import com.kyhsgeekcode.disassembler.DisassemblyListItem
+import com.kyhsgeekcode.disassembler.R
+
 import com.kyhsgeekcode.disassembler.ui.InfiniteList
 import timber.log.Timber
 
@@ -81,11 +85,17 @@ fun BinaryDisasmTabContent(disasmData: BinaryDisasmData) {
     InfiniteList(onLoadMore = { lastVisibleItemIndex ->
         disasmData.loadMore(lastVisibleItemIndex)
     }) {
+        val adapter = Disasm
+
         stickyHeader {
             BinaryDisasmHeader()
         }
         items(disasmData.itemCount()) { position ->
             BinaryDisasmRow(disasmData.getItem(position))
+            items(data.) { symbol ->
+                BinaryDisasmRow(symbol)
+
+            }
         }
     }
 }

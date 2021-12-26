@@ -120,9 +120,9 @@ fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) 
     val parsedFileValue = data.parsedFile.value
     if (parsedFileValue is DataResult.Success) {
         when (val tabKind = theTab.tabKind) {
-            is BinaryTabKind.BinaryDetail -> TODO()
             is BinaryTabKind.BinaryDisasm -> BinaryDisasmTabContent(data.disasmData)
-            is BinaryTabKind.BinaryExportSymbol -> TODO()
+            is BinaryTabKind.BinaryDetail -> BinaryDetailTabContent(data = parsedFileValue.data)
+            is BinaryTabKind.BinaryExportSymbol -> BinaryExportSymbolTabContent(parsedFileValue.data)
             is BinaryTabKind.BinaryImportSymbol -> BinaryImportSymbolTabContent(parsedFileValue.data)
             is BinaryTabKind.BinaryOverview -> BinaryOverviewTabContent(parsedFileValue.data)
             is BinaryTabKind.BinaryString -> TODO()

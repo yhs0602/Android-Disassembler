@@ -11,7 +11,6 @@ class FileItemDotNetSymbol(text: String, private val reflector: FacileReflector,
     override fun canExpand(): Boolean = true
     override fun isRawAvailable(): Boolean = false
 
-    @ExperimentalUnsignedTypes
     override suspend fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
         val result = ArrayList<FileItem>()
         val fields = type.fields

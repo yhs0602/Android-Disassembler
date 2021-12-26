@@ -47,7 +47,6 @@ class StringFragment : Fragment() {
     private lateinit var stringAdapter: FoundStringAdapter
     private lateinit var fileContent: ByteArray
 
-    @ExperimentalUnsignedTypes
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {

@@ -28,9 +28,25 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         itemsNew.clear()
     }
 
+
+    fun addAll(
+        data: LongSparseArray<DisassemblyListItem>,
+        addr: SparseArray<Long>
+    ) {
+        itemsNew = data // .clone();
+        address = addr // .clone();
+        notifyDataSetChanged()
+    }
+
+    // You should not modify
+    fun itemList(): LongSparseArray<DisassemblyListItem> {
+        return itemsNew // / *listViewItemList;// */new ArrayList<ListViewItem>().addAll(listViewItemList);
+    }
+
     // New method
     // position->address
     var address = SparseArray<Long>()
+
     // address->item
     private var itemsNew = LongSparseArray<DisassemblyListItem>()
     var writep = 0
@@ -110,6 +126,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         // address=//new long[file.fileContents.length];//Use sparseArray if oom
 //        mainactivity = ma;
 // IMPORTANT Note: total arg is unused
+        dit = DisasmIterator(file, handle)
     }
 
     fun adjustShow(
