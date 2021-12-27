@@ -54,14 +54,8 @@ fun BinaryMenuItems(viewModel: MainViewModel) {
     DropdownMenuItem(onClick = {
         viewModel.closeCurrentFile()
     }) {
-        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Close File")
+        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Close Tab")
         Text("Close Tab")
-    }
-    DropdownMenuItem(onClick = {
-        viewModel.closeCurrentFile()
-    }) {
-        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Show")
-        Text("Show")
     }
     DropdownMenuItem(onClick = {
         viewModel.closeCurrentFile()

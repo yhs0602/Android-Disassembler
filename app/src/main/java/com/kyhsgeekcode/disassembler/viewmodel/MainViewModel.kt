@@ -214,7 +214,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun closeCurrentFile() {
-        TODO("Not yet implemented")
+        // free memory and remove from list
+        val curIdx = currentTabIndex.value
+        if (openedTabs.value.size > 1) {
+            _currentTabIndex.value = kotlin.math.max(currentTabIndex.value - 1, 0)
+            val tabData = openedTabs.value[curIdx]
+            tabDataMap.remove(tabData)
+            _openedTabs.value = openedTabs.value - tabData
+        }
     }
 
     fun isBinaryTab(): Boolean {
