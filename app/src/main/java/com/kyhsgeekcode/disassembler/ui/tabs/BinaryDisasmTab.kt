@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -37,7 +36,8 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
     private val addressToListItem = LongSparseArray<DisassemblyListItem>()
     var positionToAddress = SparseArray<Long>()
     var writep = 0
-    var currentAddress: Long = 0
+    private val _currentAddress = MutableStateFlow(0L)
+    val currentAddress = _currentAddress as StateFlow<Long>
     private val assemblyProvider: AssemblyProvider = DisasmIterator(file, handle)
 
     private val _itemCount = MutableStateFlow(0)
@@ -82,8 +82,8 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
             )
         )
         writep = position
-        if (currentAddress == 0L)
-            currentAddress = address + file.codeSectionBase - file.codeVirtAddr
+        if (currentAddress.value == 0L)
+            _currentAddress.value = address + file.codeSectionBase - file.codeVirtAddr
         val newItems = assemblyProvider.getSome(
             file.fileContents,
             address + file.codeSectionBase - file.codeVirtAddr /*address-file.codeVirtualAddress*/,
@@ -123,12 +123,14 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
 
     fun jumpto(address: Long): Boolean {
         return if (isValidAddress(address)) {
-            backstack.push(currentAddress)
-            currentAddress = address
+            backstack.push(currentAddress.value)
+            _currentAddress.value = address
             positionToAddress.clear()
             addressToListItem.clear()
-            loadMore(0, currentAddress)
+            _itemCount.value = 0
+            loadMore(0, currentAddress.value)
 //            lazyListState.scrollToItem(0, 0)
+
             true
         } else {
             false
@@ -140,7 +142,7 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
     }
 
     fun setCurrentAddressByFirstItemIndex(firstVisibleItemIndex: Int) {
-        currentAddress = positionToAddress.get(firstVisibleItemIndex)
+        _currentAddress.value = positionToAddress.get(firstVisibleItemIndex)
     }
 }
 
@@ -150,24 +152,23 @@ fun BinaryDisasmTabContent(
     disasmData: BinaryDisasmData,
     data: BinaryTabData
 ) {
-    SideEffect {
-        data.disasmTabDidLoad()
-    }
     val count = disasmData.itemCount.collectAsState()
     val backstack = disasmData.backstack
     val listState = rememberSaveable(saver = LazyListState.Saver) {
         disasmData.lazyListState
     }
     val coroutineScope = rememberCoroutineScope()
+    val currentAddress = disasmData.currentAddress.collectAsState()
     InfiniteList(onLoadMore = { firstVisibleItemIndex, lastVisibleItemIndex ->
         disasmData.setCurrentAddressByFirstItemIndex(firstVisibleItemIndex)
         disasmData.loadMore(lastVisibleItemIndex)
     }, modifier = Modifier.horizontalScroll(rememberScrollState()), listState = listState) {
+
         stickyHeader {
             BinaryDisasmHeader()
         }
         items(count.value) { position ->
-            BinaryDisasmRow(disasmData.getItem(position), disasmData)
+            BinaryDisasmRow(disasmData.getItem(position), disasmData, currentAddress.value)
         }
     }
 
@@ -198,7 +199,11 @@ private fun BinaryDisasmHeader() {
 
 @ExperimentalFoundationApi
 @Composable
-private fun BinaryDisasmRow(item: DisassemblyListItem, data: BinaryDisasmData) {
+private fun BinaryDisasmRow(
+    item: DisassemblyListItem,
+    data: BinaryDisasmData,
+    currentAddress: Long
+) {
     // 7 textviews!
     Row(Modifier.height(IntrinsicSize.Min)) {
         CellText(item.address, Modifier.width(80.dp))

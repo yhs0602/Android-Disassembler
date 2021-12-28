@@ -1,6 +1,5 @@
 package com.kyhsgeekcode.disassembler.ui.tabs
 
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,20 +10,20 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.google.firebase.inject.Deferred
 import com.kyhsgeekcode.disassembler.AbstractFile
 import com.kyhsgeekcode.disassembler.MainActivity
 import com.kyhsgeekcode.disassembler.UserCanceledException
 import com.kyhsgeekcode.disassembler.models.Architecture
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
-import com.kyhsgeekcode.disassembler.showEditDialog
 import com.kyhsgeekcode.disassembler.ui.TabData
 import com.kyhsgeekcode.disassembler.ui.TabKind
 import com.kyhsgeekcode.disassembler.ui.components.TextInputDialog
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 sealed class DataResult<T> {
@@ -77,8 +76,6 @@ class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope
     lateinit var disasmData: BinaryDisasmData
         private set
 
-    var disasmTabDidDload = CompletableDeferred<Boolean>()
-
     override suspend fun prepare() {
         val abstractFile =
             AbstractFile.createInstance(ProjectDataStorage.resolveToRead(data.relPath)!!)
@@ -129,9 +126,6 @@ class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope
                 val target = inputJumpTarget()
                 jumpTarget = CompletableDeferred()
                 setCurrentTab<BinaryTabKind.BinaryDisasm>()
-                disasmTabDidDload.await()
-                delay(200)
-                disasmTabDidDload = CompletableDeferred()
                 val result = disasmData.jumpto(target.toLong(16))
                 if (!result) {
                     Timber.d("Invalid address $target")
@@ -149,10 +143,6 @@ class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope
 
     fun analyze() {
         TODO("Not yet implemented")
-    }
-
-    fun disasmTabDidLoad() {
-        disasmTabDidDload.complete(true)
     }
 
     fun onJumpTargetCancel() {
