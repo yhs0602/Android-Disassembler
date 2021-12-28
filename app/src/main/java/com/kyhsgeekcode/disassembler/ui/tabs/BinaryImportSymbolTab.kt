@@ -51,7 +51,7 @@ fun BinaryImportSymbolTabContent(data: AbstractFile) {
             5 -> item.offset.toString(16)
             6 -> item.type.toString()
             7 -> item.addend.toString()
-            8 -> item.calcValue.toString()
+            8 -> item.calcValue.toString(16)
             else -> throw IllegalArgumentException("OOB $col")
         }
     }
