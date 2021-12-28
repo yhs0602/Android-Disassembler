@@ -124,8 +124,8 @@ class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope
     }
 
     fun jumpto() {
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 val target = inputJumpTarget()
                 jumpTarget = CompletableDeferred()
                 setCurrentTab<BinaryTabKind.BinaryDisasm>()
@@ -136,9 +136,10 @@ class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope
                 if (!result) {
                     Timber.d("Invalid address $target")
                 }
+            } catch (e: UserCanceledException) {
+                Timber.d("User canceled jump to.")
+                jumpTarget = CompletableDeferred()
             }
-        } catch (e: UserCanceledException) {
-            Timber.d("User canceled jump to.")
         }
     }
 
@@ -152,6 +153,11 @@ class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope
 
     fun disasmTabDidLoad() {
         disasmTabDidDload.complete(true)
+    }
+
+    fun onJumpTargetCancel() {
+        _showJumpToDialog.value = false
+        jumpTarget.completeExceptionally(UserCanceledException())
     }
 }
 
@@ -219,7 +225,7 @@ fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) 
             onTextChanged = { jumpTargetText = it },
             onConfirm = {
                 data.onJumpTargetInput(jumpTargetText)
-            })
+            }, onDismissRequest = { data.onJumpTargetCancel() })
     }
 }
 

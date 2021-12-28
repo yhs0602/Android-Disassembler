@@ -126,7 +126,7 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
             positionToAddress.clear()
             addressToListItem.clear()
             loadMore(0, currentAddress)
-            lazyListState.scrollToItem(0, 0)
+//            lazyListState.scrollToItem(0, 0)
             true
         } else {
             false

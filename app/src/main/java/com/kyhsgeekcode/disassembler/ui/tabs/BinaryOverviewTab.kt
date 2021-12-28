@@ -38,33 +38,33 @@ fun BinaryOverviewTabContent(parsedFile: AbstractFile) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.padding(10.dp)) {
         BinaryOverviewDataRow(
             stringResource(id = R.string.FoffsCS),
-            codeSectionBase.toString(),
+            codeSectionBase.toString(16),
             onValueChange = {
-                codeSectionBase = it.toLong()
+                codeSectionBase = it.toLong(16)
             },
             isEnabled
         )
         BinaryOverviewDataRow(
             stringResource(id = R.string.FoffsCSEd),
-            codeSectionLimit.toString(),
+            codeSectionLimit.toString(16),
             onValueChange = {
-                codeSectionLimit = it.toLong()
+                codeSectionLimit = it.toLong(16)
             },
             isEnabled
         )
         BinaryOverviewDataRow(
             stringResource(id = R.string.VAofEP),
-            entryPoint.toString(),
+            entryPoint.toString(16),
             onValueChange = {
-                entryPoint = it.toLong()
+                entryPoint = it.toLong(16)
             },
             isEnabled
         )
         BinaryOverviewDataRow(
             stringResource(id = R.string.VAofCS),
-            codeVirtAddr.toString(),
+            codeVirtAddr.toString(16),
             onValueChange = {
-                codeVirtAddr = it.toLong()
+                codeVirtAddr = it.toLong(16)
             },
             isEnabled
         )
