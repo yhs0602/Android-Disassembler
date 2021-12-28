@@ -184,7 +184,12 @@ class ElfFile(file: File, filec: ByteArray) : AbstractFile() {
 //            ParseRela(relas);
             loadBinary(path)
             // sort it? this should be after plt parse
+//            exportSymbols.removeAll { symbol ->
+//                symbol.st_value == 0L
+//            }
             Collections.sort(exportSymbols, Comparator { p1, p2 ->
+                if (p1.st_value == 0L) return@Comparator 1
+                if (p2.st_value == 0L) return@Comparator -1
                 if (p1.type == p2.type) return@Comparator 0
                 if (p1.type == Symbol.Type.STT_FUNC) return@Comparator -1
                 if (p2.type == Symbol.Type.STT_FUNC) 1 else 0
@@ -396,96 +401,96 @@ class ElfFile(file: File, filec: ByteArray) : AbstractFile() {
 // private long codeLimit=0L;
 // private long codeVirtualAddress=0L;
 // String[] symstrings;
-    @Throws(IOException::class)
-    private fun ParseRela(relas: ArrayList<Rela>) {
-        val relaSec = elf.getSectionHeaderByType(SectionType.RELA)
-        if (relaSec != null) {
-            val relaBuf = elf.getSection(relaSec)
-            val targetSection = relaSec.info
-            val sourceSymtab = relaSec.link
-            while (relaBuf.hasRemaining()) {
-                val r_offset = relaBuf.long // unsigned, byte offset from targetSection
-                val r_info = relaBuf.long // unsigned, index to sourceSymtab
-                val index = (r_info shr 32 and -0x1).toInt()
-                val symbol = exportSymbols[index]
-                val r_addend = relaBuf.long // signed, delta
-                val rela = Rela()
-                rela.targetSection = targetSection
-                rela.symsection = sourceSymtab
-                rela.index = index
-                rela.symbol = symbol
-                rela.r_offset = r_offset
-                rela.r_addend = r_addend
-                rela.r_info = r_info
-                rela.type = (r_info and -0x1).toInt()
-                relas.add(rela)
-            }
-        }
-    }
+//    @Throws(IOException::class)
+//    private fun ParseRela(relas: ArrayList<Rela>) {
+//        val relaSec = elf.getSectionHeaderByType(SectionType.RELA)
+//        if (relaSec != null) {
+//            val relaBuf = elf.getSection(relaSec)
+//            val targetSection = relaSec.info
+//            val sourceSymtab = relaSec.link
+//            while (relaBuf.hasRemaining()) {
+//                val r_offset = relaBuf.long // unsigned, byte offset from targetSection
+//                val r_info = relaBuf.long // unsigned, index to sourceSymtab
+//                val index = (r_info shr 32 and -0x1).toInt()
+//                val symbol = exportSymbols[index]
+//                val r_addend = relaBuf.long // signed, delta
+//                val rela = Rela()
+//                rela.targetSection = targetSection
+//                rela.symsection = sourceSymtab
+//                rela.index = index
+//                rela.symbol = symbol
+//                rela.r_offset = r_offset
+//                rela.r_addend = r_addend
+//                rela.r_info = r_info
+//                rela.type = (r_info and -0x1).toInt()
+//                relas.add(rela)
+//            }
+//        }
+//    }
 
-    private fun ParseSymtab(sb: StringBuilder, strtable: ByteArray) {
-        val symbuffer: ByteBuffer
-        try {
-            symbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.SYMTAB))
-            val elfClass = elf.header.elfClass
-            exportSymbols.clear()
-            if (elfClass == ElfClass.CLASS_32) {
-                while (symbuffer.hasRemaining()) {
-                    val name = symbuffer.int
-                    val value = symbuffer.int
-                    val size = symbuffer.int
-                    val stinfo = symbuffer.get().toShort()
-                    val stother = symbuffer.get().toShort()
-                    val stshndx = symbuffer.short
-                    val sym_name = Elf.getZString(strtable, name.toLong())
-                    val symbol = Symbol()
-                    symbol.name = sym_name
-                    symbol.is64 = false
-                    symbol.st_info = stinfo
-                    symbol.st_name = name.toLong()
-                    symbol.st_other = stother
-                    symbol.st_shndx = stshndx
-                    symbol.st_size = size.toLong()
-                    symbol.st_value = value.toLong()
-                    symbol.analyze()
-                    exportSymbols.add(symbol)
-                    /*sb.append(sym_name).append("=").append(Integer.toHexString(value))
-                     .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
-                     */sb.append(symbol.toString()).append(System.lineSeparator())
-                }
-            } else { // 64
-                while (symbuffer.hasRemaining()) {
-                    val name = symbuffer.int
-                    val stinfo = symbuffer.get().toShort()
-                    val stother = symbuffer.get().toShort()
-                    val stshndx = symbuffer.short
-                    val value = symbuffer.long
-                    val size = symbuffer.long
-                    val sym_name = Elf.getZString(strtable, name.toLong())
-                    val symbol = Symbol()
-                    symbol.name = sym_name
-                    symbol.is64 = true
-                    symbol.st_info = stinfo
-                    symbol.st_name = name.toLong()
-                    symbol.st_other = stother
-                    symbol.st_shndx = stshndx
-                    symbol.st_size = size
-                    symbol.st_value = value
-                    symbol.analyze()
-                    exportSymbols.add(symbol)
-                    /*	sb.append(sym_name).append("=").append(Integer.toHexString(value))
-                     .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
-                     */sb.append(symbol.toString()).append(System.lineSeparator())
-                }
-            }
-        } catch (e: IllegalArgumentException) {
-            Log.e(TAG, "", e)
-        } catch (e: IOException) {
-            Log.e(TAG, "", e)
-        } catch (e: StringIndexOutOfBoundsException) {
-            Log.e(TAG, "", e)
-        }
-    }
+//    private fun ParseSymtab(sb: StringBuilder, strtable: ByteArray) {
+//        val symbuffer: ByteBuffer
+//        try {
+//            symbuffer = elf.getSection(elf.getSectionHeaderByType(SectionType.SYMTAB))
+//            val elfClass = elf.header.elfClass
+//            exportSymbols.clear()
+//            if (elfClass == ElfClass.CLASS_32) {
+//                while (symbuffer.hasRemaining()) {
+//                    val name = symbuffer.int
+//                    val value = symbuffer.int
+//                    val size = symbuffer.int
+//                    val stinfo = symbuffer.get().toShort()
+//                    val stother = symbuffer.get().toShort()
+//                    val stshndx = symbuffer.short
+//                    val sym_name = Elf.getZString(strtable, name.toLong())
+//                    val symbol = Symbol()
+//                    symbol.name = sym_name
+//                    symbol.is64 = false
+//                    symbol.st_info = stinfo
+//                    symbol.st_name = name.toLong()
+//                    symbol.st_other = stother
+//                    symbol.st_shndx = stshndx
+//                    symbol.st_size = size.toLong()
+//                    symbol.st_value = value.toLong()
+//                    symbol.analyze()
+//                    exportSymbols.add(symbol)
+//                    /*sb.append(sym_name).append("=").append(Integer.toHexString(value))
+//                     .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
+//                     */sb.append(symbol.toString()).append(System.lineSeparator())
+//                }
+//            } else { // 64
+//                while (symbuffer.hasRemaining()) {
+//                    val name = symbuffer.int
+//                    val stinfo = symbuffer.get().toShort()
+//                    val stother = symbuffer.get().toShort()
+//                    val stshndx = symbuffer.short
+//                    val value = symbuffer.long
+//                    val size = symbuffer.long
+//                    val sym_name = Elf.getZString(strtable, name.toLong())
+//                    val symbol = Symbol()
+//                    symbol.name = sym_name
+//                    symbol.is64 = true
+//                    symbol.st_info = stinfo
+//                    symbol.st_name = name.toLong()
+//                    symbol.st_other = stother
+//                    symbol.st_shndx = stshndx
+//                    symbol.st_size = size
+//                    symbol.st_value = value
+//                    symbol.analyze()
+//                    exportSymbols.add(symbol)
+//                    /*	sb.append(sym_name).append("=").append(Integer.toHexString(value))
+//                     .append(";size=").append(size).append(";").append(stinfo).append(";").append(stshndx)
+//                     */sb.append(symbol.toString()).append(System.lineSeparator())
+//                }
+//            }
+//        } catch (e: IllegalArgumentException) {
+//            Log.e(TAG, "", e)
+//        } catch (e: IOException) {
+//            Log.e(TAG, "", e)
+//        } catch (e: StringIndexOutOfBoundsException) {
+//            Log.e(TAG, "", e)
+//        }
+//    }
 
     external fun loadBinary(path: String?)
     fun addSymbol(symbol: Symbol) {

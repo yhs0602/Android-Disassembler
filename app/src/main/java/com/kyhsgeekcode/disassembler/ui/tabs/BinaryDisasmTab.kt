@@ -123,6 +123,9 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
         return if (isValidAddress(address)) {
             backstack.push(currentAddress)
             currentAddress = address
+            positionToAddress.clear()
+            addressToListItem.clear()
+            loadMore(0, currentAddress)
             lazyListState.scrollToItem(0, 0)
             true
         } else {
