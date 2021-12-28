@@ -25,6 +25,8 @@ fun BinaryExportSymbolTabContent(data: AbstractFile, data1: BinaryTabData) {
             } else {
                 val address = item.st_value
                 Toast.makeText(context, "Jump to" + address.toString(16), Toast.LENGTH_SHORT).show()
+                data1.setCurrentTab<BinaryTabKind.BinaryDisasm>()
+                data1.disasmData.jumpto(address)
 //                (ITabController).setCurrentTabByTag(
 //                    TabTags.TAB_DISASM,
 //                    true
