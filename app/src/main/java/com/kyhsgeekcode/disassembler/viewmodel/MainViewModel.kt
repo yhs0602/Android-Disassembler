@@ -190,7 +190,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             is TabKind.AnalysisResult -> TODO()
             is TabKind.Apk -> TODO()
             is TabKind.Archive -> TODO()
-            is TabKind.Binary -> BinaryTabData(tabKind)
+            is TabKind.Binary -> BinaryTabData(tabKind, viewModelScope)
             is TabKind.Dex -> TODO()
             is TabKind.DotNet -> TODO()
             is TabKind.Image -> ImageTabData(
@@ -230,6 +230,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setCurrentTabByIndex(index: Int) {
         _currentTabIndex.value = index
+    }
+
+    fun getCurrentTabData(): PreparedTabData? {
+        return tabDataMap[openedTabs.value[currentTabIndex.value]]
     }
 
     private val _parsedFile: StateFlow<AbstractFile?> = MutableStateFlow<AbstractFile?>(null)

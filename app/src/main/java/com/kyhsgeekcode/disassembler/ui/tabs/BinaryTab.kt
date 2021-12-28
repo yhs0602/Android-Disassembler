@@ -1,5 +1,6 @@
 package com.kyhsgeekcode.disassembler.ui.tabs
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,13 +11,18 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.firebase.inject.Deferred
 import com.kyhsgeekcode.disassembler.AbstractFile
 import com.kyhsgeekcode.disassembler.MainActivity
+import com.kyhsgeekcode.disassembler.UserCanceledException
 import com.kyhsgeekcode.disassembler.models.Architecture
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
+import com.kyhsgeekcode.disassembler.showEditDialog
 import com.kyhsgeekcode.disassembler.ui.TabData
 import com.kyhsgeekcode.disassembler.ui.TabKind
+import com.kyhsgeekcode.disassembler.ui.components.TextInputDialog
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
@@ -42,9 +48,9 @@ sealed class BinaryTabKind {
     class BinaryString : BinaryTabKind()
 }
 
-class BinaryTabData(val data: TabKind.Binary) : PreparedTabData() {
-    @PublishedApi
-    internal val _currentTabIndex = MutableStateFlow(0)
+class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope) :
+    PreparedTabData() {
+    private val _currentTabIndex = MutableStateFlow(0)
     val currentTabIndex = _currentTabIndex as StateFlow<Int>
     private val _openedTabs = MutableStateFlow(
         listOf(
@@ -60,11 +66,18 @@ class BinaryTabData(val data: TabKind.Binary) : PreparedTabData() {
     )
     val openedTabs = _openedTabs as StateFlow<List<BinaryInternalTabData>>
 
+    private val _showJumpToDialog = MutableStateFlow(false)
+    val showJumpToDialog = _showJumpToDialog as StateFlow<Boolean>
+
+    var jumpTarget = CompletableDeferred<String>()
+
     private val _parsedFile = MutableStateFlow<DataResult<AbstractFile>>(DataResult.Loading())
     val parsedFile = _parsedFile as StateFlow<DataResult<AbstractFile>>
 
     lateinit var disasmData: BinaryDisasmData
         private set
+
+    var disasmTabDidDload = CompletableDeferred<Boolean>()
 
     override suspend fun prepare() {
         val abstractFile =
@@ -86,18 +99,59 @@ class BinaryTabData(val data: TabKind.Binary) : PreparedTabData() {
         disasmData.prepare()
     }
 
-    inline fun <reified T> setCurrentTab() {
+    inline fun <reified T : BinaryTabKind> setCurrentTab() {
         val tab = openedTabs.value.indexOfFirst {
             it.tabKind is T
         }
         if (tab < 0) {
             Timber.e("Error: No such tab")
         }
-        _currentTabIndex.value = tab
+        setCurrentTabByIndex(tab)
     }
 
     fun setCurrentTabByIndex(index: Int) {
         _currentTabIndex.value = index
+    }
+
+    suspend fun inputJumpTarget(): String {
+        _showJumpToDialog.value = true
+        return jumpTarget.await()
+    }
+
+    fun onJumpTargetInput(target: String) {
+        _showJumpToDialog.value = false
+        jumpTarget.complete(target)
+    }
+
+    fun jumpto() {
+        try {
+            viewModelScope.launch {
+                val target = inputJumpTarget()
+                jumpTarget = CompletableDeferred()
+                setCurrentTab<BinaryTabKind.BinaryDisasm>()
+                disasmTabDidDload.await()
+                delay(200)
+                disasmTabDidDload = CompletableDeferred()
+                val result = disasmData.jumpto(target.toLong(16))
+                if (!result) {
+                    Timber.d("Invalid address $target")
+                }
+            }
+        } catch (e: UserCanceledException) {
+            Timber.d("User canceled jump to.")
+        }
+    }
+
+    fun chooseColumns() {
+        TODO("Not yet implemented")
+    }
+
+    fun analyze() {
+        TODO("Not yet implemented")
+    }
+
+    fun disasmTabDidLoad() {
+        disasmTabDidDload.complete(true)
     }
 }
 
@@ -137,6 +191,7 @@ fun OpenedBinaryTabs(data: BinaryTabData, viewModel: MainViewModel) {
 fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) {
     val theTab = data.openedTabs.value[state]
     val parsedFileValue = data.parsedFile.value
+    val isShowJumpToDialog = data.showJumpToDialog.collectAsState()
     if (parsedFileValue is DataResult.Success) {
         when (val tabKind = theTab.tabKind) {
             is BinaryTabKind.BinaryDisasm -> BinaryDisasmTabContent(data.disasmData, data)
@@ -151,6 +206,20 @@ fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) 
         }
     } else {
         Text("Parsed file is none!")
+    }
+
+    if (isShowJumpToDialog.value) {
+        var jumpTargetText by remember {
+            mutableStateOf("")
+        }
+        TextInputDialog(
+            title = "Jump to where?",
+            description = "Enter an address",
+            text = jumpTargetText,
+            onTextChanged = { jumpTargetText = it },
+            onConfirm = {
+                data.onJumpTargetInput(jumpTargetText)
+            })
     }
 }
 

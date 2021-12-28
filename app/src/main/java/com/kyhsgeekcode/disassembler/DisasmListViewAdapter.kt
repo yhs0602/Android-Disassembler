@@ -118,7 +118,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     private val dp260 = convertDpToPixel(260f)
 
     companion object {
-        const val INSERT_COUNT = 80
+        const val INSERT_COUNT = 160
     }
 
     init {

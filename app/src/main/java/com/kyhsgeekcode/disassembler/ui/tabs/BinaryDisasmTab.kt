@@ -10,16 +10,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.util.containsKey
 import com.kyhsgeekcode.disassembler.*
-
 import com.kyhsgeekcode.disassembler.ui.components.CellText
 import com.kyhsgeekcode.disassembler.ui.components.InfiniteList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,11 +43,25 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
 
     val backstack = Stack<Long>()
 
+    val lazyListState = LazyListState(0, 0)
+
     fun getItem(position: Int): DisassemblyListItem {
-        Timber.d("getItem $position")
+        Timber.d("getItem $position, count: ${itemCount.value}")
         val addrl = positionToAddress.get(position, null)
         if (addrl == null) {
+            var tryPosition = position
+            while (tryPosition > 0 && !positionToAddress.containsKey(tryPosition)) {
+                tryPosition--
+            }
+            if (tryPosition == 0) {
+                Timber.e("Failed to find fallback position")
+                return DisassemblyListItem(DisasmResult())
+            }
+            val fallBackAddr = positionToAddress[tryPosition]
+            loadMore(tryPosition, fallBackAddr)
+            Timber.e("Loaded more for pos $tryPosition addr ${fallBackAddr.toString(16)}")
 
+            return addressToListItem[positionToAddress[position]]
         }
         val lvi = addressToListItem[addrl]
         if (lvi == null) {
@@ -77,7 +92,7 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
         for (item in newItems) {
             addressToListItem.put(item.disasmResult.address, item)
             positionToAddress.put(writep, item.disasmResult.address)
-            Timber.d("Putting addr ${item.disasmResult.address} at $writep")
+            Timber.d("Putting addr ${item.disasmResult.address.toString(16)} at $writep")
             writep++ // continuously add
         }
         _itemCount.value = positionToAddress.size()
@@ -98,17 +113,17 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
         loadMore(0, addr)
     }
 
-    suspend fun returnJump(listState: LazyListState) {
+    suspend fun returnJump() {
         val to = backstack.pop()
-        jumpto(to, listState)
+        jumpto(to)
         backstack.pop()
     }
 
-    suspend fun jumpto(address: Long, listState: LazyListState): Boolean {
+    suspend fun jumpto(address: Long): Boolean {
         return if (isValidAddress(address)) {
             backstack.push(currentAddress)
             currentAddress = address
-            listState.scrollToItem(0, 0)
+            lazyListState.scrollToItem(0, 0)
             true
         } else {
             false
@@ -126,10 +141,18 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
 
 @ExperimentalFoundationApi
 @Composable
-fun BinaryDisasmTabContent(disasmData: BinaryDisasmData, data: BinaryTabData) {
+fun BinaryDisasmTabContent(
+    disasmData: BinaryDisasmData,
+    data: BinaryTabData
+) {
+    SideEffect {
+        data.disasmTabDidLoad()
+    }
     val count = disasmData.itemCount.collectAsState()
     val backstack = disasmData.backstack
-    val listState = rememberLazyListState()
+    val listState = rememberSaveable(saver = LazyListState.Saver) {
+        disasmData.lazyListState
+    }
     val coroutineScope = rememberCoroutineScope()
     InfiniteList(onLoadMore = { firstVisibleItemIndex, lastVisibleItemIndex ->
         disasmData.setCurrentAddressByFirstItemIndex(firstVisibleItemIndex)
@@ -146,7 +169,7 @@ fun BinaryDisasmTabContent(disasmData: BinaryDisasmData, data: BinaryTabData) {
     BackHandler {
         if (!backstack.empty()) {
             coroutineScope.launch {
-                disasmData.returnJump(listState)
+                disasmData.returnJump()
             }
         } else {
             data.setCurrentTab<BinaryTabKind.BinaryExportSymbol>()
