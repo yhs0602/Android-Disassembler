@@ -4,6 +4,7 @@ import android.util.LongSparseArray
 import android.util.SparseArray
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.util.containsKey
@@ -113,13 +115,13 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
         loadMore(0, addr)
     }
 
-    suspend fun returnJump() {
+    fun returnJump() {
         val to = backstack.pop()
         jumpto(to)
         backstack.pop()
     }
 
-    suspend fun jumpto(address: Long): Boolean {
+    fun jumpto(address: Long): Boolean {
         return if (isValidAddress(address)) {
             backstack.push(currentAddress)
             currentAddress = address
@@ -165,7 +167,7 @@ fun BinaryDisasmTabContent(
             BinaryDisasmHeader()
         }
         items(count.value) { position ->
-            BinaryDisasmRow(disasmData.getItem(position))
+            BinaryDisasmRow(disasmData.getItem(position), disasmData)
         }
     }
 
@@ -194,8 +196,9 @@ private fun BinaryDisasmHeader() {
     }
 }
 
+@ExperimentalFoundationApi
 @Composable
-private fun BinaryDisasmRow(item: DisassemblyListItem) {
+private fun BinaryDisasmRow(item: DisassemblyListItem, data: BinaryDisasmData) {
     // 7 textviews!
     Row(Modifier.height(IntrinsicSize.Min)) {
         CellText(item.address, Modifier.width(80.dp))
@@ -203,7 +206,18 @@ private fun BinaryDisasmRow(item: DisassemblyListItem) {
         CellText(item.bytes, Modifier.width(90.dp))
         CellText(item.instruction, Modifier.width(100.dp))
         CellText(item.condition, Modifier.width(20.dp))
-        CellText(item.operands, Modifier.width(180.dp))
+        CellText(item.operands,
+            Modifier
+                .width(180.dp)
+                .composed {
+                    if (item.isBranch) {
+                        Modifier.combinedClickable(onLongClick = {
+                            data.jumpto(item.disasmResult.jumpOffset) // why name is offset?
+                        }, onClick = {})
+                    } else {
+                        Modifier
+                    }
+                })
         CellText(item.comments, Modifier.width(200.dp))
     }
 }
