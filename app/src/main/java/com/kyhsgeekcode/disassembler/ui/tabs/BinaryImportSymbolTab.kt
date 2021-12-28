@@ -49,10 +49,19 @@ fun BinaryImportSymbolTabContent(data: AbstractFile) {
             3 -> item.address.toString(16)
             4 -> item.value.toString()
             5 -> item.offset.toString(16)
-            6 -> item.type.toString()
+            6 -> elfTypeToString(item.type)
             7 -> item.addend.toString()
             8 -> item.calcValue.toString(16)
             else -> throw IllegalArgumentException("OOB $col")
         }
     }
+}
+
+fun elfTypeToString(value: Int): String {
+    if (value == 1026) {
+        return "R_<CLS> _JUMP_SLOT(1026)"
+    } else if (value == 1027) {
+        return "R_<CLS>_RELATIVE(1027)"
+    }
+    return value.toString()
 }
