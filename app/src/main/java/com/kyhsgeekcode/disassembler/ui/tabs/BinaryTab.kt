@@ -19,6 +19,7 @@ import com.kyhsgeekcode.disassembler.models.Architecture
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.ui.TabData
 import com.kyhsgeekcode.disassembler.ui.TabKind
+import com.kyhsgeekcode.disassembler.ui.components.AutoCompleteTextFieldDialog
 import com.kyhsgeekcode.disassembler.ui.components.MultiCheckBoxDialog
 import com.kyhsgeekcode.disassembler.ui.components.TextInputDialog
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
@@ -132,7 +133,8 @@ class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope
                 val target = inputJumpTarget()
                 jumpTarget = CompletableDeferred()
                 setCurrentTab<BinaryTabKind.BinaryDisasm>()
-                val result = disasmData.jumpto(target.toLong(16))
+                val addr = addrOrFromSymbol(target)
+                val result = disasmData.jumpto(addr)
                 if (!result) {
                     Timber.d("Invalid address $target")
                 }
@@ -141,6 +143,13 @@ class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope
                 jumpTarget = CompletableDeferred()
             }
         }
+    }
+
+    private fun addrOrFromSymbol(jumpTarget: String): Long {
+        return kotlin.runCatching { jumpTarget.toLong(16) }.getOrNull()
+            ?: disasmData.file.exportSymbols.find {
+                it.name == jumpTarget || it.demangled == jumpTarget
+            }?.st_value ?: 0L
     }
 
     fun chooseColumns() {
@@ -215,43 +224,53 @@ fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) 
             is BinaryTabKind.BinaryOverview -> BinaryOverviewTabContent(parsedFileValue.data)
             is BinaryTabKind.BinaryString -> TODO()
         }
+        if (isShowJumpToDialog.value) {
+            var jumpTargetText by remember {
+                mutableStateOf("")
+            }
+            AutoCompleteTextFieldDialog(
+                title = "Jump to where?",
+                description = "Enter an address",
+                text = jumpTargetText,
+                onValueChange = { jumpTargetText = it },
+                onOptionSelected = {
+                    jumpTargetText = it
+                },
+                suggestions = parsedFileValue.data.exportSymbols.map { it.name }.filter {
+                    it.startsWith(
+                        jumpTargetText
+                    )
+                }.take(5),
+                onConfirm = {
+                    data.onJumpTargetInput(jumpTargetText)
+                }, onDismissRequest = { data.onJumpTargetCancel() }, modifier = Modifier
+            )
+        }
+
+        if (isShowChooseColumnDialog.value) {
+            MultiCheckBoxDialog(
+                title = "Choose columns",
+                description = "Choose columns to show",
+                list = data.disasmData.showColumns,
+                labels = listOf(
+                    stringResource(id = R.string.address),
+                    stringResource(id = R.string.size),
+                    "Bytes",
+                    stringResource(id = R.string.instruction),
+                    stringResource(id = R.string.condition),
+                    stringResource(id = R.string.operands),
+                    stringResource(id = R.string.comment)
+                ),
+                onCheckChanged = { index, value -> data.disasmData.showColumns[index] = value },
+                onConfirm = {
+                    data.onChooseColumnDone()
+                }, onDismissRequest = { data.onChooseColumnDone() })
+        }
     } else {
         Text("Parsed file is none!")
     }
 
-    if (isShowJumpToDialog.value) {
-        var jumpTargetText by remember {
-            mutableStateOf("")
-        }
-        TextInputDialog(
-            title = "Jump to where?",
-            description = "Enter an address",
-            text = jumpTargetText,
-            onTextChanged = { jumpTargetText = it },
-            onConfirm = {
-                data.onJumpTargetInput(jumpTargetText)
-            }, onDismissRequest = { data.onJumpTargetCancel() })
-    }
 
-    if (isShowChooseColumnDialog.value) {
-        MultiCheckBoxDialog(
-            title = "Choose columns",
-            description = "Choose columns to show",
-            list = data.disasmData.showColumns,
-            labels = listOf(
-                stringResource(id = R.string.address),
-                stringResource(id = R.string.size),
-                "Bytes",
-                stringResource(id = R.string.instruction),
-                stringResource(id = R.string.condition),
-                stringResource(id = R.string.operands),
-                stringResource(id = R.string.comment)
-            ),
-            onCheckChanged = { index, value -> data.disasmData.showColumns[index] = value },
-            onConfirm = {
-                data.onChooseColumnDone()
-            }, onDismissRequest = { data.onChooseColumnDone() })
-    }
 }
 
 
