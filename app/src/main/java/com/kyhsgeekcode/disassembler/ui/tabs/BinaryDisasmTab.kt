@@ -14,8 +14,10 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.res.stringResource
@@ -46,6 +48,8 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
     val backstack = Stack<Long>()
 
     val lazyListState = LazyListState(0, 0)
+
+    val showCoumns = mutableStateListOf<Boolean>(true, true, true, true, true, true, true)
 
     fun getItem(position: Int): DisassemblyListItem {
         Timber.d("getItem $position, count: ${itemCount.value}")
@@ -165,7 +169,7 @@ fun BinaryDisasmTabContent(
     }, modifier = Modifier.horizontalScroll(rememberScrollState()), listState = listState) {
 
         stickyHeader {
-            BinaryDisasmHeader()
+            BinaryDisasmHeader(disasmData)
         }
         items(count.value) { position ->
             BinaryDisasmRow(disasmData.getItem(position), disasmData, currentAddress.value)
@@ -185,15 +189,30 @@ fun BinaryDisasmTabContent(
 
 
 @Composable
-private fun BinaryDisasmHeader() {
+private fun BinaryDisasmHeader(data: BinaryDisasmData) {
+    val showColumns = data.showCoumns
     Row(Modifier.height(IntrinsicSize.Min)) {
-        CellText(stringResource(id = R.string.address), Modifier.width(80.dp))
-        CellText(stringResource(id = R.string.size_short), Modifier.width(30.dp))
-        CellText("Bytes", Modifier.width(90.dp))
-        CellText(stringResource(id = R.string.instruction), Modifier.width(100.dp))
-        CellText(stringResource(id = R.string.condition_short), Modifier.width(20.dp))
-        CellText(stringResource(id = R.string.operands), Modifier.width(180.dp))
-        CellText(stringResource(id = R.string.comment), Modifier.width(200.dp))
+        if (showColumns[0]) {
+            CellText(stringResource(id = R.string.address), Modifier.width(80.dp))
+        }
+        if (showColumns[1]) {
+            CellText(stringResource(id = R.string.size_short), Modifier.width(30.dp))
+        }
+        if (showColumns[2]) {
+            CellText("Bytes", Modifier.width(90.dp))
+        }
+        if (showColumns[3]) {
+            CellText(stringResource(id = R.string.instruction), Modifier.width(100.dp))
+        }
+        if (showColumns[4]) {
+            CellText(stringResource(id = R.string.condition_short), Modifier.width(20.dp))
+        }
+        if (showColumns[5]) {
+            CellText(stringResource(id = R.string.operands), Modifier.width(180.dp))
+        }
+        if (showColumns[6]) {
+            CellText(stringResource(id = R.string.comment), Modifier.width(200.dp))
+        }
     }
 }
 
@@ -205,24 +224,39 @@ private fun BinaryDisasmRow(
     currentAddress: Long
 ) {
     // 7 textviews!
+    val showColumns = data.showCoumns
     Row(Modifier.height(IntrinsicSize.Min)) {
-        CellText(item.address, Modifier.width(80.dp))
-        CellText(item.label, Modifier.width(30.dp))
-        CellText(item.bytes, Modifier.width(90.dp))
-        CellText(item.instruction, Modifier.width(100.dp))
-        CellText(item.condition, Modifier.width(20.dp))
-        CellText(item.operands,
-            Modifier
-                .width(180.dp)
-                .composed {
-                    if (item.isBranch) {
-                        Modifier.combinedClickable(onLongClick = {
-                            data.jumpto(item.disasmResult.jumpOffset) // why name is offset?
-                        }, onClick = {})
-                    } else {
-                        Modifier
-                    }
-                })
-        CellText(item.comments, Modifier.width(200.dp))
+        if (showColumns[0]) {
+            CellText(item.address, Modifier.width(80.dp))
+        }
+        if (showColumns[1]) {
+            CellText(item.label, Modifier.width(30.dp))
+        }
+        if (showColumns[2]) {
+            CellText(item.bytes, Modifier.width(90.dp))
+        }
+        if (showColumns[3]) {
+            CellText(item.instruction, Modifier.width(100.dp))
+        }
+        if (showColumns[4]) {
+            CellText(item.condition, Modifier.width(20.dp))
+        }
+        if (showColumns[5]) {
+            CellText(item.operands,
+                Modifier
+                    .width(180.dp)
+                    .composed {
+                        if (item.isBranch) {
+                            Modifier.combinedClickable(onLongClick = {
+                                data.jumpto(item.disasmResult.jumpOffset) // why name is offset?
+                            }, onClick = {})
+                        } else {
+                            Modifier
+                        }
+                    })
+        }
+        if (showColumns[6]) {
+            CellText(item.comments, Modifier.width(200.dp))
+        }
     }
 }

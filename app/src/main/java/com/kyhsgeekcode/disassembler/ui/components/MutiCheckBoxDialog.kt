@@ -4,11 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -16,10 +14,11 @@ import androidx.compose.ui.unit.dp
 fun MultiCheckBoxDialog(
     title: String,
     description: String,
-    text: String,
-    onTextChanged: (String) -> Unit,
-    onConfirm: (String) -> Unit,
-    onDismissRequest: () -> Unit = {}
+    list: SnapshotStateList<Boolean>,
+    labels: List<String>,
+    onCheckChanged: (Int, Boolean) -> Unit,
+    onConfirm: () -> Unit,
+    onDismissRequest: () -> Unit = {},
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -29,7 +28,15 @@ fun MultiCheckBoxDialog(
         text = {
             Column {
                 Text(text = description)
-                TextField(value = text, onValueChange = onTextChanged)
+                for (l in list.withIndex()) {
+                    Row {
+                        Checkbox(
+                            checked = l.value,
+                            onCheckedChange = { onCheckChanged(l.index, it) }
+                        )
+                        Text(text = labels[l.index])
+                    }
+                }
             }
         },
         buttons = {
@@ -45,7 +52,7 @@ fun MultiCheckBoxDialog(
                 }
                 Button(
                     modifier = Modifier.weight(1f),
-                    onClick = { onConfirm(text) }
+                    onClick = { onConfirm() }
                 ) {
                     Text("OK")
                 }

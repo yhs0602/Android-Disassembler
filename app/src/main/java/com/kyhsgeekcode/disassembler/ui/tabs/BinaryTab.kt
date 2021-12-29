@@ -9,14 +9,18 @@ import androidx.compose.material.Tab
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kyhsgeekcode.disassembler.AbstractFile
 import com.kyhsgeekcode.disassembler.MainActivity
+import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.disassembler.UserCanceledException
 import com.kyhsgeekcode.disassembler.models.Architecture
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.ui.TabData
 import com.kyhsgeekcode.disassembler.ui.TabKind
+import com.kyhsgeekcode.disassembler.ui.components.CellText
+import com.kyhsgeekcode.disassembler.ui.components.MultiCheckBoxDialog
 import com.kyhsgeekcode.disassembler.ui.components.TextInputDialog
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 import kotlinx.coroutines.CompletableDeferred
@@ -67,6 +71,9 @@ class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope
 
     private val _showJumpToDialog = MutableStateFlow(false)
     val showJumpToDialog = _showJumpToDialog as StateFlow<Boolean>
+
+    private val _showChooseColumnDialog = MutableStateFlow(false)
+    val showChooseColumnDialog = _showChooseColumnDialog as StateFlow<Boolean>
 
     var jumpTarget = CompletableDeferred<String>()
 
@@ -138,7 +145,7 @@ class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope
     }
 
     fun chooseColumns() {
-        TODO("Not yet implemented")
+        _showChooseColumnDialog.value = true
     }
 
     fun analyze() {
@@ -148,6 +155,14 @@ class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope
     fun onJumpTargetCancel() {
         _showJumpToDialog.value = false
         jumpTarget.completeExceptionally(UserCanceledException())
+    }
+
+    fun isDisasmTab(): Boolean {
+        return openedTabs.value[_currentTabIndex.value].tabKind is BinaryTabKind.BinaryDisasm
+    }
+
+    fun onChooseColumnDone() {
+        _showChooseColumnDialog.value = false
     }
 }
 
@@ -188,6 +203,7 @@ fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) 
     val theTab = data.openedTabs.value[state]
     val parsedFileValue = data.parsedFile.value
     val isShowJumpToDialog = data.showJumpToDialog.collectAsState()
+    val isShowChooseColumnDialog = data.showChooseColumnDialog.collectAsState()
     if (parsedFileValue is DataResult.Success) {
         when (val tabKind = theTab.tabKind) {
             is BinaryTabKind.BinaryDisasm -> BinaryDisasmTabContent(data.disasmData, data)
@@ -216,6 +232,26 @@ fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) 
             onConfirm = {
                 data.onJumpTargetInput(jumpTargetText)
             }, onDismissRequest = { data.onJumpTargetCancel() })
+    }
+
+    if (isShowChooseColumnDialog.value) {
+        MultiCheckBoxDialog(
+            title = "Choose columns",
+            description = "Choose columns to show",
+            list = data.disasmData.showCoumns,
+            labels = listOf(
+                stringResource(id = R.string.address),
+                stringResource(id = R.string.size),
+                "Bytes",
+                stringResource(id = R.string.instruction),
+                stringResource(id = R.string.condition),
+                stringResource(id = R.string.operands),
+                stringResource(id = R.string.comment)
+            ),
+            onCheckChanged = { index, value -> data.disasmData.showCoumns[index] = value },
+            onConfirm = {
+                data.onChooseColumnDone()
+            }, onDismissRequest = { data.onChooseColumnDone() })
     }
 }
 

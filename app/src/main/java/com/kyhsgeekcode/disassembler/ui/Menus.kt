@@ -67,12 +67,14 @@ fun BinaryMenuItems(binaryTabData: BinaryTabData, dismiss: () -> Unit) {
         Icon(imageVector = Icons.Filled.Delete, contentDescription = "Jump to")
         Text("Jump to")
     }
-    DropdownMenuItem(onClick = {
-        dismiss()
-        binaryTabData.chooseColumns()
-    }) {
-        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Choose columns")
-        Text("Choose columns")
+    if (binaryTabData.isDisasmTab()) {
+        DropdownMenuItem(onClick = {
+            dismiss()
+            binaryTabData.chooseColumns()
+        }) {
+            Icon(imageVector = Icons.Filled.Delete, contentDescription = "Choose columns")
+            Text("Choose columns")
+        }
     }
     DropdownMenuItem(onClick = {
         dismiss()
