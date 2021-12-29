@@ -19,7 +19,6 @@ import com.kyhsgeekcode.disassembler.models.Architecture
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.ui.TabData
 import com.kyhsgeekcode.disassembler.ui.TabKind
-import com.kyhsgeekcode.disassembler.ui.components.CellText
 import com.kyhsgeekcode.disassembler.ui.components.MultiCheckBoxDialog
 import com.kyhsgeekcode.disassembler.ui.components.TextInputDialog
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
@@ -238,7 +237,7 @@ fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) 
         MultiCheckBoxDialog(
             title = "Choose columns",
             description = "Choose columns to show",
-            list = data.disasmData.showCoumns,
+            list = data.disasmData.showColumns,
             labels = listOf(
                 stringResource(id = R.string.address),
                 stringResource(id = R.string.size),
@@ -248,7 +247,7 @@ fun BinaryTabContent(state: Int, data: BinaryTabData, viewModel: MainViewModel) 
                 stringResource(id = R.string.operands),
                 stringResource(id = R.string.comment)
             ),
-            onCheckChanged = { index, value -> data.disasmData.showCoumns[index] = value },
+            onCheckChanged = { index, value -> data.disasmData.showColumns[index] = value },
             onConfirm = {
                 data.onChooseColumnDone()
             }, onDismissRequest = { data.onChooseColumnDone() })

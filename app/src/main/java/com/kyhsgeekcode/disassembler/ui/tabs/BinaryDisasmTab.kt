@@ -17,7 +17,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.res.stringResource
@@ -49,7 +48,7 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
 
     val lazyListState = LazyListState(0, 0)
 
-    val showCoumns = mutableStateListOf<Boolean>(true, true, true, true, true, true, true)
+    val showColumns = mutableStateListOf(true, true, true, true, true, true, true)
 
     fun getItem(position: Int): DisassemblyListItem {
         Timber.d("getItem $position, count: ${itemCount.value}")
@@ -190,7 +189,7 @@ fun BinaryDisasmTabContent(
 
 @Composable
 private fun BinaryDisasmHeader(data: BinaryDisasmData) {
-    val showColumns = data.showCoumns
+    val showColumns = data.showColumns
     Row(Modifier.height(IntrinsicSize.Min)) {
         if (showColumns[0]) {
             CellText(stringResource(id = R.string.address), Modifier.width(80.dp))
@@ -224,7 +223,7 @@ private fun BinaryDisasmRow(
     currentAddress: Long
 ) {
     // 7 textviews!
-    val showColumns = data.showCoumns
+    val showColumns = data.showColumns
     Row(Modifier.height(IntrinsicSize.Min)) {
         if (showColumns[0]) {
             CellText(item.address, Modifier.width(80.dp))
