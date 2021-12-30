@@ -90,7 +90,7 @@ fun BinaryOverviewTabContent(parsedFile: AbstractFile) {
         }, enabled = isEnabled) {
             Text(stringResource(R.string.finish_setup))
         }
-        Button(onClick = { isEnabled = true }, enabled = !isEnabled) { // TODO: DISABLED.
+        Button(onClick = { isEnabled = true }, enabled = !isEnabled) {
             Text(stringResource(R.string.override_autosetup))
         }
     }

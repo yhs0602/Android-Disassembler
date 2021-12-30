@@ -10,7 +10,6 @@ import com.kyhsgeekcode.disassembler.AbstractFile
 import com.kyhsgeekcode.disassembler.ui.components.TableView
 import com.kyhsgeekcode.disassembler.utils.NDKRefUrlMatcher
 
-// TODO: Sort, Filter, TransactionLarge
 @ExperimentalFoundationApi
 @Composable
 fun BinaryImportSymbolTabContent(data: AbstractFile) {

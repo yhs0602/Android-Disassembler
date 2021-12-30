@@ -31,8 +31,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
-// TODO: Search autocomplete
-
 class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabData() {
     private val addressToListItem = LongSparseArray<DisassemblyListItem>()
     var positionToAddress = SparseArray<Long>()
