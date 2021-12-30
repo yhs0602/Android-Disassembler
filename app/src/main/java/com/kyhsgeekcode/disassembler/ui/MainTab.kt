@@ -42,7 +42,6 @@ fun ProjectOverview(viewModel: MainViewModel) {
             .padding(10.dp)) {
         Text(text = stringResource(id = R.string.main_select_source_guide))
         Row(Modifier.fillMaxWidth()) {
-            TextField(value = "", onValueChange = {})
             Button(onClick = {
                 val j = Intent(context, NewFileChooserActivity::class.java)
                 launcher.launch(j)

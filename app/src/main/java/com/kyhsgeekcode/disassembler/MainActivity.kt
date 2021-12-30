@@ -139,36 +139,11 @@ class MainActivity : AppCompatActivity(),
         }
         //        setupUncaughtException()
         initNative()
+        handleViewActionIntent()
 
         setContent {
             MainScreen(viewModel = viewModel)
         }
-//        _binding = MainBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-//        pagerAdapter = ViewPagerAdapter(this)
-//        binding.pagerMain.adapter = pagerAdapter
-//        binding.pagerMain.isUserInputEnabled = false
-////        tablayout.setupWithViewPager(pagerMain)
-//        TabLayoutMediator(binding.tablayout, binding.pagerMain) { tab, position ->
-//            tab.text = pagerAdapter.getTitle(position)
-//            binding.pagerMain.setCurrentItem(tab.position, true)
-//        }.attach()
-//        binding.pagerMain.offscreenPageLimit = 20
-//        overviewFragment = ProjectOverviewFragment.newInstance()
-//        pagerAdapter.addFragment(overviewFragment, "Overview")
-//
-////        setupSymCompleteAdapter()
-//        toDoAfterPermQueue.add(Runnable {
-//            //            if (disasmManager == null) {
-////                disasmManager = DisassemblyManager()
-////
-//
-////            disasmManager!!.setData(adapter!!.itemList(), adapter!!.getAddress())
-//            // handleDataFragment()
-//            // LoadProjects
-//            setupLeftDrawer()
-//            handleViewActionIntent()
-//        })
 //        requestAppPermissions(this)
 //        manageShowRational()
     }
@@ -208,31 +183,12 @@ class MainActivity : AppCompatActivity(),
 
     private fun handleViewActionIntent() {
         // https://www.androidpub.com/1351553
-        val intent = intent
+        val intent = intent ?: return
         if (intent.action == Intent.ACTION_VIEW) { // User opened this app from file browser
-            val filePath = intent.data?.path
-            Log.d(TAG, "intent path=$filePath")
-            var toks: Array<String?> = filePath!!.split(Pattern.quote(".")).toTypedArray()
-            val last = toks.size - 1
-            val ext: String?
-            if (last >= 1) {
-//                ext = toks[last]
-//                if ("adp".equals(ext, ignoreCase = true)) { //User opened the project file
-//                    //now get the project name
-//                    val file = File(filePath)
-//                    val pname = file.name
-//                    toks = pname.split(Pattern.quote(".")).toTypedArray()
-//                    //                        projectManager!!.Open(toks[toks.size - 2])
-//                } else { //User opened pther files
-                onChoosePathNew(intent!!.data!!)
-//                }
-            } else { // User opened other files
-                onChoosePathNew(intent!!.data!!)
+            intent.data?.let {
+                intent.putExtra("uri", it)
+                viewModel.onSelectIntent(intent)
             }
-        } else { // android.intent.action.MAIN
-            val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
-            val lastProj = projectsetting.getString(LASTPROJKEY, "")
-            //                if (projectManager != null) projectManager!!.Open(lastProj)
         }
     }
 
