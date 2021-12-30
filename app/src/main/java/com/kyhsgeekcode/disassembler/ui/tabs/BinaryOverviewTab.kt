@@ -86,14 +86,14 @@ fun BinaryOverviewTabContent(parsedFile: AbstractFile) {
             parsedFile.entryPoint = entryPoint
             parsedFile.codeVirtAddr = codeVirtAddr
             parsedFile.machineType = machineType
+            isEnabled = false
         }, enabled = isEnabled) {
             Text(stringResource(R.string.finish_setup))
         }
-        Button(onClick = { /*isEnabled = true*/ }) { // TODO: DISABLED.
+        Button(onClick = { isEnabled = true }, enabled = !isEnabled) { // TODO: DISABLED.
             Text(stringResource(R.string.override_autosetup))
         }
     }
-
 }
 
 @Composable
