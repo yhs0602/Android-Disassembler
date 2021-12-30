@@ -101,4 +101,5 @@
     <string name="askCopy">대상 파일을 본 앱의 프로젝트 폴더로 복사하시겠습니까?(권장)</string>
     <string name="size">길이</string>
     <string name="size_short">S</string>
+    <string name="bytes">Bytes</string>
 </resources>

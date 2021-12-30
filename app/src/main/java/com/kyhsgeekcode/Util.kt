@@ -28,6 +28,7 @@ import org.boris.pecoff4j.PE
 import org.boris.pecoff4j.io.PEParser
 import splitties.init.appCtx
 import splitties.systemservices.clipboardManager
+import timber.log.Timber
 import java.io.*
 import java.net.URL
 import java.util.zip.ZipEntry
@@ -231,6 +232,7 @@ suspend fun deleteRecursive(fileOrDirectory: File): Unit = withContext(Dispatche
 
 fun setClipBoard(s: String?) {
     val clip = ClipData.newPlainText("Android Disassembler", s)
+    Timber.d("Clipboard: $s/$clip")
     clipboardManager.setPrimaryClip(clip)
 }
 

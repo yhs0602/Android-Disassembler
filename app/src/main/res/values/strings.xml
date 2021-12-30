@@ -313,4 +313,5 @@ Android </string>
     <string name="condition_short" translatable="false">C</string>
     <string name="size">Size</string>
     <string name="size_short">S</string>
+    <string name="bytes">Bytes</string>
 </resources>
