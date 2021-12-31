@@ -230,45 +230,27 @@ class Palette(name: String, src: File) {
     //		Color.BLUE
     //	};
     companion object {
-        var Arm64CallIns: MutableSet<Int> = HashSet()
-        var ArmCallIns: MutableSet<Int> = HashSet()
-        var ArmPushIns: MutableSet<Int> = HashSet()
-        var X86PushIns: MutableSet<Int> = HashSet()
-        var ArmPopIns: MutableSet<Int> = HashSet()
-        var X86PopIns: MutableSet<Int> = HashSet()
-    }
-
-    init {
-        ArmCallIns.add(Arm_const.ARM_INS_BL)
-        ArmCallIns.add(Arm_const.ARM_INS_BLX)
-        Arm64CallIns.add(Arm64_const.ARM64_INS_BL)
-        Arm64CallIns.add(Arm64_const.ARM64_INS_BR)
-    }
-
-    init {
-        ArmPushIns.add(Arm_const.ARM_INS_PUSH)
-    }
-
-    init {
-        X86PushIns.add(X86_const.X86_INS_PUSH)
-        X86PushIns.add(X86_const.X86_INS_PUSHAW)
-        X86PushIns.add(X86_const.X86_INS_PUSHAL)
-        X86PushIns.add(X86_const.X86_INS_PUSHF)
-        X86PushIns.add(X86_const.X86_INS_PUSHFD)
-        X86PushIns.add(X86_const.X86_INS_PUSHFQ)
-    }
-
-    init {
-        ArmPopIns.add(Arm_const.ARM_INS_POP)
-    }
-
-    init {
-        X86PopIns.add(X86_const.X86_INS_POP)
-        X86PopIns.add(X86_const.X86_INS_POPAL)
-        X86PopIns.add(X86_const.X86_INS_POPF)
-        X86PopIns.add(X86_const.X86_INS_POPFD)
-        X86PopIns.add(X86_const.X86_INS_POPFQ)
-        X86PopIns.add(X86_const.X86_INS_POPAW)
+        val Default = Palette("Default", File("/"))
+        val Arm64CallIns = setOf(Arm64_const.ARM64_INS_BL, Arm64_const.ARM64_INS_BR)
+        val ArmCallIns = setOf(Arm_const.ARM_INS_BL, Arm_const.ARM_INS_BLX)
+        val ArmPushIns = setOf(Arm_const.ARM_INS_PUSH)
+        val X86PushIns = setOf(
+            X86_const.X86_INS_PUSH,
+            X86_const.X86_INS_PUSHAW,
+            X86_const.X86_INS_PUSHAL,
+            X86_const.X86_INS_PUSHF,
+            X86_const.X86_INS_PUSHFD,
+            X86_const.X86_INS_PUSHFQ
+        )
+        val ArmPopIns = setOf(Arm_const.ARM_INS_POP)
+        val X86PopIns = setOf(
+            X86_const.X86_INS_POP,
+            X86_const.X86_INS_POPAL,
+            X86_const.X86_INS_POPF,
+            X86_const.X86_INS_POPFD,
+            X86_const.X86_INS_POPFQ,
+            X86_const.X86_INS_POPAW
+        )
     }
 
     init {

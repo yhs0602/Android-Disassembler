@@ -1,5 +1,7 @@
 package com.kyhsgeekcode.disassembler
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import splitties.init.appCtx
 import timber.log.Timber
 import java.io.File
@@ -10,6 +12,9 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 object ColorHelper {
+    private val _palette = MutableStateFlow<Palette>(Palette.Default)
+    val palette = _palette as StateFlow<Palette>
+
     var isUpdatedColor = false
     var architecture = 0
 
