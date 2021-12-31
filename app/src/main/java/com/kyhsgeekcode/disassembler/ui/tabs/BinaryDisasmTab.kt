@@ -290,29 +290,26 @@ private fun BinaryDisasmRow(
     Row(Modifier.height(IntrinsicSize.Min)) {
         for (col in DisassemblyColumn.values().withIndex()) {
             if (showColumns[col.index]) {
-                val m = if (col.index == 5) {
-                    Modifier
-                        .width(col.value.width)
-                        .then(Modifier.composed {
-                            if (item.isBranch) {
-                                Modifier.combinedClickable(onLongClick = {
-                                    data.jumpto(item.disasmResult.jumpOffset) // why name is offset?
-                                }, onClick = {
-                                    data.askDisasmClickAction(currentAddress)
-                                })
-                            } else {
-                                Modifier.clickable {
-                                    data.askDisasmClickAction(currentAddress)
-                                }
+                val modifier = Modifier.width(col.value.width).let {
+                    if (col.index == 5) {
+                        if (item.isBranch) {
+                            it.combinedClickable(onLongClick = {
+                                data.jumpto(item.disasmResult.jumpOffset) // why name is offset?
+                            }, onClick = {
+                                data.askDisasmClickAction(currentAddress)
+                            })
+                        } else {
+                            it.clickable {
+                                data.askDisasmClickAction(currentAddress)
                             }
-                        })
-                } else {
-                    Modifier.width(col.value.width)
+                        }
+                    } else {
+                        it
+                    }
                 }
-
                 CellText(
                     content = col.value.value(item),
-                    m
+                    modifier
                 )
             }
         }
