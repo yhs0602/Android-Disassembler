@@ -1,7 +1,5 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.util.Log;
-
 import org.boris.pecoff4j.DOSHeader;
 import org.boris.pecoff4j.ExportDirectory;
 import org.boris.pecoff4j.ImageData;
