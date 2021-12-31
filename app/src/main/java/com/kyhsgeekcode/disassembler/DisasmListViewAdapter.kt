@@ -10,7 +10,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kyhsgeekcode.convertDpToPixel
-import com.kyhsgeekcode.disassembler.ColorHelper.palette
 import com.kyhsgeekcode.disassembler.databinding.ListviewItemBinding
 import timber.log.Timber
 
@@ -173,7 +172,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
             getItem(position) as DisassemblyListItem // listViewItemList/ *[position];*/.get(position);
         val dar = disassemblyListItem.disasmResult
 
-        val palette = palette
+//        val palette = ColorHelper.palette.value
         with(holder) {
             adjustShow(
                 binding.tvAddr,
@@ -186,37 +185,37 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
             )
             binding.tvOperand.layoutParams.width = if (architecture == 1) dp260 else dp180
             binding.tvOperand.requestLayout()
-            val defTxtColor = palette!!.defaultTxtColor
-            val defBkColor = palette.defaultBkColor
+//            val defTxtColor = palette.default.textColor
+//            val defBkColor = palette.default.bkColor
             // convertView.setBackgroundColor(palette.getDefaultBkColor());
-            val bkColor = palette.getBkColorByGrps(
-                dar.groups,
-                dar.groups_count.toInt(),
-                dar.id
-            )
-            binding.tvInst.setBackgroundColor(bkColor)
-            binding.tvAddr.setBackgroundColor(defBkColor)
-            binding.tvBytes.setBackgroundColor(defBkColor)
-            binding.tvComment.setBackgroundColor(defBkColor)
-            binding.tvCond.setBackgroundColor(defBkColor)
-            binding.tvLabel.setBackgroundColor(defBkColor)
-            binding.tvOperand.setBackgroundColor(bkColor)
+//            val bkColor = palette.getBkColorByGrps(
+//                dar.groups,
+//                dar.groups_count.toInt(),
+//                dar.id
+//            )
+//            binding.tvInst.setBackgroundColor(bkColor)
+//            binding.tvAddr.setBackgroundColor(defBkColor)
+//            binding.tvBytes.setBackgroundColor(defBkColor)
+//            binding.tvComment.setBackgroundColor(defBkColor)
+//            binding.tvCond.setBackgroundColor(defBkColor)
+//            binding.tvLabel.setBackgroundColor(defBkColor)
+//            binding.tvOperand.setBackgroundColor(bkColor)
 //            Log.d(TAG, "Address: ${dar.address.toString(16)} Bytes: ${dar.bytes.joinToString(", ") {
 //                it.toString(16)
 //            }}")
-            val txtColor = palette.getTxtColorByGrps(
-                dar.groups,
-                dar.groups_count.toInt(),
-                dar.id,
-                dar.bytes
-            )
-            binding.tvInst.setTextColor(txtColor)
-            binding.tvAddr.setTextColor(defTxtColor)
-            binding.tvBytes.setTextColor(defTxtColor)
-            binding.tvComment.setTextColor(defTxtColor)
-            binding.tvCond.setTextColor(defTxtColor)
-            binding.tvLabel.setTextColor(defTxtColor)
-            binding.tvOperand.setTextColor(txtColor)
+//            val txtColor = palette.getTxtColorByGrps(
+//                dar.groups,
+//                dar.groups_count.toInt(),
+//                dar.id,
+//                dar.bytes
+//            )
+//            binding.tvInst.setTextColor(txtColor)
+//            binding.tvAddr.setTextColor(defTxtColor)
+//            binding.tvBytes.setTextColor(defTxtColor)
+//            binding.tvComment.setTextColor(defTxtColor)
+//            binding.tvCond.setTextColor(defTxtColor)
+//            binding.tvLabel.setTextColor(defTxtColor)
+//            binding.tvOperand.setTextColor(txtColor)
 
             binding.tvAddr.text = disassemblyListItem.getAddress()
             binding.tvBytes.text = disassemblyListItem.getBytes()

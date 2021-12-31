@@ -17,6 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.util.containsKey
 import com.kyhsgeekcode.disassembler.*
+import com.kyhsgeekcode.disassembler.disasmtheme.ColorHelper
+import com.kyhsgeekcode.disassembler.disasmtheme.PaletteRow
 import com.kyhsgeekcode.disassembler.ui.components.CellText
 import com.kyhsgeekcode.disassembler.ui.components.InfiniteList
 import com.kyhsgeekcode.disassembler.ui.components.SelectOneActionDialog
@@ -287,6 +289,8 @@ private fun BinaryDisasmRow(
 ) {
     // 7 textviews!
     val showColumns = data.showColumns
+    val currentPalette = ColorHelper.palette.collectAsState().value
+    val colorRow: PaletteRow = ColorHelper.getColorRow(currentPalette, item.disasmResult)
     Row(Modifier.height(IntrinsicSize.Min)) {
         for (col in DisassemblyColumn.values().withIndex().filter { showColumns[it.index] }) {
             val modifier = Modifier.width(col.value.width).let {

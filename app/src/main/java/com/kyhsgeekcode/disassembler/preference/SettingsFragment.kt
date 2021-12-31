@@ -6,12 +6,12 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.EditText
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.kyhsgeekcode.disassembler.*
+import com.kyhsgeekcode.disassembler.MainActivity
+import com.kyhsgeekcode.disassembler.R
+import com.kyhsgeekcode.disassembler.disasmtheme.ColorHelper
 import com.mikepenz.aboutlibraries.LibsBuilder
 import java.io.BufferedReader
 import java.io.IOException
@@ -29,33 +29,33 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceClic
         val key = p1.key
         if ("predefinedcolor" == key) {
             val value: Int = (p2 as String).toInt()
-            if (value == prefnames.size) { //Add new
-                val et = EditText(activity!!)
-                showEditDialog(activity!!,
-                    "New theme",
-                    "Set name for the theme..",
-                    et,
-                    "Create",
-                    DialogInterface.OnClickListener { p11: DialogInterface?, p21: Int ->
-                        val nam = et.text.toString()
-                        val palette = Palette(nam, ColorHelper.getPaletteFile(nam))
-                        val cpd = ColorPrefDialog(activity!!, "New theme", View.OnClickListener {
-                            palette.Save()
-                            ColorHelper.addPalette(palette)
-                            val sp = context!!.getSharedPreferences(
-                                MainActivity.SETTINGKEY,
-                                Context.MODE_PRIVATE
-                            )
-                            val ed = sp.edit()
-                            ed.putString("PaletteName", palette.name).apply()
-                            ColorHelper.setPalette(palette.name)
-                        }, palette)
-                        cpd.show()
-                    },
-                    "Cancel",
-                    DialogInterface.OnClickListener { p112: DialogInterface?, p212: Int -> })
-                return false
-            }
+//            if (value == prefnames.size) { //Add new
+//                val et = EditText(activity!!)
+//                showEditDialog(activity!!,
+//                    "New theme",
+//                    "Set name for the theme..",
+//                    et,
+//                    "Create",
+//                    { p11: DialogInterface?, p21: Int ->
+//                        val nam = et.text.toString()
+//                        val palette = Palette(nam, ColorHelper.getPaletteFile(nam))
+//                        val cpd = ColorPrefDialog(activity!!, "New theme", {
+//                            palette.Save()
+//                            ColorHelper.addPalette(palette)
+//                            val sp = context!!.getSharedPreferences(
+//                                MainActivity.SETTINGKEY,
+//                                Context.MODE_PRIVATE
+//                            )
+//                            val ed = sp.edit()
+//                            ed.putString("PaletteName", palette.name).apply()
+//                            ColorHelper.setPalette(palette.name)
+//                        }, palette)
+//                        cpd.show()
+//                    },
+//                    "Cancel",
+//                    { _: DialogInterface?, _: Int -> })
+//                return false
+//            }
             val name = prefnames[value - 1]
             val sp = context!!.getSharedPreferences(MainActivity.SETTINGKEY, Context.MODE_PRIVATE)
             val ed = sp.edit()
