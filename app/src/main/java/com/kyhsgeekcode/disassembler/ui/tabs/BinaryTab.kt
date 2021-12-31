@@ -189,7 +189,7 @@ fun OpenedBinaryTabs(data: BinaryTabData, viewModel: MainViewModel) {
     val titles = tabs.value.map {
         it.title
     }
-    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(Modifier.fillMaxSize()) {
         ScrollableTabRow(
             selectedTabIndex = currentTabIndex.value,
         ) {

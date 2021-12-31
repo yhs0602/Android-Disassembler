@@ -28,6 +28,7 @@ import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.PermissionUtils.requestAppPermissions
 import com.kyhsgeekcode.disassembler.databinding.MainBinding
+import com.kyhsgeekcode.disassembler.disasmtheme.ColorHelper
 import com.kyhsgeekcode.disassembler.preference.SettingsActivity
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
@@ -44,6 +45,7 @@ import com.kyhsgeekcode.rootpicker.FileSelectorActivity
 import com.kyhsgeekcode.sendErrorReport
 import com.tingyik90.snackprogressbar.SnackProgressBar
 import com.tingyik90.snackprogressbar.SnackProgressBarManager
+import kotlinx.serialization.ExperimentalSerializationApi
 import timber.log.Timber
 import timber.log.Timber.*
 import java.io.File
@@ -146,6 +148,12 @@ class MainActivity : AppCompatActivity(),
         }
 //        requestAppPermissions(this)
 //        manageShowRational()
+    }
+
+    @OptIn(ExperimentalSerializationApi::class)
+    override fun onResume() {
+        super.onResume()
+        ColorHelper.populatePalettes(context = this)
     }
 
 //    private fun handleDataFragment() {

@@ -1,12 +1,17 @@
 package com.kyhsgeekcode.disassembler.disasmtheme
 
-import capstone.*
+import android.content.Context
+import capstone.Arm64_const
+import capstone.Arm_const
+import capstone.Capstone
+import capstone.X86_const
 import com.kyhsgeekcode.disassembler.DisasmResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import splitties.init.appCtx
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 import timber.log.Timber
-import java.io.File
 import java.util.*
 
 object ColorHelper {
@@ -20,13 +25,20 @@ object ColorHelper {
         palettes[palette.name] = palette
     }
 
-    fun getPaletteFile(nam: String?): File {
-        val ext = appCtx.getExternalFilesDir(null)!!.absoluteFile
-        val themeDir = File(ext, "themes/")
-        if (!themeDir.exists()) themeDir.mkdirs()
-        return File(themeDir, nam)
+    @ExperimentalSerializationApi
+    fun populatePalettes(context: Context) {
+        val themeNames = context.assets.list("themes/")?.map {
+            it.substringBefore(".json")
+        } ?: return
+        for (themeName in themeNames) {
+            context.assets.open("themes/$themeName.json").use {
+                val palette = Json.decodeFromStream<Palette>(it).apply {
+                    name = themeName
+                }
+                palettes[themeName] = palette
+            }
+        }
     }
-
 
     // combined by ORs
 // index=group_type
