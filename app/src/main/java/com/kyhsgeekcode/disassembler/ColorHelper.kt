@@ -1,7 +1,7 @@
 package com.kyhsgeekcode.disassembler
 
-import android.util.Log
 import splitties.init.appCtx
+import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -25,43 +25,8 @@ object ColorHelper {
         return File(themeDir, nam)
     }
 
-    /*@Override
-    public int describeContents()
-    {
-        return 0;
-    }
-    @Override
-    public void writeToParcel(Parcel p1,int  p2)
-    {
-        p1.writeStringArray((String[])palettes.keySet().toArray());
-        return ;
-    }
 
-    public static final Parcelable.Creator<ColorHelper> CREATOR = new Parcelable.Creator<ColorHelper>()
-    {
-        @Override
-        public ColorHelper createFromParcel(Parcel source)
-        {
-            return new ColorHelper(source);
-        }
-
-        @Override
-        public ColorHelper[] newArray(int size)
-        {
-            return new ColorHelper[size];
-        }
-    };
-
-    public static Parcelable.Creator<ColorHelper> getCreator()
-    {
-        return CREATOR;
-    }
-
-    public ColorHelper(Parcel p)
-    {
-        p.readStringArray(names);
-    }*/
-// combined by ORs
+    // combined by ORs
 // index=group_type
 // Common instruction groups - to be consistent across all architectures.
 // public static final int CS_GRP_INVALID = 0;  // uninitialized/invalid group.
@@ -88,7 +53,7 @@ object ColorHelper {
             try { // color=//txtColors[groups[i]&0xff];
                 break
             } catch (e: ArrayIndexOutOfBoundsException) {
-                Log.e(TAG, "", e)
+                Timber.e(e, "")
             }
         }
         return color
@@ -101,7 +66,7 @@ object ColorHelper {
             try { // color=//bkColors[groups[i]&0xFF];
                 break
             } catch (e: ArrayIndexOutOfBoundsException) {
-                Log.e(TAG, "", e)
+                Timber.e(e, "")
             }
         }
         return color
@@ -140,7 +105,7 @@ object ColorHelper {
                     }
                 }
             } catch (e: IOException) {
-                Log.e(TAG, "Failed to unzip themes", e)
+                Timber.e(e, "Failed to unzip themes")
             }
         }
         val themes = themeDir.listFiles()
@@ -149,7 +114,7 @@ object ColorHelper {
             palettes["Default"] = Palette("Default", newf)
         } else {
             for (f in themes) {
-                Log.d(TAG, "reg theme " + f.name)
+                Timber.d("reg theme ${f.name}")
                 palettes[f.name] = Palette(f.name, f)
             }
         }

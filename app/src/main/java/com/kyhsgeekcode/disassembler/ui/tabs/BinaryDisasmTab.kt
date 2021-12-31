@@ -288,30 +288,28 @@ private fun BinaryDisasmRow(
     // 7 textviews!
     val showColumns = data.showColumns
     Row(Modifier.height(IntrinsicSize.Min)) {
-        for (col in DisassemblyColumn.values().withIndex()) {
-            if (showColumns[col.index]) {
-                val modifier = Modifier.width(col.value.width).let {
-                    if (col.index == 5) {
-                        if (item.isBranch) {
-                            it.combinedClickable(onLongClick = {
-                                data.jumpto(item.disasmResult.jumpOffset) // why name is offset?
-                            }, onClick = {
-                                data.askDisasmClickAction(currentAddress)
-                            })
-                        } else {
-                            it.clickable {
-                                data.askDisasmClickAction(currentAddress)
-                            }
-                        }
+        for (col in DisassemblyColumn.values().withIndex().filter { showColumns[it.index] }) {
+            val modifier = Modifier.width(col.value.width).let {
+                if (col.index == 5) {
+                    if (item.isBranch) {
+                        it.combinedClickable(onLongClick = {
+                            data.jumpto(item.disasmResult.jumpOffset) // why name is offset?
+                        }, onClick = {
+                            data.askDisasmClickAction(currentAddress)
+                        })
                     } else {
-                        it
+                        it.clickable {
+                            data.askDisasmClickAction(currentAddress)
+                        }
                     }
+                } else {
+                    it
                 }
-                CellText(
-                    content = col.value.value(item),
-                    modifier
-                )
             }
+            CellText(
+                content = col.value.value(item),
+                modifier
+            )
         }
     }
 }
