@@ -275,27 +275,6 @@ private fun BinaryDisasmHeader(data: BinaryDisasmData) {
                 )
             }
         }
-//        if (showColumns[0]) {
-//            CellText(stringResource(id = R.string.address), Modifier.width(80.dp))
-//        }
-//        if (showColumns[1]) {
-//            CellText(stringResource(id = R.string.size_short), Modifier.width(30.dp))
-//        }
-//        if (showColumns[2]) {
-//            CellText("Bytes", Modifier.width(90.dp))
-//        }
-//        if (showColumns[3]) {
-//            CellText(stringResource(id = R.string.instruction), Modifier.width(100.dp))
-//        }
-//        if (showColumns[4]) {
-//            CellText(stringResource(id = R.string.condition_short), Modifier.width(20.dp))
-//        }
-//        if (showColumns[5]) {
-//            CellText(stringResource(id = R.string.operands), Modifier.width(180.dp))
-//        }
-//        if (showColumns[6]) {
-//            CellText(stringResource(id = R.string.comment), Modifier.width(200.dp))
-//        }
     }
 }
 
@@ -309,42 +288,33 @@ private fun BinaryDisasmRow(
     // 7 textviews!
     val showColumns = data.showColumns
     Row(Modifier.height(IntrinsicSize.Min)) {
-        if (showColumns[0]) {
-            CellText(item.address, Modifier.width(80.dp))
-        }
-        if (showColumns[1]) {
-            CellText(item.label, Modifier.width(30.dp))
-        }
-        if (showColumns[2]) {
-            CellText(item.bytes, Modifier.width(90.dp))
-        }
-        if (showColumns[3]) {
-            CellText(item.instruction, Modifier.width(100.dp))
-        }
-        if (showColumns[4]) {
-            CellText(item.condition, Modifier.width(20.dp))
-        }
-        if (showColumns[5]) {
-            CellText(item.operands,
-                Modifier
-                    .width(180.dp)
-                    .composed {
-                        if (item.isBranch) {
-                            Modifier.combinedClickable(onLongClick = {
-                                data.jumpto(item.disasmResult.jumpOffset) // why name is offset?
-                            }, onClick = {
-                                data.askDisasmClickAction(item.disasmResult.address)
-                            })
-                        } else {
-                            Modifier.clickable {
-                                data.askDisasmClickAction(item.disasmResult.address)
+        for (col in DisassemblyColumn.values().withIndex()) {
+            if (showColumns[col.index]) {
+                val m = if (col.index == 5) {
+                    Modifier
+                        .width(col.value.width)
+                        .then(Modifier.composed {
+                            if (item.isBranch) {
+                                Modifier.combinedClickable(onLongClick = {
+                                    data.jumpto(item.disasmResult.jumpOffset) // why name is offset?
+                                }, onClick = {
+                                    data.askDisasmClickAction(currentAddress)
+                                })
+                            } else {
+                                Modifier.clickable {
+                                    data.askDisasmClickAction(currentAddress)
+                                }
                             }
-                        }
-                    }
-            )
-        }
-        if (showColumns[6]) {
-            CellText(item.comments, Modifier.width(200.dp))
+                        })
+                } else {
+                    Modifier.width(col.value.width)
+                }
+
+                CellText(
+                    content = col.value.value(item),
+                    m
+                )
+            }
         }
     }
 }
