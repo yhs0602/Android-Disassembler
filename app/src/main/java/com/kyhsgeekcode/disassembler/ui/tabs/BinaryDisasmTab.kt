@@ -13,6 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.graphics.BlendMode.Companion.Color
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.util.containsKey
@@ -268,12 +270,17 @@ fun BinaryDisasmTabContent(
 @Composable
 private fun BinaryDisasmHeader(data: BinaryDisasmData) {
     val showColumns = data.showColumns
+    val currentPalette = ColorHelper.palette.collectAsState().value
+    val defaultColor = currentPalette.default
     Row(Modifier.height(IntrinsicSize.Min)) {
         for (col in DisassemblyColumn.values().withIndex()) {
             if (showColumns[col.index]) {
                 CellText(
                     content = stringResource(id = col.value.text),
-                    Modifier.width(col.value.width)
+                    Modifier.width(col.value.width),
+                    color = Color(defaultColor.textColor),
+                    bkColor = Color(defaultColor.bkColor),
+                    borderColor = Color(defaultColor.textColor)
                 )
             }
         }
@@ -293,26 +300,31 @@ private fun BinaryDisasmRow(
     val colorRow: PaletteRow = ColorHelper.getColorRow(currentPalette, item.disasmResult)
     Row(Modifier.height(IntrinsicSize.Min)) {
         for (col in DisassemblyColumn.values().withIndex().filter { showColumns[it.index] }) {
-            val modifier = Modifier.width(col.value.width).let {
-                if (col.index == 5) {
-                    if (item.isBranch) {
-                        it.combinedClickable(onLongClick = {
-                            data.jumpto(item.disasmResult.jumpOffset) // why name is offset?
-                        }, onClick = {
-                            data.askDisasmClickAction(currentAddress)
-                        })
-                    } else {
-                        it.clickable {
-                            data.askDisasmClickAction(currentAddress)
+
+            val modifier = Modifier.width(col.value.width)
+                .let {
+                    if (col.index == 5) {
+                        if (item.isBranch) {
+                            it.combinedClickable(onLongClick = {
+                                data.jumpto(item.disasmResult.jumpOffset) // why name is offset?
+                            }, onClick = {
+                                data.askDisasmClickAction(currentAddress)
+                            })
+                        } else {
+                            it.clickable {
+                                data.askDisasmClickAction(currentAddress)
+                            }
                         }
+                    } else {
+                        it
                     }
-                } else {
-                    it
                 }
-            }
             CellText(
                 content = col.value.value(item),
-                modifier
+                modifier,
+                color = Color(colorRow.textColor),
+                bkColor = Color(colorRow.bkColor),
+                borderColor = Color(colorRow.textColor)
             )
         }
     }

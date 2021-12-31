@@ -39,7 +39,9 @@ object ColorHelper {
 // 	public static final int CS_GRP_IRET    = 5;  // all interrupt return instructions
 // 1 2 3 4 5 6 7
 
-    val palettes = HashMap<String, Palette>()
+    val palettes = HashMap<String, Palette>().apply {
+        put("Default", Palette.Default)
+    }
 
     fun setPalette(name: String?) {
         _palette.value = palettes[name] ?: Palette.Default

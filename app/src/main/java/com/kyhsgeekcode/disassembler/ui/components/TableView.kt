@@ -57,14 +57,20 @@ fun TableViewHeader(titles: List<Pair<String, Dp>>) {
 }
 
 @Composable
-fun CellText(content: String, modifier: Modifier) {
+fun CellText(
+    content: String,
+    modifier: Modifier,
+    color: Color = Color.Black,
+    bkColor: Color = Color.White,
+    borderColor: Color = Color.Cyan
+) {
     Box(
         modifier = modifier
-            .background(Color.White)
-            .border(1.dp, Color.Cyan)
+            .background(bkColor)
+            .border(1.dp, borderColor)
             .padding(8.dp)
             .fillMaxHeight()
     ) {
-        Text(text = content)
+        Text(text = content, color = color, modifier = Modifier.background(bkColor))
     }
 }
