@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -132,26 +133,30 @@ public class PEFile extends AbstractFile {
             }
         }
         //parse TLS
-        byte[] tlsb = imd.getTlsTable();
-        if (tlsb != null) {
-            ByteBuffer tlsBuf = ByteBuffer.wrap(tlsb).order(ByteOrder.LITTLE_ENDIAN);
-            /*Dword 6*/
-            while (tlsBuf.remaining() > 0) {
-                int StartAddressOfRawData = tlsBuf.getInt();
-                int EndAddressOfRawData = tlsBuf.getInt();
-                int AddressOfIndex = tlsBuf.getInt();
-                int AddressOfCallBacks = tlsBuf.getInt();
-                int SizeOfZeroFill = tlsBuf.getInt();
-                int Characteristics = tlsBuf.getInt();
-                TLS tls = new TLS();
-                tls.StartAddressOfRawData = StartAddressOfRawData;
-                tls.EndAddressOfRawData = EndAddressOfRawData;
-                tls.AddressOfIndex = AddressOfIndex;
-                tls.AddressOfCallBacks = AddressOfCallBacks;
-                tls.SizeOfZeroFill = SizeOfZeroFill;
-                tls.Characteristics = Characteristics;
-                tlss.add(tls);
+        try {
+            byte[] tlsb = imd.getTlsTable();
+            if (tlsb != null) {
+                ByteBuffer tlsBuf = ByteBuffer.wrap(tlsb).order(ByteOrder.LITTLE_ENDIAN);
+                /*Dword 6*/
+                while (tlsBuf.remaining() > 0) {
+                    int StartAddressOfRawData = tlsBuf.getInt();
+                    int EndAddressOfRawData = tlsBuf.getInt();
+                    int AddressOfIndex = tlsBuf.getInt();
+                    int AddressOfCallBacks = tlsBuf.getInt();
+                    int SizeOfZeroFill = tlsBuf.getInt();
+                    int Characteristics = tlsBuf.getInt();
+                    TLS tls = new TLS();
+                    tls.StartAddressOfRawData = StartAddressOfRawData;
+                    tls.EndAddressOfRawData = EndAddressOfRawData;
+                    tls.AddressOfIndex = AddressOfIndex;
+                    tls.AddressOfCallBacks = AddressOfCallBacks;
+                    tls.SizeOfZeroFill = SizeOfZeroFill;
+                    tls.Characteristics = Characteristics;
+                    tlss.add(tls);
+                }
             }
+        } catch (BufferUnderflowException e) {
+            Timber.d(e, "Error parsing PE File");
         }
 
     }

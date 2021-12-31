@@ -18,7 +18,6 @@ import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 @Composable
 fun OpenedTabs(viewModel: MainViewModel) {
     val state = viewModel.currentTabIndex.collectAsState()
-//    val titles = listOf("TAB 1", "TAB 2", "TAB 3")
     val tabs = viewModel.openedTabs.collectAsState()
     val titles = tabs.value.map {
         it.title

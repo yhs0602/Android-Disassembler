@@ -117,13 +117,16 @@ abstract class AbstractFile : Closeable {
                     try {
                         PEFile(file, content)
                     } catch (f: NotThisFormatException) {
+                        Timber.e(f, "Not this format exception")
                         RawFile(file, content)
                         // AllowRawSetup();
 // failed to parse the file. please setup manually.
                     } catch (f: RuntimeException) { // AlertError("Failed to parse the file. Please setup manually. Sending an error report, the file being analyzed can be attached.", f);
+                        Timber.e(f, "Not this format exception")
                         RawFile(file, content)
                         // AllowRawSetup();
                     } catch (g: Exception) { // AlertError("Unexpected exception: failed to parse the file. please setup manually.", g);
+                        Timber.e(g, "What the exception")
                         RawFile(file, content)
                         // AllowRawSetup();
                     }
