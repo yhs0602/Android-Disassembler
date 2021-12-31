@@ -3,9 +3,7 @@ package com.kyhsgeekcode.disassembler.ui
 import android.content.Intent
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.kyhsgeekcode.disassembler.preference.SettingsActivity
@@ -30,14 +28,28 @@ fun ActivatedMenus(viewModel: MainViewModel) {
             viewModel.openAsHex()
             showMenu = false
         }) {
-            Icon(imageVector = Icons.Filled.Delete, contentDescription = "Open with hex viewer")
+            Icon(imageVector = Icons.Filled.Edit, contentDescription = "Open with hex viewer")
             Text("Open with hex viewer")
+        }
+        DropdownMenuItem(onClick = {
+            viewModel.searchForStrings()
+            showMenu = false
+        }) {
+            Icon(imageVector = Icons.Filled.Build, contentDescription = "Search for strings")
+            Text("Search for strings")
+        }
+        DropdownMenuItem(onClick = {
+            viewModel.analyze()
+            showMenu = false
+        }) {
+            Icon(imageVector = Icons.Filled.Info, contentDescription = "Analyze")
+            Text("Analyze")
         }
         DropdownMenuItem(onClick = {
             viewModel.closeCurrentFile()
             showMenu = false
         }) {
-            Icon(imageVector = Icons.Filled.Delete, contentDescription = "Close File")
+            Icon(imageVector = Icons.Filled.Close, contentDescription = "Close File")
             Text("Close File")
         }
         if (viewModel.isBinaryTab()) {

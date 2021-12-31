@@ -5,7 +5,7 @@ data class TabData(val title: String, val tabKind: TabKind)
 
 sealed class TabKind {
     class Apk(val relPath: String) : TabKind()
-    class AnalysisResult() : TabKind()
+    class AnalysisResult(val relPath: String) : TabKind()
     class Archive(val relPath: String) : TabKind()
     class Binary(val relPath: String) : TabKind()
     class Dex(val relPath: String) : TabKind()
@@ -15,5 +15,5 @@ sealed class TabKind {
     object ProjectOverview : TabKind()
     class Hex(val relPath: String) : TabKind()
     class Log() : TabKind()
-    class FoundString() : TabKind()
+    class FoundString(val relPath: String) : TabKind()
 }

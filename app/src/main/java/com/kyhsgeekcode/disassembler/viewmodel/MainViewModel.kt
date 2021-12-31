@@ -31,6 +31,12 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 
+
+sealed class ShowSearchForStringsDialog {
+    object NotShown : ShowSearchForStringsDialog()
+    object Shown : ShowSearchForStringsDialog()
+}
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     sealed class Event {
         object NavigateToSettings : Event()
@@ -73,6 +79,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _fileDrawerRootNode = MutableStateFlow<FileDrawerTreeItem?>(null)
     val fileDrawerRootNode = _fileDrawerRootNode as StateFlow<FileDrawerTreeItem?>
+
+    private val _showSearchForStrings =
+        MutableStateFlow<ShowSearchForStringsDialog>(ShowSearchForStringsDialog.NotShown)
+    val showSearchForStringsDialog = _showSearchForStrings as StateFlow<ShowSearchForStringsDialog>
 
     private val _openedTabs =
         MutableStateFlow(listOf(TabData("Overview", TabKind.ProjectOverview)))
@@ -260,8 +270,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return tabDataMap[openedTabs.value[currentTabIndex.value]]
     }
 
-    private val _parsedFile: StateFlow<AbstractFile?> = MutableStateFlow<AbstractFile?>(null)
-    val parsedFile: StateFlow<AbstractFile?> = _parsedFile
+    fun searchForStrings() {
+        _showSearchForStrings.value = ShowSearchForStringsDialog.Shown
+    }
+
+    fun analyze() {
+        TODO("Not yet implemented")
+    }
+
+    fun dismissSearchForStringsDialog() {
+        _showSearchForStrings.value = ShowSearchForStringsDialog.NotShown
+    }
+
+    fun reallySearchForStrings(from: Int, to: Int) {
+        TODO("Not yet implemented")
+    }
 }
 
 
