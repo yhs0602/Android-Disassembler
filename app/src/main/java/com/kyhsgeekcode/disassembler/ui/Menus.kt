@@ -27,6 +27,13 @@ fun ActivatedMenus(viewModel: MainViewModel) {
         onDismissRequest = { showMenu = false }
     ) {
         DropdownMenuItem(onClick = {
+            viewModel.openAsHex()
+            showMenu = false
+        }) {
+            Icon(imageVector = Icons.Filled.Delete, contentDescription = "Open with hex viewer")
+            Text("Open with hex viewer")
+        }
+        DropdownMenuItem(onClick = {
             viewModel.closeCurrentFile()
             showMenu = false
         }) {

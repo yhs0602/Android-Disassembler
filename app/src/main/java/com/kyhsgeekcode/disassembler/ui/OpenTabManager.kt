@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import com.kyhsgeekcode.disassembler.ui.tabs.BinaryTab
+import com.kyhsgeekcode.disassembler.ui.tabs.HexTab
 import com.kyhsgeekcode.disassembler.ui.tabs.ImageTab
 import com.kyhsgeekcode.disassembler.ui.tabs.TextTab
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
@@ -53,7 +55,7 @@ fun TabContent(state: Int, viewModel: MainViewModel) {
         is TabKind.Text -> TextTab(theTab, viewModel)
         is TabKind.ProjectOverview -> ProjectOverview(viewModel)
         is TabKind.FoundString -> TODO()
-        is TabKind.Hex -> TODO()
+        is TabKind.Hex -> HexTab(theTab, viewModel)
         is TabKind.Log -> TODO()
     }
 }

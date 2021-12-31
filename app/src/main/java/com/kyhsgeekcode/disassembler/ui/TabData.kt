@@ -13,7 +13,7 @@ sealed class TabKind {
     class Image(val relPath: String) : TabKind()
     class Text(val key: String) : TabKind()
     object ProjectOverview : TabKind()
-    class Hex() : TabKind()
+    class Hex(val relPath: String) : TabKind()
     class Log() : TabKind()
     class FoundString() : TabKind()
 }

@@ -175,6 +175,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         openDrawerItem(item)
     }
 
+    fun openAsHex() {
+        val relPath = when (val tk = openedTabs.value[currentTabIndex.value].tabKind) {
+            is TabKind.Binary -> tk.relPath
+            is TabKind.AnalysisResult -> TODO()
+            is TabKind.Apk -> tk.relPath
+            is TabKind.Archive -> tk.relPath
+            is TabKind.Dex -> tk.relPath
+            is TabKind.DotNet -> tk.relPath
+            is TabKind.FoundString -> return
+            is TabKind.Hex -> return
+            is TabKind.Image -> tk.relPath
+            is TabKind.Log -> return
+            is TabKind.ProjectOverview -> return
+            is TabKind.Text -> return
+        }
+//        val relPath: String = ProjectManager.getRelPath(absPath)
+        val tabData = TabData("$relPath AS HEX", TabKind.Hex(relPath))
+        prepareTabData(tabData)
+        val newList = ArrayList<TabData>()
+        newList.addAll(openedTabs.value)
+        newList.add(tabData)
+        _openedTabs.value = newList
+    }
+
     private fun openDrawerItem(item: FileDrawerTreeItem) {
         Timber.d("Opening item: ${item.caption}")
         val tabData = createTabData(item)
@@ -200,7 +224,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             is TabKind.ProjectOverview -> PreparedTabData()
             is TabKind.Text -> TextTabData(tabKind)
             is TabKind.FoundString -> TODO()
-            is TabKind.Hex -> TODO()
+            is TabKind.Hex -> HexTabData(tabKind)
             is TabKind.Log -> TODO()
         }
         viewModelScope.launch {
