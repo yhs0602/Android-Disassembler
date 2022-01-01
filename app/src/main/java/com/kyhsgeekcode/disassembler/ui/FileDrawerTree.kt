@@ -147,6 +147,9 @@ class FileDrawerTreeItem : TreeNode<FileDrawerTreeItem> {
             DrawerItemType.PROJECT,
             DrawerItemType.FOLDER,
             DrawerItemType.PE_IL_TYPE,
+            DrawerItemType.APK,
+            DrawerItemType.ARCHIVE,
+            DrawerItemType.DEX
         )
     }
 
