@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,6 +35,37 @@ fun HexView(bytes: ByteArray) {
 
 @Composable
 fun HexViewHeader() {
+    Row(Modifier.height(IntrinsicSize.Min)) {
+        for (v in 0..7) {
+            Text(
+                text = String.format("%02X", v),
+                modifier = Modifier
+                    .width(25.dp)
+                    .fillMaxHeight()
+                    .background(Color.White),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.Blue
+            )
+        }
+        Spacer(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(10.dp)
+        )
+        for (v in 0..7) {
+            Text(
+                text = String.format("%02X", v),
+                modifier = Modifier
+                    .width(20.dp)
+                    .fillMaxHeight()
+                    .background(Color.White),
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.Green
+            )
+        }
+    }
 
 }
 
