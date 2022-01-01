@@ -164,7 +164,7 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val document = Jsoup.parse(URL(url), 30000)
-                        val ipaddr = document.select("[rel=nofollow]")?.first()?.text()
+                        val ipaddr = document.select("[rel=nofollow]").first()?.text()
                         Log.d(TAG, "ipaddr=$ipaddr")
                         val realAddr = ipaddr?.replace("hXXp", "http") ?: return@launch
                         Log.d(TAG, "RealAddr:$realAddr")

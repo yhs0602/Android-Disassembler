@@ -15,8 +15,8 @@ class ElfFile(file: File, filec: ByteArray) : AbstractFile() {
             if (address in it) {
                 val offset = address - it.first
                 if (offset % 16 == 0L) {
-                    val index = offset / 16;
-                    return (index - 1L).toInt();
+                    val index = offset / 16
+                    return (index - 1L).toInt()
                 }
             }
         }

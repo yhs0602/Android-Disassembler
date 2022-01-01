@@ -15,7 +15,7 @@ object NDKRefUrlMatcher {
                 }
             }
             return if (index != null) {
-                val module = name.substring(1, index).toLowerCase(Locale.ROOT)
+                val module = name.substring(1, index).lowercase(Locale.ROOT)
                 "https://developer.android.com/ndk/reference/group/${module}#${
                     name.lowercase(Locale.getDefault())
                 }"

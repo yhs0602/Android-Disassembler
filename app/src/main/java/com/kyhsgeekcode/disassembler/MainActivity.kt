@@ -385,7 +385,7 @@ class MainActivity : AppCompatActivity(),
                     val showRationalEditor = showRationalSetting.edit()
                     showRationalEditor.putBoolean("show", true)
                     showRationalEditor.apply()
-                    finish();
+                    finish()
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
@@ -502,7 +502,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    public fun onChoosePathNew(uri: Uri) {
+    fun onChoosePathNew(uri: Uri) {
         if (uri.scheme == "content") {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 //                contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)

@@ -18,9 +18,9 @@ public class DisasmClickListener implements View.OnClickListener {
     final String JUMP = "Follow jump";
     BinaryDisasmFragment binaryDisasmFragment;
     List<String> menus = new ArrayList<>();
-    private String TAG = "Disassembler";
-    private int position;
-    private DisasmListViewAdapter adapter;
+    private final String TAG = "Disassembler";
+    private final int position;
+    private final DisasmListViewAdapter adapter;
 
     public DisasmClickListener(BinaryDisasmFragment fragment, DisasmListViewAdapter adapter, int position) {
         this.binaryDisasmFragment = fragment;

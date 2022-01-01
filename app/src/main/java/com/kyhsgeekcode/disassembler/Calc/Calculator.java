@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class Calculator {
-    private static String TAG = "Disassembler calc";
+    private static final String TAG = "Disassembler calc";
 
     public static Data Calc(String infix) {
         return CalcPostfix(toPostfix(infix));

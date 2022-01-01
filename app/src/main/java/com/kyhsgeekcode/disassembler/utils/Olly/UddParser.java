@@ -71,7 +71,7 @@ public class UddParser {
         }
     }
 
-    private String HDR_MAGIC = "Mod\u0000";
+    private final String HDR_MAGIC = "Mod\u0000";
 
     //public static void handle
 

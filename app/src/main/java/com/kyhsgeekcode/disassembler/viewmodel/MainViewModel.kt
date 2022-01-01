@@ -30,6 +30,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 
@@ -329,7 +332,7 @@ private fun createTabData(item: FileDrawerTreeItem): TabData {
     val abspath = (item.tag as String)
 //        Log.d(TAG, "rootPath:${rootPath}")
     Timber.d("absPath:$abspath")
-    val ext = File(abspath).extension.toLowerCase()
+    val ext = File(abspath).extension.lowercase(Locale.getDefault())
     val relPath: String = ProjectManager.getRelPath(abspath)
 //        if (abspath.length > rootPath.length)
 //            relPath = abspath.substring(rootPath.length+2)

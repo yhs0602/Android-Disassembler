@@ -38,7 +38,7 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) :
     MultiLevelListAdapter<FileDrawerListItem>() {
     var mAlwaysExpandend = false
     override fun isExpandable(anObject: FileDrawerListItem): Boolean {
-        val item = anObject as FileDrawerListItem
+        val item = anObject
         return item.isExpandable
     }
 
@@ -224,7 +224,7 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) :
         val bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
         return when (kind) {
             TypeKind.ELEMENT_TYPE_BOOLEAN -> bytes[0].toInt() != 0
-            TypeKind.ELEMENT_TYPE_CHAR -> bytes[0].toChar()
+            TypeKind.ELEMENT_TYPE_CHAR -> bytes[0].toInt().toChar()
             TypeKind.ELEMENT_TYPE_I -> bb.int
             TypeKind.ELEMENT_TYPE_I1 -> bb.get()
             TypeKind.ELEMENT_TYPE_I2 -> bb.short
@@ -267,7 +267,7 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) :
         } else {
             viewHolder = convertView2.tag as ViewHolder
         }
-        val item = anObject as FileDrawerListItem
+        val item = anObject
         viewHolder.nameView!!.text = item.caption
         viewHolder.nameView!!.isSelected = true
 //        val compounds = arrayOfNulls<Drawable>(4)

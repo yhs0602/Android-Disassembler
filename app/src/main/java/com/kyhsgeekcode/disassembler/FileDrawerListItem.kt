@@ -155,7 +155,7 @@ class FileDrawerListItem {
         if (file.isDirectory) {
             type = DrawerItemType.FOLDER
         } else {
-            val lower = caption.toLowerCase()
+            val lower = caption.lowercase(Locale.getDefault())
             if (file.isArchive())
                 type = DrawerItemType.ARCHIVE
             else if (lower.endsWith(".apk"))
