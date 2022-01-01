@@ -30,6 +30,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
+import kotlin.math.max
+import kotlin.math.min
 
 
 sealed class ShowSearchForStringsDialog {
@@ -248,7 +250,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         // free memory and remove from list
         val curIdx = currentTabIndex.value
         if (openedTabs.value.size > 1) {
-            _currentTabIndex.value = kotlin.math.max(currentTabIndex.value - 1, 0)
+            _currentTabIndex.value = max(currentTabIndex.value - 1, 0)
             val tabData = openedTabs.value[curIdx]
             tabDataMap.remove(tabData)
             _openedTabs.value = openedTabs.value - tabData
@@ -268,6 +270,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun searchForStrings() {
+        Timber.d("Will be shown strings dialog")
         _showSearchForStrings.value = ShowSearchForStringsDialog.Shown
     }
 
@@ -279,10 +282,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _showSearchForStrings.value = ShowSearchForStringsDialog.NotShown
     }
 
-    fun reallySearchForStrings(from: Int, to: Int) {
+    fun reallySearchForStrings(from: String, to: String) {
+        _showSearchForStrings.value = ShowSearchForStringsDialog.NotShown
+        val f = from.toIntOrNull() ?: return
+        val t = to.toIntOrNull() ?: return
         val relPath = getCurrentRelPath() ?: return
-        val tabData = TabData("String of $relPath ", TabKind.FoundString(relPath, from..to))
+
+        val tabData = TabData(
+            newCaptionFromCurrent("String"),
+            TabKind.FoundString(relPath, min(f, t)..max(f, t))
+        )
         openNewTab(tabData)
+    }
+
+    private fun newCaptionFromCurrent(with: String): String {
+        return openedTabs.value[currentTabIndex.value].title.replaceAfter("as ", with)
     }
 
     private fun openNewTab(tabData: TabData) {

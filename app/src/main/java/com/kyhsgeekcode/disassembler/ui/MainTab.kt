@@ -37,7 +37,6 @@ fun ProjectOverview(viewModel: MainViewModel) {
     }
 
     val askCopy = viewModel.askCopy.collectAsState()
-    val showSearchForStringsDialog = viewModel.showSearchForStringsDialog.collectAsState()
 
     Column(
         Modifier
@@ -87,49 +86,4 @@ fun ProjectOverview(viewModel: MainViewModel) {
             }
         )
     }
-
-    if (showSearchForStringsDialog.value is ShowSearchForStringsDialog.Shown) {
-        SearchForStringsDialog(viewModel)
-    }
-}
-
-@Composable
-fun SearchForStringsDialog(viewModel: MainViewModel) {
-    var from by remember { mutableStateOf("") }
-    var to by remember { mutableStateOf("") }
-    AlertDialog(
-        onDismissRequest = {
-            viewModel.dismissSearchForStringsDialog()
-        },
-        title = {
-            Text(text = "Search for strings with length ? to ?")
-        },
-        text = {
-            Row {
-
-                NumberTextField(from, { from = it })
-                Text(text = "to..")
-                NumberTextField(to, { to = it })
-            }
-        },
-        buttons = {
-            Row(
-                modifier = Modifier.padding(all = 8.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = { viewModel.dismissSearchForStringsDialog() }
-                ) {
-                    Text("Cancel")
-                }
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = { viewModel.reallySearchForStrings(from.toInt(), to.toInt()) }
-                ) {
-                    Text("Search")
-                }
-            }
-        }
-    )
 }

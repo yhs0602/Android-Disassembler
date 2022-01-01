@@ -6,9 +6,12 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import com.kyhsgeekcode.disassembler.ui.tabs.SearchForStringsDialog
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
+import com.kyhsgeekcode.disassembler.viewmodel.ShowSearchForStringsDialog
 import kotlinx.coroutines.launch
 
 
@@ -57,6 +60,11 @@ fun MainScreen(viewModel: MainViewModel) {
                 }
             }
             OpenedTabs(viewModel)
+
+            val showSearchForStringsDialog = viewModel.showSearchForStringsDialog.collectAsState()
+            if (showSearchForStringsDialog.value == ShowSearchForStringsDialog.Shown) {
+                SearchForStringsDialog(viewModel)
+            }
         }
     )
 }

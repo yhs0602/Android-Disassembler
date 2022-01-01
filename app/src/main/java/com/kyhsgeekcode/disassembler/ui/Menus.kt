@@ -83,7 +83,7 @@ fun BinaryMenuItems(binaryTabData: BinaryTabData, dismiss: () -> Unit) {
         dismiss()
         binaryTabData.jumpto()
     }) {
-        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Jump to")
+        Icon(imageVector = Icons.Filled.Navigation, contentDescription = "Jump to")
         Text("Jump to")
     }
     if (binaryTabData.isDisasmTab()) {
@@ -91,15 +91,8 @@ fun BinaryMenuItems(binaryTabData: BinaryTabData, dismiss: () -> Unit) {
             dismiss()
             binaryTabData.chooseColumns()
         }) {
-            Icon(imageVector = Icons.Filled.Delete, contentDescription = "Choose columns")
+            Icon(imageVector = Icons.Filled.CheckBox, contentDescription = "Choose columns")
             Text("Choose columns")
         }
-    }
-    DropdownMenuItem(onClick = {
-        dismiss()
-        binaryTabData.analyze()
-    }) {
-        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Analyze")
-        Text("Analyze")
     }
 }
