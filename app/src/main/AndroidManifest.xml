@@ -15,9 +15,9 @@
     <uses-permission
         android:name="android.permission.ACCESS_NETWORK_STATE"
         tools:remove="android:maxSdkVersion" />
-<!--    <uses-permission-->
-<!--        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"-->
-<!--        tools:remove="android:maxSdkVersion" />-->
+    <!--    <uses-permission-->
+    <!--        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"-->
+    <!--        tools:remove="android:maxSdkVersion" />-->
 
     <queries>
         <intent>
@@ -28,7 +28,6 @@
     </queries>
 
     <application
-        android:name=".EnableMultidex"
         android:allowBackup="true"
         android:extractNativeLibs="false"
         android:icon="@drawable/ic_launcher"
@@ -41,13 +40,13 @@
         android:usesCleartextTraffic="true">
         <activity
             android:name=".preference.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:exported="false"/>
+            android:exported="false"
+            android:label="@string/title_activity_settings" />
 
         <activity
             android:name="com.mikepenz.aboutlibraries.ui.LibsActivity"
-            android:theme="@style/Theme.MaterialComponents.NoActionBar"
-            android:exported="false"/>
+            android:exported="false"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar" />
 
         <provider
             android:name=".CrashReportFileProvider"
@@ -60,16 +59,17 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name="com.kyhsgeekcode.filechooser.NewFileChooserActivity"
-            android:exported="false"/>
+        <activity
+            android:name="com.kyhsgeekcode.filechooser.NewFileChooserActivity"
+            android:exported="false" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-1064966062299374~9116700670" /> <!-- android:name=".EnableMultidex" -->
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
             android:exported="true"
+            android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -102,10 +102,12 @@ meta-data android:name="com.google.android.gms.version"
         -->
         <!-- activity android:name=".MadeByActivity"/ -->
         <!-- activity android:name=".OpenSourceActivity"/ -->
-        <activity android:name="com.kyhsgeekcode.rootpicker.FileSelectorActivity"
-            android:exported="false"/>
-        <activity android:name=".DonateActivity"
-            android:exported="false"/>
+        <activity
+            android:name="com.kyhsgeekcode.rootpicker.FileSelectorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DonateActivity"
+            android:exported="false" />
 
     </application>
 

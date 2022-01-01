@@ -39,6 +39,8 @@ sealed class ShowCommentEditDialog {
     data class Shown(val where: Long) : ShowCommentEditDialog()
 }
 
+private const val INSERT_COUNT = 160
+
 class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabData() {
     private val addressToListItem = LongSparseArray<DisassemblyListItem>()
     var positionToAddress = SparseArray<Long>()
@@ -106,7 +108,7 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
             address + file.codeSectionBase - file.codeVirtAddr /*address-file.codeVirtualAddress*/,
             file.fileContents.size.toLong(),
             address,
-            DisasmListViewAdapter.INSERT_COUNT
+            INSERT_COUNT
         )
         for (item in newItems) {
             addressToListItem.put(item.disasmResult.address, item)

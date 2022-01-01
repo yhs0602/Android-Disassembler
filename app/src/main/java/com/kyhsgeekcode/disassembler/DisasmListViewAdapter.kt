@@ -224,13 +224,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
             binding.tvInst.text = disassemblyListItem.getInstruction()
             binding.tvLabel.text = disassemblyListItem.getLabel()
             binding.tvOperand.text = disassemblyListItem.getOperands()
-            view.setOnClickListener(
-                DisasmClickListener(
-                    fragment,
-                    this@DisasmListViewAdapter,
-                    position
-                )
-            )
+
         }
     }
 

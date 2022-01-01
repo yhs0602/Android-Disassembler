@@ -62,38 +62,6 @@ public class DisassemblyListItem implements Serializable {
         return builder.toString();
     }
 
-    public String toCodeString(ColumnSetting cs) {
-
-        StringBuilder sb = new StringBuilder();
-        if (cs.showAddress) {
-            sb.append("L_" + address);
-            //sb.append(":");
-        }
-        if (cs.showLabel) {
-            sb.append(label);
-            //sb.append(":");
-        }
-        if (cs.showAddress || cs.showLabel)
-            sb.append(":\t");
-        if (cs.showBytes) {
-            //sb.append("\t");
-            sb.append(bytes);
-        }
-        if (cs.showInstruction) {
-            sb.append(instruction);
-        }
-        if (cs.showOperands) {
-            sb.append(" ");
-            sb.append(operands);
-        }
-        if (cs.showComments) {
-            sb.append("\t;");
-            sb.append(comments);
-        }
-        //sb.append(System.lineSeparator());
-        return sb.toString().trim();
-    }
-
     public boolean isBranch() {
         return disasmResult.isBranch();
     }

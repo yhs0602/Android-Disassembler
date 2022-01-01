@@ -4,7 +4,6 @@ package com.kyhsgeekcode.disassembler
 
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -21,10 +20,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.GravityCompat
 import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
-import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.PermissionUtils.requestAppPermissions
 import com.kyhsgeekcode.disassembler.databinding.MainBinding
@@ -53,15 +50,7 @@ import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 
 
-class MainActivity : AppCompatActivity(),
-    ITabController,
-    ArchiveFragment.OnFragmentInteractionListener,
-    APKFragment.OnFragmentInteractionListener,
-    DexFragment.OnFragmentInteractionListener,
-    DotNetFragment.OnFragmentInteractionListener,
-    StringFragment.OnFragmentInteractionListener,
-    IDrawerManager,
-    ProgressHandler {
+class MainActivity : AppCompatActivity(), ProgressHandler {
     private var _binding: MainBinding? = null
     private val binding get() = _binding!!
 
@@ -269,7 +258,7 @@ class MainActivity : AppCompatActivity(),
             }
             if (p2 is SecurityException) {
                 Toast.makeText(this@MainActivity, R.string.didUgrant, Toast.LENGTH_SHORT).show()
-                val permSetting = getSharedPreferences(RATIONALSETTING, Context.MODE_PRIVATE)
+                val permSetting = getSharedPreferences(RATIONALSETTING, MODE_PRIVATE)
                 val permEditor = permSetting.edit()
                 permEditor.putBoolean("show", true)
                 permEditor.apply()
@@ -278,7 +267,7 @@ class MainActivity : AppCompatActivity(),
             // String [] accs=getAccounts();
             sendErrorReport(p2)
             // 	ori.uncaughtException(p1, p2);
-            Log.wtf(TAG, "UncaughtException", p2)
+            Timber.wtf(p2, "UncaughtException")
             finish()
         }
     }
@@ -301,13 +290,7 @@ class MainActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         when (id) {
-            R.id.closeFile -> {
-                val curTab = getCurrentTab()
-                if (curTab != 0) {
-//                    tablayout.removeTab(tablayout.getTabAt(curTab)!!)
-                    pagerAdapter.removeTab(curTab)
-                }
-            }
+
             R.id.settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 // SettingActivity.putExtra("ColorHelper",colorHelper);
@@ -325,7 +308,7 @@ class MainActivity : AppCompatActivity(),
                     "Enter an expression to measure",
                     et,
                     getString(R.string.ok),
-                    DialogInterface.OnClickListener { p1, p2 ->
+                    { p1, p2 ->
                         Toast.makeText(
                             this@MainActivity,
                             Calculator.Calc(et.text.toString()).toString(),
@@ -336,29 +319,9 @@ class MainActivity : AppCompatActivity(),
                     null
                 )
             }
-//            R.id.donate -> {
-////                val url = "https://www.buymeacoffee.com/i4QJKbC"
-////                val i = Intent(Intent.ACTION_VIEW)
-////                i.data = Uri.parse(url)
-//                Toast.makeText(
-//                    this,
-//                    "Thank you for your appreciate for this app!",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-////                startActivity(i)
-//                val intent = Intent(this, DonateActivity::class.java)
-//                startActivity(intent)
-//            }
+//            R.id.donate -> val url = "https://www.buymeacoffee.com/i4QJKbC"
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun showSelDialog(
-        ListItems: List<String>?,
-        title: String?,
-        listener: DialogInterface.OnClickListener?
-    ) {
-        showSelDialog(this, ListItems!!, title, listener)
     }
 
     override fun onRequestPermissionsResult(
@@ -393,23 +356,6 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    fun showToast(resid: Int) {
-        Toast.makeText(this, resid, Toast.LENGTH_SHORT).show()
-    }
-
-    // //////////////////////////////////////////////End Project//////////////////////////////////////////////
-    fun disassembleFile(offset: Long) {
-    }
-
-    private fun alertError(p0: Int, e: Exception, sendError: Boolean = true) {
-        Log.e(TAG, "" + p0, e)
-        showErrorDialog(this, p0, e, sendError)
-    }
-
-    private fun alertError(p0: String, e: Exception, sendError: Boolean = true) {
-        Log.e(TAG, "" + p0, e)
-        showErrorDialog(this, p0, e, sendError)
-    }
 
     val PATHPREF = "path"
     private fun showFileChooser() {
@@ -518,52 +464,16 @@ class MainActivity : AppCompatActivity(),
                     val project =
                         ProjectManager.newProject(file, ProjectType.UNKNOWN, file.name, true)
                     overviewFragment.initializeDrawer(project)
-                    notifyDataSetChanged()
 
                 }
             } catch (e: Exception) {
-                alertError(R.string.failCreateProject, e, false)
+//                alertError(R.string.failCreateProject, e, false)
             }
         }
     }
 
 
     external fun Init(): Int
-
-    override fun setCurrentTab(index: Int): Boolean {
-        val tab = binding.tablayout.getTabAt(index) ?: return false
-        tab.select()
-        binding.pagerMain.setCurrentItem(index, true)
-        return true
-    }
-
-    override fun getCurrentTab(): Int {
-        return binding.pagerMain.currentItem
-    }
-
-    override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun findTabByTag(tag: String): Int? {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onFragmentInteraction(uri: Uri) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun notifyDataSetChanged() {
-        mDrawerAdapter.notifyDataSetChanged()
-        mDrawerAdapter.callPrivateFunc("reloadData")
-//        val orig = left_drawer.isAlwaysExpanded
-//        left_drawer.isAlwaysExpanded = !orig
-//        left_drawer.isAlwaysExpanded = orig
-        binding.leftDrawer.refreshDrawableState()
-        binding.leftDrawer.requestLayout()
-//        showAlertDialog(this, "Then..", "Swipe from left to right please.")
-        binding.drawerLayout.openDrawer(GravityCompat.START)
-    }
 
     override fun publishProgress(current: Int, total: Int?, message: String?) {
         snackProgressBarManager.setProgress(current)
