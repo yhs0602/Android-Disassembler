@@ -1,60 +1,57 @@
 package com.kyhsgeekcode.disassembler
 
+//import com.gu.toolargetool.TooLargeTool
+
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GravityCompat
-import androidx.fragment.app.Fragment
-import at.pollaknet.api.facile.FacileReflector
-import at.pollaknet.api.facile.renderer.ILAsmRenderer
-import at.pollaknet.api.facile.symtab.symbols.Method
 import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
-import com.google.android.material.tabs.TabLayoutMediator
-//import com.gu.toolargetool.TooLargeTool
-import com.kyhsgeekcode.FileExtensions.textFileExts
 import com.kyhsgeekcode.callPrivateFunc
 import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.PermissionUtils.requestAppPermissions
 import com.kyhsgeekcode.disassembler.databinding.MainBinding
+import com.kyhsgeekcode.disassembler.disasmtheme.ColorHelper
 import com.kyhsgeekcode.disassembler.preference.SettingsActivity
-import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
 import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
-import com.kyhsgeekcode.disassembler.utils.ProjectManager_OLD
+import com.kyhsgeekcode.disassembler.ui.MainScreen
+import com.kyhsgeekcode.disassembler.utils.CrashReportingTree
+import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 import com.kyhsgeekcode.filechooser.NewFileChooserActivity
 import com.kyhsgeekcode.filechooser.model.FileItem
 import com.kyhsgeekcode.isArchive
 import com.kyhsgeekcode.multilevellistview.ItemInfo
 import com.kyhsgeekcode.multilevellistview.MLLVOnItemClickListener
-import com.kyhsgeekcode.multilevellistview.MultiLevelListAdapter
 import com.kyhsgeekcode.multilevellistview.MultiLevelListView
 import com.kyhsgeekcode.rootpicker.FileSelectorActivity
 import com.kyhsgeekcode.sendErrorReport
 import com.tingyik90.snackprogressbar.SnackProgressBar
 import com.tingyik90.snackprogressbar.SnackProgressBarManager
-import java.io.DataInputStream
+import kotlinx.serialization.ExperimentalSerializationApi
+import timber.log.Timber
+import timber.log.Timber.*
 import java.io.File
-import java.io.IOException
-import java.io.InputStream
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.regex.Pattern
+
 
 class MainActivity : AppCompatActivity(),
     ITabController,
@@ -103,8 +100,6 @@ class MainActivity : AppCompatActivity(),
         const val TAG_PROCESSES = 3
         const val TAG_RUNNING_APPS = 4
 
-
-        // //////////////////////////////////////////Data Conversion//////////////////////////////////
         /**
          * @returns handle : Int
          */
@@ -114,113 +109,50 @@ class MainActivity : AppCompatActivity(),
         @JvmStatic
         external fun Finalize(handle: Int)
 
-        /* this is used to load the 'hello-jni' library on application
-     * startup. The library has already been unpacked into
-     * /data/data/com.example.hellojni/lib/libhello-jni.so at
-     * installation time by the package manager.
-     */
         init {
             System.loadLibrary("native-lib")
         }
-
     }
 
-    // ////////////////////////////////////////////Views/////////////////////////////////////
-//    var touchSource: View? = null
-//    var clickSource: View? = null
     var llmainLinearLayoutSetupRaw: ConstraintLayout? = null
-
-    //    var tab1: LinearLayout? = null
-//    var tab2: LinearLayout? = null
-    // FileTabContentFactory factory = new FileTabContentFactory(this);
-//    val textFactory: FileTabContentFactory = TextFileTabFactory(this)
-//    val imageFactory: FileTabContentFactory = ImageFileTabFactory(this)
-//    val nativeDisasmFactory: FileTabContentFactory = NativeDisassemblyFactory(this)
-//    val factoryList: MutableList<FileTabContentFactory> = ArrayList()
-    // /////////////////////////////////////////////////UI manager////////////////////////////////////////////
-//    var hexManager = HexManager()
     var toDoAfterPermQueue: Queue<Runnable> = LinkedBlockingQueue()
 
-    // ///////////////////////////////////////////////Current working data///////////////////////////////////////
-//    var fpath: String? = null
-//        set(fpath) {
-//            field = fpath
-//            dataFragment!!.path = fpath
-//        }
-//    var filecontent: ByteArray? = null
-//        set(filecontent) {
-//            field = filecontent
-//            dataFragment!!.filecontent = filecontent
-//        }
     @JvmField
     var parsedFile: AbstractFile? = null// Parsed file info
-    // ///////////////////////////////////////////////Settings/////////////////////////////////////////////////////
-//    var settingPath: SharedPreferences? = null
-    // ///////////////////////////////////////////////Choose Column////////////////////////////////////
-
-    // /////////////////////////////////////////////End Permission//////////////////////////////////////////////////////
-// ////////////////////////////////////////////Column Picking/////////////////////////////////////////////////////
-
-    /*ArrayList*/
-
-
-    private var disasmManager: DisassemblyManager? = null
-
-    // private SymbolTableAdapter symAdapter;
-
-    // DisasmIterator disasmIterator
-
-    //    val runnableRequestLayout = Runnable {
-//        //adapter.notifyDataSetChanged();
-//        listview!!.requestLayout()
-//    }
-    //    private var mProjNames: Array<String>
-//    private var mDrawerLayout: DrawerLayout? = null
-//    private var cs: Capstone? = null
-//    private val EXTRA_NOTIFICATION_ID: String? = null
-//    private val ACTION_SNOOZE: String? = null
-    //    private var projectManager: ProjectManager? = null
-//    private var currentProject: ProjectManager.Project? = null
-    //    private var lvSymbols: ListView? = null
-
     private lateinit var mDrawerAdapter: FileDrawerListAdapter
 
     lateinit var pagerAdapter: ViewPagerAdapter
 
     lateinit var overviewFragment: ProjectOverviewFragment
+
+    private val viewModel by viewModels<MainViewModel>()
+
+    /** A tree which logs important information for crash reporting.  */
+
+    @OptIn(ExperimentalFoundationApi::class)
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        TooLargeTool.startLogging(application)
-        setupUncaughtException()
+        //        TooLargeTool.startLogging(application)
+        if (BuildConfig.DEBUG) {
+            Timber.plant(DebugTree())
+        } else {
+            Timber.plant(CrashReportingTree())
+        }
+        //        setupUncaughtException()
         initNative()
-        _binding = MainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        pagerAdapter = ViewPagerAdapter(this)
-        binding.pagerMain.adapter = pagerAdapter
-        binding.pagerMain.isUserInputEnabled = false
-//        tablayout.setupWithViewPager(pagerMain)
-        TabLayoutMediator(binding.tablayout, binding.pagerMain) { tab, position ->
-            tab.text = pagerAdapter.getTitle(position)
-            binding.pagerMain.setCurrentItem(tab.position, true)
-        }.attach()
-        binding.pagerMain.offscreenPageLimit = 20
-        overviewFragment = ProjectOverviewFragment.newInstance()
-        pagerAdapter.addFragment(overviewFragment, "Overview")
+        handleViewActionIntent()
 
-//        setupSymCompleteAdapter()
-        toDoAfterPermQueue.add(Runnable {
-            //            if (disasmManager == null) {
-//                disasmManager = DisassemblyManager()
-//
+        setContent {
+            MainScreen(viewModel = viewModel)
+        }
+//        requestAppPermissions(this)
+//        manageShowRational()
+    }
 
-//            disasmManager!!.setData(adapter!!.itemList(), adapter!!.getAddress())
-            // handleDataFragment()
-            // LoadProjects
-            setupLeftDrawer()
-            handleViewActionIntent()
-        })
-        requestAppPermissions(this)
-        manageShowRational()
+    @OptIn(ExperimentalSerializationApi::class)
+    override fun onResume() {
+        super.onResume()
+        ColorHelper.populatePalettes(context = this)
     }
 
 //    private fun handleDataFragment() {
@@ -258,31 +190,12 @@ class MainActivity : AppCompatActivity(),
 
     private fun handleViewActionIntent() {
         // https://www.androidpub.com/1351553
-        val intent = intent
+        val intent = intent ?: return
         if (intent.action == Intent.ACTION_VIEW) { // User opened this app from file browser
-            val filePath = intent.data?.path
-            Log.d(TAG, "intent path=$filePath")
-            var toks: Array<String?> = filePath!!.split(Pattern.quote(".")).toTypedArray()
-            val last = toks.size - 1
-            val ext: String?
-            if (last >= 1) {
-//                ext = toks[last]
-//                if ("adp".equals(ext, ignoreCase = true)) { //User opened the project file
-//                    //now get the project name
-//                    val file = File(filePath)
-//                    val pname = file.name
-//                    toks = pname.split(Pattern.quote(".")).toTypedArray()
-//                    //                        projectManager!!.Open(toks[toks.size - 2])
-//                } else { //User opened pther files
-                onChoosePathNew(intent!!.data!!)
-//                }
-            } else { // User opened other files
-                onChoosePathNew(intent!!.data!!)
+            intent.data?.let {
+                intent.putExtra("uri", it)
+                viewModel.onSelectIntent(intent)
             }
-        } else { // android.intent.action.MAIN
-            val projectsetting = getSharedPreferences(SETTINGKEY, Context.MODE_PRIVATE)
-            val lastProj = projectsetting.getString(LASTPROJKEY, "")
-            //                if (projectManager != null) projectManager!!.Open(lastProj)
         }
     }
 
@@ -303,7 +216,8 @@ class MainActivity : AppCompatActivity(),
         )
         mDrawerAdapter.setDataItems(initialDrawers)
         mDrawerAdapter.notifyDataSetChanged()
-        binding.leftDrawer.setOnItemClickListener(object : MLLVOnItemClickListener<FileDrawerListItem> {
+        binding.leftDrawer.setOnItemClickListener(object :
+            MLLVOnItemClickListener<FileDrawerListItem> {
             override fun onItemClicked(
                 parent: MultiLevelListView<FileDrawerListItem>,
                 view: View,
@@ -314,24 +228,24 @@ class MainActivity : AppCompatActivity(),
                 Toast.makeText(this@MainActivity, fitem.caption, Toast.LENGTH_SHORT).show()
                 if (!fitem.isOpenable)
                     return
-                showYesNoCancelDialog(
-                    this@MainActivity,
-                    "Open file",
-                    "Open " + fitem.caption + "?",
-                    DialogInterface.OnClickListener { dialog, which ->
-                        //                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
-//                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
-//                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
-//                    }
-                        val fragmentDataToOpen = determineFragmentToOpen(fitem)
-                        pagerAdapter.addFragment(
-                            fragmentDataToOpen.first,
-                            fragmentDataToOpen.second
-                        )
-                    },
-                    null,
-                    null
-                )
+//                showYesNoCancelDialog(
+//                    this@MainActivity,
+//                    "Open file",
+//                    "Open " + fitem.caption + "?",
+//                    DialogInterface.OnClickListener { dialog, which ->
+//                        //                    if (fitem.tag is String) onChoosePath(fitem.tag as String) else {
+////                        val resultPath = fitem.CreateDataToPath(appCtx.filesDir)
+////                        if (resultPath != null) onChoosePath(resultPath) else Toast.makeText(this@MainActivity, "Something went wrong.", Toast.LENGTH_SHORT).show()
+////                    }
+////                        val fragmentDataToOpen = determineFragmentToOpen(fitem)
+////                        pagerAdapter.addFragment(
+////                            fragmentDataToOpen.first,
+////                            fragmentDataToOpen.second
+////                        )
+//                    },
+//                    null,
+//                    null
+//                )
             }
 
             override fun onGroupItemClicked(
@@ -346,63 +260,6 @@ class MainActivity : AppCompatActivity(),
         })
     }
 
-    fun determineFragmentToOpen(item: FileDrawerListItem): Pair<Fragment, String> {
-        var title = "${item.caption} as ${item.type}"
-//        val rootPath = ProjectManager.getOriginal("").absolutePath
-        if (item.type == FileDrawerListItem.DrawerItemType.METHOD) {
-            val reflector = (item.tag as Array<*>)[0] as FacileReflector
-            val method = (item.tag as Array<*>)[1] as Method
-            val renderedStr = ILAsmRenderer(reflector).render(method)
-            val key = "${method.owner.name}.${method.name}_${method.methodSignature}"
-            ProjectDataStorage.putFileContent(key, renderedStr.encodeToByteArray())
-            return Pair(TextFragment.newInstance(key), key)
-        }
-        val abspath = (item.tag as String)
-//        Log.d(TAG, "rootPath:${rootPath}")
-        Log.d(TAG, "absPath:$abspath")
-        val ext = File(abspath).extension.toLowerCase()
-        val relPath: String = ProjectManager.getRelPath(abspath)
-//        if (abspath.length > rootPath.length)
-//            relPath = abspath.substring(rootPath.length+2)
-//        else
-//            relPath = ""
-        Log.d(TAG, "relPath:$relPath")
-        val fragment = when (item.type) {
-            FileDrawerListItem.DrawerItemType.ARCHIVE -> ArchiveFragment.newInstance(relPath)
-            FileDrawerListItem.DrawerItemType.APK -> APKFragment.newInstance(relPath)
-            FileDrawerListItem.DrawerItemType.NORMAL -> {
-                Log.d(TAG, "ext:$ext")
-                if (textFileExts.contains(ext)) {
-                    title = "${item.caption} as Text"
-                    TextFragment.newInstance(relPath)
-                } else {
-                    val file = File(abspath)
-                    try {
-                        (BitmapFactory.decodeStream(file.inputStream())
-                            ?: throw Exception()).recycle()
-                        ImageFragment.newInstance(relPath)
-                    } catch (e: Exception) {
-                        BinaryFragment.newInstance(relPath)
-                    }
-                }
-            }
-            FileDrawerListItem.DrawerItemType.BINARY -> BinaryFragment.newInstance(relPath)
-            FileDrawerListItem.DrawerItemType.PE -> BinaryFragment.newInstance(relPath)
-            FileDrawerListItem.DrawerItemType.PE_IL -> DotNetFragment.newInstance(relPath)
-//            FileDrawerListItem.DrawerItemType.PE_IL_TYPE -> TODO()
-//            FileDrawerListItem.DrawerItemType.FIELD -> TODO()
-//            FileDrawerListItem.DrawerItemType.METHOD -> TODO()
-            FileDrawerListItem.DrawerItemType.DEX -> DexFragment.newInstance(relPath)
-//            FileDrawerListItem.DrawerItemType.PROJECT -> TODO()
-            FileDrawerListItem.DrawerItemType.DISASSEMBLY ->
-                BinaryDisasmFragment.newInstance(relPath, BinaryDisasmFragment.ViewMode.Text)
-//            FileDrawerListItem.DrawerItemType.HEAD -> TODO()
-//            FileDrawerListItem.DrawerItemType.NONE -> TODO()
-            else -> throw Exception()
-        }
-
-        return Pair(fragment, title)
-    }
 
     private fun setupUncaughtException() {
         Thread.setDefaultUncaughtExceptionHandler { p1: Thread?, p2: Throwable ->
@@ -439,18 +296,6 @@ class MainActivity : AppCompatActivity(),
             ).show()
             Process.killProcess(Process.getGidForName(null))
         }
-    }
-
-    override fun onBackPressed() {
-        val fragment = pagerAdapter.createFragment(binding.pagerMain.currentItem)
-        if ((fragment as? IOnBackPressed)?.onBackPressed() != true) {
-            super.onBackPressed()
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -540,7 +385,7 @@ class MainActivity : AppCompatActivity(),
                     val showRationalEditor = showRationalSetting.edit()
                     showRationalEditor.putBoolean("show", true)
                     showRationalEditor.apply()
-                    finish();
+                    finish()
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
@@ -551,129 +396,6 @@ class MainActivity : AppCompatActivity(),
     fun showToast(resid: Int) {
         Toast.makeText(this, resid, Toast.LENGTH_SHORT).show()
     }
-
-//    private fun AlertSelFile() {
-//        Toast.makeText(this, R.string.selfilefirst, Toast.LENGTH_SHORT).show()
-// //        showFileChooser() /*File*/
-//    }
-
-//    //FIX ME, TO DO
-//    private fun ExportDisasmSub(mode: Int) {
-//        Log.v(TAG, "Saving disassembly")
-//        if (mode == 0) //Raw mode
-//        {
-//            SaveDisasmRaw()
-//            return
-//        }
-//        if (mode == 4) //Database mode
-//        {
-//            SaveDisasm(currentProject!!.disasmDb)
-//            return
-//        }
-//        val dir = File(ProjectManager.RootFile, currentProject!!.name + "/")
-//        Log.d(TAG, "dirpath=" + dir.absolutePath)
-//        val file = File(dir, "Disassembly_" + Date(System.currentTimeMillis()).toString() + if (mode == 3) ".json" else ".txt")
-//        Log.d(TAG, "filepath=" + file.absolutePath)
-//        dir.mkdirs()
-//        try {
-//            file.createNewFile()
-//        } catch (e: IOException) {
-//            Log.e(TAG, "", e)
-//            Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show()
-//        }
-//        //Editable et=etDetails.getText();
-//        try {
-//            val fos = FileOutputStream(file)
-//            try {
-//                val sb = StringBuilder()
-//                val   /*ListViewItem[]*/items = ArrayList<ListViewItem>()
-//                //items.addAll(adapter.itemList());
-//                for (lvi in items) {
-//                    when (mode) {
-//                        1 -> {
-//                            sb.append(lvi.address)
-//                            sb.append("\t")
-//                            sb.append(lvi.bytes)
-//                            sb.append("\t")
-//                            sb.append(lvi.instruction)
-//                            sb.append(" ")
-//                            sb.append(lvi.operands)
-//                            sb.append("\t")
-//                            sb.append(lvi.comments)
-//                        }
-//                        2 -> {
-//                            sb.append(lvi.address)
-//                            sb.append(":")
-//                            sb.append(lvi.instruction)
-//                            sb.append(" ")
-//                            sb.append(lvi.operands)
-//                            sb.append("  ;")
-//                            sb.append(lvi.comments)
-//                        }
-//                        3 -> sb.append(lvi.toString())
-//                    }
-//                    sb.append(System.lineSeparator())
-//                }
-//                fos.write(sb.toString().toByteArray())
-//            } catch (e: IOException) {
-//                alertError("", e)
-//                return
-//            }
-//        } catch (e: FileNotFoundException) {
-//            alertError("", e)
-//        }
-//        AlertSaveSuccess(file)
-//    }
-
-//    private fun SaveDetailNewProject(projn: String) {
-//        try {
-//            val proj = projectManager!!.newProject(projn, fpath)
-//            proj.Open(false)
-//            db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
-//            SaveDetailSub(proj)
-//        } catch (e: IOException) {
-//            alertError(R.string.failCreateProject, e)
-//        }
-//    }
-
-//    @Throws(IOException::class)
-//    private fun SaveDetailSub(proj: ProjectManager.Project) {
-//        val detailF = proj.getDetailFile() ?: throw IOException("Failed to create detail File")
-//        currentProject = proj
-//        detailF.createNewFile()
-//        SaveDetail(File(ProjectManager.Path), detailF)
-//        proj.Save()
-//    }
-//
-//    private fun SaveDisasmNewProject(projn: String, runnable: Runnable? = null) {
-//        try {
-//            val proj = projectManager!!.newProject(projn, fpath)
-//            currentProject = proj
-//            proj.Open(false)
-//            db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
-//            ShowExportOptions(runnable)
-//            proj.Save()
-//        } catch (e: IOException) {
-//            alertError(getString(R.string.failCreateProject), e)
-//        }
-//    }
-
-//    private fun ShowExportOptions(runnable: Runnable? = null) {
-//        val ListItems: MutableList<String> = ArrayList()
-//        ListItems.add("Raw(Fast,Reloadable)")
-//        ListItems.add("Classic(Addr bytes inst op comment)")
-//        ListItems.add("Simple(Addr: inst op; comment")
-//        ListItems.add("Json")
-//        ListItems.add("Database(.db, reloadable)")
-//        showSelDialog(this, ListItems, getString(R.string.export_as), DialogInterface.OnClickListener { dialog, pos ->
-//            //String selectedText = items[pos].toString();
-//            dialog.dismiss()
-//            val dialog2 = showProgressDialog(getString(R.string.saving))
-//            ExportDisasmSub(pos)
-//            runnable?.run()
-//            dialog2.dismiss()
-//        })
-//    }
 
     // //////////////////////////////////////////////End Project//////////////////////////////////////////////
     fun disassembleFile(offset: Long) {
@@ -780,7 +502,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    public fun onChoosePathNew(uri: Uri) {
+    fun onChoosePathNew(uri: Uri) {
         if (uri.scheme == "content") {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 //                contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
@@ -805,6 +527,65 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+
+    external fun Init(): Int
+
+    override fun setCurrentTab(index: Int): Boolean {
+        val tab = binding.tablayout.getTabAt(index) ?: return false
+        tab.select()
+        binding.pagerMain.setCurrentItem(index, true)
+        return true
+    }
+
+    override fun getCurrentTab(): Int {
+        return binding.pagerMain.currentItem
+    }
+
+    override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun findTabByTag(tag: String): Int? {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onFragmentInteraction(uri: Uri) {
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun notifyDataSetChanged() {
+        mDrawerAdapter.notifyDataSetChanged()
+        mDrawerAdapter.callPrivateFunc("reloadData")
+//        val orig = left_drawer.isAlwaysExpanded
+//        left_drawer.isAlwaysExpanded = !orig
+//        left_drawer.isAlwaysExpanded = orig
+        binding.leftDrawer.refreshDrawableState()
+        binding.leftDrawer.requestLayout()
+//        showAlertDialog(this, "Then..", "Swipe from left to right please.")
+        binding.drawerLayout.openDrawer(GravityCompat.START)
+    }
+
+    override fun publishProgress(current: Int, total: Int?, message: String?) {
+        snackProgressBarManager.setProgress(current)
+        if (total != null || message != null) {
+            if (total != null)
+                horizontal.setProgressMax(total)
+            if (message != null)
+                horizontal.setMessage(message)
+            snackProgressBarManager.updateTo(horizontal)
+        }
+        if (snackProgressBarManager.getLastShown() != null)
+            snackProgressBarManager.show(horizontal, SnackProgressBarManager.LENGTH_INDEFINITE)
+    }
+
+    override fun startProgress() {
+        snackProgressBarManager.show(indeterminate, SnackProgressBarManager.LENGTH_INDEFINITE)
+    }
+
+    override fun finishProgress() {
+        snackProgressBarManager.dismiss()
+    }
+}
 //    private fun onChoosePath(uri: Uri) {
 //        val tmpfile = File(filesDir, "tmp.so")
 //
@@ -938,12 +719,137 @@ class MainActivity : AppCompatActivity(),
 //        }
 //
 //    }
+//
+//private fun handleEmptyFile(path: String) {
+//    Log.d(MainActivity.TAG, "File $path has zero length")
+//    Toast.makeText(this, "The file is empty.", Toast.LENGTH_SHORT).show()
+//    return
+//}
 
-    private fun handleEmptyFile(path: String) {
-        Log.d(TAG, "File $path has zero length")
-        Toast.makeText(this, "The file is empty.", Toast.LENGTH_SHORT).show()
-        return
-    }
+
+//    private fun AlertSelFile() {
+//        Toast.makeText(this, R.string.selfilefirst, Toast.LENGTH_SHORT).show()
+// //        showFileChooser() /*File*/
+//    }
+
+//    //FIX ME, TO DO
+//    private fun ExportDisasmSub(mode: Int) {
+//        Log.v(TAG, "Saving disassembly")
+//        if (mode == 0) //Raw mode
+//        {
+//            SaveDisasmRaw()
+//            return
+//        }
+//        if (mode == 4) //Database mode
+//        {
+//            SaveDisasm(currentProject!!.disasmDb)
+//            return
+//        }
+//        val dir = File(ProjectManager.RootFile, currentProject!!.name + "/")
+//        Log.d(TAG, "dirpath=" + dir.absolutePath)
+//        val file = File(dir, "Disassembly_" + Date(System.currentTimeMillis()).toString() + if (mode == 3) ".json" else ".txt")
+//        Log.d(TAG, "filepath=" + file.absolutePath)
+//        dir.mkdirs()
+//        try {
+//            file.createNewFile()
+//        } catch (e: IOException) {
+//            Log.e(TAG, "", e)
+//            Toast.makeText(this, R.string.failSaveFile, Toast.LENGTH_SHORT).show()
+//        }
+//        //Editable et=etDetails.getText();
+//        try {
+//            val fos = FileOutputStream(file)
+//            try {
+//                val sb = StringBuilder()
+//                val   /*ListViewItem[]*/items = ArrayList<ListViewItem>()
+//                //items.addAll(adapter.itemList());
+//                for (lvi in items) {
+//                    when (mode) {
+//                        1 -> {
+//                            sb.append(lvi.address)
+//                            sb.append("\t")
+//                            sb.append(lvi.bytes)
+//                            sb.append("\t")
+//                            sb.append(lvi.instruction)
+//                            sb.append(" ")
+//                            sb.append(lvi.operands)
+//                            sb.append("\t")
+//                            sb.append(lvi.comments)
+//                        }
+//                        2 -> {
+//                            sb.append(lvi.address)
+//                            sb.append(":")
+//                            sb.append(lvi.instruction)
+//                            sb.append(" ")
+//                            sb.append(lvi.operands)
+//                            sb.append("  ;")
+//                            sb.append(lvi.comments)
+//                        }
+//                        3 -> sb.append(lvi.toString())
+//                    }
+//                    sb.append(System.lineSeparator())
+//                }
+//                fos.write(sb.toString().toByteArray())
+//            } catch (e: IOException) {
+//                alertError("", e)
+//                return
+//            }
+//        } catch (e: FileNotFoundException) {
+//            alertError("", e)
+//        }
+//        AlertSaveSuccess(file)
+//    }
+
+//    private fun SaveDetailNewProject(projn: String) {
+//        try {
+//            val proj = projectManager!!.newProject(projn, fpath)
+//            proj.Open(false)
+//            db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
+//            SaveDetailSub(proj)
+//        } catch (e: IOException) {
+//            alertError(R.string.failCreateProject, e)
+//        }
+//    }
+
+//    @Throws(IOException::class)
+//    private fun SaveDetailSub(proj: ProjectManager.Project) {
+//        val detailF = proj.getDetailFile() ?: throw IOException("Failed to create detail File")
+//        currentProject = proj
+//        detailF.createNewFile()
+//        SaveDetail(File(ProjectManager.Path), detailF)
+//        proj.Save()
+//    }
+//
+//    private fun SaveDisasmNewProject(projn: String, runnable: Runnable? = null) {
+//        try {
+//            val proj = projectManager!!.newProject(projn, fpath)
+//            currentProject = proj
+//            proj.Open(false)
+//            db = DatabaseHelper(this, ProjectManager.createPath(proj.name) + "disasm.db")
+//            ShowExportOptions(runnable)
+//            proj.Save()
+//        } catch (e: IOException) {
+//            alertError(getString(R.string.failCreateProject), e)
+//        }
+//    }
+
+//    private fun ShowExportOptions(runnable: Runnable? = null) {
+//        val ListItems: MutableList<String> = ArrayList()
+//        ListItems.add("Raw(Fast,Reloadable)")
+//        ListItems.add("Classic(Addr bytes inst op comment)")
+//        ListItems.add("Simple(Addr: inst op; comment")
+//        ListItems.add("Json")
+//        ListItems.add("Database(.db, reloadable)")
+//        showSelDialog(this, ListItems, getString(R.string.export_as), DialogInterface.OnClickListener { dialog, pos ->
+//            //String selectedText = items[pos].toString();
+//            dialog.dismiss()
+//            val dialog2 = showProgressDialog(getString(R.string.saving))
+//            ExportDisasmSub(pos)
+//            runnable?.run()
+//            dialog2.dismiss()
+//        })
+//    }
+
 
 //    private fun HandleZipFIle(path: String, inputStream: InputStream): Boolean {
 //        var lowname: String
@@ -993,16 +899,17 @@ class MainActivity : AppCompatActivity(),
 //        return false
 //    }
 
-    private fun handleUDDFile(path: String, inputStream: InputStream): Boolean {
-        return try {
-            val data = ProjectManager_OLD.ReadUDD(DataInputStream(inputStream))
-            false // true;
-        } catch (e: IOException) {
-            Log.e(TAG, "path:$path", e)
-            false
-        }
-        // return false;
-    }
+//private fun handleUDDFile(path: String, inputStream: InputStream): Boolean {
+//    return try {
+//        val data = ProjectManager_OLD.ReadUDD(DataInputStream(inputStream))
+//        false // true;
+//    } catch (e: IOException) {
+//        Log.e(MainActivity.TAG, "path:$path", e)
+//        false
+//    }
+//    // return false;
+//}
+
 
 //    @Throws(IOException::class)
 //    private fun afterReadFully(file: File) { //	symAdapter.setCellItems(list);
@@ -1116,64 +1023,6 @@ class MainActivity : AppCompatActivity(),
 //        //DisassembleFile(0/*parsedFile.getEntryPoint()*/);
 //    }
 
-    external fun Init(): Int
-
-    override fun setCurrentTab(index: Int): Boolean {
-        val tab = binding.tablayout.getTabAt(index) ?: return false
-        tab.select()
-        binding.pagerMain.setCurrentItem(index, true)
-        return true
-    }
-
-    override fun getCurrentTab(): Int {
-        return binding.pagerMain.currentItem
-    }
-
-    override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun findTabByTag(tag: String): Int? {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onFragmentInteraction(uri: Uri) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun notifyDataSetChanged() {
-        mDrawerAdapter.notifyDataSetChanged()
-        mDrawerAdapter.callPrivateFunc("reloadData")
-//        val orig = left_drawer.isAlwaysExpanded
-//        left_drawer.isAlwaysExpanded = !orig
-//        left_drawer.isAlwaysExpanded = orig
-        binding.leftDrawer.refreshDrawableState()
-        binding.leftDrawer.requestLayout()
-//        showAlertDialog(this, "Then..", "Swipe from left to right please.")
-        binding.drawerLayout.openDrawer(GravityCompat.START)
-    }
-
-    override fun publishProgress(current: Int, total: Int?, message: String?) {
-        snackProgressBarManager.setProgress(current)
-        if (total != null || message != null) {
-            if (total != null)
-                horizontal.setProgressMax(total)
-            if (message != null)
-                horizontal.setMessage(message)
-            snackProgressBarManager.updateTo(horizontal)
-        }
-        if (snackProgressBarManager.getLastShown() != null)
-            snackProgressBarManager.show(horizontal, SnackProgressBarManager.LENGTH_INDEFINITE)
-    }
-
-    override fun startProgress() {
-        snackProgressBarManager.show(indeterminate, SnackProgressBarManager.LENGTH_INDEFINITE)
-    }
-
-    override fun finishProgress() {
-        snackProgressBarManager.dismiss()
-    }
-
 //    internal inner class SaveDBAsync : AsyncTask<DatabaseHelper?, Int?, Void?>() {
 //        var TAG = javaClass.simpleName
 //        var builder: AlertDialog.Builder? = null
@@ -1209,4 +1058,3 @@ class MainActivity : AppCompatActivity(),
 //    factoryList.add(textFactory)
 //    factoryList.add(imageFactory)
 //    factoryList.add(nativeDisasmFactory)
-}

@@ -38,6 +38,7 @@ public class SectionType {
     public static final SectionType GNU_VERDEF = new SectionType(0x6ffffffd, "GNU version definition section");
     public static final SectionType GNU_VERNEED = new SectionType(0x6ffffffe, "GNU version needs section");
     public static final SectionType GNU_VERSYM = new SectionType(0x6fffffff, "GNU version symbol table");
+    public static final SectionType UNKNOWN = new SectionType(-1, "Unknown");
 
     private static final SectionType[] VALUES = {NULL, PROGBITS, SYMTAB, STRTAB, RELA, HASH, DYNAMIC, NOTE, NOBITS,
             REL, SHLIB, DYNSYM, INIT_ARRAY, FINI_ARRAY, PREINIT_ARRAY, GROUP, SYMTAB_SHNDX, GNU_ATTRIBUTES, GNU_HASH,
@@ -63,7 +64,9 @@ public class SectionType {
         } else if (value >= SHT_LOUSER && value <= SHT_HIUSER) {
             return new SectionType(value, "User-specific segment");
         }
-        throw new IllegalArgumentException("Invalid segment type!");
+        System.err.println("Invalid segment type!" + value);
+        return UNKNOWN;
+//        throw new IllegalArgumentException("Invalid segment type!" + value);
     }
 
     private final int no;

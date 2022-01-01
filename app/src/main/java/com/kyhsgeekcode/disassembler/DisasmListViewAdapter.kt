@@ -1,6 +1,5 @@
 package com.kyhsgeekcode.disassembler
 
-import android.util.Log
 import android.util.LongSparseArray
 import android.util.SparseArray
 import android.view.LayoutInflater
@@ -11,8 +10,8 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kyhsgeekcode.convertDpToPixel
-import com.kyhsgeekcode.disassembler.ColorHelper.palette
 import com.kyhsgeekcode.disassembler.databinding.ListviewItemBinding
+import timber.log.Timber
 
 class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     var file: AbstractFile,
@@ -21,65 +20,43 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     val mLayoutManager: LinearLayoutManager
 ) : RecyclerView.Adapter<DisasmListViewAdapter.ViewHolder>() {
     private lateinit var listView: RecyclerView
-    private val TAG = "Disassembler LV"
-
-    // 	public void setAddress(SparseArray<Long> address)
-// 	{
-// 		this.address = address;
-// 	}
-//
     var currentAddress: Long = 0
-//    private val mainactivity: MainActivity? = null
 
     fun clear() {
         address.clear()
         itemsNew.clear()
     }
 
-//    @Deprecated("")
-//    fun setDit(dit: DisasmIterator) {
-//        this.dit = dit
-//    }
 
-    // private / *ListViewItem[]*/LongSparseArray<ListViewItem> listViewItemList=new LongSparseArray<>();
-// private long lvLength=0;
-// LinkedList ll;
-    fun addAll(/*ArrayList*/
+    fun addAll(
         data: LongSparseArray<DisassemblyListItem>,
         addr: SparseArray<Long>
     ) {
         itemsNew = data // .clone();
         address = addr // .clone();
-        // for(;;)
-// {
-// 	break;
-// }
-// listViewItemList.addAll(data);
-// itemsNew=data;
         notifyDataSetChanged()
     }
 
     // You should not modify
-    /*ArrayList*/
     fun itemList(): LongSparseArray<DisassemblyListItem> {
         return itemsNew // / *listViewItemList;// */new ArrayList<ListViewItem>().addAll(listViewItemList);
     }
 
     // New method
-// private int [] address;
-// position->address
+    // position->address
     var address = SparseArray<Long>()
 
     // address->item
     private var itemsNew = LongSparseArray<DisassemblyListItem>()
     var writep = 0
-    private var dit: DisasmIterator
+    private var dit: DisasmIterator = DisasmIterator(file, handle)
 
     // @address eq virtualaddress
     fun loadMore(position: Int, address: Long) { // this.address.clear();
-        Log.d(
-            TAG,
-            "LoadMore position: $position, writep: $writep, virtaddr: ${address.toString(16)}"
+        Timber.d(
+            "LoadMore position: $position, writep: $writep, virtaddr: " + address.toString(
+                16
+            )
         )
         writep = position
         if (currentAddress == 0L)
@@ -94,10 +71,6 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         )
     }
 
-//    // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
-//    override fun getCount(): Int {
-//        return address.size() //listViewItemList.size();// lvLength;//listViewItemList//size() ;
-//    }
 
     fun getItem(position: Int): Any {
         val addrl = address[position] ?: return DisassemblyListItem()
@@ -126,21 +99,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         currentAddress = address
     }
 
-    /*
-	 public void addAll(ArrayList/ *LongSparseArra <ListViewItem> data)
-	{
-		listViewItemList.addAll(data);
-		notifyDataSetChanged();
-	}
-
-
-    public void addItem(ListViewItem item)
-	{
-        listViewItemList.add(item);
-		//notifyDataSetChanged();
-    }
-	*/
-// ?!!!
+    // ?!!!
 // 지정한 위치(position)에 있는 데이터와 관계된 아이템(row)의 ID를 리턴. : 필수 구현
     override fun getItemId(position: Int): Long {
         return position.toLong()
@@ -158,7 +117,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
     private val dp260 = convertDpToPixel(260f)
 
     companion object {
-        const val INSERT_COUNT = 80
+        const val INSERT_COUNT = 160
     }
 
     init {
@@ -166,7 +125,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
         // address=//new long[file.fileContents.length];//Use sparseArray if oom
 //        mainactivity = ma;
 // IMPORTANT Note: total arg is unused
-        dit = DisasmIterator(this)
+        dit = DisasmIterator(file, handle)
     }
 
     fun adjustShow(
@@ -213,7 +172,7 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
             getItem(position) as DisassemblyListItem // listViewItemList/ *[position];*/.get(position);
         val dar = disassemblyListItem.disasmResult
 
-        val palette = palette
+//        val palette = ColorHelper.palette.value
         with(holder) {
             adjustShow(
                 binding.tvAddr,
@@ -226,37 +185,37 @@ class DisasmListViewAdapter(// Use: arr+arr/arr+lsa/ll+lsa,...
             )
             binding.tvOperand.layoutParams.width = if (architecture == 1) dp260 else dp180
             binding.tvOperand.requestLayout()
-            val defTxtColor = palette!!.defaultTxtColor
-            val defBkColor = palette.defaultBkColor
+//            val defTxtColor = palette.default.textColor
+//            val defBkColor = palette.default.bkColor
             // convertView.setBackgroundColor(palette.getDefaultBkColor());
-            val bkColor = palette.getBkColorByGrps(
-                dar.groups,
-                dar.groups_count.toInt(),
-                dar.id
-            )
-            binding.tvInst.setBackgroundColor(bkColor)
-            binding.tvAddr.setBackgroundColor(defBkColor)
-            binding.tvBytes.setBackgroundColor(defBkColor)
-            binding.tvComment.setBackgroundColor(defBkColor)
-            binding.tvCond.setBackgroundColor(defBkColor)
-            binding.tvLabel.setBackgroundColor(defBkColor)
-            binding.tvOperand.setBackgroundColor(bkColor)
+//            val bkColor = palette.getBkColorByGrps(
+//                dar.groups,
+//                dar.groups_count.toInt(),
+//                dar.id
+//            )
+//            binding.tvInst.setBackgroundColor(bkColor)
+//            binding.tvAddr.setBackgroundColor(defBkColor)
+//            binding.tvBytes.setBackgroundColor(defBkColor)
+//            binding.tvComment.setBackgroundColor(defBkColor)
+//            binding.tvCond.setBackgroundColor(defBkColor)
+//            binding.tvLabel.setBackgroundColor(defBkColor)
+//            binding.tvOperand.setBackgroundColor(bkColor)
 //            Log.d(TAG, "Address: ${dar.address.toString(16)} Bytes: ${dar.bytes.joinToString(", ") {
 //                it.toString(16)
 //            }}")
-            val txtColor = palette.getTxtColorByGrps(
-                dar.groups,
-                dar.groups_count.toInt(),
-                dar.id,
-                dar.bytes
-            )
-            binding.tvInst.setTextColor(txtColor)
-            binding.tvAddr.setTextColor(defTxtColor)
-            binding.tvBytes.setTextColor(defTxtColor)
-            binding.tvComment.setTextColor(defTxtColor)
-            binding.tvCond.setTextColor(defTxtColor)
-            binding.tvLabel.setTextColor(defTxtColor)
-            binding.tvOperand.setTextColor(txtColor)
+//            val txtColor = palette.getTxtColorByGrps(
+//                dar.groups,
+//                dar.groups_count.toInt(),
+//                dar.id,
+//                dar.bytes
+//            )
+//            binding.tvInst.setTextColor(txtColor)
+//            binding.tvAddr.setTextColor(defTxtColor)
+//            binding.tvBytes.setTextColor(defTxtColor)
+//            binding.tvComment.setTextColor(defTxtColor)
+//            binding.tvCond.setTextColor(defTxtColor)
+//            binding.tvLabel.setTextColor(defTxtColor)
+//            binding.tvOperand.setTextColor(txtColor)
 
             binding.tvAddr.text = disassemblyListItem.getAddress()
             binding.tvBytes.text = disassemblyListItem.getBytes()

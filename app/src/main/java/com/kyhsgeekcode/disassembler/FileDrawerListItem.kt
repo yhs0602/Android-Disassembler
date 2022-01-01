@@ -2,19 +2,28 @@ package com.kyhsgeekcode.disassembler
 
 import android.graphics.drawable.Drawable
 import android.util.Log
+import at.pollaknet.api.facile.Facile
 import at.pollaknet.api.facile.FacileReflector
 import at.pollaknet.api.facile.code.ExceptionClause
 import at.pollaknet.api.facile.code.instruction.CilInstruction
 import at.pollaknet.api.facile.renderer.ILAsmRenderer
 import at.pollaknet.api.facile.symtab.symbols.Method
+import at.pollaknet.api.facile.symtab.symbols.Type
 import at.pollaknet.api.facile.symtab.symbols.TypeRef
+import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
+import com.kyhsgeekcode.disassembler.project.ProjectManager
+import com.kyhsgeekcode.disassembler.project.models.ProjectModel
+import com.kyhsgeekcode.disassembler.project.models.ProjectType
+import com.kyhsgeekcode.filechooser.model.getValueFromTypeKindAndBytes
 import com.kyhsgeekcode.getDrawable
 import com.kyhsgeekcode.isArchive
 import org.boris.pecoff4j.io.PEParser
-import java.io.File
-import java.io.FileWriter
-import java.io.IOException
+import org.jf.baksmali.Main
+import timber.log.Timber
+import java.io.*
 import java.util.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 
 class FileDrawerListItem {
     var caption: String
@@ -146,7 +155,7 @@ class FileDrawerListItem {
         if (file.isDirectory) {
             type = DrawerItemType.FOLDER
         } else {
-            val lower = caption.toLowerCase()
+            val lower = caption.lowercase(Locale.getDefault())
             if (file.isArchive())
                 type = DrawerItemType.ARCHIVE
             else if (lower.endsWith(".apk"))
@@ -223,5 +232,182 @@ class FileDrawerListItem {
             inopenables.add(DrawerItemType.FOLDER)
             inopenables.add(DrawerItemType.PE_IL_TYPE)
         }
+    }
+
+    fun getSubObjects(
+        startHandler: () -> Unit = {},
+        progressHandler: (now: Int, total: Int) -> Unit = { _, _ -> },
+        finishHandler: () -> Unit = {}
+    ): List<FileDrawerListItem> {
+        val items: MutableList<FileDrawerListItem> = ArrayList()
+        // Moved From MainActivity.java
+//        Toast.makeText(context, item.caption, Toast.LENGTH_SHORT).show()
+        //
+        val initialLevel = level
+        val newLevel = initialLevel + 1
+        when (type) {
+            DrawerItemType.PROJECTS -> {
+                val curProj = ProjectManager.currentProject
+                if (curProj == null) {
+                    items.add(FileDrawerListItem("Nothing opened", newLevel))
+                } else {
+                    items.add(
+                        FileDrawerListItem(
+                            curProj.name, newLevel, DrawerItemType.PROJECT,
+                            curProj, getDrawable(android.R.drawable.ic_secure)
+                        )
+                    )
+                }
+            }
+            DrawerItemType.PROJECT -> {
+                val projectModel = tag as ProjectModel
+                val file = File(projectModel.sourceFilePath)
+                items.add(FileDrawerListItem(file, newLevel))
+                if (projectModel.projectType == ProjectType.APK) {
+                    val libsFolder = File("${file.absolutePath}_libs")
+                    if (libsFolder.exists()) {
+                        items.add(FileDrawerListItem(libsFolder, newLevel))
+                    }
+                }
+            }
+            DrawerItemType.FOLDER -> {
+                val path = tag as String
+                val thisFolder = File(path)
+                if (thisFolder.isDirectory) {
+                    if (thisFolder.canRead()) {
+                        thisFolder.listFiles()?.let {
+                            if (it.isEmpty()) {
+                                items.add(FileDrawerListItem("The folder is empty", newLevel))
+                                return@let
+                            }
+                            for (file in it) {
+                                items.add(FileDrawerListItem(file, newLevel))
+                            }
+                            Collections.sort(items, FileNameComparator)
+                        }
+                    } else {
+                        items.add(FileDrawerListItem("Could not be read!", newLevel))
+                    }
+                }
+            }
+            DrawerItemType.ARCHIVE, DrawerItemType.APK -> {
+                val path = tag as String
+                val targetDirectory =
+                    ProjectDataStorage.resolveToWrite(ProjectManager.getRelPath(path), true)
+                Timber.d("Target directory $targetDirectory")
+//                        File(File(appCtx.filesDir, "/extracted/"), File(path).name + "/")
+//                appCtx.filesDir.resolve("extracted").resolve()
+                targetDirectory.deleteRecursively()
+                targetDirectory.mkdirs()
+                val total = File(path).length() * 2
+                progressHandler(0, total.toInt())
+                var read = 0
+                try {
+                    val zi = ZipInputStream(FileInputStream(path))
+                    var entry: ZipEntry? = null
+                    val buffer = ByteArray(2048)
+                    while (zi.nextEntry?.also { entry = it } != null) {
+                        val outfile = File(targetDirectory, entry!!.name)
+                        val canonicalPath = outfile.canonicalPath
+                        if (!canonicalPath.startsWith(targetDirectory.canonicalPath)) {
+                            throw SecurityException(
+                                "The file may have a Zip Path Traversal Vulnerability." +
+                                        "Is the file trusted?"
+                            )
+                        }
+                        outfile.parentFile.mkdirs()
+                        var output: FileOutputStream? = null
+                        try {
+                            if (entry!!.name == "")
+                                continue
+                            Timber.d("entry: " + entry + ", outfile:" + outfile)
+                            output = FileOutputStream(outfile)
+                            var len = 0
+                            while (zi.read(buffer).also { len = it } > 0) {
+                                output.write(buffer, 0, len)
+                            }
+                            read += len
+                        } finally { // we must always close the output file
+                            output?.close()
+                        }
+                        progressHandler(read, 100)
+                    }
+                    finishHandler()
+                    return FileDrawerListItem(targetDirectory, initialLevel).getSubObjects()
+                } catch (e: IOException) {
+                    Log.e("FileAdapter", "", e)
+                    items.add(FileDrawerListItem("Failed to extract", newLevel))
+                }
+            }
+            DrawerItemType.DEX -> {
+                startHandler()
+                val filename = tag as String
+                val targetDirectory =
+                    ProjectDataStorage.resolveToWrite(ProjectManager.getRelPath(filename), true)
+//                val targetDirectory = File(File(appCtx.filesDir, "/dex-decompiled/"), File(filename).name + "/")
+                targetDirectory.mkdirs()
+                Main.main(arrayOf("d", "-o", targetDirectory.absolutePath, filename))
+                finishHandler()
+                return FileDrawerListItem(targetDirectory, initialLevel).getSubObjects()
+            }
+            DrawerItemType.PE_IL -> try {
+                startHandler()
+                val facileReflector = Facile.load(tag as String)
+                // load the assembly
+                val assembly = facileReflector.loadAssembly()
+                val types = assembly.allTypes
+                for (type in types) {
+                    items.add(
+                        FileDrawerListItem(
+                            "${type.namespace}.${type.name}",
+                            newLevel,
+                            DrawerItemType.PE_IL_TYPE,
+                            arrayOf(facileReflector, type)
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                Logger.e("FileAdapter", "", e)
+            } finally {
+                finishHandler()
+            }
+            DrawerItemType.PE_IL_TYPE -> {
+                val cont = tag as Array<Any>
+                val fr = cont[0] as FacileReflector
+                val type = cont[1] as Type
+                val fields = type.fields
+                val methods = type.methods
+                for (field in fields) {
+                    val c = field.constant
+                    var fieldDesc: String = field.name + ":" + field.typeRef.name
+                    if (c != null) {
+                        val kind = c.elementTypeKind
+                        val bytes = c.value
+                        val value = getValueFromTypeKindAndBytes(bytes, kind)
+                        fieldDesc += "(="
+                        fieldDesc += value
+                        fieldDesc += ")"
+                    }
+                    items.add(FileDrawerListItem(fieldDesc, newLevel, DrawerItemType.FIELD))
+                }
+                for (method in methods) {
+                    items.add(
+                        FileDrawerListItem(
+                            "${method.name}${method.methodSignature}",
+                            newLevel,
+                            DrawerItemType.METHOD,
+                            arrayOf(fr, method)
+                        )
+                    )
+                }
+            }
+            else -> {
+            }
+        }
+        // if expandable yes.
+// if folder show subfolders
+// if zip/apk unzip and show
+        finishHandler()
+        return items
     }
 }

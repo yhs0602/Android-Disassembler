@@ -8,9 +8,9 @@ public class StringParser {
     int i = 0;
     Set<String> str2opks = null;
     Set<Character> ch2opks = null;
-    private String TAG = "Disassembler parser";
-    private String source;
-    private char[] chars;
+    private final String TAG = "Disassembler parser";
+    private final String source;
+    private final char[] chars;
 
     public StringParser(String s) {
         source = s;

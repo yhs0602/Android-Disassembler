@@ -2,16 +2,11 @@ package com.kyhsgeekcode.disassembler
 
 // import kotlinx.android.synthetic.main.fragment_analysis_result.*
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayoutMediator
 import com.kyhsgeekcode.disassembler.databinding.FragmentBinaryBinding
 import com.kyhsgeekcode.disassembler.project.ProjectDataStorage
-import kotlin.reflect.KClass
-import kotlin.reflect.full.companionObject
-import kotlin.reflect.full.companionObjectInstance
-import kotlin.reflect.full.functions
 
 class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackPressed {
     private var _binding: FragmentBinaryBinding? = null
@@ -65,9 +60,6 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
                 BinaryDisasmFragment.ViewMode.Binary
             ), "Disassembly"
         )
-        pagerAdapter.addFragment(BinaryExportSymbolFragment.newInstance(relPath), "Export Symbols")
-        pagerAdapter.addFragment(BinaryImportSymbolFragment.newInstance(relPath), "Import Symbols")
-        pagerAdapter.addFragment(BinaryDetailFragment.newInstance(relPath), "Details")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -133,17 +125,17 @@ class BinaryFragment : Fragment(), ITabController, IParsedFileProvider, IOnBackP
     override fun getCurrentTab(): Int = binding.pagerBinary.currentItem
 
     override fun setCurrentTabByTag(tag: String, openNew: Boolean): Boolean {
-        val clas: KClass<out Any>
-        val fragment = classNameByTag[tag].let {
-            clas = Class.forName("com.kyhsgeekcode.disassembler.$it").kotlin
-            pagerAdapter.findFragmentByType(clas)
-        } ?: if (!openNew) return false else {
-            Log.d(TAG, "Open new")
-            val frag = clas.companionObject!!.functions.single { it.name == "newInstance" }
-                .call(clas.companionObjectInstance, relPath) as Fragment
-            pagerAdapter.addFragment(frag, tag)
-        }
-        binding.pagerBinary.setCurrentItem(fragment, true)
+//        val clas: KClass<out Any>
+//        val fragment = classNameByTag[tag].let {
+//            clas = Class.forName("com.kyhsgeekcode.disassembler.$it").kotlin
+//            pagerAdapter.findFragmentByType(clas)
+//        } ?: if (!openNew) return false else {
+//            Log.d(TAG, "Open new")
+//            val frag = clas.companionObject!!.functions.single { it.name == "newInstance" }
+//                .call(clas.companionObjectInstance, relPath) as Fragment
+//            pagerAdapter.addFragment(frag, tag)
+//        }
+//        binding.pagerBinary.setCurrentItem(fragment, true)
         return true
     }
 

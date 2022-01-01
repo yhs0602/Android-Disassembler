@@ -6,16 +6,19 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.util.Log
 import splitties.init.appCtx
+import timber.log.Timber
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
-import kotlin.experimental.and
+import kotlin.math.exp
+import kotlin.math.ln
+import kotlin.math.pow
+
 
 @ExperimentalUnsignedTypes
 class Analyzer(private val bytes: ByteArray) {
-    private val uBytes: UByteArray
+    private val uBytes: UByteArray = bytes.toUByteArray()
     private var mean = 0.0
     private var autocorel = 0.0
     private var monteCarloPI = 0.0
@@ -32,19 +35,16 @@ class Analyzer(private val bytes: ByteArray) {
     private val nums = IntArray(256)
 
     // Search for strings
-    fun /*List<String>*/searchStrings(
-        adapter: FoundStringAdapter,
+    fun searchStrings(
         min: Int,
         max: Int,
-        progress: (Int, Int) -> Boolean
-    ) { // List<String> list=new ArrayList<>();
-// char lastch=0;
+        progress: (Int, Int, FoundString?) -> Unit
+    ) {
         var strstart = -1
-        adapter.reset()
         for (i in bytes.indices) {
-            val v = bytes[i].toUByte().toShort().toChar()
+            val v = bytes[i].toUByte().toShort().toInt().toChar()
             // Log.v(TAG,""+v);
-            if (Character.isISOControl(v) == false /*Character.isUnicodeIdentifierStart(v)||Character.isJavaLetterOrDigit(v)*/) {
+            if (!Character.isISOControl(v) /*Character.isUnicodeIdentifierStart(v)||Character.isJavaLetterOrDigit(v)*/) {
                 if (strstart == -1) strstart = i
             } else if (strstart != -1) {
                 val length = i - strstart
@@ -53,16 +53,16 @@ class Analyzer(private val bytes: ByteArray) {
                     val str = String(bytes, strstart, length)
                     val fs = FoundString(length, offset.toLong(), str)
                     // Log.v(TAG,str);
-                    adapter.addItem(fs)
-                } else { // Logger.v(TAG,"Ignoring short string at:"+offset);
+                    progress(i, bytes.size, fs)
+                } else { // Timber.v("Ignoring short string at:"+offset);
                 }
                 strstart = -1
                 // Log.i(TAG,str);
             }
             if (i % 100 == 0)
-                progress(i, bytes.size)
+                progress(i, bytes.size, null)
         }
-        return
+        progress(bytes.size, bytes.size, null)
     }
 
     fun getImage(): Drawable {
@@ -166,15 +166,15 @@ class Analyzer(private val bytes: ByteArray) {
             return sb.toString()
         }
 
-    suspend fun analyze(progress: suspend (Int, Int, String) -> Boolean) { // Count shorts, calculate average, ...
-        Logger.v(TAG, "Counting numbers")
+    suspend fun analyze(progress: suspend (Int, Int, String) -> Unit) { // Count shorts, calculate average, ...
+        Timber.v("Counting numbers")
         Arrays.fill(nums, 0)
         for (i in uBytes.indices) {
             nums[uBytes[i].toInt()]++
         }
-        Logger.v(TAG, "Count:" + nums.contentToString())
+        Timber.v("Count:" + nums.contentToString())
         progress(7, 1, "Measuring average...")
-        Logger.v(TAG, "Averaging")
+        Timber.v("Averaging")
         var div: Double
         // double[] divs = new double[256];
         var avg = 0.0
@@ -183,18 +183,18 @@ class Analyzer(private val bytes: ByteArray) {
             div *= i.toDouble()
             avg += div
         }
-        Logger.v(TAG, "Avg:$avg")
+        Timber.v("Avg:$avg")
 
         progress(7, 2, "Measuring Entropy...")
         // Calculate Entropy (bits/symbol)
 // https://rosettacode.org/wiki/Entropy
-        Logger.v(TAG, "Measuring entropy")
+        Timber.v("Measuring entropy")
         var entropy = 0.0
         for (i in 0..255) {
             val p = nums[i].toDouble() / uBytes.size.toDouble()
             entropy -= p * log2(p)
         }
-        Logger.v(TAG, "Entropy:$entropy")
+        Timber.v("Entropy:$entropy")
 
         progress(7, 3, "Performing G-test...")
         G = 0.0
@@ -209,19 +209,19 @@ class Analyzer(private val bytes: ByteArray) {
         // Do Chi-square test
 // https://rosettacode.org/wiki/Verify_distribution_uniformity/Chi-squared_test
 // https://rosettacode.org/wiki/Verify_distribution_uniformity/Chi-squared_test#C
-        Logger.v(TAG, "Chi-square test")
+        Timber.v("Chi-square test")
         chiDof = uBytes.size - 1
-        Logger.v(TAG, "chiDof:$chiDof")
+        Timber.v("chiDof:$chiDof")
         chiDist = chi2UniformDistance(uBytes, uBytes.size) // x2Dist(shorts);
-        Logger.v(TAG, "chiDist:$chiDist")
+        Timber.v("chiDist:$chiDist")
         chiProb = chi2Probability(chiDof, chiDist) // xhi2Prob(dof, dist);
-        Logger.v(TAG, "chiProb:$chiProb")
+        Timber.v("chiProb:$chiProb")
         chiIsUniform = chiIsUniform(uBytes, uBytes.size, 0.05)
-        Logger.v(TAG, "chiIsUniform:$chiIsUniform")
+        Timber.v("chiIsUniform:$chiIsUniform")
 
         progress(7, 5, "Performing monte-carlo analysis...")
         // Monte Carlo PI calc
-        Logger.v(TAG, "Performing Monte Carlo")
+        Timber.v("Performing Monte Carlo")
         var inCircle = 0
         for (i in 0 until uBytes.size - 1) { // a square with a side of length 2 centered at 0 has
 // x and y range of -1 to 1
@@ -236,12 +236,12 @@ class Analyzer(private val bytes: ByteArray) {
             }
         }
         monteCarloPI = 4.0 * inCircle / (uBytes.size - 1)
-        Logger.v(TAG, "Monte Carlo PI:$monteCarloPI")
+        Timber.v("Monte Carlo PI:$monteCarloPI")
 
         progress(7, 6, "Measuring auto correlation...")
         // Serial correlation coefficient
 // compute sum of squared
-        Logger.v(TAG, "Measuring correlation coeffs")
+        Timber.v("Measuring correlation coeffs")
         var sumsq = 0.0
         for (i in uBytes.indices) {
             sumsq += (uBytes[i] * uBytes[i]).toDouble()
@@ -257,16 +257,17 @@ class Analyzer(private val bytes: ByteArray) {
         MD5Hash = hash("MD5", bytes)
         SHA1Hash = hash("SHA-1", bytes)
         SHA256Hash = hash("SHA-256", bytes)
-        Logger.v(TAG, "Saving results")
+        Timber.v("Saving results")
         mean = avg
         this.entropy = entropy
         autocorel = corel
+        progress(7, 7, "Done")
     }
 
     var cspace = DoubleArray(A)
     var coefs: DoubleArray? = null
     fun Gamma_Spouge(z: Double): Double {
-        Log.d(TAG, "Gamma spouge:$z")
+        Timber.d("Gamma spouge:$z")
         var k: Int
         var accum: Double
         val a = A.toDouble()
@@ -293,21 +294,19 @@ class Analyzer(private val bytes: ByteArray) {
 
     var aa1 = 0.0
     fun GammaIncomplete_Q(a: Double, x: Double): Double {
-        val f: Ifctn = object : Ifctn {
-            override fun f(x: Double): Double {
-                return Math.pow(x, aa1) * Math.exp(-x)
-            }
+        val f = { it: Double ->
+            it.pow(aa1) * exp(-it)
         }
-        Logger.v(TAG, "GammaIncompleteQ_a:" + a + "x:" + x)
+        Timber.v("GammaIncompleteQ_a:$a x:$x")
         var y: Double
         val h = 1.5e+3 /*e-2*/ /* approximate integration step size */
         /* this cuts off the tail of the integration to speed things up */aa1 = a - 1
         y = aa1
-        Logger.v(TAG, "GammaIncompleteQ_y:$y")
-        Log.d(TAG, "Before loop")
-        while (f.f(y) * (x - y) > 2.0e-8 && y < x) y += .4
+        Timber.v("GammaIncompleteQ_y:$y")
+        Timber.d("Before loop")
+        while (f(y) * (x - y) > 2.0e-8 && y < x) y += .4
         if (y > x) y = x
-        Log.d(TAG, "Calling Simpson")
+        Timber.d("Calling Simpson")
         val gamma = Gamma_Spouge(a)
         return 1.0 - Simpson3_8(f, 0.0, y, (y / h).toInt(), gamma)
     }
@@ -346,9 +345,29 @@ class Analyzer(private val bytes: ByteArray) {
     }
 
     companion object {
-        private const val TAG = "Analyzer"
+        const val A = 12
+    }
+}
 
-        // static double x2Dist(byte[] data) {
+
+fun hash(algorithm: String, bytes: ByteArray?): String {
+    var shash = "Unknown"
+    try {
+        val digest = MessageDigest.getInstance(algorithm)
+        shash = bytes?.digestString(digest) ?: shash
+//                val hash = digest.digest(bytes)
+//                shash = ""
+//                for (b in hash) {
+//                    shash += Integer.toHexString((b and 0xFF.toByte()).toInt())
+//                }
+    } catch (e: NoSuchAlgorithmException) {
+        Timber.e(e, "Failed to get $algorithm hash;")
+    }
+    return shash
+}
+
+
+// static double x2Dist(byte[] data) {
 // 	avg;
 // 	double sqs = stream(data).reduce(0, (a, b) -> a + pow((b - avg), 2));
 // 	return sqs / avg;
@@ -359,54 +378,26 @@ class Analyzer(private val bytes: ByteArray) {
 // static boolean x2IsUniform(byte[] data, double significance) {
 // 	return x2Prob(data.length - 1.0, x2Dist(data)) > significance;
 // }
-        fun Simpson3_8(f: Ifctn, a: Double, b: Double, N: Int, gamma: Double): Double {
-            Log.v(TAG, "Simpson; a:" + a + "b:" + b + "N:" + N)
-            var j: Int
-            var l1: Double
-            val h = (b - a) / N
-            val h1 = h / 3.0
-            var sum = f.f(a) + f.f(b)
-            j = 3 * N - 1
-            while (j > 0) {
-                // Logger.v(TAG,"Simpson_ j:"+j+",sum:"+sum);
-                l1 = if (j % 3 != 0) 3.0 else 2.0
-                sum += l1 * f.f(a + h1 * j) / gamma
-                j--
-            }
-            val result = h * sum / 8.0
-            Logger.v(TAG, "simpson:$result")
-            return result
-        }
 
-        const val A = 12
-        private fun log2(a: Double): Double {
-            return Math.log(a) / Math.log(2.0)
-        }
 
-        fun hash(algorithm: String, bytes: ByteArray?): String {
-            var shash = "Unknown"
-            try {
-                val digest = MessageDigest.getInstance(algorithm)
-                shash = bytes?.digestString(digest)?:shash
-//                val hash = digest.digest(bytes)
-//                shash = ""
-//                for (b in hash) {
-//                    shash += Integer.toHexString((b and 0xFF.toByte()).toInt())
-//                }
-            } catch (e: NoSuchAlgorithmException) {
-                Logger.e(TAG, "Failed to get $algorithm hash;", e)
-            }
-            return shash
-        }
+fun Simpson3_8(f: (Double) -> Double, a: Double, b: Double, N: Int, gamma: Double): Double {
+    Timber.v("Simpson; a:" + a + "b:" + b + "N:" + N)
+    var l1: Double
+    val h = (b - a) / N
+    val h1 = h / 3.0
+    var sum = f(a) + f(b)
+    var j = 3 * N - 1
+    while (j > 0) {
+        // Timber.v("Simpson_ j:"+j+",sum:"+sum);
+        l1 = if (j % 3 != 0) 3.0 else 2.0
+        sum += l1 * f(a + h1 * j) / gamma
+        j--
     }
+    val result = h * sum / 8.0
+    Timber.v("simpson:$result")
+    return result
+}
 
-
-    // Analyzes code, strings, etc
-    init {
-        uBytes = bytes.toUByteArray()
-//        uBytes = ShortArray(bytes.size)
-//        for (i in bytes.indices) {
-//            uBytes[i] = bytes[i].toUByte().toShort()
-//        }
-    }
+private fun log2(a: Double): Double {
+    return ln(a) / ln(2.0)
 }

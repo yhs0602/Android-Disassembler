@@ -14,9 +14,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kyhsgeekcode.TAG
 import com.kyhsgeekcode.disassembler.databinding.FragmentBinaryDisasmBinding
+import com.kyhsgeekcode.disassembler.disasmtheme.ColorHelper
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_ALL
 import com.kyhsgeekcode.disassembler.models.Architecture.CS_ARCH_MAX
 import com.kyhsgeekcode.disassembler.models.Architecture.getArchitecture
+import timber.log.Timber
 import java.util.*
 
 class BinaryDisasmFragment : Fragment(), IOnBackPressed {
@@ -116,15 +118,15 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
     }
 
     fun disassemble() {
-        Log.v(TAG, "Strted disasm")
+        Timber.v("Strted disasm")
         // NOW there's no notion of pause or resume
         workerThread = Thread {
             val codesection = parsedFile.codeSectionBase
             val start = codesection // elfUtil.getCodeSectionOffset();
 //            val limit = parsedFile.codeSectionLimit
             val addr = parsedFile.codeVirtAddr // + offset
-            Log.v(TAG, "code section point :${start.toString(16)}")
-            Log.d(TAG, "addr : ${addr.toString(16)}")
+            Timber.v("code section point :" + start.toString(16))
+            Timber.d("addr : " + addr.toString(16))
             // ListViewItem lvi;
 // 	getFunctionNames();
 //            val size = limit - start
@@ -140,7 +142,7 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
 					 }else{
 					 disasmManager.setResumeOffsetFromCode(toresume);
 					 }*/
-            disasmResults = adapter.itemList()
+//            disasmResults = adapter.itemList()
             // mNotifyManager.cancel(0);
             // final int len=disasmResults.size();
             // add xrefs
@@ -149,13 +151,13 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
                 //                tab2!!.invalidate()
                 Toast.makeText(activity, "done", Toast.LENGTH_SHORT).show()
             }
-            Log.v(TAG, "disassembly done")
+            Timber.v("disassembly done")
         }
         workerThread!!.start()
     }
 
     override fun onBackPressed(): Boolean {
-        Log.d(TAG, "onBackPressed, ${jmpBackstack.size}")
+        Timber.d("onBackPressed, " + jmpBackstack.size)
         if (!jmpBackstack.empty()) {
             jumpto(jmpBackstack.pop())
             jmpBackstack.pop()
@@ -267,24 +269,22 @@ class BinaryDisasmFragment : Fragment(), IOnBackPressed {
         return if (address > parsedFile.fileContents.size + parsedFile.codeVirtAddr) false else address >= 0
     }
 
-    private val leftListener: View.OnClickListener = object : View.OnClickListener {
-        override fun onClick(v: View) {
-            val cs = v.tag as ColumnSetting
-            /*String hint=(String) ((Button)v).getHint();
+    private val leftListener: View.OnClickListener = View.OnClickListener { v ->
+        val cs = v.tag as ColumnSetting
+        /*String hint=(String) ((Button)v).getHint();
 			hint=hint.substring(1,hint.length()-1);
 			Log.v(TAG,"Hint="+hint);
 			String [] parsed=hint.split(", ",0);
 			Log.v(TAG,Arrays.toString(parsed));*/columns = cs
-            adapter.isShowAddress = cs.showAddress // /*v.getTag(CustomDialog.TAGAddress)*/);
-            adapter.isShowLabel = cs.showLabel // /*v.getTag(CustomDialog.TAGLabel)*/);
-            adapter.isShowBytes = cs.showBytes // /*v.getTag(CustomDialog.TAGBytes)*/);
-            adapter.isShowInstruction =
-                cs.showInstruction // /*v.getTag(CustomDialog.TAGInstruction)*/);
-            adapter.isShowComment = cs.showComments // /*v.getTag(CustomDialog.TAGComment)*/);
-            adapter.isShowOperands = cs.showOperands // /*v.getTag(CustomDialog.TAGOperands)*/);
-            adapter.isShowCondition = cs.showConditions // /*v.getTag(CustomDialog.TAGCondition)*/);
-            binding.disasmTabListview.requestLayout()
-        }
+        adapter.isShowAddress = cs.showAddress // /*v.getTag(CustomDialog.TAGAddress)*/);
+        adapter.isShowLabel = cs.showLabel // /*v.getTag(CustomDialog.TAGLabel)*/);
+        adapter.isShowBytes = cs.showBytes // /*v.getTag(CustomDialog.TAGBytes)*/);
+        adapter.isShowInstruction =
+            cs.showInstruction // /*v.getTag(CustomDialog.TAGInstruction)*/);
+        adapter.isShowComment = cs.showComments // /*v.getTag(CustomDialog.TAGComment)*/);
+        adapter.isShowOperands = cs.showOperands // /*v.getTag(CustomDialog.TAGOperands)*/);
+        adapter.isShowCondition = cs.showConditions // /*v.getTag(CustomDialog.TAGCondition)*/);
+        binding.disasmTabListview.requestLayout()
     }
 
     override fun onResume() {

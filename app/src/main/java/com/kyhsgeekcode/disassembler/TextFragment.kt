@@ -97,7 +97,7 @@ class TextFragment : Fragment() {
 
     private suspend fun readAndColorize(): SpannableStringBuilder = withContext(Dispatchers.IO) {
         val ssb = SpannableStringBuilder()
-        val terms: List<String>? = TermList[File(relPath).extension.toLowerCase()]
+        val terms: List<String>? = TermList[File(relPath).extension.lowercase(Locale.getDefault())]
 
         val br = BufferedReader(InputStreamReader(ByteArrayInputStream(fileContent)))
         var line: String?

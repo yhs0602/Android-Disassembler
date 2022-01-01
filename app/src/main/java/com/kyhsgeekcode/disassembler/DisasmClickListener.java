@@ -1,15 +1,15 @@
 package com.kyhsgeekcode.disassembler;
 
+import static com.kyhsgeekcode.UtilKt.setClipBoard;
+import static com.kyhsgeekcode.disassembler.UIUtilsKt.showEditDialog;
+import static com.kyhsgeekcode.disassembler.UIUtilsKt.showSelDialog;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.kyhsgeekcode.UtilKt.setClipBoard;
-import static com.kyhsgeekcode.disassembler.UIUtilsKt.showEditDialog;
-import static com.kyhsgeekcode.disassembler.UIUtilsKt.showSelDialog;
 
 public class DisasmClickListener implements View.OnClickListener {
     final String EDIT_COMMENT = "Edit comment";
@@ -18,9 +18,9 @@ public class DisasmClickListener implements View.OnClickListener {
     final String JUMP = "Follow jump";
     BinaryDisasmFragment binaryDisasmFragment;
     List<String> menus = new ArrayList<>();
-    private String TAG = "Disassembler";
-    private int position;
-    private DisasmListViewAdapter adapter;
+    private final String TAG = "Disassembler";
+    private final int position;
+    private final DisasmListViewAdapter adapter;
 
     public DisasmClickListener(BinaryDisasmFragment fragment, DisasmListViewAdapter adapter, int position) {
         this.binaryDisasmFragment = fragment;

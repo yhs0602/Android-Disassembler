@@ -47,7 +47,6 @@ class StringFragment : Fragment() {
     private lateinit var stringAdapter: FoundStringAdapter
     private lateinit var fileContent: ByteArray
 
-    @ExperimentalUnsignedTypes
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -103,7 +102,7 @@ class StringFragment : Fragment() {
                     withContext(Dispatchers.Default) {
                         val analyzer = Analyzer(fileContent)
                         var oldTot = 100
-                        analyzer.searchStrings(stringAdapter, min, max) { i, tot ->
+                        analyzer.searchStrings(min, max) { i, tot, fs ->
                             snackProgressBarManager.setProgress(i)
                             if (oldTot != tot) {
                                 oldTot = tot

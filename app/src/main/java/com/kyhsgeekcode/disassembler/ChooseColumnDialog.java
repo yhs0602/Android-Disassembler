@@ -28,7 +28,7 @@ public class ChooseColumnDialog extends Dialog {
     private TextView mContentView;
     private Button mLeftButton;
     private Button mRightButton;
-    private String mTitle;
+    private final String mTitle;
     private String mContent;
     private CheckBox mCKAddress;
     private CheckBox mCKLabel;
@@ -37,9 +37,9 @@ public class ChooseColumnDialog extends Dialog {
     private CheckBox mCKCondition;
     private CheckBox mCKOperands;
     private CheckBox mCKComments;
-    private View.OnClickListener mLeftClickListener;
+    private final View.OnClickListener mLeftClickListener;
     private View.OnClickListener mRightClickListener;
-    private String TAG = "Disassembler dialog";
+    private final String TAG = "Disassembler dialog";
 
     // 클릭버튼이 하나일때 생성자 함수로 클릭이벤트를 받는다.
     public ChooseColumnDialog(Context context, String title,

@@ -1,6 +1,7 @@
 package com.kyhsgeekcode.disassembler
 
 import android.util.Log
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -9,22 +10,22 @@ object Logger {
     val logData: Queue<LogData> = LinkedList()
     fun v(TAG: String, desc: String) {
         log(TAG, desc, "Verbose")
-        Log.v(TAG, desc)
+        Timber.v(desc)
     }
 
     fun v(TAG: String, desc: String, e: Throwable?) {
         log(TAG, desc + System.lineSeparator() + Log.getStackTraceString(e), "Verbose")
-        Log.v(TAG, desc, e)
+        Timber.v(e, desc)
     }
 
     fun e(TAG: String, desc: String) {
         log(TAG, desc, "Error")
-        Log.e(TAG, desc)
+        Timber.e(desc)
     }
 
     fun e(TAG: String, desc: String, e: Throwable?) {
         log(TAG, desc + System.lineSeparator() + Log.getStackTraceString(e), "Error")
-        Log.v(TAG, desc, e)
+        Timber.v(e, desc)
     }
 
     private fun log(TAG: String, desc: String, level: String) {

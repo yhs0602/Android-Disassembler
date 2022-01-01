@@ -1,12 +1,12 @@
 package com.kyhsgeekcode.disassembler;
 
-import java.io.Serializable;
-
 import static com.kyhsgeekcode.disassembler.UtilsKt.bytesToHex;
 
+import java.io.Serializable;
+
 public class DisassemblyListItem implements Serializable {
-    String address, bytes, label, instruction, operands, comments, condition;
-    DisasmResult disasmResult;
+    public String address, bytes, label, instruction, operands, comments, condition;
+    public DisasmResult disasmResult;
 
     //Capstone.CsInsn insn;
     public DisassemblyListItem(String address, String bytes, String label, String instruction, String operands, String comments, String condition) {
@@ -160,7 +160,6 @@ public class DisassemblyListItem implements Serializable {
 
     @Override
     public String toString() {
-        // TODO: Implement this method
         if (disasmResult == null) {
             return "null!!!";
         }

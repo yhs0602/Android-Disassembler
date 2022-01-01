@@ -4,10 +4,12 @@ apply plugin: 'kotlinx-serialization'
 apply plugin: 'de.mannodermaus.android-junit5'
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
 apply plugin: 'com.mikepenz.aboutlibraries.plugin'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -15,10 +17,13 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.1.0-rc02'
+    }
     defaultConfig {
         applicationId "com.kyhsgeekcode.disassembler"
-        minSdkVersion 19
-        targetSdkVersion 29
+        minSdkVersion 21
+        targetSdkVersion 31
         versionCode 18
         versionName "2.1.5"
         multiDexEnabled true
@@ -29,7 +34,10 @@ android {
             }
         }
     }
-
+    buildFeatures {
+        // Enables Jetpack Compose for this module
+        compose true
+    }
     /*packagingOptions {
         pickFirst 'lib/armeabi-v7a/libhello-jni.so'
         pickFirst 'lib/x86/libhello-jni.so'
@@ -80,65 +88,97 @@ android {
         }
     }
 
-    ndkVersion "21.4.7075529"
+    ndkVersion "23.1.7779620"
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'com.google.android.gms:play-services-ads:20.4.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'com.google.android.gms:play-services-ads:20.5.0'
     implementation 'com.github.codekidX:storage-chooser:2.0.4.4'
     implementation 'com.github.skydoves:colorpickerview:2.2.3'
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 //    implementation group: "pl.openrnd.android", name: "multi-level-listview", version: "1.0.1"
     // https://mvnrepository.com/artifact/commons-io/commons-io
 //    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
 
     //implementation 'dotnet.msil.decompiler:+'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.core:core-ktx:1.6.0"
+    implementation 'androidx.core:core-ktx:1.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation("com.louiscad.splitties:splitties-fun-pack-android-base:3.0.0-beta03")
+    implementation('com.louiscad.splitties:splitties-fun-pack-android-base:3.0.0')
     implementation "com.louiscad.splitties:splitties-systemservices:$splitties_version"
     implementation("com.louiscad.splitties:splitties-appctx:$splitties_version")
     implementation 'org.apache.commons:commons-compress:1.21'
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     // implementation("com.google.guava:guava:29.0-android")
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.21"
-    implementation 'org.jsoup:jsoup:1.14.1'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10'
+    implementation 'org.jsoup:jsoup:1.14.3'
+
+    implementation 'com.jakewharton.timber:timber:5.0.1'
 
     // or "kotlin-stdlib-jdk8"
 //    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:1.0.1" // JVM dependency
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1'
 
     implementation "androidx.multidex:multidex:2.0.1"
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.viewpager2:viewpager2:1.1.0-alpha01'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+    implementation 'androidx.viewpager2:viewpager2:1.1.0-beta01'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
 
     implementation 'androidx.preference:preference-ktx:1.1.1'
     implementation "com.mikepenz:aboutlibraries:8.9.1"
     implementation "androidx.cardview:cardview:1.0.0"
+
+    implementation platform('com.google.firebase:firebase-bom:28.4.1')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+
 
 //    implementation 'mnemonik:mnemonik:2.0.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'com.github.tingyik90:snackprogressbar:6.4.2'
 
-    implementation 'commons-codec:commons-codec:1.15'
+//    implementation 'commons-codec:commons-codec:'
     implementation project(path: ':multilevellistview')
 
-    testImplementation "org.junit.jupiter:junit-jupiter:5.7.2"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit5:$kotlin_version"
     testImplementation "org.spekframework.spek2:spek-dsl-jvm:$spek_version"
     testImplementation "org.spekframework.spek2:spek-runner-junit5:$spek_version"
     // spek requires kotlin-reflect, omit when already in classpath
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    implementation 'androidx.fragment:fragment-ktx:1.4.0'
+    implementation 'androidx.activity:activity-ktx:1.4.0'
+
+    // Integration with activities
+    implementation 'androidx.activity:activity-compose:1.4.0'
+    // Compose Material Design
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+
+    // Animations
+    implementation "androidx.compose.animation:animation:$compose_version"
+    // Tooling support (Previews, etc.)
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+
+    // Integration with ViewModels
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
+    implementation 'androidx.navigation:navigation-compose:2.4.0-rc01'
+
+
+    // When using a AppCompat theme
+    implementation "com.google.accompanist:accompanist-appcompat-theme:0.16.0"
+
+    // UI Tests
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.0.5'
 
 //    implementation 'com.gu.android:toolargetool:0.3.0@aar'
 }

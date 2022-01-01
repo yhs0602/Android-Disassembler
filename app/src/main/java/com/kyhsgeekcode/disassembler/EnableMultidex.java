@@ -8,7 +8,7 @@ import android.util.Log;
 public class EnableMultidex extends /*MultiDex*/Application {
     public static Context context;
     private static EnableMultidex enableMultiDex;
-    private String TAG = "EnableMultiDex";
+    private final String TAG = "EnableMultiDex";
 
     public EnableMultidex() {
         enableMultiDex = this;

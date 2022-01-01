@@ -235,14 +235,16 @@ class NewFileChooserAdapter(
     }
 
     private fun addItemsToListSorted(subItems: List<FileItem>) {
-        values.clear()
-        values.addAll(subItems)
-        values.sortWith(
+        val newValues = ArrayList<FileItem>()
+        newValues.addAll(subItems)
+        newValues.sortWith(
             compareBy(
                 { !it.text.endsWith("/") },
                 { it.text[0].lowercaseChar() },
                 { it.text })
         )
+        values.clear()
+        values.addAll(newValues)
     }
 
     fun onBackPressedShouldFinish(): Boolean {
