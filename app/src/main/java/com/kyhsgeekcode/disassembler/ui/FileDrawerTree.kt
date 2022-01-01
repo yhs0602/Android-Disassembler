@@ -129,30 +129,25 @@ class FileDrawerTreeItem : TreeNode<FileDrawerTreeItem> {
         get() = !inopenables.contains(type)
 
     companion object {
-        private const val TAG = "FileItem"
-        private val expandables: MutableSet<DrawerItemType> = HashSet()
-        private val inopenables: MutableSet<DrawerItemType> = HashSet()
-
-        init {
-            expandables.add(DrawerItemType.APK)
-            expandables.add(DrawerItemType.ARCHIVE)
-            expandables.add(DrawerItemType.FOLDER)
-            expandables.add(DrawerItemType.HEAD)
-            expandables.add(DrawerItemType.DEX)
-            expandables.add(DrawerItemType.PE_IL)
-            expandables.add(DrawerItemType.PE_IL_TYPE)
-            expandables.add(DrawerItemType.PROJECT)
-            expandables.add(DrawerItemType.PROJECTS)
-        }
-
-        init {
-            inopenables.add(DrawerItemType.FIELD)
-            inopenables.add(DrawerItemType.NONE)
-            inopenables.add(DrawerItemType.PROJECTS)
-            inopenables.add(DrawerItemType.PROJECT)
-            inopenables.add(DrawerItemType.FOLDER)
-            inopenables.add(DrawerItemType.PE_IL_TYPE)
-        }
+        private val expandables = setOf(
+            DrawerItemType.APK,
+            DrawerItemType.ARCHIVE,
+            DrawerItemType.FOLDER,
+            DrawerItemType.HEAD,
+            DrawerItemType.DEX,
+            DrawerItemType.PE_IL,
+            DrawerItemType.PE_IL_TYPE,
+            DrawerItemType.PROJECT,
+            DrawerItemType.PROJECTS
+        )
+        private val inopenables = setOf(
+            DrawerItemType.FIELD,
+            DrawerItemType.NONE,
+            DrawerItemType.PROJECTS,
+            DrawerItemType.PROJECT,
+            DrawerItemType.FOLDER,
+            DrawerItemType.PE_IL_TYPE,
+        )
     }
 
     override fun getChildren(): List<FileDrawerTreeItem> {

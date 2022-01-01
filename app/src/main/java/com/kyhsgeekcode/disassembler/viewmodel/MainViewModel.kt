@@ -225,7 +225,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             is TabKind.Archive -> TODO()
             is TabKind.Binary -> BinaryTabData(tabKind, viewModelScope)
             is TabKind.Dex -> TODO() // DexTabData(tabKind)
-            is TabKind.DotNet -> TODO()
+            is TabKind.DotNet ->  TODO()
             is TabKind.Image -> ImageTabData(
                 tabKind,
                 getApplication<Application>().applicationContext.resources
