@@ -1,9 +1,10 @@
-package com.kyhsgeekcode.disassembler
+package com.kyhsgeekcode.disassembler.files
 
 import at.pollaknet.api.facile.Facile
 import at.pollaknet.api.facile.exception.CoffPeDataNotFoundException
 import at.pollaknet.api.facile.exception.SizeMismatchException
 import at.pollaknet.api.facile.exception.UnexpectedHeaderDataException
+import com.kyhsgeekcode.disassembler.*
 import nl.lxtreme.binutils.elf.MachineType
 import splitties.init.appCtx
 import timber.log.Timber

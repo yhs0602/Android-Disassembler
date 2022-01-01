@@ -9,7 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.kyhsgeekcode.disassembler.AbstractFile
+import com.kyhsgeekcode.disassembler.files.AbstractFile
 import com.kyhsgeekcode.disassembler.MainActivity
 import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.disassembler.UserCanceledException
@@ -87,7 +87,7 @@ class BinaryTabData(val data: TabKind.Binary, val viewModelScope: CoroutineScope
         val type = abstractFile.machineType // elf.header.machineType;
         val archs = Architecture.getArchitecture(type)
         val arch = archs[0]
-        var mode = 0
+        var mode = 0 /*CS_MODE_LITTLE_ENDIAN*/
         if (archs.size == 2) mode = archs[1]
         if (arch == Architecture.CS_ARCH_MAX || arch == Architecture.CS_ARCH_ALL) {
             throw Exception("No such arch!")

@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.kyhsgeekcode.disassembler.AbstractFile
+import com.kyhsgeekcode.disassembler.files.AbstractFile
 import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.disassembler.ui.components.HexTextField
 import com.kyhsgeekcode.disassembler.ui.components.Spinner

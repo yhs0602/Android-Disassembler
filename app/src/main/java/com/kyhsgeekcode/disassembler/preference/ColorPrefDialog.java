@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler;
+package com.kyhsgeekcode.disassembler.preference;
 
 //public class ColorPrefDialog extends Dialog {
 //    SharedPreferences setting;

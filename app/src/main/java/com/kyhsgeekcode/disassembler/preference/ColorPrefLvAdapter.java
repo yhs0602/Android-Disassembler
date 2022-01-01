@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler;
+package com.kyhsgeekcode.disassembler.preference;
 
 //public class ColorPrefLvAdapter extends BaseAdapter {
 //    // Adapter에 추가된 데이터를 저장하기 위한 ArrayList

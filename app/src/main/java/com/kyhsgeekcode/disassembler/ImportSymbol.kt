@@ -1,6 +1,6 @@
 package com.kyhsgeekcode.disassembler
 
-import com.kyhsgeekcode.disassembler.ElfFile.Companion.Demangle
+import com.kyhsgeekcode.disassembler.files.ElfFile.Companion.Demangle
 
 class ImportSymbol {
     @JvmField

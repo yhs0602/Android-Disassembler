@@ -1,5 +1,7 @@
 package com.kyhsgeekcode.disassembler;
 
+import com.kyhsgeekcode.disassembler.files.ElfFile;
+
 public class Symbol {
     boolean is64;
     long st_name;

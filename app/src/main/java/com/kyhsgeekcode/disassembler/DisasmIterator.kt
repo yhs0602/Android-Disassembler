@@ -1,5 +1,8 @@
 package com.kyhsgeekcode.disassembler
 
+import com.kyhsgeekcode.disassembler.files.AbstractFile
+import com.kyhsgeekcode.disassembler.files.ElfFile
+
 class DisasmIterator(val abstractFile: AbstractFile, val handle: Int) : AssemblyProvider() {
     private val _itemList = ArrayList<DisassemblyListItem>()
 

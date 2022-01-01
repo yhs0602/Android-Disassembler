@@ -1,11 +1,13 @@
 package com.kyhsgeekcode.disassembler.ui
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.preference.SettingsActivity
 import com.kyhsgeekcode.disassembler.ui.tabs.BinaryTabData
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
@@ -96,3 +98,22 @@ fun BinaryMenuItems(binaryTabData: BinaryTabData, dismiss: () -> Unit) {
         }
     }
 }
+
+// R.id.donate -> val url = "https://www.buymeacoffee.com/i4QJKbC"
+//
+//showEditDialog(
+//this,
+//getString(R.string.calculator),
+//"Enter an expression to measure",
+//et,
+//getString(R.string.ok),
+//{ p1, p2 ->
+//    Toast.makeText(
+//        this@MainActivity,
+//        Calculator.Calc(et.text.toString()).toString(),
+//        Toast.LENGTH_SHORT
+//    ).show()
+//},
+//getString(R.string.cancel),
+//null
+//)

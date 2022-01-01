@@ -1,4 +1,8 @@
-package com.kyhsgeekcode.disassembler;
+package com.kyhsgeekcode.disassembler.files;
+
+import com.kyhsgeekcode.disassembler.ImportSymbol;
+import com.kyhsgeekcode.disassembler.NotThisFormatException;
+import com.kyhsgeekcode.disassembler.Symbol;
 
 import org.boris.pecoff4j.DOSHeader;
 import org.boris.pecoff4j.ExportDirectory;

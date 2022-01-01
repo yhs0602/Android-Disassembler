@@ -18,6 +18,7 @@ import androidx.core.util.containsKey
 import com.kyhsgeekcode.disassembler.*
 import com.kyhsgeekcode.disassembler.disasmtheme.ColorHelper
 import com.kyhsgeekcode.disassembler.disasmtheme.PaletteRow
+import com.kyhsgeekcode.disassembler.files.AbstractFile
 import com.kyhsgeekcode.disassembler.ui.components.CellText
 import com.kyhsgeekcode.disassembler.ui.components.InfiniteList
 import com.kyhsgeekcode.disassembler.ui.components.SelectOneActionDialog
