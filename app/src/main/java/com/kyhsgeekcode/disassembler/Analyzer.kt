@@ -11,11 +11,11 @@ import splitties.init.appCtx
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
-import kotlin.experimental.and
+
 
 @ExperimentalUnsignedTypes
 class Analyzer(private val bytes: ByteArray) {
-    private val uBytes: UByteArray
+    private val uBytes: UByteArray = bytes.toUByteArray()
     private var mean = 0.0
     private var autocorel = 0.0
     private var monteCarloPI = 0.0
@@ -32,19 +32,16 @@ class Analyzer(private val bytes: ByteArray) {
     private val nums = IntArray(256)
 
     // Search for strings
-    fun /*List<String>*/searchStrings(
-        adapter: FoundStringAdapter,
+    fun searchStrings(
         min: Int,
         max: Int,
-        progress: (Int, Int) -> Boolean
-    ) { // List<String> list=new ArrayList<>();
-// char lastch=0;
+        progress: (Int, Int, FoundString?) -> Unit
+    ) {
         var strstart = -1
-        adapter.reset()
         for (i in bytes.indices) {
-            val v = bytes[i].toUByte().toShort().toChar()
+            val v = bytes[i].toUByte().toShort().toInt().toChar()
             // Log.v(TAG,""+v);
-            if (Character.isISOControl(v) == false /*Character.isUnicodeIdentifierStart(v)||Character.isJavaLetterOrDigit(v)*/) {
+            if (!Character.isISOControl(v) /*Character.isUnicodeIdentifierStart(v)||Character.isJavaLetterOrDigit(v)*/) {
                 if (strstart == -1) strstart = i
             } else if (strstart != -1) {
                 val length = i - strstart
@@ -53,16 +50,16 @@ class Analyzer(private val bytes: ByteArray) {
                     val str = String(bytes, strstart, length)
                     val fs = FoundString(length, offset.toLong(), str)
                     // Log.v(TAG,str);
-                    adapter.addItem(fs)
+                    progress(i, bytes.size, fs)
                 } else { // Logger.v(TAG,"Ignoring short string at:"+offset);
                 }
                 strstart = -1
                 // Log.i(TAG,str);
             }
             if (i % 100 == 0)
-                progress(i, bytes.size)
+                progress(i, bytes.size, null)
         }
-        return
+        progress(bytes.size, bytes.size, null)
     }
 
     fun getImage(): Drawable {
@@ -387,7 +384,7 @@ class Analyzer(private val bytes: ByteArray) {
             var shash = "Unknown"
             try {
                 val digest = MessageDigest.getInstance(algorithm)
-                shash = bytes?.digestString(digest)?:shash
+                shash = bytes?.digestString(digest) ?: shash
 //                val hash = digest.digest(bytes)
 //                shash = ""
 //                for (b in hash) {
@@ -398,15 +395,5 @@ class Analyzer(private val bytes: ByteArray) {
             }
             return shash
         }
-    }
-
-
-    // Analyzes code, strings, etc
-    init {
-        uBytes = bytes.toUByteArray()
-//        uBytes = ShortArray(bytes.size)
-//        for (i in bytes.indices) {
-//            uBytes[i] = bytes[i].toUByte().toShort()
-//        }
     }
 }

@@ -186,39 +186,36 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun openAsHex() {
-        val relPath = when (val tk = openedTabs.value[currentTabIndex.value].tabKind) {
+        val relPath = getCurrentRelPath() ?: return
+//        val relPath: String = ProjectManager.getRelPath(absPath)
+        val tabData = TabData("$relPath AS HEX", TabKind.Hex(relPath))
+        openNewTab(tabData)
+    }
+
+    private fun getCurrentRelPath(): String? {
+        return when (val tk = openedTabs.value[currentTabIndex.value].tabKind) {
             is TabKind.Binary -> tk.relPath
             is TabKind.AnalysisResult -> TODO()
             is TabKind.Apk -> tk.relPath
             is TabKind.Archive -> tk.relPath
             is TabKind.Dex -> tk.relPath
             is TabKind.DotNet -> tk.relPath
-            is TabKind.FoundString -> return
-            is TabKind.Hex -> return
+            is TabKind.FoundString -> null
+            is TabKind.Hex -> null
             is TabKind.Image -> tk.relPath
-            is TabKind.Log -> return
-            is TabKind.ProjectOverview -> return
-            is TabKind.Text -> return
+            is TabKind.Log -> null
+            is TabKind.ProjectOverview -> null
+            is TabKind.Text -> null
         }
-//        val relPath: String = ProjectManager.getRelPath(absPath)
-        val tabData = TabData("$relPath AS HEX", TabKind.Hex(relPath))
-        prepareTabData(tabData)
-        val newList = ArrayList<TabData>()
-        newList.addAll(openedTabs.value)
-        newList.add(tabData)
-        _openedTabs.value = newList
     }
 
     private fun openDrawerItem(item: FileDrawerTreeItem) {
         Timber.d("Opening item: ${item.caption}")
         val tabData = createTabData(item)
-        prepareTabData(tabData)
-        val newList = ArrayList<TabData>()
-        newList.addAll(openedTabs.value)
-        newList.add(tabData)
-        _openedTabs.value = newList
+        openNewTab(tabData)
     }
 
+    @ExperimentalUnsignedTypes
     private fun prepareTabData(tabData: TabData) {
         val data = when (val tabKind = tabData.tabKind) {
             is TabKind.AnalysisResult -> TODO()
@@ -233,7 +230,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             )
             is TabKind.ProjectOverview -> PreparedTabData()
             is TabKind.Text -> TextTabData(tabKind)
-            is TabKind.FoundString -> TODO()
+            is TabKind.FoundString -> StringTabData(tabKind)
             is TabKind.Hex -> HexTabData(tabKind)
             is TabKind.Log -> TODO()
         }
@@ -283,7 +280,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun reallySearchForStrings(from: Int, to: Int) {
-        TODO("Not yet implemented")
+        val relPath = getCurrentRelPath() ?: return
+        val tabData = TabData("String of $relPath ", TabKind.FoundString(relPath, from..to))
+        openNewTab(tabData)
+    }
+
+    private fun openNewTab(tabData: TabData) {
+        prepareTabData(tabData)
+        val newList = ArrayList<TabData>()
+        newList.addAll(openedTabs.value)
+        newList.add(tabData)
+        _openedTabs.value = newList
     }
 }
 

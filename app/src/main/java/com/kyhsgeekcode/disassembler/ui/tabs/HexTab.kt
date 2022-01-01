@@ -17,7 +17,7 @@ class HexTabData(val data: TabKind.Hex) : PreparedTabData() {
     val bytes = _bytes as StateFlow<ByteArray>
 
     override suspend fun prepare() {
-        _bytes.value = ProjectDataStorage.resolveToRead(data.relPath)?.readBytes() ?: byteArrayOf()
+        _bytes.value = ProjectDataStorage.getFileContent(data.relPath)
     }
 }
 

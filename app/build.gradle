@@ -139,7 +139,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
 
 
-
 //    implementation 'mnemonik:mnemonik:2.0.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
@@ -162,11 +161,14 @@ dependencies {
     // Integration with activities
     implementation 'androidx.activity:activity-compose:1.4.0'
     // Compose Material Design
-    implementation 'androidx.compose.material:material:1.0.5'
+    implementation "androidx.compose.material:material:$compose_version"
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+
     // Animations
-    implementation 'androidx.compose.animation:animation:1.0.5'
+    implementation "androidx.compose.animation:animation:$compose_version"
     // Tooling support (Previews, etc.)
-    implementation 'androidx.compose.ui:ui-tooling:1.0.5'
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+
     // Integration with ViewModels
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
     implementation 'androidx.navigation:navigation-compose:2.4.0-rc01'

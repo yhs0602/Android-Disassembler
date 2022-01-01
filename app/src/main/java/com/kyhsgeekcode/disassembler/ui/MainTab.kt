@@ -89,7 +89,7 @@ fun ProjectOverview(viewModel: MainViewModel) {
     }
 
     if (showSearchForStringsDialog.value is ShowSearchForStringsDialog.Shown) {
-        SearchForStringsDialog()
+        SearchForStringsDialog(viewModel)
     }
 }
 

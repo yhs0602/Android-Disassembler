@@ -14,6 +14,6 @@ sealed class TabKind {
     class Text(val key: String) : TabKind()
     object ProjectOverview : TabKind()
     class Hex(val relPath: String) : TabKind()
-    class Log() : TabKind()
-    class FoundString(val relPath: String) : TabKind()
+    object Log : TabKind()
+    class FoundString(val relPath: String, val range: IntRange) : TabKind()
 }
