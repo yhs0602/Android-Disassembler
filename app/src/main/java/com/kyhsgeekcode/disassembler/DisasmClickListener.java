@@ -1,15 +1,15 @@
 package com.kyhsgeekcode.disassembler;
 
+import static com.kyhsgeekcode.UtilKt.setClipBoard;
+import static com.kyhsgeekcode.disassembler.UIUtilsKt.showEditDialog;
+import static com.kyhsgeekcode.disassembler.UIUtilsKt.showSelDialog;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.kyhsgeekcode.UtilKt.setClipBoard;
-import static com.kyhsgeekcode.disassembler.UIUtilsKt.showEditDialog;
-import static com.kyhsgeekcode.disassembler.UIUtilsKt.showSelDialog;
 
 public class DisasmClickListener implements View.OnClickListener {
     final String EDIT_COMMENT = "Edit comment";

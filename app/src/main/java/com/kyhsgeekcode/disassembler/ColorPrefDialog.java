@@ -1,15 +1,5 @@
 package com.kyhsgeekcode.disassembler;
 
-import android.app.Dialog;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
-
 //public class ColorPrefDialog extends Dialog {
 //    SharedPreferences setting;
 //    SharedPreferences.Editor editor;

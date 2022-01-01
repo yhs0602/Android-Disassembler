@@ -12,11 +12,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.graphics.BlendMode.Companion.Color
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.core.util.containsKey
 import com.kyhsgeekcode.disassembler.*
 import com.kyhsgeekcode.disassembler.disasmtheme.ColorHelper
@@ -30,7 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.Stack
+import java.util.*
 
 sealed class ShowDisasmClickMenu {
     object NotShown : ShowDisasmClickMenu()

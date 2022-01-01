@@ -51,7 +51,6 @@ import timber.log.Timber.*
 import java.io.File
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.regex.Pattern
 
 
 class MainActivity : AppCompatActivity(),

@@ -1,8 +1,8 @@
 package com.kyhsgeekcode.disassembler;
 
-import java.io.Serializable;
-
 import static com.kyhsgeekcode.disassembler.UtilsKt.bytesToHex;
+
+import java.io.Serializable;
 
 public class DisassemblyListItem implements Serializable {
     public String address, bytes, label, instruction, operands, comments, condition;

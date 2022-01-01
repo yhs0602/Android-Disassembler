@@ -1,13 +1,9 @@
 package com.kyhsgeekcode.disassembler.ui.tabs
 
 import android.graphics.drawable.Drawable
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.LinearProgressIndicator
@@ -15,7 +11,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.chrisbanes.photoview.PhotoView
@@ -29,7 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
 
 
-sealed class AnalysisState() {
+sealed class AnalysisState {
     object Ready : AnalysisState()
     data class Running(val progress: Int, val total: Int, val stage: String) : AnalysisState()
 }

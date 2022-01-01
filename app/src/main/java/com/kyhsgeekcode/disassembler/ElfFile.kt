@@ -2,7 +2,6 @@ package com.kyhsgeekcode.disassembler
 
 import android.util.Log
 import nl.lxtreme.binutils.elf.Elf
-import nl.lxtreme.binutils.elf.ElfClass
 import nl.lxtreme.binutils.elf.SectionType
 import java.io.File
 import java.io.IOException

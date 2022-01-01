@@ -1,7 +1,6 @@
 package com.kyhsgeekcode.disassembler.ui.tabs
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ScrollableTabRow
@@ -10,7 +9,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.kyhsgeekcode.disassembler.AbstractFile
 import com.kyhsgeekcode.disassembler.MainActivity
 import com.kyhsgeekcode.disassembler.R
@@ -21,7 +19,6 @@ import com.kyhsgeekcode.disassembler.ui.TabData
 import com.kyhsgeekcode.disassembler.ui.TabKind
 import com.kyhsgeekcode.disassembler.ui.components.AutoCompleteTextFieldDialog
 import com.kyhsgeekcode.disassembler.ui.components.MultiCheckBoxDialog
-import com.kyhsgeekcode.disassembler.ui.components.TextInputDialog
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -43,7 +40,7 @@ enum class ViewMode {
 data class BinaryInternalTabData(val title: String, val tabKind: BinaryTabKind)
 
 sealed class BinaryTabKind {
-    class BinaryDetail() : BinaryTabKind()
+    class BinaryDetail : BinaryTabKind()
     class BinaryDisasm(val relPath: String, val viewMode: ViewMode) : BinaryTabKind()
     class BinaryExportSymbol : BinaryTabKind()
     class BinaryImportSymbol : BinaryTabKind()

@@ -1,6 +1,5 @@
 package com.kyhsgeekcode.disassembler
 
-import android.util.Log
 import at.pollaknet.api.facile.Facile
 import at.pollaknet.api.facile.exception.CoffPeDataNotFoundException
 import at.pollaknet.api.facile.exception.SizeMismatchException

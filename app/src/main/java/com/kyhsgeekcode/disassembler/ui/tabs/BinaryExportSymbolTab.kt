@@ -5,7 +5,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.kyhsgeekcode.disassembler.*
+import com.kyhsgeekcode.disassembler.AbstractFile
+import com.kyhsgeekcode.disassembler.Symbol
 import com.kyhsgeekcode.disassembler.ui.components.TableView
 
 @ExperimentalFoundationApi

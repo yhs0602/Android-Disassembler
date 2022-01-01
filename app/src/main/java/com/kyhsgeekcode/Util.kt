@@ -31,6 +31,7 @@ import splitties.systemservices.clipboardManager
 import timber.log.Timber
 import java.io.*
 import java.net.URL
+import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
@@ -83,7 +84,7 @@ fun File.isArchive(): Boolean {
 }
 
 fun File.isDotnetFile(): Boolean {
-    if (peFileExts.contains(extension.toLowerCase())) {
+    if (peFileExts.contains(extension.lowercase(Locale.getDefault()))) {
         return try {
             val pe: PE = PEParser.parse(path)
             //https://web.archive.org/web/20110930194955/http://www.grimes.demon.co.uk/dotnet/vistaAndDotnet.htm

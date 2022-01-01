@@ -46,7 +46,7 @@ fun <T : TreeNode<T>> TreeView(
     }
 }
 
-class TestTreeNode() : TreeNode<TestTreeNode> {
+class TestTreeNode : TreeNode<TestTreeNode> {
     override fun isExpandable(): Boolean {
         return true
     }
