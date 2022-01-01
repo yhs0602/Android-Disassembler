@@ -197,7 +197,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun getCurrentRelPath(): String? {
         return when (val tk = openedTabs.value[currentTabIndex.value].tabKind) {
             is TabKind.Binary -> tk.relPath
-            is TabKind.AnalysisResult -> TODO()
+            is TabKind.AnalysisResult -> null
             is TabKind.Apk -> tk.relPath
             is TabKind.Archive -> tk.relPath
             is TabKind.Dex -> tk.relPath
@@ -220,11 +220,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     @ExperimentalUnsignedTypes
     private fun prepareTabData(tabData: TabData) {
         val data = when (val tabKind = tabData.tabKind) {
-            is TabKind.AnalysisResult -> TODO()
+            is TabKind.AnalysisResult -> AnalysisTabData(tabKind)
             is TabKind.Apk -> TODO()
             is TabKind.Archive -> TODO()
             is TabKind.Binary -> BinaryTabData(tabKind, viewModelScope)
-            is TabKind.Dex -> TODO()
+            is TabKind.Dex -> TODO() // DexTabData(tabKind)
             is TabKind.DotNet -> TODO()
             is TabKind.Image -> ImageTabData(
                 tabKind,
@@ -275,7 +275,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun analyze() {
-        TODO("Not yet implemented")
+        val relPath = getCurrentRelPath() ?: return
+
+        val tabData = TabData(
+            newCaptionFromCurrent("Analysis"),
+            TabKind.AnalysisResult(relPath)
+        )
+        openNewTab(tabData)
     }
 
     fun dismissSearchForStringsDialog() {
