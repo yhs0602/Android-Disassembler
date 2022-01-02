@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#FBC02D</color>
+
+    <color name="memory_status_color">#de6565</color>
+    <color name="memory_bar_color">#7bde65</color>
+    <color name="new_folder_color">#c14b84</color>
+    <color name="select_color">#6b3fa1</color>
+    <color name="cancel_color">#3fa19f</color>
+</resources>

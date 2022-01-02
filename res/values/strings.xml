@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Disassembler</string>
+	<string name="app_info">Application info</string>
+	<string name="dev_info">Developer info</string>
+	<string name="dev_info_detail">Check out developer info!</string>
+	<string name="send_mail">Send Email</string>
+	<string name="send_mail_detail">Send an e-mail to the developer.</string>
+	<string name="open_info">Open source info</string>
+	<string name="open_info_detail">Open source license</string>
+	<string name="send_feature_request">Send Feature request</string>
+	<string name="send_feature_request_detail">Send a feature request to the developer.</string>
+	
+	
+    <string name="choose_storage">Choose Storage</string>
+    
+	
+	<string name="choose_external_storage">Choose External Storage</string>
+
+    <string name="external_storage">External storage</string>
+    <!-- Usb storage descripton -->
+    <string name="usb_storage">USB storage</string>
+    <string name="text_freespace">%1$s free</string>
+    <string name="toast_threshold_breached">%1$s is not sufficient for current operation. Please clear out some space.</string>
+    <string name="toast_not_readable">The storage you have chosen is not accessible.</string>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical">
+
+	<TextView
+		android:layout_height="wrap_content"
+		android:text="KYHSGeekCode"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:layout_width="wrap_content"
+		android:typeface="serif"
+		android:textStyle="bold|italic"
+		android:textIsSelectable="true"
+		android:textSize="40sp"
+		android:alpha="0.9"
+		android:background="@drawable/cell_shape"
+		android:ellipsize="middle"
+		android:gravity="right|center_vertical|fill|fill_vertical"
+		android:textColor="#99DF76"
+		android:shadowColor="#C4554E"
+		android:textColorHint="#AD413A"
+		android:id="@+id/activitymadebyTextView1"/>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:text="&lt;a href=&#34;https://stackexchange.com/users/11771696/kyhsgeekcode?tab=accounts\&#34;&gt;KYHSGeekCode&lt;/a&gt;"
+		android:linksClickable="true"
+        android:autoLink="web"
+		/>
+
+</LinearLayout>
+
