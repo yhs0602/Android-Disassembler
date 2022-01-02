@@ -18,6 +18,7 @@ import androidx.core.util.containsKey
 import com.kyhsgeekcode.disassembler.*
 import com.kyhsgeekcode.disassembler.disasmtheme.ColorHelper
 import com.kyhsgeekcode.disassembler.disasmtheme.PaletteRow
+import com.kyhsgeekcode.disassembler.files.AbstractFile
 import com.kyhsgeekcode.disassembler.ui.components.CellText
 import com.kyhsgeekcode.disassembler.ui.components.InfiniteList
 import com.kyhsgeekcode.disassembler.ui.components.SelectOneActionDialog
@@ -38,6 +39,8 @@ sealed class ShowCommentEditDialog {
     object NotShown : ShowCommentEditDialog()
     data class Shown(val where: Long) : ShowCommentEditDialog()
 }
+
+private const val INSERT_COUNT = 160
 
 class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabData() {
     private val addressToListItem = LongSparseArray<DisassemblyListItem>()
@@ -106,7 +109,7 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
             address + file.codeSectionBase - file.codeVirtAddr /*address-file.codeVirtualAddress*/,
             file.fileContents.size.toLong(),
             address,
-            DisasmListViewAdapter.INSERT_COUNT
+            INSERT_COUNT
         )
         for (item in newItems) {
             addressToListItem.put(item.disasmResult.address, item)

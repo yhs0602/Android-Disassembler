@@ -1,6 +1,8 @@
-package com.kyhsgeekcode.disassembler
+package com.kyhsgeekcode.disassembler.files
 
 import android.util.Log
+import com.kyhsgeekcode.disassembler.ImportSymbol
+import com.kyhsgeekcode.disassembler.Symbol
 import nl.lxtreme.binutils.elf.Elf
 import nl.lxtreme.binutils.elf.SectionType
 import java.io.File

@@ -143,7 +143,7 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
             "Download a sample from the zoo and open it with this app",
             Toast.LENGTH_SHORT
         ).show()
-        val url = "https://github.com/ytisf/theZoo/tree/master/malwares"
+        val url = "https://github.com/ytisf/theZoo/"
         val i = Intent(Intent.ACTION_VIEW)
         i.data = Uri.parse(url)
         startActivity(i)

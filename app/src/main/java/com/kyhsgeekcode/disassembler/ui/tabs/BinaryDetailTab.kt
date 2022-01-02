@@ -8,7 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.kyhsgeekcode.disassembler.AbstractFile
+import com.kyhsgeekcode.disassembler.files.AbstractFile
 
 @Composable
 fun BinaryDetailTabContent(data: AbstractFile) {

@@ -1,5 +1,7 @@
 package com.kyhsgeekcode.disassembler;
 
+import com.kyhsgeekcode.disassembler.files.AbstractFile;
+
 import java.io.IOException;
 
 import at.pollaknet.api.facile.FacileReflector;

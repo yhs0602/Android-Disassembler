@@ -1,4 +1,4 @@
-package com.kyhsgeekcode.disassembler
+package com.kyhsgeekcode.disassembler.files
 
 import java.io.File
 
