@@ -131,7 +131,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
 
     implementation 'androidx.preference:preference-ktx:1.1.1'
-    implementation "com.mikepenz:aboutlibraries:8.9.1"
+    implementation "com.mikepenz:aboutlibraries:8.9.4"
     implementation "androidx.cardview:cardview:1.0.0"
 
     implementation platform('com.google.firebase:firebase-bom:28.4.1')
