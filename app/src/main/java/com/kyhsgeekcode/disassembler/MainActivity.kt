@@ -2,6 +2,7 @@ package com.kyhsgeekcode.disassembler
 
 //import com.gu.toolargetool.TooLargeTool
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -14,9 +15,18 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.codekidlabs.storagechooser.StorageChooser
 import com.codekidlabs.storagechooser.utils.DiskUtil
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.kyhsgeekcode.disassembler.PermissionUtils.requestAppPermissions
 import com.kyhsgeekcode.disassembler.disasmtheme.ColorHelper
 import com.kyhsgeekcode.disassembler.ui.MainScreen
@@ -69,7 +79,7 @@ class MainActivity : AppCompatActivity() {
 
     /** A tree which logs important information for crash reporting.  */
 
-    @OptIn(ExperimentalFoundationApi::class)
+    @OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //        TooLargeTool.startLogging(application)
@@ -84,9 +94,71 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             MainScreen(viewModel = viewModel)
+//            PermissionScreen {
+//
+//            }
         }
-//        requestAppPermissions(this)
-//        manageShowRational()
+    }
+
+    @ExperimentalPermissionsApi
+    @Composable
+    private fun PermissionScreen(content: @Composable () -> Unit) {
+        // Track if the user doesn't want to see the rationale any more.
+        var doNotShowRationale by rememberSaveable { mutableStateOf(false) }
+
+        val storagePermissionState = rememberMultiplePermissionsState(
+            listOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) // ,Mani fest.permission.GET_ACCOUNTS
+        )
+
+        when {
+            // If the camera permission is granted, then show screen with the feature enabled
+            storagePermissionState.allPermissionsGranted -> {
+                content()
+            }
+            // If the user denied the permission but a rationale should be shown, or the user sees
+            // the permission for the first time, explain why the feature is needed by the app and allow
+            // the user to be presented with the permission again or to not see the rationale any more.
+            storagePermissionState.shouldShowRationale ||
+                    !storagePermissionState.permissionRequested -> {
+                if (doNotShowRationale) {
+                    Text("Feature not available")
+                } else {
+                    Column {
+                        Text("The storage is important for this app. Please grant the permission.")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row {
+                            Button(onClick = {
+                                storagePermissionState.launchMultiplePermissionRequest()
+                            }) {
+                                Text("Request permission")
+                            }
+                            Spacer(Modifier.width(8.dp))
+                            Button(onClick = { /*doNotShowRationale = true*/ }) {
+                                Text("Don't show rationale again")
+                            }
+                        }
+                    }
+                }
+            }
+            // If the criteria above hasn't been met, the user denied the permission. Let's present
+            // the user with a FAQ in case they want to know more and send them to the Settings screen
+            // to enable it the future there if they want to.
+            else -> {
+                Column {
+                    Text(
+                        "Storage permission denied. See this FAQ with information about why we " +
+                                "need this permission."
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(onClick = { finish() }) {
+                        Text("Close app")
+                    }
+                }
+            }
+        }
     }
 
     @OptIn(ExperimentalSerializationApi::class)
