@@ -176,7 +176,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-permissions:0.22.0-rc"
 
     // When using a AppCompat theme
-    implementation "com.google.accompanist:accompanist-appcompat-theme:0.16.0"
+    implementation "com.google.accompanist:accompanist-appcompat-theme:0.20.3"
 
     // UI Tests
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.0.5'
