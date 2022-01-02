@@ -176,7 +176,7 @@ files </string>
     <string name="library_RootFilePicker_licenseId" translatable="false">mit </string>
     <string name="library_RootFilePicker_isOpenSource" translatable="false"> true </string>
     <string name="library_RootFilePicker_repositoryLink" translatable="false">https://github.com/KYHSGeekCode/RootFilePicker </string>
-    
+
     <string name="define_FacileAPI" translatable="false"></string>
     <string name="library_FacileAPI_author" translatable="false">TomSmartBishop</string>
     <string name="library_FacileAPI_authorWebsite" translatable="false">https://github.com/TomSmartBishop</string>
