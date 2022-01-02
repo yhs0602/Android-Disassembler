@@ -18,8 +18,6 @@ import com.kyhsgeekcode.disassembler.project.ProjectManager
 import com.kyhsgeekcode.disassembler.project.models.ProjectModel
 import com.kyhsgeekcode.disassembler.project.models.ProjectType
 import com.kyhsgeekcode.getDrawable
-import com.kyhsgeekcode.multilevellistview.ItemInfo
-import com.kyhsgeekcode.multilevellistview.MultiLevelListAdapter
 import org.jf.baksmali.Main
 import splitties.init.appCtx
 import java.io.File
@@ -34,15 +32,14 @@ import java.util.zip.ZipInputStream
 import kotlin.experimental.and
 import kotlin.math.roundToInt
 
-class FileDrawerListAdapter(val progressHandler: ProgressHandler) :
-    MultiLevelListAdapter<FileDrawerListItem>() {
+class FileDrawerListAdapter(val progressHandler: ProgressHandler) {
     var mAlwaysExpandend = false
-    override fun isExpandable(anObject: FileDrawerListItem): Boolean {
+    fun isExpandable(anObject: FileDrawerListItem): Boolean {
         val item = anObject
         return item.isExpandable
     }
 
-    override fun getSubObjects(anObject: FileDrawerListItem?): List<FileDrawerListItem> {
+    fun getSubObjects(anObject: FileDrawerListItem?): List<FileDrawerListItem> {
         val items: MutableList<FileDrawerListItem> = ArrayList()
         val item = anObject as FileDrawerListItem
         // Moved From MainActivity.java
@@ -248,10 +245,9 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) :
         var nameView: TextView? = null // ImageView arrowView;
     }
 
-    override fun getViewForObject(
+    fun getViewForObject(
         anObject: FileDrawerListItem,
         convertView: View?,
-        itemInfo: ItemInfo,
         pos: Int
     ): View {
         var convertView2 = convertView
@@ -271,21 +267,21 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) :
         viewHolder.nameView!!.text = item.caption
         viewHolder.nameView!!.isSelected = true
 //        val compounds = arrayOfNulls<Drawable>(4)
-        if (itemInfo.isExpandable && !mAlwaysExpandend) {
-            viewHolder.expanderView?.setImageResource(
-                if (itemInfo.isExpanded)
-                    android.R.drawable.arrow_up_float
-                else
-                    android.R.drawable.arrow_down_float
-            )
-//            compounds[0] =
-//                getDrawable()
-        } else {
-            viewHolder.expanderView?.setImageResource(
-                android.R.color.transparent
-            )
-//            compounds[0] = null
-        }
+//        if (itemInfo.isExpandable && !mAlwaysExpandend) {
+//            viewHolder.expanderView?.setImageResource(
+//                if (itemInfo.isExpanded)
+//                    android.R.drawable.arrow_up_float
+//                else
+//                    android.R.drawable.arrow_down_float
+//            )
+////            compounds[0] =
+////                getDrawable()
+//        } else {
+//            viewHolder.expanderView?.setImageResource(
+//                android.R.color.transparent
+//            )
+////            compounds[0] = null
+//        }
         viewHolder.iconView?.setImageDrawable(
             if (item.drawable == null)
                 getDrawableFromType(item.type)

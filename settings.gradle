@@ -1,3 +1,2 @@
 rootProject.name='android-disassembler'
 include ':app'
-include ':multilevellistview'
