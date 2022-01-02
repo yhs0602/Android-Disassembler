@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/stringMain"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    tools:context=".StringFragment">
+
+
+    <EditText
+        android:id="@+id/editTextStrFirst"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:autofillHints="0"
+        android:digits="0123456789."
+        android:ems="10"
+        android:inputType="number"
+        android:text="5"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/textView"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="~"
+        app:layout_constraintBottom_toBottomOf="@id/editTextStrFirst"
+        app:layout_constraintLeft_toRightOf="@id/editTextStrFirst"
+        app:layout_constraintRight_toLeftOf="@id/editTextStrEnd"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextStrEnd"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:autofillHints="5"
+        android:digits="0123456789."
+        android:ems="10"
+        android:inputType="number"
+        android:text="10"
+        app:layout_constraintLeft_toRightOf="@id/textView"
+        app:layout_constraintRight_toLeftOf="@id/buttonStartFindString"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonStartFindString"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@android:string/search_go"
+        app:layout_constraintLeft_toRightOf="@id/editTextStrEnd"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <!--        app:layout_constraintBottom_toTopOf="@id/stringListVIew"-->
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/stringListVIew"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editTextStrFirst" />
+</androidx.constraintlayout.widget.ConstraintLayout>

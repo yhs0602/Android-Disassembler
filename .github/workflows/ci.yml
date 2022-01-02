@@ -1,0 +1,16 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Create google json
+        run: echo '${{ secrets.GOOGLE_JSON }}' | base64 --decode > app/google-services.json
+      - uses: gradle/wrapper-validation-action@v1
+      - run: ./gradlew build

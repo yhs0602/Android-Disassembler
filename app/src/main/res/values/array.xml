@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="predefinedcolor">
+        <item>Original</item>
+        <item>Hacker</item>
+        <item>OllyDbg</item>
+    </string-array>
+    <string-array name="predefinedcolor_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="filepickers">
+        <item>Storage-Chooser 2.0 by CodeKidX</item>
+        <item>Root picker by KYHSGeekCode(Root files supported)</item>
+        <item>New file chooser</item>
+
+    </string-array>
+    <string-array name="filepickers_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+</resources>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/disasmTheme">
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/predefinedcolor"
+            android:entryValues="@array/predefinedcolor_values"
+            android:key="predefinedcolor"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="Choose a prebuilt theme" />
+        <!--ListPreference
+            android:defaultValue="0"
+            android:entries="@array/filepickers"
+            android:entryValues="@array/filepickers_values"
+            android:key="filepicker"
+            android:negativeButtonText="@null"
+            android:positiveButtonText="@null"
+            android:title="Choose a file picker to use" / -->
+
+        <!--com.skydoves.colorpickerpreference.ColorPickerPreference
+        android:key="h"
+        android:title="Toolbar Color"
+        android:summary="changes toolbar color"
+        app:preference_dialog_title="Toolbar ColorPickerDialog"
+        app:preference_dialog_positive="confirm"
+        app:preference_dialog_negative="cancel"
+        app:preference_palette="palette"
+        app:preference_selector="wheel"
+        app:default_color="colorPrimary"/-->
+    </PreferenceCategory>
+<!--    <PreferenceCategory android:title="Security configuration">-->
+<!--        <Preference android:title="Manage this app\'s all storage access">-->
+<!--            <intent android:action="android.settings.MANAGE_ALL_FILES_ACCESS_PERMISSION" />-->
+<!--        </Preference>-->
+<!--    </PreferenceCategory>-->
+    <PreferenceCategory android:title="@string/app_info">
+        <Preference
+            android:fragment="com.kyhsgeekcode.disassembler.preference.DeveloperInfoFragment"
+            android:summary="@string/dev_info"
+            android:title="@string/dev_info_detail" />
+        <Preference
+            android:summary="@string/send_mail_detail"
+            android:title="@string/send_mail">
+            <intent
+                android:action="android.intent.action.SENDTO"
+                android:data="mailto:jourhyang123@naver.com" />
+        </Preference>
+        <Preference
+            android:summary="@string/send_feature_request_detail"
+            android:title="@string/send_feature_request">
+            <intent
+                android:action="android.intent.action.SENDTO"
+                android:data="mailto:1641832e@fire.fundersclub.com" />
+        </Preference>
+        <Preference
+            android:key="readme"
+            android:summary="Online readme.md"
+            android:title="View online manual">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/KYHSGeekCode/Android-Disassembler#usage-explanation-video" />
+        </Preference>
+
+        <Preference
+            android:key="openscrn"
+            android:summary="Check open source license"
+            android:title="Open source LICENSE"></Preference>
+    </PreferenceCategory>
+</PreferenceScreen>
