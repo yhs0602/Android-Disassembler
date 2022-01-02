@@ -133,7 +133,7 @@ dependencies {
 
 
     implementation 'androidx.preference:preference-ktx:1.1.1'
-    implementation "com.mikepenz:aboutlibraries:8.9.1"
+    implementation "com.mikepenz:aboutlibraries:8.9.4"
     implementation "androidx.cardview:cardview:1.0.0"
 
     implementation platform('com.google.firebase:firebase-bom:29.0.3')
