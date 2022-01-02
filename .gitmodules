@@ -3,4 +3,4 @@
 	url = https://github.com/KYHSGeekCode/android-multi-level-listview
 [submodule "app/src/main/java/nl"]
 	path = app/src/main/java/nl
-	url = https://github.com/KYHSGeekCode/java-binutils
+	url = https://github.com/KYHSGeekCode/java-binutils.git
