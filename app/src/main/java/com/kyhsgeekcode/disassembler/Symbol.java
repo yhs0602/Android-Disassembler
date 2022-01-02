@@ -1,17 +1,19 @@
 package com.kyhsgeekcode.disassembler;
 
+import com.kyhsgeekcode.disassembler.files.ElfFile;
+
 public class Symbol {
     boolean is64;
     long st_name;
-    long st_value;
+    public long st_value;
     long st_size;
     short st_info;
     short st_other;
     short st_shndx;
-    String name = "";
-    String demangled = "";
-    Bind bind;
-    Type type;
+    public String name = "";
+    public String demangled = "";
+    public Bind bind;
+    public Type type;
 
     public void analyze() {
         bind = Bind.values()[st_info >> 4];
@@ -42,7 +44,7 @@ public class Symbol {
 	 #define STT_SECTION 3
 	 #define STT_FILE    4
 	 #define STT_COMMON  5
-	 #define STT_TLS     6       
+	 #define STT_TLS     6
 	 Oh. I Think I get it. `#define ELF_ST_BIND(x)    ((x) >> 4)` `#define ELF_ST_TYPE(x)    (((unsigned int) x) & 0xf)` that means that if `st_info == 34` then it means `STB_WEAK` **and** `STT_FUNC` because `34 >> 4 == 2` and `34 & 0xff == 2`. Is that right?
 
 

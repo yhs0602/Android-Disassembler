@@ -87,7 +87,7 @@ public class DisasmResult implements Serializable {
     String mnemonic;
     // Ascii text of instruction operands
     // This information is available even when CS_OPT_DETAIL = CS_OPT_OFF
-    //char op_str[160];
+    //char op_str[F160];
     String op_str;
     // Pointer to cs_detail.
     // NOTE: detail pointer is only valid when both requirements below are met:

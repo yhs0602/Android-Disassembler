@@ -1,0 +1,42 @@
+{
+  "default": {
+    "textColor": -16777216,
+    "bkColor": -655393
+  },
+  "importantAddr": {
+    "textColor": -16711936,
+    "bkColor": -16777216
+  },
+  "jmp": {
+    "textColor": -14935268,
+    "bkColor": -13309697
+  },
+  "jcc": {
+    "textColor": -14935268,
+    "bkColor": -11841869
+  },
+  "call": {
+    "textColor": -16711936,
+    "bkColor": -5693429
+  },
+  "ret": {
+    "textColor": -16711936,
+    "bkColor": -56290
+  },
+  "push": {
+    "textColor": -16711936,
+    "bkColor": -118529
+  },
+  "pop": {
+    "textColor": -16711936,
+    "bkColor": -60961
+  },
+  "interrupt": {
+    "textColor": -16711936,
+    "bkColor": -4312
+  },
+  "iret": {
+    "textColor": -16711936,
+    "bkColor": -8429
+  }
+}

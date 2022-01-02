@@ -11,7 +11,6 @@ class FileItemDotNetSymbol(text: String, private val reflector: FacileReflector,
     override fun canExpand(): Boolean = true
     override fun isRawAvailable(): Boolean = false
 
-    @ExperimentalUnsignedTypes
     override suspend fun listSubItems(publisher: (Int, Int) -> Unit): List<FileItem> {
         val result = ArrayList<FileItem>()
         val fields = type.fields
@@ -43,7 +42,7 @@ fun getValueFromTypeKindAndBytes(bytes: ByteArray, kind: Int): Any {
     val bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
     return when (kind) {
         TypeKind.ELEMENT_TYPE_BOOLEAN -> bytes[0].toInt() != 0
-        TypeKind.ELEMENT_TYPE_CHAR -> bytes[0].toChar()
+        TypeKind.ELEMENT_TYPE_CHAR -> bytes[0].toInt().toChar()
         TypeKind.ELEMENT_TYPE_I -> bb.int
         TypeKind.ELEMENT_TYPE_I1 -> bb.get()
         TypeKind.ELEMENT_TYPE_I2 -> bb.short

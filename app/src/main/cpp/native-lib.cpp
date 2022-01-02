@@ -228,7 +228,7 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "lviinit");
     //	jmethodID java_util_Map_put  = env->GetMethodID(mapcls, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
     //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "arraylistaddmethod");
-    jmethodID notify = env->GetMethodID(thecls, "showNoti", "(I)I");
+    jmethodID notify = env->GetMethodID(thecls, "isCancel", "(I)I");
     __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "shownotimethod");
     jmethodID additem = env->GetMethodID(thecls, "AddItem",
                                          "(Lcom/kyhsgeekcode/disassembler/DisassemblyListItem;)V");
@@ -424,7 +424,7 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
             }
             env->SetLongField(dar, fidJumpOffset, jumpOffset);
         }
-        __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "afterdetail");
+//        __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "afterdetail");
         jobject lvi = env->NewObject(lvicls, ctorLvi, dar);
         //jobject addrobj=env->NewObject(longcls,ctorLong,insn->address);
         //__android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "created lvi");
@@ -441,16 +441,16 @@ Java_com_kyhsgeekcode_disassembler_DisasmIterator_getSome(JNIEnv *env, jobject t
        worker.detach();
    */
         env->CallVoidMethod(thiz, additem, lvi);
-        __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "added lvi");
+//        __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "added lvi");
 
         env->DeleteLocalRef(lvi);
         env->DeleteLocalRef(dar);
         //env->DeleteLocalRef(jstr);
         //env->DeleteLocalRef(dar);
         if (done % 1024 == 0) {
-            __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "calling noti");
+//            __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "calling noti");
             int ret = env->CallIntMethod(thiz, notify, done);
-            __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "end call noti");
+//            __android_log_print(ANDROID_LOG_VERBOSE, "Disassembler", "end call noti");
             if (ret == -1) {
                 //thread interrupted
                 break;

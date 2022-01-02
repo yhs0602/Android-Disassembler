@@ -120,7 +120,7 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
             val resultIntent = Intent()
 //            resultIntent.putExtra("fileItem", FileItem())
             Log.e(TAG, "selecteduri:${data.data}")
-            Log.e("intent URI", intent.toUri(0));
+            Log.e("intent URI", intent.toUri(0))
             val bundle = data.extras
             if (bundle != null) {
                 for (key in bundle.keySet()) {
@@ -143,7 +143,7 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
             "Download a sample from the zoo and open it with this app",
             Toast.LENGTH_SHORT
         ).show()
-        val url = "https://github.com/ytisf/theZoo/tree/master/malwares"
+        val url = "https://github.com/ytisf/theZoo/"
         val i = Intent(Intent.ACTION_VIEW)
         i.data = Uri.parse(url)
         startActivity(i)
@@ -164,7 +164,7 @@ class NewFileChooserActivity : AppCompatActivity(), ProgressHandler {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val document = Jsoup.parse(URL(url), 30000)
-                        val ipaddr = document?.select("[rel=nofollow]")?.first()?.text()
+                        val ipaddr = document.select("[rel=nofollow]").first()?.text()
                         Log.d(TAG, "ipaddr=$ipaddr")
                         val realAddr = ipaddr?.replace("hXXp", "http") ?: return@launch
                         Log.d(TAG, "RealAddr:$realAddr")

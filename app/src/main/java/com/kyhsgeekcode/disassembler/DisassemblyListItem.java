@@ -1,12 +1,12 @@
 package com.kyhsgeekcode.disassembler;
 
-import java.io.Serializable;
-
 import static com.kyhsgeekcode.disassembler.UtilsKt.bytesToHex;
 
+import java.io.Serializable;
+
 public class DisassemblyListItem implements Serializable {
-    String address, bytes, label, instruction, operands, comments, condition;
-    DisasmResult disasmResult;
+    public String address, bytes, label, instruction, operands, comments, condition;
+    public DisasmResult disasmResult;
 
     //Capstone.CsInsn insn;
     public DisassemblyListItem(String address, String bytes, String label, String instruction, String operands, String comments, String condition) {
@@ -60,38 +60,6 @@ public class DisassemblyListItem implements Serializable {
         builder.append(operands);
 
         return builder.toString();
-    }
-
-    public String toCodeString(ColumnSetting cs) {
-
-        StringBuilder sb = new StringBuilder();
-        if (cs.showAddress) {
-            sb.append("L_" + address);
-            //sb.append(":");
-        }
-        if (cs.showLabel) {
-            sb.append(label);
-            //sb.append(":");
-        }
-        if (cs.showAddress || cs.showLabel)
-            sb.append(":\t");
-        if (cs.showBytes) {
-            //sb.append("\t");
-            sb.append(bytes);
-        }
-        if (cs.showInstruction) {
-            sb.append(instruction);
-        }
-        if (cs.showOperands) {
-            sb.append(" ");
-            sb.append(operands);
-        }
-        if (cs.showComments) {
-            sb.append("\t;");
-            sb.append(comments);
-        }
-        //sb.append(System.lineSeparator());
-        return sb.toString().trim();
     }
 
     public boolean isBranch() {
@@ -160,7 +128,6 @@ public class DisassemblyListItem implements Serializable {
 
     @Override
     public String toString() {
-        // TODO: Implement this method
         if (disasmResult == null) {
             return "null!!!";
         }

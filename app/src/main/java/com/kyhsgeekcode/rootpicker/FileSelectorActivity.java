@@ -40,9 +40,9 @@ public class FileSelectorActivity extends ListActivity {
      private List<String> path = (List<String>) null;*/
     List<Item> items = new ArrayList<>();
     String lspath = "";
-    private String root = "/";
+    private final String root = "/";
     private TextView mPath;
-    private String TAG = "RootPicker";
+    private final String TAG = "RootPicker";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
