@@ -171,7 +171,7 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling:$compose_version"
 
     // Integration with ViewModels
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
     implementation 'androidx.navigation:navigation-compose:2.4.0-rc01'
 
     implementation "com.google.accompanist:accompanist-permissions:0.22.0-rc"
