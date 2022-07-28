@@ -174,7 +174,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0'
     implementation 'androidx.navigation:navigation-compose:2.4.0-rc01'
 
-    implementation "com.google.accompanist:accompanist-permissions:0.22.0-rc"
+    implementation "com.google.accompanist:accompanist-permissions:0.25.0"
 
     // When using a AppCompat theme
     implementation "com.google.accompanist:accompanist-appcompat-theme:0.20.3"
