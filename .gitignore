@@ -10,4 +10,3 @@ captures/
 *.hprof
 app/release/
 app/src/main/asm/
-google-services.json

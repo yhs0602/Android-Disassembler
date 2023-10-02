@@ -16,8 +16,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
             // the permission for the first time, explain why the feature is needed by the app and allow
             // the user to be presented with the permission again or to not see the rationale any more.
             storagePermissionState.shouldShowRationale ||
-                    !storagePermissionState.permissionRequested -> {
+                    !storagePermissionState.allPermissionsGranted -> {
                 if (doNotShowRationale) {
                     Text("Feature not available")
                 } else {

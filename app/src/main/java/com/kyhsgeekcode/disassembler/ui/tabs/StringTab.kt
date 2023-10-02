@@ -4,12 +4,12 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pending
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -55,7 +55,7 @@ fun StringTab(data: TabData, viewModel: MainViewModel) {
     val isDone = preparedTabData.isDone.collectAsState()
     Row {
         if (!isDone.value) {
-            Icon(imageVector = Icons.Filled.Pending, contentDescription = "Searching...")
+            Icon(imageVector = Icons.Default.MoreVert, contentDescription = "Searching...")
         }
         TableView(
             titles = listOf("Offset" to 100.dp, "Length" to 50.dp, "String" to 800.dp),
@@ -89,7 +89,7 @@ fun SearchForStringsDialog(viewModel: MainViewModel) {
                 NumberTextField(to, { to = it }, modifier = Modifier.weight(1f))
             }
         },
-        buttons = {
+        confirmButton = {
             Row(
                 modifier = Modifier.padding(all = 8.dp),
                 horizontalArrangement = Arrangement.Center

@@ -148,6 +148,7 @@ class FileDrawerListAdapter(val progressHandler: ProgressHandler) {
                     ProjectDataStorage.resolveToWrite(ProjectManager.getRelPath(filename), true)
 //                val targetDirectory = File(File(appCtx.filesDir, "/dex-decompiled/"), File(filename).name + "/")
                 targetDirectory.mkdirs()
+                // run backsmali
                 Main.main(arrayOf("d", "-o", targetDirectory.absolutePath, filename))
                 progressHandler.finishProgress()
                 return getSubObjects(FileDrawerListItem(targetDirectory, initialLevel))
