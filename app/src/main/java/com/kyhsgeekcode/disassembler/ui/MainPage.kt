@@ -36,6 +36,7 @@ fun MainScreen(viewModel: MainViewModel) {
         drawerContent = {
             FileDrawer(viewModel)
         },
+        drawerState = drawerState,
     ) {
         Scaffold(
             topBar = {

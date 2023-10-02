@@ -81,7 +81,6 @@ class MainActivity : AppCompatActivity() {
     @OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //        TooLargeTool.startLogging(application)
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
         } else {

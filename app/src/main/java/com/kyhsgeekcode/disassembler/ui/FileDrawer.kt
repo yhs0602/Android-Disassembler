@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -31,6 +32,7 @@ fun FileDrawer(viewModel: MainViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth(0.8f)
+            .fillMaxHeight()
             .verticalScroll(rememberScrollState())
             .background(Color.White)
     ) {
