@@ -3,9 +3,9 @@ package com.kyhsgeekcode.disassembler.ui.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,10 +52,11 @@ fun DropDownList(
                 onClick = {
                     request(false)
                     selectedString(it)
+                },
+                text = {
+                    Text(it, modifier = Modifier.wrapContentWidth())
                 }
-            ) {
-                Text(it, modifier = Modifier.wrapContentWidth())
-            }
+            )
         }
     }
 }
