@@ -32,7 +32,7 @@ fun ActivatedMenus(viewModel: MainViewModel) {
     IconButton(onClick = { showMenu = !showMenu }) {
         Icon(
             imageVector = Icons.Default.MoreVert,
-            contentDescription = "More"
+            contentDescription = "Menu"
         )
     }
     DropdownMenu(

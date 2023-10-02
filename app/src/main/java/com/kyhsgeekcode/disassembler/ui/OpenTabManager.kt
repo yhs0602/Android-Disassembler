@@ -1,14 +1,17 @@
 package com.kyhsgeekcode.disassembler.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.kyhsgeekcode.disassembler.ui.tabs.AnalysisTab
 import com.kyhsgeekcode.disassembler.ui.tabs.BinaryTab
 import com.kyhsgeekcode.disassembler.ui.tabs.HexTab
@@ -29,6 +32,7 @@ fun OpenedTabs(viewModel: MainViewModel) {
     Column(Modifier.fillMaxSize()) {
         ScrollableTabRow(
             selectedTabIndex = state.value,
+            modifier = Modifier.fillMaxWidth(),
         ) {
             titles.forEachIndexed { index, title ->
                 Tab(
@@ -42,10 +46,11 @@ fun OpenedTabs(viewModel: MainViewModel) {
     }
 }
 
+@OptIn(ExperimentalUnsignedTypes::class)
 @ExperimentalFoundationApi
 @Composable
 fun TabContent(state: Int, viewModel: MainViewModel) {
-    val theTab = viewModel.openedTabs.value[state]
+    val theTab = viewModel.openedTabs.collectAsState().value[state]
     when (val tabKind = theTab.tabKind) {
         is TabKind.AnalysisResult -> AnalysisTab(theTab, viewModel)
         is TabKind.Apk -> TODO()
