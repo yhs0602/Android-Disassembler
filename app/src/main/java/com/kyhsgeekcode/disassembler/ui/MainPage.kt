@@ -2,6 +2,8 @@ package com.kyhsgeekcode.disassembler.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -38,11 +40,13 @@ fun MainScreen(viewModel: MainViewModel) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = "Disassembler") },
+                    title = {
+                        Text(text = "Disassembler")
+                    },
                     navigationIcon = {
                         Icon(
                             Icons.Default.Menu,
-                            "",
+                            "Open menu",
                             modifier = Modifier.clickable(onClick = {
                                 with(drawerState) {
                                     scope.launch {
@@ -62,37 +66,22 @@ fun MainScreen(viewModel: MainViewModel) {
                 )
             },
             content = { paddingValues ->
-
-                val drawerState = rememberDrawerState(DrawerValue.Closed)
-                val scope = rememberCoroutineScope()
-                val openDrawer = {
-                    scope.launch {
-                        drawerState.open()
+                Box(modifier = Modifier.padding(paddingValues)) {
+                    val openDrawer = {
+                        scope.launch {
+                            drawerState.open()
+                        }
                     }
-                }
-                OpenedTabs(viewModel)
+                    OpenedTabs(viewModel)
 
-                val showSearchForStringsDialog =
-                    viewModel.showSearchForStringsDialog.collectAsState()
-                if (showSearchForStringsDialog.value == ShowSearchForStringsDialog.Shown) {
-                    SearchForStringsDialog(viewModel)
+                    val showSearchForStringsDialog =
+                        viewModel.showSearchForStringsDialog.collectAsState()
+                    if (showSearchForStringsDialog.value == ShowSearchForStringsDialog.Shown) {
+                        SearchForStringsDialog(viewModel)
+                    }
                 }
             }
         )
     }
 
 }
-
-
-/*
-enum class FileScreens(
-    val title: String,
-    val route: String,
-    val ComposeScreen: @Composable (NavBackStackEntry) -> Unit
-) {
-    Home("Home", "home", { it -> HomeScreen(it) }),
-    Account("Account", "account", { AccountScreen() }),
-    Help("Help", "help", { HelpScreen() }),
-    ;
-}
- */

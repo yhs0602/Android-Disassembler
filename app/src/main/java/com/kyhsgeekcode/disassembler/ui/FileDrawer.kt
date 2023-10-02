@@ -1,6 +1,7 @@
 package com.kyhsgeekcode.disassembler.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,9 +29,10 @@ import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
 fun FileDrawer(viewModel: MainViewModel) {
 //    val askOpen = viewModel.askOpen.collectAsState()
     Column(
-        Modifier
+        modifier = Modifier
             .fillMaxWidth(0.8f)
             .verticalScroll(rememberScrollState())
+            .background(Color.White)
     ) {
         Column {
             IconButton(onClick = { }) {
