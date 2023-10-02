@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -81,9 +82,10 @@ private fun FileDrawerItemRow(
         ), verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(1.dp)
     ) {
+        val expandable = node.isExpandable()
         Icon(
             painter = painterResource(
-                id = if (node.isExpandable()) {
+                id = if (expandable) {
                     if (expanded) {
                         android.R.drawable.arrow_up_float
                     } else {
@@ -98,10 +100,12 @@ private fun FileDrawerItemRow(
             tint = Color.Gray
         )
         Icon(
-            painter = painterResource(id = R.drawable.ic_folder_icon),
+            painter = painterResource(
+                id = R.drawable.ic_folder_icon
+            ),
             contentDescription = "Folder",
             Modifier.width(20.dp),
-            tint = Color(0xFF7F00FF)
+            tint = if (expandable) Color(0xFF7F00FF) else LocalContentColor.current
         )
         Text(text = node.caption)
     }
