@@ -3,6 +3,7 @@ package com.kyhsgeekcode.disassembler.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -62,20 +64,23 @@ private fun FileDrawerItemRow(
     handleExpand: () -> Unit,
     viewModel: MainViewModel
 ) {
-    Row(modifier = Modifier.combinedClickable(
-        onClick = {
-            if (node.isExpandable()) {
-                handleExpand()
-            } else if (node.isOpenable) {
-                viewModel.onOpenDrawerItem(node)
-            }
-        },
-        onLongClick = {
-            if (node.isOpenable) {
-                viewModel.onOpenDrawerItem(node)
-            }
-        }
-    )) {
+    Row(
+        modifier = Modifier.combinedClickable(
+            onClick = {
+                if (node.isExpandable()) {
+                    handleExpand()
+                } else if (node.isOpenable) {
+                    viewModel.onOpenDrawerItem(node)
+                }
+            },
+            onLongClick = {
+                if (node.isOpenable) {
+                    viewModel.onOpenDrawerItem(node)
+                }
+            },
+        ), verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(1.dp)
+    ) {
         Icon(
             painter = painterResource(
                 id = if (node.isExpandable()) {
@@ -90,13 +95,13 @@ private fun FileDrawerItemRow(
             ),
             contentDescription = "expand",
             Modifier.width(20.dp),
-            tint = Color.Green
+            tint = Color.Gray
         )
         Icon(
             painter = painterResource(id = R.drawable.ic_folder_icon),
             contentDescription = "Folder",
             Modifier.width(20.dp),
-            tint = Color.Blue
+            tint = Color(0xFF7F00FF)
         )
         Text(text = node.caption)
     }
