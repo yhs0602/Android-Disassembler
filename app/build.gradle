@@ -128,8 +128,8 @@ dependencies {
     implementation("com.google.guava:guava:31.1-android")
     implementation('org.smali:baksmali:2.5.2')
     implementation 'com.beust:jcommander:1.82'
-    implementation 'org.smali:util:2.5.2'
-
+    implementation("org.smali:util:2.5.2")
+    implementation("com.github.twalcari:java-prettify:2.0.4")
 
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0'
     implementation 'org.jsoup:jsoup:1.14.3'
