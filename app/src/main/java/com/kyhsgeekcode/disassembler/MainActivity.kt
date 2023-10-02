@@ -16,8 +16,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity() {
 
         // https://medium.com/@gurpreetsk/memory-management-on-android-using-ontrimmemory-f500d364bc1a
         private const val LASTPROJKEY = "lastProject"
-        private const val TAG = "Disassembler"
         private const val RATIONALSETTING = "showRationals"
 
         /**
@@ -71,8 +70,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    var llmainLinearLayoutSetupRaw: ConstraintLayout? = null
-    var toDoAfterPermQueue: Queue<Runnable> = LinkedBlockingQueue()
+    private var llmainLinearLayoutSetupRaw: ConstraintLayout? = null
+    private var toDoAfterPermQueue: Queue<Runnable> = LinkedBlockingQueue()
 
 
     private val viewModel by viewModels<MainViewModel>()
@@ -82,7 +81,6 @@ class MainActivity : AppCompatActivity() {
     @OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //        TooLargeTool.startLogging(application)
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
         } else {
@@ -94,9 +92,6 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             MainScreen(viewModel = viewModel)
-//            PermissionScreen {
-//
-//            }
         }
     }
 
@@ -122,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             // the permission for the first time, explain why the feature is needed by the app and allow
             // the user to be presented with the permission again or to not see the rationale any more.
             storagePermissionState.shouldShowRationale ||
-                    !storagePermissionState.permissionRequested -> {
+                    !storagePermissionState.allPermissionsGranted -> {
                 if (doNotShowRationale) {
                     Text("Feature not available")
                 } else {
@@ -304,10 +299,12 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
             1 -> {
                 val i = Intent(this, FileSelectorActivity::class.java)
                 startActivityForResult(i, REQUEST_SELECT_FILE)
             }
+
             2 -> {
                 val j = Intent(this, NewFileChooserActivity::class.java)
                 startActivityForResult(j, REQUEST_SELECT_FILE_NEW)
@@ -317,19 +314,19 @@ class MainActivity : AppCompatActivity() {
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG, "onActivityResult")
+        Timber.d("onActivityResult")
         if (requestCode == REQUEST_SELECT_FILE) {
-            Log.d(TAG, "OnActivityResult1")
+            Timber.d("OnActivityResult1")
             if (resultCode == Activity.RESULT_OK) {
                 val path = data!!.getStringExtra("path")
-                Log.d(TAG, "OnActivityResult2")
+                Timber.d("OnActivityResult2")
                 val settingPath = getSharedPreferences(PATHPREF, MODE_PRIVATE)
                 val edi = settingPath.edit()
-                Log.d(TAG, "OnActivityResult3")
+                Timber.d("OnActivityResult3")
                 edi.putString(DiskUtil.SC_PREFERENCE_KEY, path)
                 edi.apply()
                 disableEnableControls(false, llmainLinearLayoutSetupRaw)
-                Log.d(TAG, "OnActivityResult4")
+                Timber.d("OnActivityResult4")
 //                onChoosePath(path)
             }
         }

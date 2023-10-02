@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "883983907421",
+    "project_id": "android-disassembler",
+    "storage_bucket": "android-disassembler.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:883983907421:android:5b020ea180e0aebea56bb4",
+        "android_client_info": {
+          "package_name": "com.kyhsgeekcode.disassembler"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "883983907421-bql61u4elqqin8agng1d627i0kcqas65.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kyhsgeekcode.disassembler",
+            "certificate_hash": "338bf66bcd364c3166ad4792068c1bd0cb75e3c7"
+          }
+        },
+        {
+          "client_id": "883983907421-9vh06ekki19gm703g90hcvusipio8u3a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMDfgCQWnGziwRim_j5LB5xn_Bh1VDlZ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "883983907421-9vh06ekki19gm703g90hcvusipio8u3a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

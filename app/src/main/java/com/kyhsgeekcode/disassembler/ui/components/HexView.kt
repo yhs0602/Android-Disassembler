@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -20,13 +22,16 @@ import androidx.compose.ui.unit.dp
 @ExperimentalFoundationApi
 @Composable
 fun HexView(bytes: ByteArray) {
-    val splitted = derivedStateOf { (bytes.toList().chunked(8)) }
+    val splitted by remember {
+        derivedStateOf { (bytes.toList().chunked(8)) }
+    }
+
 
     LazyColumn(Modifier.horizontalScroll(rememberScrollState())) {
         stickyHeader {
             HexViewHeader()
         }
-        items(splitted.value) { item ->
+        items(splitted) { item ->
             HexViewRow(item)
         }
     }

@@ -1,13 +1,26 @@
 package com.kyhsgeekcode.disassembler.ui
 
 import android.content.Intent
-import android.widget.Toast
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.kyhsgeekcode.disassembler.Calc.Calculator
 import com.kyhsgeekcode.disassembler.preference.SettingsActivity
 import com.kyhsgeekcode.disassembler.ui.tabs.BinaryTabData
 import com.kyhsgeekcode.disassembler.viewmodel.MainViewModel
@@ -19,7 +32,7 @@ fun ActivatedMenus(viewModel: MainViewModel) {
     IconButton(onClick = { showMenu = !showMenu }) {
         Icon(
             imageVector = Icons.Default.MoreVert,
-            contentDescription = "More"
+            contentDescription = "Menu"
         )
     }
     DropdownMenu(
@@ -29,31 +42,35 @@ fun ActivatedMenus(viewModel: MainViewModel) {
         DropdownMenuItem(onClick = {
             viewModel.openAsHex()
             showMenu = false
-        }) {
+        }, leadingIcon = {
             Icon(imageVector = Icons.Filled.Edit, contentDescription = "Open with hex viewer")
+        }, text = {
             Text("Open with hex viewer")
-        }
+        })
         DropdownMenuItem(onClick = {
             viewModel.searchForStrings()
             showMenu = false
-        }) {
+        }, leadingIcon = {
             Icon(imageVector = Icons.Filled.Build, contentDescription = "Search for strings")
-            Text("Search for strings")
-        }
-        DropdownMenuItem(onClick = {
-            viewModel.analyze()
-            showMenu = false
-        }) {
-            Icon(imageVector = Icons.Filled.Info, contentDescription = "Analyze")
-            Text("Analyze")
-        }
+        }, text = { Text("Search for strings") }
+        )
+        DropdownMenuItem(
+            onClick = {
+                viewModel.analyze()
+                showMenu = false
+            },
+            leadingIcon = { Icon(imageVector = Icons.Filled.Info, contentDescription = "Analyze") },
+            text = { Text("Analyze") }
+        )
         DropdownMenuItem(onClick = {
             viewModel.closeCurrentFile()
             showMenu = false
-        }) {
-            Icon(imageVector = Icons.Filled.Close, contentDescription = "Close File")
-            Text("Close File")
-        }
+        },
+            leadingIcon = {
+                Icon(imageVector = Icons.Filled.Close, contentDescription = "Close File")
+            },
+            text = { Text("Close File") }
+        )
         if (viewModel.isBinaryTab()) {
             BinaryMenuItems(viewModel.getCurrentTabData() as BinaryTabData) {
                 showMenu = false
@@ -66,10 +83,12 @@ fun ActivatedMenus(viewModel: MainViewModel) {
         DropdownMenuItem(onClick = {
             showMenu = false
             context.startActivity(Intent(context, SettingsActivity::class.java))
-        }) {
-            Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings / Help")
-            Text("Settings / Help")
-        }
+        },
+            leadingIcon = {
+                Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings / Help")
+            },
+            text = { Text("Settings / Help") }
+        )
     }
 }
 
@@ -81,21 +100,32 @@ fun BinaryMenuItems(binaryTabData: BinaryTabData, dismiss: () -> Unit) {
 //        Icon(imageVector = Icons.Filled.Delete, contentDescription = "Close Tab")
 //        Text("Close Tab")
 //    }
-    DropdownMenuItem(onClick = {
-        dismiss()
-        binaryTabData.jumpto()
-    }) {
-        Icon(imageVector = Icons.Filled.Navigation, contentDescription = "Jump to")
-        Text("Jump to")
-    }
-    if (binaryTabData.isDisasmTab()) {
-        DropdownMenuItem(onClick = {
+    DropdownMenuItem(
+        onClick = {
             dismiss()
-            binaryTabData.chooseColumns()
-        }) {
-            Icon(imageVector = Icons.Filled.CheckBox, contentDescription = "Choose columns")
-            Text("Choose columns")
-        }
+            binaryTabData.jumpto()
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Filled.AddCircle,
+                contentDescription = "Jump to"
+            )
+        }, text = { Text("Jump to") })
+    if (binaryTabData.isDisasmTab()) {
+        DropdownMenuItem(
+            onClick = {
+                dismiss()
+                binaryTabData.chooseColumns()
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    contentDescription = "Choose columns"
+                )
+            },
+            text = {
+                Text("Choose columns")
+            })
     }
 }
 

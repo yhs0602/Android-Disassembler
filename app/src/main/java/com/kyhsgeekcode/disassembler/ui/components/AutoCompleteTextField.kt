@@ -4,15 +4,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.PopupProperties
 
 // https://stackoverflow.com/a/67116200/8614565
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AutoCompleteTextField(
     value: String,
@@ -38,11 +40,13 @@ fun AutoCompleteTextField(
             properties = PopupProperties(focusable = false)
         ) {
             suggestions.forEach { label ->
-                DropdownMenuItem(onClick = {
-                    onOptionSelected(label)
-                }) {
-                    Text(text = label)
-                }
+                DropdownMenuItem(
+                    text = {
+                        Text(text = label)
+                    },
+                    onClick = {
+                        onOptionSelected(label)
+                    })
             }
         }
     }
