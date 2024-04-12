@@ -1,4 +1,4 @@
-capstone linguist-vendored
-capstone2 linguist-vendored
-app/src/main/cpp/elfio linguist-vendored
-app/src/main/cpp/plthook linguist-vendored
+capstone/* linguist-vendored
+capstone2/* linguist-vendored
+app/src/main/cpp/elfio/* linguist-vendored
+app/src/main/cpp/plthook/* linguist-vendored
