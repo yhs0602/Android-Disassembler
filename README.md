@@ -129,3 +129,7 @@ I think I have to notice you that:
 
 [1]: https://github.com/KYHSGeekCode/Android-Disassembler/workflows/ci/badge.svg
 [2]: https://github.com/KYHSGeekCode/Android-Disassembler/actions
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=yhs0602/Android-disassembler&type=Date)](https://www.star-history.com/#yhs0602/Android-disassembler&Date)
