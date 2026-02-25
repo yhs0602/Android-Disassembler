@@ -4,10 +4,7 @@ import android.util.LongSparseArray
 import android.util.SparseArray
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -203,16 +200,23 @@ fun BinaryDisasmTabContent(
     val currentAddress = disasmData.currentAddress.collectAsState()
     val showDisasmClickMenu = disasmData.showDisasmClickMenu.collectAsState()
     val showCommentEditDialog = disasmData.showCommentEditDialog.collectAsState()
-    InfiniteList(onLoadMore = { firstVisibleItemIndex, lastVisibleItemIndex ->
-        disasmData.setCurrentAddressByFirstItemIndex(firstVisibleItemIndex)
-        disasmData.loadMore(lastVisibleItemIndex)
-    }, modifier = Modifier.horizontalScroll(rememberScrollState()), listState = listState) {
+    val scrollState = rememberScrollState()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .horizontalScroll(scrollState)
+    ) {
+        InfiniteList(onLoadMore = { firstVisibleItemIndex, lastVisibleItemIndex ->
+            disasmData.setCurrentAddressByFirstItemIndex(firstVisibleItemIndex)
+            disasmData.loadMore(lastVisibleItemIndex)
+        }, modifier = Modifier.fillMaxWidth(), listState = listState) {
 
-        stickyHeader {
-            BinaryDisasmHeader(disasmData)
-        }
-        items(count.value) { position ->
-            BinaryDisasmRow(disasmData.getItem(position), disasmData, currentAddress.value)
+            stickyHeader {
+                BinaryDisasmHeader(disasmData)
+            }
+            items(count.value) { position ->
+                BinaryDisasmRow(disasmData.getItem(position), disasmData, currentAddress.value)
+            }
         }
     }
 
