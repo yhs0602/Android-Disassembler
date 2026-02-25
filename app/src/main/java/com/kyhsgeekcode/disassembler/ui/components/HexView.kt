@@ -19,33 +19,53 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+private const val BYTES_PER_ROW = 16
+private val OFFSET_WIDTH = 90.dp
+private val HEX_CELL_WIDTH = 25.dp
+private val ASCII_CELL_WIDTH = 12.dp
+
 @ExperimentalFoundationApi
 @Composable
 fun HexView(bytes: ByteArray) {
-    val splitted by remember {
-        derivedStateOf { (bytes.toList().chunked(8)) }
+    val rows by remember {
+        derivedStateOf {
+            bytes.toList().chunked(BYTES_PER_ROW).mapIndexed { idx, chunk ->
+                Pair(idx * BYTES_PER_ROW, chunk)
+            }
+        }
     }
-
 
     LazyColumn(Modifier.horizontalScroll(rememberScrollState())) {
         stickyHeader {
             HexViewHeader()
         }
-        items(splitted) { item ->
-            HexViewRow(item)
+        items(rows) { (offset, chunk) ->
+            HexViewRow(offset, chunk)
         }
     }
-
 }
 
 @Composable
 fun HexViewHeader() {
     Row(Modifier.height(IntrinsicSize.Min)) {
-        for (v in 0..7) {
+        // Offset column header
+        Text(
+            text = "Offset",
+            modifier = Modifier
+                .width(OFFSET_WIDTH)
+                .fillMaxHeight()
+                .background(Color.White),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.ExtraBold,
+            color = Color.DarkGray
+        )
+        Spacer(modifier = Modifier.width(4.dp).fillMaxHeight())
+        // Hex column headers 00..0F
+        for (v in 0 until BYTES_PER_ROW) {
             Text(
                 text = String.format("%02X", v),
                 modifier = Modifier
-                    .width(25.dp)
+                    .width(HEX_CELL_WIDTH)
                     .fillMaxHeight()
                     .background(Color.White),
                 textAlign = TextAlign.Center,
@@ -53,16 +73,13 @@ fun HexViewHeader() {
                 color = Color.Blue
             )
         }
-        Spacer(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(10.dp)
-        )
-        for (v in 0..7) {
+        Spacer(modifier = Modifier.width(8.dp).fillMaxHeight())
+        // ASCII column headers
+        for (v in 0 until BYTES_PER_ROW) {
             Text(
-                text = String.format("%02X", v),
+                text = String.format("%X", v),
                 modifier = Modifier
-                    .width(20.dp)
+                    .width(ASCII_CELL_WIDTH)
                     .fillMaxHeight()
                     .background(Color.White),
                 textAlign = TextAlign.Center,
@@ -71,56 +88,54 @@ fun HexViewHeader() {
             )
         }
     }
-
 }
 
 @Composable
-private fun HexViewRow(item: List<Byte>) {
-    Row(
-        Modifier.height(IntrinsicSize.Min)
-    ) {
+private fun HexViewRow(offset: Int, item: List<Byte>) {
+    Row(Modifier.height(IntrinsicSize.Min)) {
+        // Offset column
+        Text(
+            text = String.format("0x%08X", offset),
+            modifier = Modifier
+                .width(OFFSET_WIDTH)
+                .fillMaxHeight()
+                .background(Color.White),
+            textAlign = TextAlign.Center,
+            color = Color.DarkGray
+        )
+        Spacer(modifier = Modifier.width(4.dp).fillMaxHeight())
+        // Hex cells
         for (v in item) {
             Text(
                 text = String.format("%02X", v),
                 modifier = Modifier
-                    .width(25.dp)
+                    .width(HEX_CELL_WIDTH)
                     .fillMaxHeight()
                     .background(Color.White),
                 textAlign = TextAlign.Center
             )
         }
-        for (i in 0 until 8 - item.size) {
+        // Padding for incomplete last row
+        for (i in 0 until BYTES_PER_ROW - item.size) {
             Text(
-                text = "",
+                text = "  ",
                 modifier = Modifier
-                    .background(Color.White)
+                    .width(HEX_CELL_WIDTH)
                     .fillMaxHeight()
-                    .width(25.dp)
+                    .background(Color.White)
             )
         }
-        Spacer(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(10.dp)
-        )
+        Spacer(modifier = Modifier.width(8.dp).fillMaxHeight())
+        // ASCII cells
         for (v in item) {
             val c = v.toInt().toChar()
             Text(
                 text = if (isPrintableChar(c)) c.toString() else ".",
                 modifier = Modifier
-                    .width(20.dp)
+                    .width(ASCII_CELL_WIDTH)
                     .fillMaxHeight()
                     .background(Color.White),
                 textAlign = TextAlign.Center
-            )
-        }
-        for (i in 0 until 8 - item.size) {
-            Text(
-                text = "",
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxHeight()
-                    .width(20.dp)
             )
         }
     }
@@ -137,16 +152,11 @@ fun isPrintableChar(c: Char): Boolean {
 fun HexPreview() {
     HexView(
         bytes = byteArrayOf(
-            0xFF.toByte(),
-            0x12.toByte(),
-            0x13.toByte(),
-            0x11.toByte(),
-            0x40.toByte(),
-            0x33.toByte(),
-            0x65.toByte(),
-            0x55.toByte(),
-            0x70.toByte(),
-            0x59.toByte()
+            0xFF.toByte(), 0x12.toByte(), 0x13.toByte(), 0x11.toByte(),
+            0x40.toByte(), 0x33.toByte(), 0x65.toByte(), 0x55.toByte(),
+            0x70.toByte(), 0x59.toByte(), 0x4A.toByte(), 0x2B.toByte(),
+            0x1C.toByte(), 0x3D.toByte(), 0xEE.toByte(), 0x7F.toByte(),
+            0x00.toByte(), 0xAB.toByte()
         )
     )
 }
