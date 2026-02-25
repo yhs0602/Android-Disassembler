@@ -1,0 +1,71 @@
+name: Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'          # triggered by tags like v2.1.5, v2.2.0, etc.
+
+jobs:
+  release:
+    name: Build & Publish APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Create google-services.json
+        run: echo '${{ secrets.GOOGLE_JSON }}' | base64 --decode > app/google-services.json
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v3
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build release APK
+        run: ./gradlew assembleRelease
+
+      - name: Sign APK
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.KEYSTORE_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Upload signed APK to GitHub Releases
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.sign_app.outputs.signedReleaseFile }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload unsigned APK to GitHub Releases (fallback)
+        if: ${{ secrets.KEYSTORE_BASE64 == '' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/build/outputs/apk/release/app-release-unsigned.apk
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          body: |
+            > ⚠️ **Note:** This APK is unsigned. You may need to enable "Install from unknown sources" and sign it manually, or use the Play Store version instead.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
