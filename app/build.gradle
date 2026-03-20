@@ -112,7 +112,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
 
-    implementation("androidx.paging:paging-common-ktx:3.2.1")
+    implementation("androidx.paging:paging-common-ktx:3.4.2")
 //    implementation group: "pl.openrnd.android", name: "multi-level-listview", version: "1.0.1"
     // https://mvnrepository.com/artifact/commons-io/commons-io
 //    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
