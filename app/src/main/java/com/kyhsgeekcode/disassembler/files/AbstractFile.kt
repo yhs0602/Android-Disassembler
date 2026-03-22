@@ -78,6 +78,16 @@ abstract class AbstractFile : Closeable {
         private const val TAG = "AbstractFile"
 
         @JvmStatic
+        internal fun readFileContentsForParsing(
+            file: File,
+            readerFactory: (File) -> BinaryRangeReader = ::FileChannelBinaryRangeReader
+        ): ByteArray {
+            return readerFactory(file).use { reader ->
+                reader.readFully()
+            }
+        }
+
+        @JvmStatic
         @Throws(IOException::class)
         fun createInstance(file: File): AbstractFile {
             // file을 읽던가 mainactivity의 코드를 잘 가져와서 AbstractFile을 만든다.
@@ -89,7 +99,7 @@ abstract class AbstractFile : Closeable {
             // 그리고 AfterReadFully 함수는 없어질지도 모른다!
             // 그러면 중복코드도 사라짐
             // 행복회로
-            val content = file.readBytes()
+            val content = readFileContentsForParsing(file)
             if (file.path.endsWith("assets/bin/Data/Managed/Assembly-CSharp.dll")) { // Unity C# dll file
                 Logger.v(TAG, "Found C# unity dll")
                 try {
