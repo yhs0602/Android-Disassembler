@@ -166,7 +166,9 @@ abstract class AbstractFile : Closeable {
                 BinaryContainerFormat.PE -> {
                     val content = readFileContentsForParsing(file)
                     try {
-                        PEFile(file, content)
+                        PEFile(file, content, BinaryContentLoader {
+                            readFileContentsForParsing(file)
+                        })
                     } catch (f: NotThisFormatException) {
                         Timber.e(f, "Not this format exception")
                         RawFile(file, content)
