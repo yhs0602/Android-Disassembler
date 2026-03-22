@@ -151,12 +151,15 @@ abstract class AbstractFile : Closeable {
             }
             return when (detectBinaryContainerFormat(file)) {
                 BinaryContainerFormat.ELF -> {
-                    val content = readFileContentsForParsing(file)
                     try {
-                        ElfFile(file, content)
+                        ElfFile(file, filec = null, deferredContentLoader = BinaryContentLoader {
+                            readFileContentsForParsing(file)
+                        })
                     } catch (e: Exception) {
                         Timber.d(e, "Fail elfutil")
-                        RawFile(file, content)
+                        RawFile(file, filecontent = null) {
+                            readFileContentsForParsing(file)
+                        }
                     }
                 }
 

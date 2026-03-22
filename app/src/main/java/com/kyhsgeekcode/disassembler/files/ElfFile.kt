@@ -10,7 +10,18 @@ import java.io.IOException
 import java.nio.ByteBuffer
 import java.util.*
 
-class ElfFile(file: File, filec: ByteArray) : AbstractFile() {
+class ElfFile(
+    private val file: File,
+    filec: ByteArray? = null,
+    deferredContentLoader: BinaryContentLoader? = null,
+) : AbstractFile() {
+    private var contentLoaded = filec != null
+    private val binaryContent = DeferredFileBackedBinaryContent(
+        file = file,
+        initialContent = filec,
+        loader = deferredContentLoader,
+    )
+
     fun getPltIndexFromJumpAddress(address: Long): Int {
         Log.d(TAG, "GetPltIndexFromJumpAddress $address")
         pltRange?.let {
@@ -51,6 +62,18 @@ class ElfFile(file: File, filec: ByteArray) : AbstractFile() {
     @Throws(IOException::class)
     override fun close() {
         elf.close()
+    }
+
+    override fun getBinaryContents(): ByteArray {
+        if (!contentLoaded) {
+            fileContents = binaryContent.contents()
+            contentLoaded = true
+        }
+        return fileContents
+    }
+
+    override fun getBinaryLength(): Long {
+        return if (contentLoaded) fileContents.size.toLong() else binaryContent.length()
     }
 
     override fun toString(): String {
@@ -515,8 +538,9 @@ class ElfFile(file: File, filec: ByteArray) : AbstractFile() {
     init {
         elf = Elf(file)
         path = file.path
-        fileContents = filec
+        if (filec != null) {
+            fileContents = filec
+        }
         afterConstructor()
     }
 }
-
