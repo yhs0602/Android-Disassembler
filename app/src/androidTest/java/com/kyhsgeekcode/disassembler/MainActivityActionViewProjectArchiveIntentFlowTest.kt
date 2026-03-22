@@ -48,4 +48,18 @@ class MainActivityActionViewProjectArchiveIntentFlowTest {
         assertEquals("ArchiveFixture", ProjectManager.currentProject?.name)
         assertTrue(ProjectManager.currentProject?.sourceFilePath?.endsWith("sourceFilePath") == true)
     }
+
+    @Test
+    fun actionViewProjectArchive_survivesRecreate() {
+        composeRule.waitUntil(timeoutMillis = PROJECT_OPEN_TIMEOUT_MS) {
+            ProjectManager.currentProject?.name == "ArchiveFixture"
+        }
+
+        composeRule.activityRule.scenario.recreate()
+
+        composeRule.waitUntil(timeoutMillis = PROJECT_OPEN_TIMEOUT_MS) {
+            ProjectManager.currentProject?.name == "ArchiveFixture"
+        }
+        composeRule.onNodeWithTag(MainTestTags.EXPORT_PROJECT_BUTTON).assertExists()
+    }
 }
