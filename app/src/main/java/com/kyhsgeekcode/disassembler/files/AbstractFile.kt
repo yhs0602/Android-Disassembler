@@ -21,7 +21,7 @@ abstract class AbstractFile : Closeable {
     }
 
     override fun toString(): String {
-        if (fileContents == null) {
+        if (!::fileContents.isInitialized) {
             return "The file has not been configured. You should setup manually in the first page before you can see the details."
         }
         val builder = StringBuilder(
@@ -29,7 +29,7 @@ abstract class AbstractFile : Closeable {
                     System.lineSeparator() else ""
         )
         builder.append(/*R.getString(R.string.FileSize)*/"File Size:")
-            .append(Integer.toHexString(fileContents.size))
+            .append(java.lang.Long.toHexString(getBinaryLength()))
             .append(ls)
         builder.append(appCtx.getString(R.string.FoffsCS))
             .append(java.lang.Long.toHexString(codeSectionBase))
@@ -74,6 +74,10 @@ abstract class AbstractFile : Closeable {
     @JvmField
     var path = ""
 
+    open fun getBinaryContents(): ByteArray = fileContents
+
+    open fun getBinaryLength(): Long = getBinaryContents().size.toLong()
+
     companion object {
         private const val TAG = "AbstractFile"
 
@@ -88,6 +92,31 @@ abstract class AbstractFile : Closeable {
         }
 
         @JvmStatic
+        internal fun detectBinaryContainerFormat(
+            file: File,
+            readerFactory: (File) -> BinaryRangeReader = ::FileChannelBinaryRangeReader
+        ): BinaryContainerFormat {
+            val header = readerFactory(file).use { reader ->
+                reader.read(offset = 0, length = 4)
+            }
+            if (header.size >= 4 &&
+                header[0] == 0x7F.toByte() &&
+                header[1] == 'E'.code.toByte() &&
+                header[2] == 'L'.code.toByte() &&
+                header[3] == 'F'.code.toByte()
+            ) {
+                return BinaryContainerFormat.ELF
+            }
+            if (header.size >= 2 &&
+                header[0] == 'M'.code.toByte() &&
+                header[1] == 'Z'.code.toByte()
+            ) {
+                return BinaryContainerFormat.PE
+            }
+            return BinaryContainerFormat.RAW
+        }
+
+        @JvmStatic
         @Throws(IOException::class)
         fun createInstance(file: File): AbstractFile {
             // file을 읽던가 mainactivity의 코드를 잘 가져와서 AbstractFile을 만든다.
@@ -99,8 +128,8 @@ abstract class AbstractFile : Closeable {
             // 그리고 AfterReadFully 함수는 없어질지도 모른다!
             // 그러면 중복코드도 사라짐
             // 행복회로
-            val content = readFileContentsForParsing(file)
             if (file.path.endsWith("assets/bin/Data/Managed/Assembly-CSharp.dll")) { // Unity C# dll file
+                val content = readFileContentsForParsing(file)
                 Logger.v(TAG, "Found C# unity dll")
                 try {
                     val facileReflector = Facile.load(file.path)
@@ -119,30 +148,40 @@ abstract class AbstractFile : Closeable {
                 } catch (e: SizeMismatchException) {
                     e.printStackTrace()
                 }
-            } else {
-                return try {
-                    ElfFile(file, content)
-                } catch (e: Exception) { // not an elf file. try PE parser
-                    Timber.d(e, "Fail elfutil")
+            }
+            return when (detectBinaryContainerFormat(file)) {
+                BinaryContainerFormat.ELF -> {
+                    val content = readFileContentsForParsing(file)
+                    try {
+                        ElfFile(file, content)
+                    } catch (e: Exception) {
+                        Timber.d(e, "Fail elfutil")
+                        RawFile(file, content)
+                    }
+                }
+
+                BinaryContainerFormat.PE -> {
+                    val content = readFileContentsForParsing(file)
                     try {
                         PEFile(file, content)
                     } catch (f: NotThisFormatException) {
                         Timber.e(f, "Not this format exception")
                         RawFile(file, content)
-                        // AllowRawSetup();
-// failed to parse the file. please setup manually.
-                    } catch (f: RuntimeException) { // AlertError("Failed to parse the file. Please setup manually. Sending an error report, the file being analyzed can be attached.", f);
+                    } catch (f: RuntimeException) {
                         Timber.e(f, "Not this format exception")
                         RawFile(file, content)
-                        // AllowRawSetup();
-                    } catch (g: Exception) { // AlertError("Unexpected exception: failed to parse the file. please setup manually.", g);
+                    } catch (g: Exception) {
                         Timber.e(g, "What the exception")
                         RawFile(file, content)
-                        // AllowRawSetup();
+                    }
+                }
+
+                BinaryContainerFormat.RAW -> {
+                    RawFile(file, filecontent = null) {
+                        readFileContentsForParsing(file)
                     }
                 }
             }
-            return RawFile(file, content)
 //            return null
         }
     }

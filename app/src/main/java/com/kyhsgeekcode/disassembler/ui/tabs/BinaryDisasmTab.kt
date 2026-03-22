@@ -40,6 +40,8 @@ sealed class ShowCommentEditDialog {
 private const val INSERT_COUNT = 160
 
 class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabData() {
+    private val binaryContents: ByteArray by lazy { file.getBinaryContents() }
+
     private val addressToListItem = LongSparseArray<DisassemblyListItem>()
     var positionToAddress = SparseArray<Long>()
     var writep = 0
@@ -102,9 +104,9 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
         if (currentAddress.value == 0L)
             _currentAddress.value = address + file.codeSectionBase - file.codeVirtAddr
         val newItems = assemblyProvider.getSome(
-            file.fileContents,
+            binaryContents,
             address + file.codeSectionBase - file.codeVirtAddr /*address-file.codeVirtualAddress*/,
-            file.fileContents.size.toLong(),
+            file.getBinaryLength(),
             address,
             INSERT_COUNT
         )
@@ -155,7 +157,7 @@ class BinaryDisasmData(val file: AbstractFile, val handle: Int) : PreparedTabDat
     }
 
     private fun isValidAddress(address: Long): Boolean {
-        return if (address > file.fileContents.size + file.codeVirtAddr) false else address >= 0
+        return if (address > file.getBinaryLength() + file.codeVirtAddr) false else address >= 0
     }
 
     fun setCurrentAddressByFirstItemIndex(firstVisibleItemIndex: Int) {
