@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.kyhsgeekcode.disassembler.MainActivity
 import com.kyhsgeekcode.disassembler.R
@@ -225,6 +226,7 @@ fun OpenedBinaryTabs(data: BinaryTabData, viewModel: MainViewModel) {
         ) {
             titles.forEachIndexed { index, title ->
                 Tab(
+                    modifier = Modifier.testTag(binaryTabTestTag(tabs.value[index].tabKind)),
                     text = { Text(title) },
                     selected = currentTabIndex.value == index,
                     onClick = { data.setCurrentTabByIndex(index) }
@@ -232,6 +234,13 @@ fun OpenedBinaryTabs(data: BinaryTabData, viewModel: MainViewModel) {
             }
         }
         BinaryTabContent(currentTabIndex.value, data, viewModel)
+    }
+}
+
+private fun binaryTabTestTag(tabKind: BinaryTabKind): String {
+    return when (tabKind) {
+        is BinaryTabKind.BinaryDetail -> com.kyhsgeekcode.disassembler.ui.MainTestTags.BINARY_TAB_DETAIL
+        else -> "binary_tab_${tabKind::class.simpleName}"
     }
 }
 

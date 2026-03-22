@@ -14,12 +14,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kyhsgeekcode.disassembler.R
 import com.kyhsgeekcode.disassembler.exporting.buildBinaryDetailsExportFileName
 import com.kyhsgeekcode.disassembler.exporting.writeTextDocument
 import com.kyhsgeekcode.disassembler.files.AbstractFile
+import com.kyhsgeekcode.disassembler.ui.MainTestTags
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -82,7 +84,9 @@ fun BinaryDetailTabContent(data: AbstractFile) {
             .padding(10.dp)
     ) {
         Button(
-            modifier = Modifier.padding(bottom = 12.dp),
+            modifier = Modifier
+                .padding(bottom = 12.dp)
+                .testTag(MainTestTags.SAVE_DETAILS_BUTTON),
             onClick = {
                 exportDetailsLauncher.launch(buildBinaryDetailsExportFileName(data.path))
             }

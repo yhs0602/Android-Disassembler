@@ -30,9 +30,22 @@ import timber.log.Timber;
 public class PEFile extends AbstractFile {
     PE pe;
     ArrayList<TLS> tlss = new ArrayList<>();
+    private final DeferredFileBackedBinaryContent binaryContent;
+    private boolean contentLoaded;
 
     public PEFile(File file, byte[] filec) throws IOException, NotThisFormatException {
+        this(file, filec, null);
+    }
+
+    public PEFile(File file, byte[] filec, BinaryContentLoader deferredContentLoader) throws IOException, NotThisFormatException {
         path = file.getPath();
+        byte[] parsingBytes = filec != null ? filec : loadBinaryContents(file, deferredContentLoader);
+        binaryContent = new DeferredFileBackedBinaryContent(
+                file,
+                deferredContentLoader == null ? parsingBytes : null,
+                deferredContentLoader
+        );
+        contentLoaded = deferredContentLoader == null;
         try {
             pe = PEParser.parse(file);
         } catch (NegativeArraySizeException e) {
@@ -54,7 +67,6 @@ public class PEFile extends AbstractFile {
         setCodeSectionLimit(getCodeSectionBase() + oph.getSizeOfCode());
         setCodeVirtAddr(oph.getImageBase() + getCodeSectionBase());
         setEntryPoint(oph.getAddressOfEntryPoint());
-        fileContents = filec;
 
         getExportSymbols().clear();
         getImportSymbols().clear();
@@ -68,11 +80,11 @@ public class PEFile extends AbstractFile {
             if (ide == null)
                 continue;//null dll
 
-            String dllname = Elf.getZString(filec, rvc.convertVirtualAddressToRawDataPointer(ide.getNameRVA()));//idir.getName(i);//get dll name? !! Not implemented method!!!!
+            String dllname = Elf.getZString(parsingBytes, rvc.convertVirtualAddressToRawDataPointer(ide.getNameRVA()));//idir.getName(i);//get dll name? !! Not implemented method!!!!
             Timber.v(dllname);
             long originalFirstThunkRaw = rvc.convertVirtualAddressToRawDataPointer(ide.getImportLookupTableRVA());//OriginalFirstThunk
             long firstThunkRaw = rvc.convertVirtualAddressToRawDataPointer(ide.getImportAddressTableRVA());
-            ByteBuffer buf = ByteBuffer.wrap(filec, (int) originalFirstThunkRaw, (int) (filec.length - originalFirstThunkRaw)).order(ByteOrder.LITTLE_ENDIAN);
+            ByteBuffer buf = ByteBuffer.wrap(parsingBytes, (int) originalFirstThunkRaw, (int) (parsingBytes.length - originalFirstThunkRaw)).order(ByteOrder.LITTLE_ENDIAN);
             int off = 0;
             //Read by dword!
             for (; ; ) {
@@ -89,7 +101,7 @@ public class PEFile extends AbstractFile {
                     //CHAR name[1];
 					/*ByteBuffer INT=ByteBuffer.wrap(filec,(int)data,(int)(filec.length-data));
 					 INT.getShort();*/
-                    String funcname = Elf.getZString(filec, rvc.convertVirtualAddressToRawDataPointer((int) data) + 2);
+                    String funcname = Elf.getZString(parsingBytes, rvc.convertVirtualAddressToRawDataPointer((int) data) + 2);
                     //Log.v(TAG,dllname+"."+funcname);
                     importSymbol.owner = dllname;
                     importSymbol.name = funcname;
@@ -107,8 +119,8 @@ public class PEFile extends AbstractFile {
             long funcAddrRaw = rvc.convertVirtualAddressToRawDataPointer((int) edir.getExportAddressTableRVA());
             long funcNameRaw = rvc.convertVirtualAddressToRawDataPointer((int) edir.getNamePointerRVA());
             long funcOrdinalRaw = rvc.convertVirtualAddressToRawDataPointer((int) edir.getOrdinalTableRVA());
-            ByteBuffer funcnamePointers = ByteBuffer.wrap(filec, (int) funcNameRaw, (int) (filec.length - funcNameRaw)).order(ByteOrder.LITTLE_ENDIAN);//len eq num of name
-            ByteBuffer funcOrdinalPointers = ByteBuffer.wrap(filec, (int) funcOrdinalRaw, (int) (filec.length - funcOrdinalRaw)).order(ByteOrder.LITTLE_ENDIAN);//len eq num of name
+            ByteBuffer funcnamePointers = ByteBuffer.wrap(parsingBytes, (int) funcNameRaw, (int) (parsingBytes.length - funcNameRaw)).order(ByteOrder.LITTLE_ENDIAN);//len eq num of name
+            ByteBuffer funcOrdinalPointers = ByteBuffer.wrap(parsingBytes, (int) funcOrdinalRaw, (int) (parsingBytes.length - funcOrdinalRaw)).order(ByteOrder.LITTLE_ENDIAN);//len eq num of name
             int ordinalbase = (int) edir.getOrdinalBase();
             Timber.v("OrdinalBase=" + ordinalbase);
             //RVAConverter rvc=pe.getSectionTable().getRVAConverter();
@@ -116,7 +128,7 @@ public class PEFile extends AbstractFile {
             {
                 Symbol sym = new Symbol();
                 try {
-                    sym.name = Elf.getZString(filec, rvc.convertVirtualAddressToRawDataPointer(funcnamePointers.getInt() & 0x7FFFFFFF));
+                    sym.name = Elf.getZString(parsingBytes, rvc.convertVirtualAddressToRawDataPointer(funcnamePointers.getInt() & 0x7FFFFFFF));
                 } catch (StringIndexOutOfBoundsException e) {
                     Timber.e(e);
                     sym.name = "ordinal?";
@@ -126,7 +138,7 @@ public class PEFile extends AbstractFile {
                 int ordinal = funcOrdinalPointers.getShort() & 0x7FFF;
                 long addraddr = funcAddrRaw + 4 * (ordinal - ordinalbase);
                 Timber.v("addraddr=" + addraddr);
-                sym.st_value = ByteBuffer.wrap(filec, (int) addraddr, (int) (filec.length - addraddr)).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0x7FFFFFFF;
+                sym.st_value = ByteBuffer.wrap(parsingBytes, (int) addraddr, (int) (parsingBytes.length - addraddr)).order(ByteOrder.LITTLE_ENDIAN).getInt() & 0x7FFFFFFF;
                 Timber.v(sym.toString());
                 sym.type = Symbol.Type.STT_FUNC;
                 sym.bind = Symbol.Bind.STB_GLOBAL;
@@ -161,6 +173,27 @@ public class PEFile extends AbstractFile {
             Timber.d(e, "Error parsing PE File");
         }
 
+    }
+
+    private static byte[] loadBinaryContents(File file, BinaryContentLoader deferredContentLoader) throws IOException {
+        if (deferredContentLoader != null) {
+            return deferredContentLoader.load();
+        }
+        return java.nio.file.Files.readAllBytes(file.toPath());
+    }
+
+    @Override
+    public byte[] getBinaryContents() {
+        if (!contentLoaded) {
+            fileContents = binaryContent.contents();
+            contentLoaded = true;
+        }
+        return fileContents;
+    }
+
+    @Override
+    public long getBinaryLength() {
+        return contentLoaded ? fileContents.length : binaryContent.length();
     }
 
     //https://docs.microsoft.com/ko-kr/windows/desktop/api/winnt/ns-winnt-_image_file_header
