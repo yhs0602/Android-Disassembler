@@ -1,7 +1,7 @@
 buildscript {
     ext {
         kotlin_version = '1.9.24'
-        spek_version = '2.0.17'
+        spek_version = '2.0.19'
     }
     repositories {
         google()
