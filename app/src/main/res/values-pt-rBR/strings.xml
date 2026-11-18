@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_info">Informações do aplicativo</string>
+    <string name="dev_info">Informações do desenvolvedor</string>
+    <string name="dev_info_detail">Veja as informações do desenvolvedor</string>
+    <string name="send_mail">Enviar e-mail</string>
+    <string name="send_mail_detail">Envie um e-mail ao desenvolvedor.</string>
+    <string name="open_info">Informações de código aberto</string>
+    <string name="open_info_detail">Licença de código aberto</string>
+    <string name="send_feature_request">Enviar sugestão de recurso</string>
+    <string name="send_feature_request_detail">Envie uma sugestão de recurso ao desenvolvedor.</string>
+
+    <string name="disasmTheme">Tema da desmontagem</string>
+
+    <string name="permission_needed">A permissão de armazenamento é absolutamente necessária!!</string>
+    <string name="fail_readfile">Falha ao ler o arquivo!</string>
+    <string name="fail_exportzip">Falha ao exportar o zip</string>
+    <string name="fail_loadraw">Erro ao carregar do raw</string>
+    <string name="err_invalid_value">Insira valores válidos: </string>
+
+    <string name="copied">Copiado!</string>
+
+    <string name="cancel">Cancelar</string>
+    <string name="ok">OK</string>
+
+    <string name="choose_storage">Escolher armazenamento</string>
+    <string name="choose_external_storage">Escolher armazenamento externo</string>
+    <string name="external_storage">Armazenamento externo</string>
+
+    <string name="Location">Local:</string>
+    <string name="FileSize">Tamanho do arquivo:</string>
+    <string name="FoffsCS">Deslocamento no arquivo do CS:</string>
+    <string name="FoffsCSEd">Deslocamento no arquivo do fim do CS:</string>
+    <string name="FoffsEP">Deslocamento no arquivo do ponto de entrada:</string>
+    <string name="VAofCS">Endereço virtual do CS:</string>
+    <string name="VAofCSE">Endereço virtual do fim do CS:</string>
+    <string name="VAofEP">Endereço virtual do EP:</string>
+    <string name="address">Endereço</string>
+    <string name="label">Rótulo</string>
+    <string name="instruction">Instrução</string>
+    <string name="condition">Condição</string>
+    <string name="operands">Operandos</string>
+    <string name="comment">Comentário</string>
+    <string name="thank_you">Obrigado</string>
+    <string name="disassembly_highlight_settings">Configurações de destaque da desmontagem</string>
+    <string name="preview">prévia</string>
+    <string name="main_select_source_guide">Selecione um arquivo para desmontar e abra os subarquivos na gaveta à esquerda.</string>
+    <string name="select_file">Selecionar arquivo</string>
+    <string name="advanced_import">Importação avançada</string>
+    <string name="power_user_features">Recursos para usuários avançados</string>
+    <string name="power_user_import_title">Ativar opções de importação para usuários avançados</string>
+    <string name="power_user_import_summary">Mantenha as importações padrão no SAF. Ative a importação avançada apenas para root, acesso direto ao sistema de arquivos e outras origens que não usam o SAF.</string>
+    <string name="power_user_filesystem_import_title">Ativar origens do sistema de arquivos</string>
+    <string name="power_user_filesystem_import_summary">Mostra origens de leitura direta do sistema de arquivos orientadas a root, armazenamento e processos na importação avançada.</string>
+    <string name="power_user_apps_import_title">Ativar origem de apps instalados</string>
+    <string name="power_user_apps_import_summary">Mostra os pacotes de aplicativos instalados na importação avançada. Esse recurso avançado depende da visibilidade de apps para navegar pelos pacotes instalados.</string>
+    <string name="power_user_research_tools_import_title">Ativar ferramentas de pesquisa</string>
+    <string name="power_user_research_tools_import_summary">Mostra as ferramentas de malware zoo e consulta de hash na importação avançada.</string>
+    <string name="architecture">Arquitetura:</string>
+    <string name="finish_setup">Concluir configuração</string>
+    <string name="override_autosetup">Substituir configuração automática</string>
+    <string name="show_details">Mostrar detalhes</string>
+    <string name="save_details_to_file">Salvar detalhes em arquivo</string>
+    <string name="details_saved">Detalhes salvos</string>
+    <string name="export">Exportar</string>
+    <string name="export_project">Exportar projeto</string>
+    <string name="project_exported">Projeto exportado</string>
+    <string name="choose_columns">Escolher colunas</string>
+    <string name="property">Propriedade</string>
+    <string name="open_calculator">Calculadora</string>
+    <string name="save">salvar</string>
+    <string name="donate_see_ad">Ver anúncio</string>
+    <string name="settings_help">Configurações / Ajuda</string>
+    <string name="NoRoot_GoDefault">Não foi possível obter acesso root. Indo para o diretório padrão</string>
+    <string name="location">Local: </string>
+    <string name="cannot_be_read">A pasta [%1$s] não pôde ser lida!</string>
+    <string name="validaddress">Insira um endereço válido.</string>
+    <string name="selfilefirst">Selecione um arquivo primeiro.</string>
+    <string name="newProject">Criar novo projeto</string>
+    <string name="enterNewProjName">Digite o nome do novo projeto</string>
+    <string name="failSaveFile">Algo deu errado ao salvar o arquivo</string>
+    <string name="calculator">Calculadora</string>
+    <string name="failCreateProject">Erro ao criar um projeto!!</string>
+    <string name="saving">Salvando…</string>
+    <string name="export_as">Exportar como…</string>
+    <string name="send_crash_via_email">Enviar relatório de erro como uma issue por e-mail</string>
+    <string name="didUgrant">Você concedeu as permissões necessárias a este app?</string>
+    <string name="overview">Visão geral</string>
+    <string name="details">Detalhes</string>
+    <string name="disassembly">Desmontagem</string>
+    <string name="symbols">Símbolos</string>
+    <string name="hexview">Visualização hex</string>
+    <string name="permissions">Permissões</string>
+    <string name="permissionMsg">- Ler/gravar armazenamento (óbvio)</string>
+    <string name="fail_readfile_root">Permissão root necessária para ler este arquivo: permissão negada; falha ao ler o arquivo</string>
+    <string name="online_help">Ajuda on-line</string>
+    <string name="refresh">atualizar</string>
+    <string name="viewlog">Log</string>
+    <string name="foundstrings">Strings</string>
+    <string name="analysis">Análise</string>
+
+    <string name="hello_blank_fragment">Ainda não implementado.</string>
+    <string name="closeTab">Fechar aba</string>
+    <string name="closeFile">Fechar arquivo</string>
+    <string name="choose_text_colors_and_background_colors">Escolha as cores do texto e as cores de fundo</string>
+    <string name="no_data">Sem dados</string>
+    <string name="show">mostrar</string>
+    <string name="jump_to">Ir para</string>
+    <string name="find">Localizar</string>
+    <string name="analyze">Analisar</string>
+    <string name="title_activity_settings">Configurações</string>
+
+    <string name="messages_header">Mensagens</string>
+    <string name="sync_header">Sincronização</string>
+
+    <string name="signature_title">Sua assinatura</string>
+    <string name="reply_title">Ação de resposta padrão</string>
+
+    <string name="sync_title">Sincronizar e-mail periodicamente</string>
+    <string name="attachment_title">Baixar anexos recebidos</string>
+    <string name="attachment_summary_on">Baixar anexos automaticamente para os e-mails recebidos</string>
+    <string name="attachment_summary_off">Baixar anexos apenas quando solicitado manualmente</string>
+
+    <string name="askCopy">Deseja copiar o arquivo de destino para a pasta do projeto do app? É recomendado</string>
+
+    <string name="size">Tamanho</string>
+    <string name="size_short">T</string>
+    <string name="bytes">Bytes</string>
+</resources>
